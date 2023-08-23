@@ -36,62 +36,67 @@ class PlatformControllerMvcTest(
     private lateinit var platformServiceMock: PlatformService
 
     @Test
-    fun `should retrieve number of entities`() {
+    fun `should retrieve number of entities with status 200`() {
         every { platformServiceMock.countPlatforms() } returns 5L
 
         val mvcResult = mockMvc.countPlatforms()
-            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.status().isOk)
             .andReturn()
 
         assertThat(mvcResult.response.contentAsString).isEqualTo("5")
     }
 
     @Test
-    fun `should retrieve platform`() {
+    fun `should retrieve platform with status 200`() {
         val id = "123e4567-e89b-12d3-a456-426614174000"
         val platformResponse = PlatformResponse("123e4567-e89b-12d3-a456-426614174000", "BINANCE")
 
         every {
-            platformServiceMock.retrievePlatform("123e4567-e89b-12d3-a456-426614174000")
+            platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174000")
         } returns platformResponse
 
         mockMvc.retrievePlatform(id)
-            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174000")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.`is`("BINANCE")))
-            .andReturn()
     }
 
-    @Test
-    fun `should retrieve 400 when retrieving platform with invalid id`() {
-        val invalidId = "123e456-e89b-12d3-a456-426614174000"
-
-        mockMvc.retrievePlatform(invalidId)
-            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "123e4567-e89b-12d3-a456-4266141740001", "123e4567-e89b-12d3-a456-42661417400",
+            "123e456-e89b-12d3-a456-426614174000", "123e45676-e89b-12d3-a456-426614174000"
+        ]
+    )
+    fun `should fail with status 400 with 1 message when retrieving platform with invalid id`(platformId: String) {
+        mockMvc.retrievePlatform(platformId)
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("must be a valid UUID")))
-            .andReturn()
     }
 
     @Test
-    fun `should retrieve all platforms`() {
+    fun `should retrieve all platforms with status 200`() {
         val platformResponse = PlatformResponse("123e4567-e89b-12d3-a456-426614174000", "BINANCE")
 
         every { platformServiceMock.retrieveAllPlatforms() } returns listOf(platformResponse)
 
         mockMvc.retrieveAllPlatforms()
-            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174000")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.`is`("BINANCE")))
-            .andReturn()
     }
 
     @ParameterizedTest
-    @ValueSource(strings = [
-        "binance", "OKX", "Coinbase", "Kraken"
-    ])
-    fun `should save platform`(platformName: String) {
+    @ValueSource(
+        strings = [
+            "binance", "OKX", "Coinbase", "Kraken"
+        ]
+    )
+    fun `should save platform with status 200`(platformName: String) {
         val payload = """
             {
                 "name": "$platformName"
@@ -103,10 +108,9 @@ class PlatformControllerMvcTest(
         } returns PlatformResponse("123e4567-e89b-12d3-a456-426614174000", platformName.uppercase())
 
         mockMvc.savePlatform(payload)
-            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174000")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.`is`(platformName.uppercase())))
-            .andReturn()
     }
 
     @ParameterizedTest
@@ -115,7 +119,7 @@ class PlatformControllerMvcTest(
             "123", "Coin base", "C01nb453", "NmkwRsgZuYqEPvDbAtIoCfLHX", "Coinba#e"
         ]
     )
-    fun `should return 400 when adding invalid platform`(platformName: String) {
+    fun `should fail with status 400 with 1 message when adding invalid platform`(platformName: String) {
         val payload = """
             {
                 "name": "$platformName"
@@ -123,7 +127,9 @@ class PlatformControllerMvcTest(
         """
 
         mockMvc.savePlatform(payload)
-            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
             .andExpect(
@@ -132,14 +138,15 @@ class PlatformControllerMvcTest(
                     Matchers.`is`("Platform name must be 1-24 characters long, no numbers, special characters or whitespace allowed")
                 )
             )
-            .andReturn()
     }
 
     @ParameterizedTest
-    @ValueSource(strings = [
-        "  ", ""
-    ])
-    fun `should return 400 with 2 messages when adding blank or empty platform`(platformName: String) {
+    @ValueSource(
+        strings = [
+            "  ", ""
+        ]
+    )
+    fun `should fail with status 400 with 2 messages when adding blank or empty platform`(platformName: String) {
         val payload = """
             {
                 "name": "$platformName"
@@ -147,7 +154,7 @@ class PlatformControllerMvcTest(
         """
 
         mockMvc.savePlatform(payload)
-            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
             .andExpect(
@@ -165,11 +172,10 @@ class PlatformControllerMvcTest(
                         )
                     )
             )
-            .andReturn()
     }
 
     @Test
-    fun `should return 400 with 2 messages when adding null platform`() {
+    fun `should fail with status 400 with 2 messages when adding null platform`() {
         val payload = """
             {
                 "name": ${null}
@@ -177,7 +183,7 @@ class PlatformControllerMvcTest(
         """
 
         mockMvc.savePlatform(payload)
-            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
             .andExpect(
@@ -195,14 +201,15 @@ class PlatformControllerMvcTest(
                         )
                     )
             )
-            .andReturn()
     }
 
     @ParameterizedTest
-    @ValueSource(strings = [
-        "binance", "OKX", "Coinbase", "Kraken"
-    ])
-    fun `should update platform`(platformName: String) {
+    @ValueSource(
+        strings = [
+            "binance", "OKX", "Coinbase", "Kraken"
+        ]
+    )
+    fun `should update platform with status 200`(platformName: String) {
         val payload = """
             {
                 "name": "$platformName"
@@ -214,18 +221,19 @@ class PlatformControllerMvcTest(
         } returns PlatformResponse("123e4567-e89b-12d3-a456-426614174000", platformName.uppercase())
 
         mockMvc.updatePlatform("123e4567-e89b-12d3-a456-426614174000", payload)
-            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174000")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.`is`(platformName.uppercase())))
-            .andReturn()
     }
 
     @ParameterizedTest
-    @ValueSource(strings = [
-        "123e4567-e89b-12d3-a456-4266141740001", "123e4567-e89b-12d3-a456-42661417400",
-        "123e456-e89b-12d3-a456-426614174000", "123e45676-e89b-12d3-a456-426614174000"
-    ])
-    fun `should return 400 when updating platform with invalid UUID`(platformId: String) {
+    @ValueSource(
+        strings = [
+            "123e4567-e89b-12d3-a456-4266141740001", "123e4567-e89b-12d3-a456-42661417400",
+            "123e456-e89b-12d3-a456-426614174000", "123e45676-e89b-12d3-a456-426614174000"
+        ]
+    )
+    fun `should fail with status 400 with 1 message when updating platform with invalid UUID`(platformId: String) {
         val payload = """
             {
                 "name": "name"
@@ -233,11 +241,12 @@ class PlatformControllerMvcTest(
         """
 
         mockMvc.updatePlatform(platformId, payload)
-            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("must be a valid UUID")))
-            .andReturn()
     }
 
     @ParameterizedTest
@@ -246,7 +255,7 @@ class PlatformControllerMvcTest(
             "123", "Coin base", "C01nb453", "NmkwRsgZuYqEPvDbAtIoCfLHX", "Coinba#e"
         ]
     )
-    fun `should return 400 when updating invalid platform`(platformName: String) {
+    fun `should fail with status 400 with 1 messages when updating invalid platform`(platformName: String) {
         val payload = """
             {
                 "name": "$platformName"
@@ -254,7 +263,9 @@ class PlatformControllerMvcTest(
         """
 
         mockMvc.updatePlatform("123e4567-e89b-12d3-a456-426614174000", payload)
-            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
             .andExpect(
@@ -263,14 +274,15 @@ class PlatformControllerMvcTest(
                     Matchers.`is`("Platform name must be 1-24 characters long, no numbers, special characters or whitespace allowed")
                 )
             )
-            .andReturn()
     }
 
     @ParameterizedTest
-    @ValueSource(strings = [
-        "", " "
-    ])
-    fun `should return 400 with 2 messages when updating blank or empty platform`(platformName: String) {
+    @ValueSource(
+        strings = [
+            "", " "
+        ]
+    )
+    fun `should fail with status 400 with 2 messages when updating blank or empty platform`(platformName: String) {
         val payload = """
             {
                 "name": "$platformName"
@@ -278,7 +290,7 @@ class PlatformControllerMvcTest(
         """
 
         mockMvc.updatePlatform("123e4567-e89b-12d3-a456-426614174000", payload)
-            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
             .andExpect(
@@ -296,11 +308,10 @@ class PlatformControllerMvcTest(
                         )
                     )
             )
-            .andReturn()
     }
 
     @Test
-    fun `should return 400 with 2 messages when updating null platform`() {
+    fun `should fail with status 400 with 2 messages when updating null platform`() {
         val payload = """
             {
                 "name": ${null}
@@ -308,7 +319,7 @@ class PlatformControllerMvcTest(
         """
 
         mockMvc.updatePlatform("123e4567-e89b-12d3-a456-426614174000", payload)
-            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
             .andExpect(
@@ -326,30 +337,29 @@ class PlatformControllerMvcTest(
                         )
                     )
             )
-            .andReturn()
     }
 
     @Test
-    fun `should delete platform`() {
+    fun `should delete platform with status 200`() {
         val id = "123e4567-e89b-12d3-a456-426614174000"
 
         justRun { platformServiceMock.deletePlatform(id) }
 
         mockMvc.deletePlatform(id)
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andReturn()
+            .andExpect(MockMvcResultMatchers.status().isOk)
     }
 
     @Test
-    fun `should return 400 when deleting invalid platform`() {
+    fun `should fail with status 400 with 1 message when deleting invalid platform`() {
         val invalidId = "123e4567-e89b-12d3-a456-4266141740001"
 
         mockMvc.deletePlatform(invalidId)
-            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("must be a valid UUID")))
-            .andReturn()
     }
 }
 

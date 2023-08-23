@@ -33,7 +33,7 @@ class PlatformController(
 
     @GetMapping("/{platformId}")
     override fun retrievePlatform(@PathVariable @UUID platformId: String): ResponseEntity<PlatformResponse> {
-        val platformResponse = platformService.retrievePlatform(platformId)
+        val platformResponse = platformService.retrievePlatformById(platformId)
 
         return ResponseEntity.ok(platformResponse)
     }
