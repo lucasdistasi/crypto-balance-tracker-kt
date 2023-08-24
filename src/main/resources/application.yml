@@ -7,6 +7,12 @@ spring:
       uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@localhost:27017
       database: ${MONGODB_DATABASE}
 
+coingecko:
+  api-key: ${COINGECKO_API_KEY}
+  url: "https://api.coingecko.com/api/v3"
+  pro:
+    url: "https://pro-api.coingecko.com/api/v3"
+
 springdoc:
   swagger-ui:
     defaultModelsExpandDepth: -1

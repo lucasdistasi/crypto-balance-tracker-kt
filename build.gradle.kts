@@ -5,6 +5,11 @@ val ioMockkVersion = "1.13.7"
 val springDocVersion = "2.1.0"
 val ioGithubOshaiVersion = "5.0.1"
 val ninjaSquadVersion = "4.0.2"
+val springRetryVersion = "2.0.2"
+val ehcacheVersion = "3.10.8"
+val javaxCacheVersion = "1.1.1"
+val aspectjweaverVersion = "1.9.19"
+val okHttp3Version = "4.11.0"
 
 plugins {
 	id("org.springframework.boot") version "3.1.2"
@@ -36,6 +41,12 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
 	implementation("io.github.oshai:kotlin-logging-jvm:$ioGithubOshaiVersion")
+	implementation("org.springframework.retry:spring-retry:$springRetryVersion")
+	implementation("org.ehcache:ehcache:$ehcacheVersion")
+	implementation("javax.cache:cache-api:$javaxCacheVersion")
+	implementation("com.squareup.okhttp3:okhttp:$okHttp3Version")
+
+	runtimeOnly("org.aspectj:aspectjweaver:$aspectjweaverVersion")
 
 	testImplementation("io.mockk:mockk:$ioMockkVersion")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -43,6 +54,7 @@ dependencies {
 	testImplementation("com.ninja-squad:springmockk:$ninjaSquadVersion") {
 		exclude(module = "mockito-core")
 	}
+	testImplementation("com.squareup.okhttp3:mockwebserver:$okHttp3Version")
 }
 
 tasks.withType<KotlinCompile> {

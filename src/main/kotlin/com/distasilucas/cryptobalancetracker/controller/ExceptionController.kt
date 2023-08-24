@@ -1,9 +1,13 @@
 package com.distasilucas.cryptobalancetracker.controller
 
-import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
-import com.distasilucas.cryptobalancetracker.constants.PLATFORM_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.service.ApiException
+import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
+import com.distasilucas.cryptobalancetracker.service.CryptoNotFoundException
+import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedPlatformException
 import com.distasilucas.cryptobalancetracker.service.PlatformNotFoundException
+import com.distasilucas.cryptobalancetracker.service.UserCryptoNotFoundException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
@@ -17,10 +21,12 @@ import org.springframework.web.context.request.ServletWebRequest
 import org.springframework.web.context.request.WebRequest
 import java.net.URI
 
-private val logger = KotlinLogging.logger { }
+private const val UNKNOWN_ERROR = "Unknown error"
 
 @RestControllerAdvice
 class ExceptionController {
+
+    private val logger = KotlinLogging.logger { }
 
     @ExceptionHandler(PlatformNotFoundException::class)
     fun handlePlatformNotFoundException(
@@ -30,9 +36,36 @@ class ExceptionController {
         logger.info { "A PlatformNotFoundException occurred $exception" }
 
         val request = (webRequest as ServletWebRequest).request
-        val problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND)
-        problemDetail.type = URI.create(request.requestURL.toString())
-        problemDetail.detail = PLATFORM_NOT_FOUND
+        val problemDetail =
+            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)
+    }
+
+    @ExceptionHandler(CoingeckoCryptoNotFoundException::class)
+    fun handleCoingeckoCryptoNotFoundException(
+        exception: CoingeckoCryptoNotFoundException,
+        webRequest: WebRequest
+    ): ResponseEntity<ProblemDetail> {
+        logger.info { "A CoingeckoCryptoNotFoundException occurred $exception" }
+
+        val request = (webRequest as ServletWebRequest).request
+        val problemDetail =
+            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)
+    }
+
+    @ExceptionHandler(UserCryptoNotFoundException::class)
+    fun handleUserCryptoNotFoundException(
+        exception: UserCryptoNotFoundException,
+        webRequest: WebRequest
+    ): ResponseEntity<ProblemDetail> {
+        logger.info { "A UserCryptoNotFoundException occurred $exception" }
+
+        val request = (webRequest as ServletWebRequest).request
+        val problemDetail =
+            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)
     }
@@ -45,9 +78,22 @@ class ExceptionController {
         logger.info { "A DuplicatedPlatformException occurred $exception" }
 
         val request = (webRequest as ServletWebRequest).request
-        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
-        problemDetail.type = URI.create(request.requestURL.toString())
-        problemDetail.detail = DUPLICATED_PLATFORM
+        val problemDetail =
+            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)
+    }
+
+    @ExceptionHandler(DuplicatedCryptoPlatFormException::class)
+    fun handleDuplicatedCryptoPlatFormException(
+        exception: DuplicatedCryptoPlatFormException,
+        webRequest: WebRequest
+    ): ResponseEntity<ProblemDetail> {
+        logger.info { "A DuplicatedCryptoPlatFormException occurred $exception" }
+
+        val request = (webRequest as ServletWebRequest).request
+        val problemDetail =
+            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)
     }
@@ -60,15 +106,14 @@ class ExceptionController {
         logger.info { "A MethodArgumentNotValidException occurred $exception" }
 
         val request = (webRequest as ServletWebRequest).request
-        val errors: List<ProblemDetail> = exception.allErrors.map { error ->
-            val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
-            problemDetail.type = URI.create(request.requestURL.toString())
-            problemDetail.detail = error.defaultMessage
+        val problemDetails = exception.allErrors.map {
+            HttpStatus.BAD_REQUEST.withDetailsAndURI(
+                it.defaultMessage ?: UNKNOWN_ERROR,
+                URI.create(request.requestURL.toString())
+            )
+        }
 
-            problemDetail
-        }.toList()
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetails)
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
@@ -95,14 +140,51 @@ class ExceptionController {
         val request = (webRequest as ServletWebRequest).request
         val constraintViolations = exception.constraintViolations.toList()
 
-        val errors = constraintViolations.map {
-            val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
-            problemDetail.type = URI.create(request.requestURL.toString())
-            problemDetail.detail = it.message
-
-            problemDetail
+        val problemDetails = constraintViolations.map {
+            HttpStatus.BAD_REQUEST.withDetailsAndURI(it.message, URI.create(request.requestURL.toString()))
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetails)
+    }
+
+    @ExceptionHandler(CryptoNotFoundException::class)
+    fun handleCryptoNotFoundException(
+        exception: CryptoNotFoundException,
+        webRequest: WebRequest
+    ): ResponseEntity<ProblemDetail> {
+        logger.warn { "This should not happen. A CryptoNotFoundException occurred $exception" }
+
+        val request = (webRequest as ServletWebRequest).request
+        val problemDetail =
+            HttpStatus.NOT_FOUND.withDetailsAndURI(CRYPTO_NOT_FOUND, URI.create(request.requestURL.toString()))
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)
+    }
+
+    @ExceptionHandler(ApiException::class)
+    fun handleApiException(
+        exception: ApiException,
+        webRequest: WebRequest
+    ): ResponseEntity<ProblemDetail> {
+        logger.warn { "An ApiException occurred $exception" }
+
+        val request = (webRequest as ServletWebRequest).request
+        val problemDetail = HttpStatus.INTERNAL_SERVER_ERROR.withDetailsAndURI(
+            exception.message ?: UNKNOWN_ERROR,
+            URI.create(request.requestURL.toString())
+        )
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(problemDetail)
+    }
+
+    private fun HttpStatus.withDetailsAndURI(
+        detail: String,
+        type: URI
+    ): ProblemDetail {
+        val problemDetail = ProblemDetail.forStatusAndDetail(this, detail)
+        problemDetail.type = type
+
+        return problemDetail
     }
 }

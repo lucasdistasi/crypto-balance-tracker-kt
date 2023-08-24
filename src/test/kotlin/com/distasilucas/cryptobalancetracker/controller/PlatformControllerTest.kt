@@ -18,7 +18,7 @@ class PlatformControllerTest {
     private val platformController = PlatformController(platformServiceMock)
 
     @Test
-    fun `should retrieve number of entities`() {
+    fun `should retrieve number of entities with status 200`() {
         every { platformServiceMock.countPlatforms() } returns 5
 
         val responseEntity = platformController.countPlatforms()
@@ -28,11 +28,11 @@ class PlatformControllerTest {
     }
 
     @Test
-    fun `should retrieve platform`() {
+    fun `should retrieve platform with status 200`() {
         val id = UUID.randomUUID().toString()
         val platformResponse = PlatformResponse(id, "BINANCE")
 
-        every { platformServiceMock.retrievePlatform(id) } returns platformResponse
+        every { platformServiceMock.retrievePlatformById(id) } returns platformResponse
 
         val responseEntity = platformController.retrievePlatform(id)
 
@@ -41,7 +41,7 @@ class PlatformControllerTest {
     }
 
     @Test
-    fun `should return 200 when retrieving all platforms`() {
+    fun `should retrieve all platforms with status 200`() {
         val platformResponse = PlatformResponse(UUID.randomUUID().toString(), "BINANCE")
 
         every { platformServiceMock.retrieveAllPlatforms() } returns listOf(platformResponse)
@@ -53,7 +53,7 @@ class PlatformControllerTest {
     }
 
     @Test
-    fun `should return 204 when retrieving all platforms`() {
+    fun `should retrieve empty platforms with status 204`() {
         every { platformServiceMock.retrieveAllPlatforms() } returns emptyList()
 
         val responseEntity = platformController.retrieveAllPlatforms()
@@ -63,7 +63,7 @@ class PlatformControllerTest {
     }
 
     @Test
-    fun `should save platform`() {
+    fun `should save platform with status 200`() {
         val platformRequest = PlatformRequest("BINANCE")
         val platformEntity = platformRequest.toEntity()
         val platformResponse = platformEntity.toPlatformResponse()
@@ -77,7 +77,7 @@ class PlatformControllerTest {
     }
 
     @Test
-    fun `should update platform`() {
+    fun `should update platform with status 200`() {
         val id = UUID.randomUUID().toString()
         val platformRequest = PlatformRequest("OKX")
         val platformEntity = platformRequest.toEntity()
@@ -92,7 +92,7 @@ class PlatformControllerTest {
     }
 
     @Test
-    fun `should delete platform`() {
+    fun `should delete platform with status 200`() {
         val id = UUID.randomUUID().toString()
 
         every { platformServiceMock.deletePlatform(id) } just runs

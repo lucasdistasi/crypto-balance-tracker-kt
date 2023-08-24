@@ -1,7 +1,7 @@
 package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
-import com.distasilucas.cryptobalancetracker.constants.PLATFORM_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
@@ -39,7 +39,7 @@ class PlatformServiceTest {
 
         every { platformRepositoryMock.findById(id) } returns Optional.of(platformEntity)
 
-        val platform = platformService.retrievePlatform(id)
+        val platform = platformService.retrievePlatformById(id)
 
         assertThat(platform).isEqualTo(platformEntity.toPlatformResponse())
     }
@@ -50,9 +50,9 @@ class PlatformServiceTest {
 
         every { platformRepositoryMock.findById(id) } returns Optional.empty()
 
-        val exception = assertThrows<PlatformNotFoundException> { platformService.retrievePlatform(id) }
+        val exception = assertThrows<PlatformNotFoundException> { platformService.retrievePlatformById(id) }
 
-        assertThat(exception.message).isEqualTo(PLATFORM_NOT_FOUND)
+        assertThat(exception.message).isEqualTo(PLATFORM_ID_NOT_FOUND.format(id))
     }
 
     @Test
@@ -89,8 +89,9 @@ class PlatformServiceTest {
 
         val platformResponse = platformService.savePlatform(platformRequest)
 
-        assertThat(platformResponse).isEqualTo(PlatformResponse(platformEntity.id, platformEntity.name))
         verify(exactly = 1) { platformRepositoryMock.save(slot.captured) }
+
+        assertThat(platformResponse).isEqualTo(PlatformResponse(platformEntity.id, platformEntity.name))
     }
 
     @Test
@@ -103,8 +104,9 @@ class PlatformServiceTest {
 
         val exception = assertThrows<DuplicatedPlatformException> { platformService.savePlatform(platformRequest) }
 
-        assertThat(exception.message).isEqualTo(DUPLICATED_PLATFORM)
         verify(exactly = 0) { platformRepositoryMock.save(platformEntity) }
+
+        assertThat(exception.message).isEqualTo(DUPLICATED_PLATFORM.format("BINANCE"))
     }
 
     @Test
@@ -120,8 +122,9 @@ class PlatformServiceTest {
 
         val updatedPlatform = platformService.updatePlatform(id, platformRequest)
 
-        assertThat(updatedPlatform).isEqualTo(PlatformResponse(id, "OKX"))
         verify(exactly = 1) { platformRepositoryMock.save(newPlatform) }
+
+        assertThat(updatedPlatform).isEqualTo(PlatformResponse(id, "OKX"))
     }
 
     @Test
@@ -136,8 +139,9 @@ class PlatformServiceTest {
             platformService.updatePlatform(id, platformRequest)
         }
 
-        assertThat(exception.message).isEqualTo(DUPLICATED_PLATFORM)
         verify(exactly = 0) { platformRepositoryMock.save(existingPlatform) }
+
+        assertThat(exception.message).isEqualTo(DUPLICATED_PLATFORM.format("BINANCE"))
     }
 
     @Test
@@ -153,8 +157,9 @@ class PlatformServiceTest {
             platformService.updatePlatform(id, platformRequest)
         }
 
-        assertThat(exception.message).isEqualTo(PLATFORM_NOT_FOUND)
         verify(exactly = 0) { platformRepositoryMock.save(existingPlatform) }
+
+        assertThat(exception.message).isEqualTo(PLATFORM_ID_NOT_FOUND.format(id))
     }
 
     @Test
@@ -179,7 +184,8 @@ class PlatformServiceTest {
 
         val exception = assertThrows<PlatformNotFoundException> { platformService.deletePlatform(id) }
 
-        assertThat(exception.message).isEqualTo(PLATFORM_NOT_FOUND)
         verify(exactly = 0) { platformRepositoryMock.delete(existingPlatform) }
+
+        assertThat(exception.message).isEqualTo(PLATFORM_ID_NOT_FOUND.format(id))
     }
 }
