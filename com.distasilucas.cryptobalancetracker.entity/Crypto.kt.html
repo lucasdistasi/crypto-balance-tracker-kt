@@ -2,20 +2,33 @@
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.data.mongodb.core.mapping.Field
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-<span class="fc" id="L8">@Document(&quot;Cryptos&quot;)</span>
-<span class="fc" id="L9">data class Crypto(</span>
-<span class="fc" id="L10">    @Id</span>
-<span class="fc" id="L11">    val id: String,</span>
-<span class="fc" id="L12">    val name: String,</span>
-<span class="fc" id="L13">    val ticker: String,</span>
-<span class="fc" id="L14">    val lastKnownPrice: BigDecimal,</span>
-<span class="fc" id="L15">    val lastKnownPriceInEUR: BigDecimal,</span>
-<span class="fc" id="L16">    val lastKnownPriceInBTC: BigDecimal,</span>
-<span class="fc" id="L17">    val circulatingSupply: BigDecimal,</span>
-<span class="fc" id="L18">    val maxSupply: BigDecimal,</span>
-<span class="fc" id="L19">    val lastUpdatedAt: LocalDateTime</span>
+<span class="fc" id="L9">@Document(&quot;Cryptos&quot;)</span>
+<span class="fc" id="L10">data class Crypto(</span>
+<span class="fc" id="L11">    @Id</span>
+<span class="fc" id="L12">    val id: String,</span>
+<span class="fc" id="L13">    val name: String,</span>
+<span class="fc" id="L14">    val ticker: String,</span>
+
+<span class="fc" id="L16">    @Field(&quot;last_known_price&quot;)</span>
+<span class="fc" id="L17">    val lastKnownPrice: BigDecimal,</span>
+
+<span class="fc" id="L19">    @Field(&quot;last_known_price_in_eur&quot;)</span>
+<span class="fc" id="L20">    val lastKnownPriceInEUR: BigDecimal,</span>
+
+<span class="fc" id="L22">    @Field(&quot;last_known_price_in_btc&quot;)</span>
+<span class="fc" id="L23">    val lastKnownPriceInBTC: BigDecimal,</span>
+
+<span class="fc" id="L25">    @Field(&quot;circulating_supply&quot;)</span>
+<span class="fc" id="L26">    val circulatingSupply: BigDecimal,</span>
+
+<span class="fc" id="L28">    @Field(&quot;max_supply&quot;)</span>
+<span class="fc" id="L29">    val maxSupply: BigDecimal,</span>
+
+<span class="fc" id="L31">    @Field(&quot;last_updated_at&quot;)</span>
+<span class="fc" id="L32">    val lastUpdatedAt: LocalDateTime</span>
 )
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GoalService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.service</a> &gt; <span class="el_source">GoalService.kt</span></div><h1>GoalService.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.service
+
+import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_GOAL
+import com.distasilucas.cryptobalancetracker.constants.GOAL_ID_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.entity.Crypto
+import com.distasilucas.cryptobalancetracker.entity.Goal
+import com.distasilucas.cryptobalancetracker.model.request.goal.GoalRequest
+import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
+import com.distasilucas.cryptobalancetracker.model.response.goal.PageGoalResponse
+import com.distasilucas.cryptobalancetracker.repository.GoalRepository
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
+import java.math.BigDecimal
+import java.math.RoundingMode
+
+<span class="fc" id="L17">@Service</span>
+<span class="fc" id="L18">class GoalService(</span>
+<span class="fc" id="L19">    val goalRepository: GoalRepository,</span>
+<span class="fc" id="L20">    val cryptoService: CryptoService,</span>
+<span class="fc" id="L21">    val userCryptoService: UserCryptoService</span>
+) {
+
+    fun retrieveGoalById(goalId: String): GoalResponse {
+<span class="fc" id="L25">        return goalRepository.findById(goalId)</span>
+<span class="fc" id="L26">            .orElseThrow { GoalNotFoundException(GOAL_ID_NOT_FOUND.format(goalId)) }</span>
+<span class="fc" id="L27">            .toGoalResponse(id = goalId)</span>
+    }
+
+    fun retrieveGoalsForPage(page: Int): PageGoalResponse {
+<span class="fc" id="L31">        val pageRequest: Pageable = PageRequest.of(page, 10)</span>
+<span class="fc" id="L32">        val entityGoalsPage = goalRepository.findAll(pageRequest)</span>
+<span class="fc" id="L33">        val goalsResponse = entityGoalsPage.content.map { it.toGoalResponse(id = it.id) }</span>
+
+<span class="fc" id="L35">        return PageGoalResponse(</span>
+<span class="fc" id="L36">            page = page,</span>
+<span class="fc" id="L37">            totalPages = entityGoalsPage.totalPages,</span>
+<span class="fc" id="L38">            goals = goalsResponse</span>
+        )
+    }
+
+    fun saveGoal(goalRequest: GoalRequest): GoalResponse {
+<span class="fc" id="L43">        val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(goalRequest.cryptoName!!)</span>
+
+<span class="fc" id="L45">        goalRepository.findByCoingeckoCryptoId(coingeckoCrypto.id)</span>
+<span class="pc" id="L46">            .ifPresent { throw DuplicatedGoalException(DUPLICATED_GOAL.format(coingeckoCrypto.name)) }</span>
+
+<span class="fc" id="L48">        val goal = goalRequest.toEntity(coingeckoCrypto.id)</span>
+<span class="fc" id="L49">        cryptoService.saveCryptoIfNotExists(goal.coingeckoCryptoId)</span>
+<span class="fc" id="L50">        goalRepository.save(goal)</span>
+
+<span class="fc" id="L52">        return goal.toGoalResponse(id = goal.id)</span>
+    }
+
+    fun updateGoal(goalId: String, goalRequest: GoalRequest): GoalResponse {
+<span class="fc" id="L56">        val goal = goalRepository.findById(goalId)</span>
+<span class="fc" id="L57">            .orElseThrow { GoalNotFoundException(GOAL_ID_NOT_FOUND.format(goalId)) }</span>
+
+<span class="fc" id="L59">        val updatedGoal = goal.copy(goalQuantity = goalRequest.goalQuantity!!)</span>
+
+<span class="fc" id="L61">        goalRepository.save(updatedGoal)</span>
+
+<span class="fc" id="L63">        return updatedGoal.toGoalResponse(id = updatedGoal.id)</span>
+    }
+
+    fun deleteGoal(goalId: String) {
+<span class="fc" id="L67">        goalRepository.findById(goalId)</span>
+<span class="fc" id="L68">            .ifPresentOrElse({</span>
+<span class="fc" id="L69">                goalRepository.deleteById(goalId)</span>
+<span class="fc" id="L70">            }, {</span>
+<span class="fc" id="L71">                throw GoalNotFoundException(GOAL_ID_NOT_FOUND.format(goalId))</span>
+            })
+<span class="fc" id="L73">    }</span>
+
+    private fun Goal.toGoalResponse(id: String): GoalResponse {
+<span class="fc" id="L76">        val crypto = cryptoService.retrieveCryptoInfoById(coingeckoCryptoId)</span>
+<span class="fc" id="L77">        val userCryptos = userCryptoService.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
+<span class="fc" id="L78">        val actualQuantity = userCryptos.map { it.quantity }</span>
+<span class="fc" id="L79">            .fold(BigDecimal.ZERO, BigDecimal::add)</span>
+<span class="fc" id="L80">        val progress = getProgress(goalQuantity, actualQuantity)</span>
+<span class="fc" id="L81">        val remainingQuantity = getRemainingQuantity(goalQuantity, actualQuantity)</span>
+<span class="fc" id="L82">        val moneyNeeded = crypto.getMoneyNeeded(remainingQuantity)</span>
+
+<span class="fc" id="L84">        return toGoalResponse(</span>
+<span class="fc" id="L85">            id = id,</span>
+<span class="fc" id="L86">            cryptoName = crypto.name,</span>
+<span class="fc" id="L87">            actualQuantity = actualQuantity,</span>
+<span class="fc" id="L88">            progress = progress,</span>
+<span class="fc" id="L89">            remainingQuantity = remainingQuantity,</span>
+<span class="fc" id="L90">            moneyNeeded = moneyNeeded</span>
+        )
+    }
+
+    private fun getRemainingQuantity(goalQuantity: BigDecimal, actualQuantity: BigDecimal): BigDecimal {
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        return if (goalQuantity &lt;= actualQuantity) BigDecimal.ZERO else goalQuantity.minus(actualQuantity)</span>
+    }
+
+    private fun getProgress(goalQuantity: BigDecimal, actualQuantity: BigDecimal): BigDecimal {
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        return if (goalQuantity &lt;= actualQuantity) BigDecimal(&quot;100&quot;) else actualQuantity.multiply(BigDecimal(&quot;100&quot;))</span>
+<span class="fc" id="L100">            .divide(goalQuantity, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L101">            .setScale(2, RoundingMode.HALF_UP)</span>
+    }
+
+    private fun Crypto.getMoneyNeeded(remainingQuantity: BigDecimal): BigDecimal {
+<span class="fc" id="L105">        return lastKnownPrice.multiply(remainingQuantity).setScale(2, RoundingMode.HALF_UP)</span>
+    }
+}
+
+<span class="fc" id="L109">class GoalNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L110">class DuplicatedGoalException(message: String) : RuntimeException(message)</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -119,9 +119,14 @@ import org.springframework.stereotype.Service
 <span class="fc" id="L119">        }, { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) })</span>
 
         // TODO (prob delete crypto if not used (need goal table for this))
-<span class="fc" id="L122">    }</span>
+        // another idea is to delegate this to the scheduler that will update crypto prices
+<span class="fc" id="L123">    }</span>
+
+    fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List&lt;UserCrypto&gt; {
+<span class="nc" id="L126">        return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
+    }
 }
 
-<span class="fc" id="L125">class UserCryptoNotFoundException(message: String) : RuntimeException(message)</span>
-<span class="fc" id="L126">class DuplicatedCryptoPlatFormException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L130">class UserCryptoNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L131">class DuplicatedCryptoPlatFormException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
