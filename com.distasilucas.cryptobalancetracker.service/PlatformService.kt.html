@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PlatformService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.service</a> &gt; <span class="el_source">PlatformService.kt</span></div><h1>PlatformService.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.service
+
+import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.entity.Platform
+import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
+import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
+import com.distasilucas.cryptobalancetracker.repository.PlatformRepository
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.stereotype.Service
+
+<span class="fc" id="L12">@Service</span>
+<span class="fc" id="L13">class PlatformService(</span>
+<span class="fc" id="L14">    private val platformRepository: PlatformRepository</span>
+) {
+
+<span class="pc" id="L17">    private val logger = KotlinLogging.logger { }</span>
+
+<span class="fc" id="L19">    fun countPlatforms() = platformRepository.count()</span>
+
+    fun retrievePlatformById(platformId: String): PlatformResponse {
+<span class="fc" id="L22">        logger.info { &quot;Retrieving platformId $platformId&quot; }</span>
+
+<span class="fc" id="L24">        return platformRepository.findById(platformId)</span>
+<span class="fc" id="L25">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
+<span class="fc" id="L26">            .toPlatformResponse()</span>
+    }
+
+    fun retrieveAllPlatforms(): List&lt;PlatformResponse&gt; {
+<span class="fc" id="L30">        logger.info { &quot;Retrieving all platforms&quot; }</span>
+
+<span class="fc" id="L32">        return platformRepository.findAll()</span>
+<span class="fc" id="L33">            .map { it.toPlatformResponse() }</span>
+<span class="fc" id="L34">            .toList()</span>
+    }
+
+    fun savePlatform(platformRequest: PlatformRequest): PlatformResponse {
+<span class="fc" id="L38">        validatePlatformNotExists(platformRequest.name!!)</span>
+
+<span class="fc" id="L40">        val platform = platformRequest.toEntity()</span>
+<span class="fc" id="L41">        val platformEntity = platformRepository.save(platform)</span>
+
+<span class="fc" id="L43">        val platformResponse = platformEntity.toPlatformResponse()</span>
+<span class="fc" id="L44">        logger.info { &quot;Saved platform $platformResponse&quot; }</span>
+
+<span class="fc" id="L46">        return platformResponse</span>
+    }
+
+    fun updatePlatform(platformId: String, platformRequest: PlatformRequest): PlatformResponse {
+<span class="fc" id="L50">        validatePlatformNotExists(platformRequest.name!!)</span>
+
+<span class="fc" id="L52">        val existingPlatform = findPlatformById(platformId)</span>
+<span class="fc" id="L53">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
+
+<span class="fc" id="L55">        val updatedPlatform = Platform(</span>
+<span class="fc" id="L56">            id = existingPlatform.id,</span>
+<span class="fc" id="L57">            name = platformRequest.name</span>
+        )
+
+<span class="fc" id="L60">        platformRepository.save(updatedPlatform)</span>
+<span class="fc" id="L61">        val platformResponse = updatedPlatform.toPlatformResponse()</span>
+<span class="fc" id="L62">        logger.info { &quot;Updated platform. Before: $existingPlatform  | After: $updatedPlatform&quot; }</span>
+
+<span class="fc" id="L64">        return platformResponse</span>
+    }
+
+    fun deletePlatform(platformId: String) {
+<span class="fc" id="L68">        val platformEntity = findPlatformById(platformId)</span>
+<span class="fc" id="L69">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
+
+<span class="fc" id="L71">        platformRepository.delete(platformEntity)</span>
+<span class="fc" id="L72">        logger.info { &quot;Deleted platform $platformEntity&quot; }</span>
+<span class="fc" id="L73">    }</span>
+
+<span class="fc" id="L75">    private fun findPlatformById(platformId: String) = platformRepository.findById(platformId)</span>
+
+    private fun validatePlatformNotExists(platformName: String) {
+<span class="pc" id="L78">        findByPlatformName(platformName).ifPresent { throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(it.name)) }</span>
+<span class="fc" id="L79">    }</span>
+
+<span class="fc" id="L81">    private fun findByPlatformName(platformName: String) = platformRepository.findByName(platformName.uppercase())</span>
+}
+
+<span class="fc" id="L84">class PlatformNotFoundException(message: String) : RuntimeException(message)</span>
+
+<span class="fc" id="L86">class DuplicatedPlatformException(message: String) : RuntimeException(message)</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
