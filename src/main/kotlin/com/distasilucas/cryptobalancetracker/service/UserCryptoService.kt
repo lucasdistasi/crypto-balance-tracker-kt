@@ -52,15 +52,17 @@ class UserCryptoService(
         val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(userCryptoRequest.cryptoName!!)
         val platform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)
 
-        userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)
-            .ifPresent {
-                throw DuplicatedCryptoPlatFormException(
-                    DUPLICATED_CRYPTO_PLATFORM.format(
-                        coingeckoCrypto.name,
-                        platform.name
-                    )
+        val existingUserCrypto =
+            userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)
+
+        if (existingUserCrypto.isPresent) {
+            throw DuplicatedCryptoPlatFormException(
+                DUPLICATED_CRYPTO_PLATFORM.format(
+                    coingeckoCrypto.name,
+                    platform.name
                 )
-            }
+            )
+        }
 
         val userCrypto = UserCrypto(
             coingeckoCryptoId = coingeckoCrypto.id,
@@ -82,17 +84,19 @@ class UserCryptoService(
         val userCrypto = userCryptoRepository.findById(userCryptoId)
             .orElseThrow { UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) }
         val platform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)
-
         val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(userCryptoRequest.cryptoName!!)
-        userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)
-            .ifPresent {
-                throw DuplicatedCryptoPlatFormException(
-                    DUPLICATED_CRYPTO_PLATFORM.format(
-                        coingeckoCrypto.name,
-                        platform.name
-                    )
+
+        val existingUserCrypto =
+            userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)
+
+        if (existingUserCrypto.isPresent) {
+            throw DuplicatedCryptoPlatFormException(
+                DUPLICATED_CRYPTO_PLATFORM.format(
+                    coingeckoCrypto.name,
+                    platform.name
                 )
-            }
+            )
+        }
 
         val updatedUserCrypto = UserCrypto(
             id = userCrypto.id,
@@ -111,14 +115,18 @@ class UserCryptoService(
     }
 
     fun deleteUserCrypto(userCryptoId: String) {
-        val userCrypto = userCryptoRepository.findById(userCryptoId)
-
-        userCrypto.ifPresentOrElse({
-            userCryptoRepository.deleteById(userCryptoId)
-            logger.info { "Deleted user crypto $userCrypto" }
-        }, { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) })
+        userCryptoRepository.findById(userCryptoId)
+            .ifPresentOrElse({
+                userCryptoRepository.deleteById(userCryptoId)
+                logger.info { "Deleted user crypto $it" }
+            }, { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) })
 
         // TODO (prob delete crypto if not used (need goal table for this))
+        // another idea is to delegate this to the scheduler that will update crypto prices
+    }
+
+    fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List<UserCrypto> {
+        return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)
     }
 }
 

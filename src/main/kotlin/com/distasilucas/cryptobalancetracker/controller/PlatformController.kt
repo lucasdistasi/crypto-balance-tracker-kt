@@ -1,5 +1,6 @@
 package com.distasilucas.cryptobalancetracker.controller
 
+import com.distasilucas.cryptobalancetracker.constants.INVALID_PLATFORM_UUID
 import com.distasilucas.cryptobalancetracker.controller.swagger.PlatformControllerAPI
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
@@ -20,9 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 @Validated
 @RestController
 @RequestMapping("/api/v1/platforms")
-class PlatformController(
-        private val platformService: PlatformService
-): PlatformControllerAPI {
+class PlatformController(private val platformService: PlatformService) : PlatformControllerAPI {
 
     @GetMapping("/count")
     override fun countPlatforms(): ResponseEntity<Long> {
@@ -32,7 +31,7 @@ class PlatformController(
     }
 
     @GetMapping("/{platformId}")
-    override fun retrievePlatform(@PathVariable @UUID platformId: String): ResponseEntity<PlatformResponse> {
+    override fun retrievePlatform(@PathVariable @UUID(message = INVALID_PLATFORM_UUID) platformId: String): ResponseEntity<PlatformResponse> {
         val platformResponse = platformService.retrievePlatformById(platformId)
 
         return ResponseEntity.ok(platformResponse)
@@ -47,7 +46,7 @@ class PlatformController(
 
     @PostMapping
     override fun savePlatform(
-            @Valid @RequestBody platformRequest: PlatformRequest
+        @Valid @RequestBody platformRequest: PlatformRequest
     ): ResponseEntity<PlatformResponse> {
         val platformResponse = platformService.savePlatform(platformRequest)
 
@@ -56,8 +55,7 @@ class PlatformController(
 
     @PutMapping("/{platformId}")
     override fun updatePlatform(
-            @PathVariable @UUID platformId: String,
-            @Valid @RequestBody platformRequest: PlatformRequest
+        @PathVariable @UUID(message = INVALID_PLATFORM_UUID) platformId: String, @Valid @RequestBody platformRequest: PlatformRequest
     ): ResponseEntity<PlatformResponse> {
         val updatedPlatform = platformService.updatePlatform(platformId, platformRequest)
 
@@ -65,7 +63,7 @@ class PlatformController(
     }
 
     @DeleteMapping("/{platformId}")
-    override fun deletePlatform(@PathVariable @UUID platformId: String): ResponseEntity<Unit> {
+    override fun deletePlatform(@PathVariable @UUID(message = INVALID_PLATFORM_UUID) platformId: String): ResponseEntity<Unit> {
         platformService.deletePlatform(platformId)
 
         return ResponseEntity.ok().build()

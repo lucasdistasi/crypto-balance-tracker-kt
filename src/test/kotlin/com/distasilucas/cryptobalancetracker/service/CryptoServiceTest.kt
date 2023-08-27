@@ -140,17 +140,66 @@ class CryptoServiceTest {
 
         assertThat(slot.captured)
             .usingRecursiveComparison()
-            .isEqualTo(Crypto(
-                id = "bitcoin",
-                name = "Bitcoin",
-                ticker = "btc",
-                lastKnownPrice = BigDecimal("30000"),
-                lastKnownPriceInEUR = BigDecimal("27000"),
-                lastKnownPriceInBTC = BigDecimal("1"),
+            .isEqualTo(
+                Crypto(
+                    id = "bitcoin",
+                    name = "Bitcoin",
+                    ticker = "btc",
+                    lastKnownPrice = BigDecimal("30000"),
+                    lastKnownPriceInEUR = BigDecimal("27000"),
+                    lastKnownPriceInBTC = BigDecimal("1"),
+                    circulatingSupply = BigDecimal("19000000"),
+                    maxSupply = BigDecimal("21000000"),
+                    lastUpdatedAt = localDateTime
+                )
+            )
+    }
+
+    @Test
+    fun `should save crypto if not exists with ZERO as max supply`() {
+        val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
+        val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
+        val coingeckoCryptoInfo = CoingeckoCryptoInfo(
+            id = "bitcoin",
+            symbol = "btc",
+            name = "Bitcoin",
+            marketData = MarketData(
+                currentPrice = CurrentPrice(
+                    usd = BigDecimal("30000"),
+                    eur = BigDecimal("27000"),
+                    btc = BigDecimal("1")
+                ),
                 circulatingSupply = BigDecimal("19000000"),
-                maxSupply = BigDecimal("21000000"),
-                lastUpdatedAt = localDateTime
-            ))
+                maxSupply = null
+            )
+        )
+
+        val slot = slot<Crypto>()
+        every { cryptoRepositoryMock.findById("bitcoin") } returns Optional.empty()
+        every { coingeckoServiceMock.retrieveCryptoInfo("bitcoin") } returns coingeckoCryptoInfo
+        every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
+        every { clockMock.zone } returns zonedDateTime.zone
+        every { cryptoRepositoryMock.save(capture(slot)) } answers { slot.captured }
+
+        cryptoService.saveCryptoIfNotExists("bitcoin")
+
+        verify(exactly = 1) { cryptoRepositoryMock.save(slot.captured) }
+
+        assertThat(slot.captured)
+            .usingRecursiveComparison()
+            .isEqualTo(
+                Crypto(
+                    id = "bitcoin",
+                    name = "Bitcoin",
+                    ticker = "btc",
+                    lastKnownPrice = BigDecimal("30000"),
+                    lastKnownPriceInEUR = BigDecimal("27000"),
+                    lastKnownPriceInBTC = BigDecimal("1"),
+                    circulatingSupply = BigDecimal("19000000"),
+                    maxSupply = BigDecimal.ZERO,
+                    lastUpdatedAt = localDateTime
+                )
+            )
     }
 
     @Test
@@ -158,6 +207,8 @@ class CryptoServiceTest {
         val crypto = getCryptoEntity()
 
         every { cryptoRepositoryMock.findById("bitcoin") } returns Optional.of(crypto)
+
+        cryptoService.saveCryptoIfNotExists("bitcoin")
 
         verify(exactly = 0) { cryptoRepositoryMock.save(any()) }
     }

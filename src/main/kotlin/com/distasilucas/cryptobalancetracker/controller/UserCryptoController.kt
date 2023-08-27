@@ -1,5 +1,8 @@
 package com.distasilucas.cryptobalancetracker.controller
 
+import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
+import com.distasilucas.cryptobalancetracker.constants.INVALID_USER_CRYPTO_UUID
+import com.distasilucas.cryptobalancetracker.controller.swagger.UserCryptoControllerAPI
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
@@ -23,19 +26,21 @@ import org.springframework.web.bind.annotation.RestController
 @Validated
 @RestController
 @RequestMapping("/api/v1/cryptos")
-class UserCryptoController(
-    private val userCryptoService: UserCryptoService
-) {
+class UserCryptoController(private val userCryptoService: UserCryptoService) : UserCryptoControllerAPI {
 
     @GetMapping("/{userCryptoId}")
-    fun retrieveUserCrypto(@PathVariable @UUID userCryptoId: String): ResponseEntity<UserCryptoResponse> {
+    override fun retrieveUserCrypto(
+        @PathVariable @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String
+    ): ResponseEntity<UserCryptoResponse> {
         val userCrypto = userCryptoService.retrieveUserCryptoById(userCryptoId)
 
         return ResponseEntity.ok(userCrypto)
     }
 
     @GetMapping
-    fun retrieveUserCryptosForPage(@RequestParam @Min(0) page: Int): ResponseEntity<PageUserCryptoResponse> {
+    override fun retrieveUserCryptosForPage(
+        @RequestParam @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int
+    ): ResponseEntity<PageUserCryptoResponse> {
         val userCryptosPage = userCryptoService.retrieveUserCryptosByPage(page)
 
         return if (userCryptosPage.cryptos.isEmpty()) ResponseEntity.status(HttpStatus.NO_CONTENT)
@@ -43,15 +48,15 @@ class UserCryptoController(
     }
 
     @PostMapping
-    fun saveUserCrypto(@Valid @RequestBody userCryptoRequest: UserCryptoRequest): ResponseEntity<UserCryptoResponse> {
+    override fun saveUserCrypto(@Valid @RequestBody userCryptoRequest: UserCryptoRequest): ResponseEntity<UserCryptoResponse> {
         val userCrypto = userCryptoService.saveUserCrypto(userCryptoRequest)
 
         return ResponseEntity.ok(userCrypto)
     }
 
     @PutMapping("/{userCryptoId}")
-    fun updateUserCrypto(
-        @PathVariable @UUID userCryptoId: String,
+    override fun updateUserCrypto(
+        @PathVariable @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String,
         @Valid @RequestBody userCryptoRequest: UserCryptoRequest
     ): ResponseEntity<UserCryptoResponse> {
         val updatedUserCrypto = userCryptoService.updateUserCrypto(userCryptoId, userCryptoRequest)
@@ -60,7 +65,9 @@ class UserCryptoController(
     }
 
     @DeleteMapping("/{userCryptoId}")
-    fun deleteUserCrypto(@PathVariable @UUID userCryptoId: String): ResponseEntity<Unit> {
+    override fun deleteUserCrypto(
+        @PathVariable @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String
+    ): ResponseEntity<Unit> {
         userCryptoService.deleteUserCrypto(userCryptoId)
 
         return ResponseEntity.ok().build()

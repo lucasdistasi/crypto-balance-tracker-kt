@@ -2,6 +2,7 @@ import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
+import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
@@ -11,6 +12,7 @@ import java.time.LocalDateTime
 
 private const val PLATFORMS_ENDPOINT = "/api/v1/platforms"
 private const val USER_CRYPTOS_ENDPOINT = "/api/v1/cryptos"
+private const val GOALS_ENDPONT = "/api/v1/goals"
 
 fun MockMvc.countPlatforms() = this.perform(
     MockMvcRequestBuilders.get("$PLATFORMS_ENDPOINT/count")
@@ -65,6 +67,33 @@ fun MockMvc.updateUserCrypto(userCryptoId: String, payload: String) = this.perfo
 
 fun MockMvc.deleteUserCrypto(userCryptoId: String) = this.perform(
     MockMvcRequestBuilders.delete("$USER_CRYPTOS_ENDPOINT/$userCryptoId")
+        .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.retrieveGoal(goalId: String) = this.perform(
+    MockMvcRequestBuilders.get("$GOALS_ENDPONT/$goalId")
+        .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.retrieveGoalsForPage(page: Int) = this.perform(
+    MockMvcRequestBuilders.get("$GOALS_ENDPONT?page=$page")
+        .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.saveGoal(payload: String) = this.perform(
+    MockMvcRequestBuilders.post(GOALS_ENDPONT)
+        .content(payload)
+        .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.updateGoal(goalId: String, payload: String) = this.perform(
+    MockMvcRequestBuilders.put("$GOALS_ENDPONT/$goalId")
+        .content(payload)
+        .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.deleteGoal(goalId: String) = this.perform(
+    MockMvcRequestBuilders.delete("$GOALS_ENDPONT/$goalId")
         .contentType(APPLICATION_JSON)
 )
 
@@ -137,5 +166,25 @@ fun getCoingeckoCrypto(
         id = id,
         symbol = symbol,
         name = name
+    )
+}
+
+fun getGoalResponse(
+    id: String = "123e4567-e89b-12d3-a456-426614174111",
+    cryptoName: String = "Bitcoin",
+    actualQuantity: BigDecimal = BigDecimal("1"),
+    progress: BigDecimal = BigDecimal("100"),
+    remainingQuantity: BigDecimal = BigDecimal.ZERO,
+    goalQuantity: BigDecimal = BigDecimal("1"),
+    moneyNeeded: BigDecimal = BigDecimal.ZERO
+): GoalResponse {
+    return GoalResponse(
+        id = id,
+        cryptoName = cryptoName,
+        actualQuantity = actualQuantity,
+        progress = progress,
+        remainingQuantity = remainingQuantity,
+        goalQuantity = goalQuantity,
+        moneyNeeded = moneyNeeded
     )
 }

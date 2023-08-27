@@ -23,6 +23,7 @@ class CryptoService(
     fun retrieveCryptoInfoById(coingeckoCryptoId: String): Crypto {
         logger.info { "Retrieving crypto info for id $coingeckoCryptoId" }
 
+        // TODO - instead of throwing an exception, maybe call coingecko api to try save the crypto (again)
         return cryptoRepository.findById(coingeckoCryptoId)
             .orElseThrow { CryptoNotFoundException(CRYPTO_NOT_FOUND) }
     }
@@ -35,7 +36,9 @@ class CryptoService(
     }
 
     fun saveCryptoIfNotExists(coingeckoCryptoId: String) {
-        if (cryptoRepository.findById(coingeckoCryptoId).isEmpty) {
+        val cryptoOptional = cryptoRepository.findById(coingeckoCryptoId)
+
+        if (cryptoOptional.isEmpty) {
             val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo(coingeckoCryptoId)
 
             with(coingeckoCryptoInfo) {

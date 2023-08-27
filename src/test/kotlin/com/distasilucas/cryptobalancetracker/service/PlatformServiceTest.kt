@@ -8,6 +8,7 @@ import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformRes
 import com.distasilucas.cryptobalancetracker.repository.PlatformRepository
 import io.mockk.every
 import io.mockk.just
+import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.slot
@@ -168,11 +169,11 @@ class PlatformServiceTest {
         val existingPlatform = Platform(id, "BINANCE")
 
         every { platformRepositoryMock.findById(id) } returns Optional.of(existingPlatform)
-        every { platformRepositoryMock.delete(existingPlatform) } just runs
+        justRun { platformRepositoryMock.deleteById(id) }
 
         platformService.deletePlatform(id)
 
-        verify(exactly = 1) { platformRepositoryMock.delete(existingPlatform) }
+        verify(exactly = 1) { platformRepositoryMock.deleteById(id) }
     }
 
     @Test

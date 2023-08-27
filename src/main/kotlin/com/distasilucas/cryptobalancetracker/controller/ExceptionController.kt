@@ -5,7 +5,9 @@ import com.distasilucas.cryptobalancetracker.service.ApiException
 import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.CryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
+import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedPlatformException
+import com.distasilucas.cryptobalancetracker.service.GoalNotFoundException
 import com.distasilucas.cryptobalancetracker.service.PlatformNotFoundException
 import com.distasilucas.cryptobalancetracker.service.UserCryptoNotFoundException
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -70,6 +72,20 @@ class ExceptionController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)
     }
 
+    @ExceptionHandler(GoalNotFoundException::class)
+    fun handleGoalNotFoundException(
+        exception: GoalNotFoundException,
+        webRequest: WebRequest
+    ): ResponseEntity<ProblemDetail> {
+        logger.info { "A GoalNotFoundException occurred $exception" }
+
+        val request = (webRequest as ServletWebRequest).request
+        val problemDetail =
+            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)
+    }
+
     @ExceptionHandler(DuplicatedPlatformException::class)
     fun handleDuplicatedPlatformException(
         exception: DuplicatedPlatformException,
@@ -90,6 +106,20 @@ class ExceptionController {
         webRequest: WebRequest
     ): ResponseEntity<ProblemDetail> {
         logger.info { "A DuplicatedCryptoPlatFormException occurred $exception" }
+
+        val request = (webRequest as ServletWebRequest).request
+        val problemDetail =
+            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)
+    }
+
+    @ExceptionHandler(DuplicatedGoalException::class)
+    fun handleDuplicatedGoalException(
+        exception: DuplicatedGoalException,
+        webRequest: WebRequest
+    ): ResponseEntity<ProblemDetail> {
+        logger.info { "A DuplicatedGoalException occurred $exception" }
 
         val request = (webRequest as ServletWebRequest).request
         val problemDetail =

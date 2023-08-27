@@ -201,18 +201,21 @@ class UserCryptoServiceTest {
         } returns Optional.empty()
         every { userCryptoRepositoryMock.save(updatedUserCrypto) } returns updatedUserCrypto
 
-        val userCryptoResponse = userCryptoService.updateUserCrypto("123e4567-e89b-12d3-a456-426614174000", userCryptoRequest)
+        val userCryptoResponse =
+            userCryptoService.updateUserCrypto("123e4567-e89b-12d3-a456-426614174000", userCryptoRequest)
 
         verify(exactly = 1) { userCryptoRepositoryMock.save(updatedUserCrypto) }
 
         assertThat(userCryptoResponse)
             .usingRecursiveComparison()
-            .isEqualTo(UserCryptoResponse(
-                id = "123e4567-e89b-12d3-a456-426614174000",
-                cryptoName = "Bitcoin",
-                quantity = BigDecimal("1.25"),
-                platform = "BINANCE"
-            ))
+            .isEqualTo(
+                UserCryptoResponse(
+                    id = "123e4567-e89b-12d3-a456-426614174000",
+                    cryptoName = "Bitcoin",
+                    quantity = BigDecimal("1.25"),
+                    platform = "BINANCE"
+                )
+            )
     }
 
     @Test
@@ -290,5 +293,29 @@ class UserCryptoServiceTest {
         verify(exactly = 0) { userCryptoRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174000") }
 
         assertThat(exception.message).isEqualTo(USER_CRYPTO_ID_NOT_FOUND.format("123e4567-e89b-12d3-a456-426614174000"))
+    }
+
+    @Test
+    fun `should find all by coingecko crypto id`() {
+        val userCrypto = getUserCrypto()
+
+        every {
+            userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin")
+        } returns listOf(userCrypto)
+
+        val userCryptos = userCryptoService.findAllByCoingeckoCryptoId("bitcoin")
+
+        assertThat(userCryptos)
+            .usingRecursiveComparison()
+            .isEqualTo(
+                listOf(
+                    UserCrypto(
+                        id = "123e4567-e89b-12d3-a456-426614174000",
+                        coingeckoCryptoId = "bitcoin",
+                        quantity = BigDecimal("0.25"),
+                        platformId = "123e4567-e89b-12d3-a456-426614174111"
+                    )
+                )
+            )
     }
 }

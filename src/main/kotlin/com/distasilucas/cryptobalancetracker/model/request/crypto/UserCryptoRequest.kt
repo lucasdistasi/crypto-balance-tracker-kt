@@ -1,5 +1,6 @@
 package com.distasilucas.cryptobalancetracker.model.request.crypto
 
+import com.distasilucas.cryptobalancetracker.constants.INVALID_PLATFORM_UUID
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.validation.ValidCryptoName
 import jakarta.validation.constraints.*
@@ -26,7 +27,7 @@ data class UserCryptoRequest(
     val quantity: BigDecimal?,
 
     @field: NotBlank(message = "Platform id can not be null or blank")
-    @field: UUID(message = "Platform id must be a valid UUID")
+    @field: UUID(message = INVALID_PLATFORM_UUID)
     val platformId: String?
 ) {
 

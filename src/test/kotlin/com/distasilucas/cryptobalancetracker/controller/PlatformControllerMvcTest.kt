@@ -75,7 +75,7 @@ class PlatformControllerMvcTest(
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("must be a valid UUID")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("Platform id must be a valid UUID")))
     }
 
     @Test
@@ -119,7 +119,7 @@ class PlatformControllerMvcTest(
             "123", "Coin base", "C01nb453", "NmkwRsgZuYqEPvDbAtIoCfLHX", "Coinba#e"
         ]
     )
-    fun `should fail with status 400 with 1 message when adding invalid platform`(platformName: String) {
+    fun `should fail with status 400 with 1 message when saving invalid platform`(platformName: String) {
         val payload = """
             {
                 "name": "$platformName"
@@ -146,7 +146,7 @@ class PlatformControllerMvcTest(
             "  ", ""
         ]
     )
-    fun `should fail with status 400 with 2 messages when adding blank or empty platform`(platformName: String) {
+    fun `should fail with status 400 with 2 messages when saving blank or empty platform`(platformName: String) {
         val payload = """
             {
                 "name": "$platformName"
@@ -175,7 +175,7 @@ class PlatformControllerMvcTest(
     }
 
     @Test
-    fun `should fail with status 400 with 2 messages when adding null platform`() {
+    fun `should fail with status 400 with 2 messages when saving null platform`() {
         val payload = """
             {
                 "name": ${null}
@@ -246,7 +246,7 @@ class PlatformControllerMvcTest(
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("must be a valid UUID")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("Platform id must be a valid UUID")))
     }
 
     @ParameterizedTest
@@ -359,7 +359,7 @@ class PlatformControllerMvcTest(
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("must be a valid UUID")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("Platform id must be a valid UUID")))
     }
 }
 

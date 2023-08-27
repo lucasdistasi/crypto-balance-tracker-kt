@@ -1,8 +1,11 @@
 package com.distasilucas.cryptobalancetracker.controller.swagger
 
-import com.distasilucas.cryptobalancetracker.constants.INVALID_PLATFORM_UUID
-import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
-import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
+import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
+import com.distasilucas.cryptobalancetracker.constants.INVALID_USER_CRYPTO_UUID
+import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
+import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
+import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
+import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
@@ -11,52 +14,25 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import jakarta.validation.constraints.Min
 import org.hibernate.validator.constraints.UUID
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RequestBody
 
-@Tag(name = "Platform Controller", description = "API endpoints for platform management")
-interface PlatformControllerAPI {
+@Tag(name = "UserCrypto Controller", description = "API endpoints for user cryptos management")
+interface UserCryptoControllerAPI {
 
-    @Operation(summary = "Retrieve number of platforms")
+    @Operation(summary = "Retrieve information for the given user crypto id")
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Number of platforms",
+                description = "User crypto information",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(
-                        implementation = Long::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = "500",
-                description = "Internal Server Error",
-                content = [Content(
-                    mediaType = "application/json",
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = ProblemDetail::class
-                        )
-                    )
-                )]
-            )
-        ]
-    )
-    fun countPlatforms(): ResponseEntity<Long>
-
-    @Operation(summary = "Retrieve platform")
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "200",
-                description = "Platform information",
-                content = [Content(
-                    mediaType = "application/json",
-                    schema = Schema(
-                        implementation = PlatformResponse::class
+                        implementation = UserCryptoResponse::class
                     )
                 )]
             ),
@@ -74,7 +50,7 @@ interface PlatformControllerAPI {
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "Platform not found",
+                description = "User crypto not found",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(
@@ -96,61 +72,30 @@ interface PlatformControllerAPI {
             )
         ]
     )
-    fun retrievePlatform(@UUID(message = INVALID_PLATFORM_UUID) platformId: String): ResponseEntity<PlatformResponse>
+    fun retrieveUserCrypto(
+        @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String
+    ): ResponseEntity<UserCryptoResponse>
 
-    @Operation(summary = "Retrieve all platforms")
+    @Operation(summary = "Retrieves user cryptos by page")
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Platforms",
+                description = "User cryptos by page",
                 content = [Content(
                     mediaType = "application/json",
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = PlatformResponse::class
-                        )
+                    schema = Schema(
+                        implementation = UserCryptoResponse::class
                     )
                 )]
             ),
             ApiResponse(
                 responseCode = "204",
-                description = "No platforms saved",
+                description = "No user cryptos found",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(
-                        implementation = Unit::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = "500",
-                description = "Internal Server Error",
-                content = [Content(
-                    mediaType = "application/json",
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = ProblemDetail::class
-                        )
-                    )
-                )]
-            )
-        ]
-    )
-    fun retrieveAllPlatforms(): ResponseEntity<List<PlatformResponse>>
-
-    @Operation(summary = "Save platform")
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "200",
-                description = "Platform saved",
-                content = [Content(
-                    mediaType = "application/json",
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = PlatformResponse::class
-                        )
+                        implementation = Void::class
                     )
                 )]
             ),
@@ -180,20 +125,18 @@ interface PlatformControllerAPI {
             )
         ]
     )
-    fun savePlatform(@Valid platformRequest: PlatformRequest): ResponseEntity<PlatformResponse>
+    fun retrieveUserCryptosForPage(@Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int): ResponseEntity<PageUserCryptoResponse>
 
-    @Operation(summary = "Update platform")
+    @Operation(summary = "Save user crypto")
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Platform updated",
+                description = "User crypto saved",
                 content = [Content(
                     mediaType = "application/json",
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = PlatformResponse::class
-                        )
+                    schema = Schema(
+                        implementation = UserCryptoResponse::class
                     )
                 )]
             ),
@@ -209,9 +152,51 @@ interface PlatformControllerAPI {
                     )
                 )]
             ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal Server Error",
+                content = [Content(
+                    mediaType = "application/json",
+                    array = ArraySchema(
+                        schema = Schema(
+                            implementation = ProblemDetail::class
+                        )
+                    )
+                )]
+            )
+        ]
+    )
+    fun saveUserCrypto(@Valid @RequestBody userCryptoRequest: UserCryptoRequest): ResponseEntity<UserCryptoResponse>
+
+    @Operation(summary = "Update user crypto")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "User crypto updated",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = UserCryptoResponse::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [Content(
+                    mediaType = "application/json",
+                    array = ArraySchema(
+                        schema = Schema(
+                            implementation = ProblemDetail::class
+                        )
+                    )
+                )]
+            ),
+
             ApiResponse(
                 responseCode = "404",
-                description = "Platform not found",
+                description = "User crypto not found",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(
@@ -233,23 +218,21 @@ interface PlatformControllerAPI {
             )
         ]
     )
-    fun updatePlatform(
-        @UUID(message = INVALID_PLATFORM_UUID) platformId: String,
-        @Valid platformRequest: PlatformRequest
-    ): ResponseEntity<PlatformResponse>
+    fun updateUserCrypto(
+        @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String,
+        @Valid userCryptoRequest: UserCryptoRequest
+    ): ResponseEntity<UserCryptoResponse>
 
-    @Operation(summary = "Delete platform")
+    @Operation(summary = "Delete user crypto")
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Platform deleted",
+                description = "User crypto deleted",
                 content = [Content(
                     mediaType = "application/json",
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = Unit::class
-                        )
+                    schema = Schema(
+                        implementation = UserCryptoResponse::class
                     )
                 )]
             ),
@@ -265,9 +248,10 @@ interface PlatformControllerAPI {
                     )
                 )]
             ),
+
             ApiResponse(
                 responseCode = "404",
-                description = "Platform not found",
+                description = "User crypto not found",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(
@@ -289,5 +273,7 @@ interface PlatformControllerAPI {
             )
         ]
     )
-    fun deletePlatform(@UUID(message = INVALID_PLATFORM_UUID) platformId: String): ResponseEntity<Unit>
+    fun deleteUserCrypto(
+        @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String
+    ): ResponseEntity<Unit>
 }
