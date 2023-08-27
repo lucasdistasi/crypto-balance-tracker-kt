@@ -1,12 +1,15 @@
-# Crypto Balance Tracker :rocket:
+# Crypto Balance Tracker :rocket: (WIP)
 
 |               |                                                                                                                                                                                         |
 |---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Pipeline      | [![Pipeline Status](https://github.com/lucasdistasi/crypto-balance-tracker-kt/actions/workflows/main.yml/badge.svg)](https://github.com/lucasdistasi/crypto-balance-tracker-kt/actions) |
+| License       | [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)                                                                                 |
 | Code Coverage | [![Code Coverage](https://github.com/lucasdistasi/crypto-balance-tracker-kt/blob/gh-pages/badges/jacoco.svg)](https://lucasdistasi.github.io/crypto-balance-tracker-kt/)                |
 | Project views | [![Project views](https://hits.dwyl.com/lucasdistasi/crypto-balance-tracker-kt.svg)]()                                                                                                  |
+| Snyk Analysis | [![Snyk Analysis](https://snyk.io/test/github/lucasdistasi/crypto-balance-tracker-kt/badge.svg)](https://snyk.io/test/github/lucasdistasi/crypto-balance-tracker-kt)                    |
 
-Crypto Balance Tracker is a Kotlin-Spring application that acts as a portfolio tracker for monitoring your crypto assets.
+Crypto Balance Tracker is a Kotlin-Spring application that acts as a portfolio tracker for monitoring your crypto
+assets.
 It allows you to retrieve data such as the percentage of each crypto owned, the total value of your assets,
 the current price of each crypto, the balance per platform, and many more data! The application makes use of the
 [Coingecko](https://www.coingecko.com) API to fetch all the required information about the cryptos.
@@ -34,3 +37,17 @@ Instead, the current approach was adopted to provide a more reliable and feasibl
 
 Investing in cryptocurrencies comes with high risk and volatility. This app was made only for educational purposes.
 Do your own research before investing money you are not willing to loss.
+
+## Technologies and stuff used :sparkles:
+
+- Java 17
+- Kotlin 1.8.22
+- Spring 6 & Spring Boot 3
+    - Spring WebFlux
+    - Hibernate
+    - OpenAPI
+- Ehcache
+- MongoDB
+- JUnit 5 - Mockk
+- oshai kotlin-logging
+- JaCoCo
