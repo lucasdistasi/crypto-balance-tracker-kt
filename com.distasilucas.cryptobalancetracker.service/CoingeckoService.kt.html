@@ -29,7 +29,7 @@ const val COINS_URI = &quot;$COIN_URI/list&quot;
 <span class="fc" id="L29">    val coingeckoWebClient: WebClient</span>
 ) {
 
-<span class="pc" id="L32">    private val logger = KotlinLogging.logger { }</span>
+<span class="fc" id="L32">    private val logger = KotlinLogging.logger { }</span>
 
     @Cacheable(cacheNames = [COINGECKO_CRYPTOS_CACHE])
     @Retryable(retryFor = [WebClientException::class], backoff = Backoff(delay = 1500))

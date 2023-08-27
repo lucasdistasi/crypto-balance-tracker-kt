@@ -28,7 +28,7 @@ private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
 <span class="fc" id="L28">@RestControllerAdvice</span>
 <span class="fc" id="L29">class ExceptionController {</span>
 
-<span class="pc" id="L31">    private val logger = KotlinLogging.logger { }</span>
+<span class="fc" id="L31">    private val logger = KotlinLogging.logger { }</span>
 
     @ExceptionHandler(PlatformNotFoundException::class)
     fun handlePlatformNotFoundException(

@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 <span class="fc" id="L18">    val clock: Clock</span>
 ) {
 
-<span class="pc" id="L21">    private val logger = KotlinLogging.logger { }</span>
+<span class="fc" id="L21">    private val logger = KotlinLogging.logger { }</span>
 
     fun retrieveCryptoInfoById(coingeckoCryptoId: String): Crypto {
 <span class="fc" id="L24">        logger.info { &quot;Retrieving crypto info for id $coingeckoCryptoId&quot; }</span>
@@ -36,29 +36,31 @@ import java.time.LocalDateTime
     }
 
     fun saveCryptoIfNotExists(coingeckoCryptoId: String) {
-<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        if (cryptoRepository.findById(coingeckoCryptoId).isEmpty) {</span>
-<span class="fc" id="L40">            val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo(coingeckoCryptoId)</span>
+<span class="fc" id="L39">        val cryptoOptional = cryptoRepository.findById(coingeckoCryptoId)</span>
 
-<span class="fc" id="L42">            with(coingeckoCryptoInfo) {</span>
-<span class="fc" id="L43">                val crypto = Crypto(</span>
-<span class="fc" id="L44">                    id = coingeckoCryptoId,</span>
-<span class="fc" id="L45">                    name = name,</span>
-<span class="fc" id="L46">                    ticker = symbol,</span>
-<span class="fc" id="L47">                    lastKnownPrice = marketData.currentPrice.usd,</span>
-<span class="fc" id="L48">                    lastKnownPriceInEUR = marketData.currentPrice.eur,</span>
-<span class="fc" id="L49">                    lastKnownPriceInBTC = marketData.currentPrice.btc,</span>
-<span class="fc" id="L50">                    circulatingSupply = marketData.circulatingSupply,</span>
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">                    maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,</span>
-<span class="fc" id="L52">                    lastUpdatedAt = LocalDateTime.now(clock)</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (cryptoOptional.isEmpty) {</span>
+<span class="fc" id="L42">            val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo(coingeckoCryptoId)</span>
+
+<span class="fc" id="L44">            with(coingeckoCryptoInfo) {</span>
+<span class="fc" id="L45">                val crypto = Crypto(</span>
+<span class="fc" id="L46">                    id = coingeckoCryptoId,</span>
+<span class="fc" id="L47">                    name = name,</span>
+<span class="fc" id="L48">                    ticker = symbol,</span>
+<span class="fc" id="L49">                    lastKnownPrice = marketData.currentPrice.usd,</span>
+<span class="fc" id="L50">                    lastKnownPriceInEUR = marketData.currentPrice.eur,</span>
+<span class="fc" id="L51">                    lastKnownPriceInBTC = marketData.currentPrice.btc,</span>
+<span class="fc" id="L52">                    circulatingSupply = marketData.circulatingSupply,</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">                    maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,</span>
+<span class="fc" id="L54">                    lastUpdatedAt = LocalDateTime.now(clock)</span>
                 )
 
-<span class="fc" id="L55">                cryptoRepository.save(crypto)</span>
-<span class="fc" id="L56">                logger.info { &quot;Saved crypto $crypto&quot; }</span>
-<span class="fc" id="L57">            }</span>
+<span class="fc" id="L57">                cryptoRepository.save(crypto)</span>
+<span class="fc" id="L58">                logger.info { &quot;Saved crypto $crypto&quot; }</span>
+<span class="fc" id="L59">            }</span>
         }
-<span class="fc" id="L59">    }</span>
+<span class="fc" id="L61">    }</span>
 }
 
-<span class="fc" id="L62">class CryptoNotFoundException(message: String) : RuntimeException(message)</span>
-<span class="fc" id="L63">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L64">class CryptoNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L65">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
