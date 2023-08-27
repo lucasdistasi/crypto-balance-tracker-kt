@@ -10,11 +10,13 @@ val ehcacheVersion = "3.10.8"
 val javaxCacheVersion = "1.1.1"
 val aspectjweaverVersion = "1.9.19"
 val okHttp3Version = "4.11.0"
+val jacocoVersion = "0.8.8"
 
 plugins {
 	id("org.springframework.boot") version "3.1.2"
 	id("io.spring.dependency-management") version "1.1.2"
 	id("com.adarshr.test-logger") version "3.2.0"
+	id("jacoco")
 	kotlin("jvm") version "1.8.22"
 	kotlin("plugin.spring") version "1.8.22"
 }
@@ -77,4 +79,32 @@ testlogger {
 	showPassed = true
 	showSkipped = true
 	showFailed = true
+}
+
+jacoco {
+	toolVersion = jacocoVersion
+}
+
+tasks.withType<JacocoReport> {
+	reports {
+		xml.required.set(false)
+		csv.required.set(true)
+		html.required.set(true)
+	}
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.map {
+			fileTree(it).apply {
+				exclude(
+					"**/configuration/**",
+					"**/CryptoBalanceTrackerApplication**"
+				)
+			}
+		}))
+	}
+}
+
+tasks.withType<Test> {
+	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport)
 }
