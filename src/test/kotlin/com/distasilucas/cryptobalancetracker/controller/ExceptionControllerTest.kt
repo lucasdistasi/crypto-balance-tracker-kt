@@ -3,7 +3,9 @@ package com.distasilucas.cryptobalancetracker.controller
 import com.distasilucas.cryptobalancetracker.constants.COINGECKO_CRYPTO_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_CRYPTO_PLATFORM
+import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_GOAL
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
+import com.distasilucas.cryptobalancetracker.constants.GOAL_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.Platform
@@ -11,7 +13,9 @@ import com.distasilucas.cryptobalancetracker.service.ApiException
 import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.CryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
+import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedPlatformException
+import com.distasilucas.cryptobalancetracker.service.GoalNotFoundException
 import com.distasilucas.cryptobalancetracker.service.PlatformNotFoundException
 import com.distasilucas.cryptobalancetracker.service.UserCryptoNotFoundException
 import jakarta.validation.ConstraintViolation
@@ -32,7 +36,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.context.request.ServletWebRequest
 import java.net.URI
 
-
 class ExceptionControllerTest {
 
     private val exceptionController = ExceptionController()
@@ -48,34 +51,6 @@ class ExceptionControllerTest {
         problemDetail.detail = exception.message
 
         val responseEntity = exceptionController.handlePlatformNotFoundException(exception, servletRequest)
-
-        assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail))
-    }
-
-    @Test
-    fun `should handle DuplicatedPlatformException`() {
-        val exception = DuplicatedPlatformException(DUPLICATED_PLATFORM.format("BINANCE"))
-        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
-        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
-        problemDetail.detail = exception.message
-
-        val responseEntity = exceptionController.handleDuplicatedPlatformException(exception, servletRequest)
-
-        assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
-    }
-
-    @Test
-    fun `should handle CryptoNotFoundException`() {
-        val exception = CryptoNotFoundException(CRYPTO_NOT_FOUND)
-        val httpServletRequest = MockHttpServletRequest("POST", "/api/v1/cryptos/123e4567-e89b-12d3-a456-426614174000")
-        val servletRequest = ServletWebRequest(httpServletRequest)
-        val problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND)
-        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
-        problemDetail.detail = exception.message
-
-        val responseEntity = exceptionController.handleCryptoNotFoundException(exception, servletRequest)
 
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail))
@@ -112,6 +87,34 @@ class ExceptionControllerTest {
     }
 
     @Test
+    fun `should handle GoalNotFoundException`() {
+        val exception = GoalNotFoundException(GOAL_ID_NOT_FOUND.format("123e4567-e89b-12d3-a456-426614174000"))
+        val httpServletRequest = MockHttpServletRequest("DELETE", "/api/v1/goals/123e4567-e89b-12d3-a456-426614174000")
+        val servletRequest = ServletWebRequest(httpServletRequest)
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = exception.message
+
+        val responseEntity = exceptionController.handleGoalNotFoundException(exception, servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail))
+    }
+
+    @Test
+    fun `should handle DuplicatedPlatformException`() {
+        val exception = DuplicatedPlatformException(DUPLICATED_PLATFORM.format("BINANCE"))
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = exception.message
+
+        val responseEntity = exceptionController.handleDuplicatedPlatformException(exception, servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
+    }
+
+    @Test
     fun `should handle DuplicatedCryptoPlatFormException`() {
         val exception = DuplicatedCryptoPlatFormException(DUPLICATED_CRYPTO_PLATFORM.format("Bitcoin", "BINANCE"))
         val httpServletRequest = MockHttpServletRequest("PUT", "/api/v1/cryptos/123e4567-e89b-12d3-a456-426614174000")
@@ -121,6 +124,21 @@ class ExceptionControllerTest {
         problemDetail.detail = exception.message
 
         val responseEntity = exceptionController.handleDuplicatedCryptoPlatFormException(exception, servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
+    }
+
+    @Test
+    fun `should handle DuplicatedGoalException`() {
+        val exception = DuplicatedGoalException(DUPLICATED_GOAL.format("Bitcoin"))
+        val httpServletRequest = MockHttpServletRequest("POST", "/api/v1/goals")
+        val servletRequest = ServletWebRequest(httpServletRequest)
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = exception.message
+
+        val responseEntity = exceptionController.handleDuplicatedGoalException(exception, servletRequest)
 
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
@@ -206,6 +224,21 @@ class ExceptionControllerTest {
 
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail))
+    }
+
+    @Test
+    fun `should handle CryptoNotFoundException`() {
+        val exception = CryptoNotFoundException(CRYPTO_NOT_FOUND)
+        val httpServletRequest = MockHttpServletRequest("POST", "/api/v1/cryptos/123e4567-e89b-12d3-a456-426614174000")
+        val servletRequest = ServletWebRequest(httpServletRequest)
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = exception.message
+
+        val responseEntity = exceptionController.handleCryptoNotFoundException(exception, servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail))
     }
 
     @Test

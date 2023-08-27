@@ -8,6 +8,7 @@ import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformRes
 import com.distasilucas.cryptobalancetracker.repository.PlatformRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class PlatformService(
@@ -65,17 +66,23 @@ class PlatformService(
     }
 
     fun deletePlatform(platformId: String) {
-        val platformEntity = findPlatformById(platformId)
-            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }
-
-        platformRepository.delete(platformEntity)
-        logger.info { "Deleted platform $platformEntity" }
+        findPlatformById(platformId)
+            .ifPresentOrElse({
+                platformRepository.deleteById(platformId)
+                logger.info { "Deleted platform $it" }
+            },{
+                throw PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId))
+            })
     }
 
     private fun findPlatformById(platformId: String) = platformRepository.findById(platformId)
 
     private fun validatePlatformNotExists(platformName: String) {
-        findByPlatformName(platformName).ifPresent { throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(it.name)) }
+        val existingPlatform = findByPlatformName(platformName)
+
+        if (existingPlatform.isPresent) {
+            throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(existingPlatform.get().name))
+        }
     }
 
     private fun findByPlatformName(platformName: String) = platformRepository.findByName(platformName.uppercase())

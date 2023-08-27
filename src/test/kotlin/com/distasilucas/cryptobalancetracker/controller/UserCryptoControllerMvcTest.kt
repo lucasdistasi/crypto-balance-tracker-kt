@@ -1,5 +1,6 @@
 package com.distasilucas.cryptobalancetracker.controller
 
+import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
@@ -105,7 +106,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("must be a valid UUID")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("User crypto id must be a valid UUID")))
     }
 
     @Test
@@ -165,7 +166,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("must be greater than or equal to 0")
+                    Matchers.`is`(INVALID_PAGE_NUMBER)
                 )
             )
     }
@@ -237,7 +238,7 @@ class UserCryptoControllerMvcTest(
     }
 
     @Test
-    fun `should fail with status 400 with 2 messages when adding user crypto with blank cryptoName`() {
+    fun `should fail with status 400 with 2 messages when saving user crypto with blank cryptoName`() {
         val cryptoName = " "
         val quantity = BigDecimal("1")
         val platformId = "123e4567-e89b-12d3-a456-426614174111"
@@ -272,7 +273,7 @@ class UserCryptoControllerMvcTest(
     }
 
     @Test
-    fun `should fail with status 400 with 2 messages when adding user crypto with null cryptoName`() {
+    fun `should fail with status 400 with 2 messages when saving user crypto with null cryptoName`() {
         val quantity = BigDecimal("1")
         val platformId = "123e4567-e89b-12d3-a456-426614174111"
 
@@ -306,7 +307,7 @@ class UserCryptoControllerMvcTest(
     }
 
     @Test
-    fun `should fail with status 400 with 2 messages when adding user crypto with long cryptoName`() {
+    fun `should fail with status 400 with 2 messages when saving user crypto with long cryptoName`() {
         val cryptoName = "reallyLoooooooooooooooooooooooooooooooooooooooooooooooooooongName"
         val quantity = BigDecimal("1")
         val platformId = "123e4567-e89b-12d3-a456-426614174111"
@@ -341,7 +342,7 @@ class UserCryptoControllerMvcTest(
     }
 
     @Test
-    fun `should fail with status 400 with 3 messages when adding user crypto with zero-size cryptoName`() {
+    fun `should fail with status 400 with 3 messages when saving user crypto with zero-size cryptoName`() {
         val cryptoName = ""
         val quantity = BigDecimal("1")
         val platformId = "123e4567-e89b-12d3-a456-426614174111"
@@ -382,7 +383,7 @@ class UserCryptoControllerMvcTest(
             " bitcoin", "bitcoin ", "bit  coin", "bit!coin"
         ]
     )
-    fun `should fail with status 400 with 1 message when adding user crypto with invalid cryptoName`(cryptoName: String) {
+    fun `should fail with status 400 with 1 message when saving user crypto with invalid cryptoName`(cryptoName: String) {
         val quantity = BigDecimal("1")
         val platformId = "123e4567-e89b-12d3-a456-426614174111"
 
@@ -409,7 +410,7 @@ class UserCryptoControllerMvcTest(
     }
 
     @Test
-    fun `should fail with status 400 with 1 message when adding user crypto with null quantity`() {
+    fun `should fail with status 400 with 1 message when saving user crypto with null quantity`() {
         val cryptoName = "bitcoin"
         val platformId = "123e4567-e89b-12d3-a456-426614174111"
 
@@ -441,7 +442,7 @@ class UserCryptoControllerMvcTest(
             "99999999999999999.999999999999", "9999999999999999.9999999999999"
         ]
     )
-    fun `should fail with status 400 with 2 messages when adding user crypto with invalid quantity`(quantity: String) {
+    fun `should fail with status 400 with 2 messages when saving user crypto with invalid quantity`(quantity: String) {
         val cryptoName = "bitcoin"
         val platformId = "123e4567-e89b-12d3-a456-426614174111"
 
@@ -475,7 +476,7 @@ class UserCryptoControllerMvcTest(
     }
 
     @Test
-    fun `should fail with status 400 with 1 message when adding user crypto with invalid quantity`() {
+    fun `should fail with status 400 with 1 message when saving user crypto with invalid quantity`() {
         val cryptoName = "bitcoin"
         val platformId = "123e4567-e89b-12d3-a456-426614174111"
 
@@ -503,7 +504,7 @@ class UserCryptoControllerMvcTest(
 
     @ParameterizedTest
     @ValueSource(strings = ["-5", "-100", "0"])
-    fun `should fail with status 400 with 1 message when adding user crypto with negative quantity`(quantity: String) {
+    fun `should fail with status 400 with 1 message when saving user crypto with negative quantity`(quantity: String) {
         val cryptoName = "bitcoin"
         val platformId = "123e4567-e89b-12d3-a456-426614174111"
 
@@ -530,7 +531,7 @@ class UserCryptoControllerMvcTest(
     }
 
     @Test
-    fun `should fail with status 400 with 2 messages when adding user crypto with blank platformId`() {
+    fun `should fail with status 400 with 2 messages when saving user crypto with blank platformId`() {
         val cryptoName = "bitcoin"
         val quantity = BigDecimal("1")
 
@@ -564,7 +565,7 @@ class UserCryptoControllerMvcTest(
     }
 
     @Test
-    fun `should fail with status 400 with 1 message when adding user crypto with null platformId`() {
+    fun `should fail with status 400 with 1 message when saving user crypto with null platformId`() {
         val cryptoName = "bitcoin"
         val quantity = BigDecimal("1")
 
@@ -681,7 +682,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("must be a valid UUID")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("User crypto id must be a valid UUID")))
     }
 
     @Test
@@ -1060,6 +1061,6 @@ class UserCryptoControllerMvcTest(
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("must be a valid UUID")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("User crypto id must be a valid UUID")))
     }
 }

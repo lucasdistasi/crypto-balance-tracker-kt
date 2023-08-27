@@ -97,7 +97,8 @@ tasks.withType<JacocoReport> {
 			fileTree(it).apply {
 				exclude(
 					"**/configuration/**",
-					"**/CryptoBalanceTrackerApplication**"
+					"**/CryptoBalanceTrackerApplication**",
+					"**/*\$logger\$*.class"
 				)
 			}
 		}))
