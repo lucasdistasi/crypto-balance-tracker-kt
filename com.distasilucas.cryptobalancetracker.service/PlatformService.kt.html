@@ -65,23 +65,25 @@ import org.springframework.stereotype.Service
     }
 
     fun deletePlatform(platformId: String) {
-<span class="fc" id="L68">        val platformEntity = findPlatformById(platformId)</span>
-<span class="fc" id="L69">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
+<span class="fc" id="L68">        findPlatformById(platformId)</span>
+<span class="fc" id="L69">            .ifPresentOrElse({</span>
+<span class="fc" id="L70">                platformRepository.deleteById(platformId)</span>
+<span class="fc" id="L71">                logger.info { &quot;Deleted platform $it&quot; }</span>
+<span class="fc" id="L72">            },{</span>
+<span class="fc" id="L73">                throw PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId))</span>
+            })
+<span class="fc" id="L75">    }</span>
 
-<span class="fc" id="L71">        platformRepository.delete(platformEntity)</span>
-<span class="fc" id="L72">        logger.info { &quot;Deleted platform $platformEntity&quot; }</span>
-<span class="fc" id="L73">    }</span>
-
-<span class="fc" id="L75">    private fun findPlatformById(platformId: String) = platformRepository.findById(platformId)</span>
+<span class="fc" id="L77">    private fun findPlatformById(platformId: String) = platformRepository.findById(platformId)</span>
 
     private fun validatePlatformNotExists(platformName: String) {
-<span class="pc" id="L78">        findByPlatformName(platformName).ifPresent { throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(it.name)) }</span>
-<span class="fc" id="L79">    }</span>
+<span class="pc" id="L80">        findByPlatformName(platformName).ifPresent { throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(it.name)) }</span>
+<span class="fc" id="L81">    }</span>
 
-<span class="fc" id="L81">    private fun findByPlatformName(platformName: String) = platformRepository.findByName(platformName.uppercase())</span>
+<span class="fc" id="L83">    private fun findByPlatformName(platformName: String) = platformRepository.findByName(platformName.uppercase())</span>
 }
 
-<span class="fc" id="L84">class PlatformNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L86">class PlatformNotFoundException(message: String) : RuntimeException(message)</span>
 
-<span class="fc" id="L86">class DuplicatedPlatformException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L88">class DuplicatedPlatformException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
