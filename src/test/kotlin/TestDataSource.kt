@@ -2,6 +2,9 @@ import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
+import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCryptoInfo
+import com.distasilucas.cryptobalancetracker.model.response.coingecko.CurrentPrice
+import com.distasilucas.cryptobalancetracker.model.response.coingecko.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -16,15 +19,18 @@ private const val GOALS_ENDPONT = "/api/v1/goals"
 
 fun MockMvc.countPlatforms() = this.perform(
     MockMvcRequestBuilders.get("$PLATFORMS_ENDPOINT/count")
-        .contentType(APPLICATION_JSON))
+        .contentType(APPLICATION_JSON)
+)
 
 fun MockMvc.retrievePlatform(platformId: String) = this.perform(
     MockMvcRequestBuilders.get("$PLATFORMS_ENDPOINT/$platformId")
-        .contentType(APPLICATION_JSON))
+        .contentType(APPLICATION_JSON)
+)
 
 fun MockMvc.retrieveAllPlatforms() = this.perform(
     MockMvcRequestBuilders.get(PLATFORMS_ENDPOINT)
-        .contentType(APPLICATION_JSON))
+        .contentType(APPLICATION_JSON)
+)
 
 fun MockMvc.savePlatform(payload: String) = this.perform(
     MockMvcRequestBuilders.post(PLATFORMS_ENDPOINT)
@@ -98,7 +104,7 @@ fun MockMvc.deleteGoal(goalId: String) = this.perform(
 )
 
 fun getCryptoEntity(
-    id: String = "123e4567-e89b-12d3-a456-426614174000",
+    id: String = "bitcoin",
     name: String = "Bitcoin",
     ticker: String = "btc",
     lastKnownPrice: BigDecimal = BigDecimal("30000"),
@@ -188,3 +194,39 @@ fun getGoalResponse(
         moneyNeeded = moneyNeeded
     )
 }
+
+fun getCoingeckoCryptoInfo(
+    id: String = "bitcoin",
+    symbol: String = "btc",
+    name: String = "Bitcoin",
+    marketData: MarketData = getMarketData()
+): CoingeckoCryptoInfo {
+    return CoingeckoCryptoInfo(
+        id = id,
+        symbol = symbol,
+        name = name,
+        marketData = marketData
+    )
+}
+
+fun getMarketData(
+    currentPrice: CurrentPrice = getCurrentPrince(),
+    circulatingSupply: BigDecimal = BigDecimal("19000000"),
+    maxSupply: BigDecimal? = BigDecimal("21000000")
+): MarketData {
+    return MarketData(
+        currentPrice = currentPrice,
+        circulatingSupply = circulatingSupply,
+        maxSupply = maxSupply
+    )
+}
+
+fun getCurrentPrince(
+    usd: BigDecimal = BigDecimal("30000"),
+    eur: BigDecimal = BigDecimal("27000"),
+    btc: BigDecimal = BigDecimal("1")
+) = CurrentPrice(
+    usd = usd,
+    eur = eur,
+    btc = btc
+)

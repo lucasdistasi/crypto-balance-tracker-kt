@@ -1,9 +1,7 @@
 package com.distasilucas.cryptobalancetracker.controller
 
-import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.service.ApiException
 import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
-import com.distasilucas.cryptobalancetracker.service.CryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedPlatformException
@@ -175,20 +173,6 @@ class ExceptionController {
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetails)
-    }
-
-    @ExceptionHandler(CryptoNotFoundException::class)
-    fun handleCryptoNotFoundException(
-        exception: CryptoNotFoundException,
-        webRequest: WebRequest
-    ): ResponseEntity<ProblemDetail> {
-        logger.warn { "This should not happen. A CryptoNotFoundException occurred $exception" }
-
-        val request = (webRequest as ServletWebRequest).request
-        val problemDetail =
-            HttpStatus.NOT_FOUND.withDetailsAndURI(CRYPTO_NOT_FOUND, URI.create(request.requestURL.toString()))
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)
     }
 
     @ExceptionHandler(ApiException::class)

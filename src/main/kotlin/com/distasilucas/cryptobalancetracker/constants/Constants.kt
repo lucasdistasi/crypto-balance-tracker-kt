@@ -11,7 +11,6 @@ const val INVALID_GOAL_UUID = "Goal id must be a valid UUID"
 const val INVALID_PAGE_NUMBER = "Page must be greater than or equal to 0"
 
 // Exceptions
-const val CRYPTO_NOT_FOUND = "Crypto not found"
 const val PLATFORM_ID_NOT_FOUND = "Platform with id %s not found"
 const val DUPLICATED_PLATFORM = "Platform %s already exists"
 const val USER_CRYPTO_ID_NOT_FOUND = "User crypto with id %s not found"
