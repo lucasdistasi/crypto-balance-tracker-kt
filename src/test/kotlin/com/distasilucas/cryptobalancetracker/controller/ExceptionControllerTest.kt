@@ -1,7 +1,6 @@
 package com.distasilucas.cryptobalancetracker.controller
 
 import com.distasilucas.cryptobalancetracker.constants.COINGECKO_CRYPTO_NOT_FOUND
-import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_CRYPTO_PLATFORM
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_GOAL
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
@@ -11,7 +10,6 @@ import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.service.ApiException
 import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
-import com.distasilucas.cryptobalancetracker.service.CryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedPlatformException
@@ -224,21 +222,6 @@ class ExceptionControllerTest {
 
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail))
-    }
-
-    @Test
-    fun `should handle CryptoNotFoundException`() {
-        val exception = CryptoNotFoundException(CRYPTO_NOT_FOUND)
-        val httpServletRequest = MockHttpServletRequest("POST", "/api/v1/cryptos/123e4567-e89b-12d3-a456-426614174000")
-        val servletRequest = ServletWebRequest(httpServletRequest)
-        val problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND)
-        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
-        problemDetail.detail = exception.message
-
-        val responseEntity = exceptionController.handleCryptoNotFoundException(exception, servletRequest)
-
-        assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail))
     }
 
     @Test

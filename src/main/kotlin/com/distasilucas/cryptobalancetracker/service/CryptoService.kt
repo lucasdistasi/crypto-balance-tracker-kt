@@ -1,7 +1,6 @@
 package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.COINGECKO_CRYPTO_NOT_FOUND
-import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
 import com.distasilucas.cryptobalancetracker.repository.CryptoRepository
@@ -23,9 +22,29 @@ class CryptoService(
     fun retrieveCryptoInfoById(coingeckoCryptoId: String): Crypto {
         logger.info { "Retrieving crypto info for id $coingeckoCryptoId" }
 
-        // TODO - instead of throwing an exception, maybe call coingecko api to try save the crypto (again)
-        return cryptoRepository.findById(coingeckoCryptoId)
-            .orElseThrow { CryptoNotFoundException(CRYPTO_NOT_FOUND) }
+        val cryptoOptional = cryptoRepository.findById(coingeckoCryptoId)
+
+        if (cryptoOptional.isPresent) {
+            return cryptoOptional.get()
+        }
+
+        val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo(coingeckoCryptoId)
+
+        val cryptoToSave = Crypto(
+            id = coingeckoCryptoId,
+            name = coingeckoCryptoInfo.name,
+            ticker = coingeckoCryptoInfo.symbol,
+            lastKnownPrice = coingeckoCryptoInfo.marketData.currentPrice.usd,
+            lastKnownPriceInEUR = coingeckoCryptoInfo.marketData.currentPrice.eur,
+            lastKnownPriceInBTC = coingeckoCryptoInfo.marketData.currentPrice.btc,
+            circulatingSupply = coingeckoCryptoInfo.marketData.circulatingSupply,
+            maxSupply = coingeckoCryptoInfo.marketData.maxSupply ?: BigDecimal.ZERO,
+            lastUpdatedAt = LocalDateTime.now(clock)
+        )
+
+        logger.info { "Saved crypto $cryptoToSave because it didn't exist" }
+
+        return cryptoRepository.save(cryptoToSave)
     }
 
     fun retrieveCoingeckoCryptoInfoByName(cryptoName: String): CoingeckoCrypto {
@@ -61,5 +80,4 @@ class CryptoService(
     }
 }
 
-class CryptoNotFoundException(message: String) : RuntimeException(message)
 class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)
