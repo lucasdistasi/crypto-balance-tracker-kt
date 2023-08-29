@@ -23,9 +23,9 @@ const val COIN_URI = &quot;/coins/&quot;
 const val COINS_URI = &quot;$COIN_URI/list&quot;
 
 <span class="fc" id="L25">@Service</span>
-<span class="pc" id="L26">class CoingeckoService(</span>
+<span class="fc" id="L26">class CoingeckoService(</span>
 <span class="fc" id="L27">    @Value(&quot;\${coingecko.api-key}&quot;)</span>
-<span class="nc" id="L28">    private val coingeckoApiKey: String? = null,</span>
+    private val coingeckoApiKey: String,
 <span class="fc" id="L29">    private val coingeckoWebClient: WebClient</span>
 ) {
 
@@ -90,7 +90,7 @@ const val COINS_URI = &quot;$COIN_URI/list&quot;
 
 <span class="fc bfc" id="L91" title="All 2 branches covered.">        return if (StringUtils.isNotBlank(coingeckoApiKey)) proCoingeckoUri else freeCoingeckoUri</span>
     }
-<span class="nc" id="L93">}</span>
+}
 
 class ApiException : RuntimeException {
 <span class="fc" id="L96">    constructor() : super()</span>

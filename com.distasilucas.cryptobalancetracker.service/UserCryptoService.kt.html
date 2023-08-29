@@ -118,18 +118,16 @@ import org.springframework.stereotype.Service
 <span class="fc" id="L118">        userCryptoRepository.findById(userCryptoId)</span>
 <span class="fc" id="L119">            .ifPresentOrElse({</span>
 <span class="fc" id="L120">                userCryptoRepository.deleteById(userCryptoId)</span>
-<span class="fc" id="L121">                logger.info { &quot;Deleted user crypto $it&quot; }</span>
-<span class="fc" id="L122">            }, { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) })</span>
-
-        // TODO (prob delete crypto if not used (need goal table for this))
-        // another idea is to delegate this to the scheduler that will update crypto prices
-<span class="fc" id="L126">    }</span>
+<span class="fc" id="L121">                cryptoService.deleteCryptoIfNotUsed(it.coingeckoCryptoId)</span>
+<span class="fc" id="L122">                logger.info { &quot;Deleted user crypto $it&quot; }</span>
+<span class="fc" id="L123">            }, { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) })</span>
+<span class="fc" id="L124">    }</span>
 
     fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List&lt;UserCrypto&gt; {
-<span class="fc" id="L129">        return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
+<span class="fc" id="L127">        return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
     }
 }
 
-<span class="fc" id="L133">class UserCryptoNotFoundException(message: String) : RuntimeException(message)</span>
-<span class="fc" id="L134">class DuplicatedCryptoPlatFormException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L131">class UserCryptoNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L132">class DuplicatedCryptoPlatFormException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -12,15 +12,11 @@ import java.util.UUID
 <span class="fc" id="L12">    val id: String = UUID.randomUUID().toString(),</span>
 
 <span class="fc" id="L14">    @Field</span>
-<span class="pc" id="L15">    var name: String</span>
+<span class="fc" id="L15">    val name: String</span>
 ) {
 
-<span class="fc" id="L18">    init {</span>
-<span class="fc" id="L19">        this.name = name.uppercase()</span>
-<span class="fc" id="L20">    }</span>
-
     fun toPlatformResponse(): PlatformResponse {
-<span class="fc" id="L23">        return PlatformResponse(id, name)</span>
+<span class="fc" id="L19">        return PlatformResponse(id, name)</span>
     }
-<span class="fc" id="L25">}</span>
+<span class="fc" id="L21">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
