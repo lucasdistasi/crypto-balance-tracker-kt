@@ -18,6 +18,8 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.Page
@@ -147,6 +149,55 @@ class GoalServiceTest {
     }
 
     @Test
+    fun `should retrieve goals for page with next page`() {
+        val goal = Goal(
+            id = "123e4567-e89b-12d3-a456-426614174111",
+            coingeckoCryptoId = "bitcoin",
+            goalQuantity = BigDecimal("1")
+        )
+        val cryptoEntity = getCryptoEntity()
+        val userCrypto = getUserCrypto()
+        val goalPage = List(2) { goal }
+        val pageImpl = PageImpl(goalPage, PageRequest.of(0, 2), 10L)
+
+        every { goalRepositoryMock.findAll(PageRequest.of(0, 10)) } returns pageImpl
+        every { cryptoServiceMock.retrieveCryptoInfoById("bitcoin") } returns cryptoEntity
+        every { userCryptoServiceMock.findAllByCoingeckoCryptoId("bitcoin") } returns listOf(userCrypto)
+
+        val goalsResponse = goalService.retrieveGoalsForPage(0)
+
+        assertThat(goalsResponse)
+            .usingRecursiveComparison()
+            .isEqualTo(
+                PageGoalResponse(
+                    page = 1,
+                    totalPages = 5,
+                    hasNextPage = true,
+                    goals = listOf(
+                        GoalResponse(
+                            id = "123e4567-e89b-12d3-a456-426614174111",
+                            cryptoName = "Bitcoin",
+                            actualQuantity = BigDecimal("0.25"),
+                            progress = BigDecimal("25.00"),
+                            remainingQuantity = BigDecimal("0.75"),
+                            goalQuantity = BigDecimal("1"),
+                            moneyNeeded = BigDecimal("22500.00")
+                        ),
+                        GoalResponse(
+                            id = "123e4567-e89b-12d3-a456-426614174111",
+                            cryptoName = "Bitcoin",
+                            actualQuantity = BigDecimal("0.25"),
+                            progress = BigDecimal("25.00"),
+                            remainingQuantity = BigDecimal("0.75"),
+                            goalQuantity = BigDecimal("1"),
+                            moneyNeeded = BigDecimal("22500.00")
+                        )
+                    )
+                )
+            )
+    }
+
+    @Test
     fun `should retrieve empty goals for page`() {
         val pageRequest = PageRequest.of(0, 10)
 
@@ -154,6 +205,7 @@ class GoalServiceTest {
 
         val goalsResponse = goalService.retrieveGoalsForPage(0)
 
+        assertFalse(goalsResponse.hasNextPage)
         assertThat(goalsResponse)
             .usingRecursiveComparison()
             .isEqualTo(
@@ -290,10 +342,12 @@ class GoalServiceTest {
 
         every { goalRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174111") } returns Optional.of(goal)
         justRun { goalRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174111") }
+        justRun { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
 
         goalService.deleteGoal("123e4567-e89b-12d3-a456-426614174111")
 
         verify(exactly = 1) { goalRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174111") }
+        verify(exactly = 1) { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
     }
 
     @Test

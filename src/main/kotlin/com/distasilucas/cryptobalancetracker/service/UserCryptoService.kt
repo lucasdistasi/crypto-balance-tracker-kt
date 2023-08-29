@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserCryptoService(
-    val userCryptoRepository: UserCryptoRepository,
-    val platformService: PlatformService,
-    val cryptoService: CryptoService
+    private val userCryptoRepository: UserCryptoRepository,
+    private val platformService: PlatformService,
+    private val cryptoService: CryptoService
 ) {
 
     private val logger = KotlinLogging.logger { }
@@ -118,11 +118,9 @@ class UserCryptoService(
         userCryptoRepository.findById(userCryptoId)
             .ifPresentOrElse({
                 userCryptoRepository.deleteById(userCryptoId)
+                cryptoService.deleteCryptoIfNotUsed(it.coingeckoCryptoId)
                 logger.info { "Deleted user crypto $it" }
             }, { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) })
-
-        // TODO (prob delete crypto if not used (need goal table for this))
-        // another idea is to delegate this to the scheduler that will update crypto prices
     }
 
     fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List<UserCrypto> {

@@ -16,6 +16,7 @@ import com.distasilucas.cryptobalancetracker.service.DuplicatedPlatformException
 import com.distasilucas.cryptobalancetracker.service.GoalNotFoundException
 import com.distasilucas.cryptobalancetracker.service.PlatformNotFoundException
 import com.distasilucas.cryptobalancetracker.service.UserCryptoNotFoundException
+import io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR
 import jakarta.validation.ConstraintViolation
 import jakarta.validation.ConstraintViolationException
 import org.assertj.core.api.Assertions.assertThat
@@ -32,6 +33,7 @@ import org.springframework.validation.BindException
 import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.context.request.ServletWebRequest
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.net.URI
 
 class ExceptionControllerTest {
@@ -231,6 +233,17 @@ class ExceptionControllerTest {
         problemDetail.detail = "Unknown error"
 
         val responseEntity = exceptionController.handleApiException(ApiException(), servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail))
+    }
+
+    @Test
+    fun `should handle any not handled exception`() {
+        val nullPointerException = NullPointerException()
+
+        val responseEntity = exceptionController.handleException(nullPointerException)
+        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error")
 
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail))

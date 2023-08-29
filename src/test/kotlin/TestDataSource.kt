@@ -111,7 +111,7 @@ fun getCryptoEntity(
     lastKnownPriceInEUR: BigDecimal = BigDecimal("27000"),
     lastKnownPriceInBTC: BigDecimal = BigDecimal("1"),
     circulatingSupply: BigDecimal = BigDecimal("19000000"),
-    maxSupply: BigDecimal = BigDecimal("21000000"),
+    maxSupply: BigDecimal? = BigDecimal("21000000"),
     lastUpdatedAt: LocalDateTime = LocalDateTime.now()
 ): Crypto {
     return Crypto(
@@ -122,7 +122,7 @@ fun getCryptoEntity(
         lastKnownPrice = lastKnownPrice,
         lastKnownPriceInBTC = lastKnownPriceInBTC,
         lastKnownPriceInEUR = lastKnownPriceInEUR,
-        maxSupply = maxSupply,
+        maxSupply = maxSupply ?: BigDecimal.ZERO,
         lastUpdatedAt = lastUpdatedAt
     )
 }

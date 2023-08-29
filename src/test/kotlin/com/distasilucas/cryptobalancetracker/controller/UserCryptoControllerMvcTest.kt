@@ -121,8 +121,9 @@ class UserCryptoControllerMvcTest(
         )
 
         val pageUserCryptoResponse = PageUserCryptoResponse(
-            page = 0,
+            page = 1,
             totalPages = 1,
+            hasNextPage = false,
             cryptos = listOf(userCryptoResponse)
         )
 

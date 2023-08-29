@@ -12,12 +12,8 @@ data class Platform(
     val id: String = UUID.randomUUID().toString(),
 
     @Field
-    var name: String
+    val name: String
 ) {
-
-    init {
-        this.name = name.uppercase()
-    }
 
     fun toPlatformResponse(): PlatformResponse {
         return PlatformResponse(id, name)

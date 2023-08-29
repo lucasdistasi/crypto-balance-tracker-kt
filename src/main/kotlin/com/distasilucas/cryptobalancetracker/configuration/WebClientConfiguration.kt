@@ -9,19 +9,17 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import java.time.Duration
 
-private const val DEFAULT_COINGECKO_URL = "https://api.coingecko.com/api/v3"
-
 @Configuration
-class WebClientConfiguration {
-
+class WebClientConfiguration(
     @Value("\${coingecko.api-key}")
-    val coingeckoApiKey: String? = null
+    val coingeckoApiKey: String,
 
     @Value("\${coingecko.pro.url}")
-    val coingeckoProUrl: String? = null
+    val coingeckoProUrl: String,
 
     @Value("\${coingecko.url}")
-    val coingeckoUrl: String? = null
+    val coingeckoUrl: String
+) {
 
     @Bean
     fun coingeckoWebClient(): WebClient {
@@ -31,7 +29,7 @@ class WebClientConfiguration {
 
         return WebClient.builder()
             .codecs { it.defaultCodecs().maxInMemorySize(700 * 1024) }
-            .baseUrl(baseUrl ?: DEFAULT_COINGECKO_URL)
+            .baseUrl(baseUrl)
             .clientConnector(httpConnector)
             .build()
     }

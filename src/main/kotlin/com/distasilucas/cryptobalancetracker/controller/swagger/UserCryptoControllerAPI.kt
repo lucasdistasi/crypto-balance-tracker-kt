@@ -5,7 +5,6 @@ import com.distasilucas.cryptobalancetracker.constants.INVALID_USER_CRYPTO_UUID
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
-import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
