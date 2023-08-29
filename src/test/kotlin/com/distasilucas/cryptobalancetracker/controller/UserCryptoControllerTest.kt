@@ -39,7 +39,6 @@ class UserCryptoControllerTest {
 
     @Test
     fun `should retrieve user cryptos for page with status 200`() {
-        val page = 0
         val userCryptoResponse = UserCryptoResponse(
             id = "123e4567-e89b-12d3-a456-426614174000",
             cryptoName = "bitcoin",
@@ -47,14 +46,15 @@ class UserCryptoControllerTest {
             platform = "Coinbase"
         )
         val pageUserCryptoResponse = PageUserCryptoResponse(
-            page = 0,
+            page = 1,
             totalPages = 1,
+            hasNextPage = false,
             listOf(userCryptoResponse)
         )
 
-        every { userCryptoServiceMock.retrieveUserCryptosByPage(page) } returns pageUserCryptoResponse
+        every { userCryptoServiceMock.retrieveUserCryptosByPage(0) } returns pageUserCryptoResponse
 
-        val responseEntity = userCryptoController.retrieveUserCryptosForPage(page)
+        val responseEntity = userCryptoController.retrieveUserCryptosForPage(0)
 
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.ok(pageUserCryptoResponse))
@@ -62,16 +62,16 @@ class UserCryptoControllerTest {
 
     @Test
     fun `should retrieve empty user cryptos with status 204`() {
-        val page = 0
         val pageUserCryptoResponse = PageUserCryptoResponse(
-            page = 0,
+            page = 1,
             totalPages = 1,
+            hasNextPage = false,
             emptyList()
         )
 
-        every { userCryptoServiceMock.retrieveUserCryptosByPage(page) } returns pageUserCryptoResponse
+        every { userCryptoServiceMock.retrieveUserCryptosByPage(0) } returns pageUserCryptoResponse
 
-        val responseEntity = userCryptoController.retrieveUserCryptosForPage(page)
+        val responseEntity = userCryptoController.retrieveUserCryptosForPage(0)
 
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.status(HttpStatus.NO_CONTENT).build<PageUserCryptoResponse>())

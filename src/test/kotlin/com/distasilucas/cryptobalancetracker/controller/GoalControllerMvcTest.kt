@@ -74,8 +74,9 @@ class GoalControllerMvcTest(
     @Test
     fun `should retrieve goals for page with status 200`() {
         val pageGoalResponse = PageGoalResponse(
-            page = 0,
+            page = 1,
             totalPages = 1,
+            hasNextPage = false,
             goals = listOf(getGoalResponse())
         )
 

@@ -42,7 +42,7 @@ class CoingeckoServiceTest {
         mockWebServer.enqueue(mockResponse)
 
         val webClient = WebClient.create(COINGECKO_API_URL)
-        coingeckoService = CoingeckoService(null, webClient)
+        coingeckoService = CoingeckoService("", webClient)
 
         val cryptos = coingeckoService.retrieveAllCryptos()
 
@@ -57,7 +57,7 @@ class CoingeckoServiceTest {
         mockWebServer.enqueue(mockResponse)
 
         val webClient = WebClient.create(COINGECKO_API_URL)
-        coingeckoService = CoingeckoService(null, webClient)
+        coingeckoService = CoingeckoService("", webClient)
 
         val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo("bitcoin")
 
@@ -72,7 +72,7 @@ class CoingeckoServiceTest {
         mockWebServer.enqueue(mockResponse)
 
         val webClient = WebClient.create(COINGECKO_API_URL)
-        coingeckoService = CoingeckoService(null, webClient)
+        coingeckoService = CoingeckoService("", webClient)
 
         val exception = assertThrows<WebClientResponseException> { coingeckoService.retrieveCryptoInfo("pipicoin") }
 

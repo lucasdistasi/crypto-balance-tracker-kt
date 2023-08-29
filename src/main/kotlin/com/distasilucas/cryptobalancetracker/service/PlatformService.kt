@@ -8,7 +8,6 @@ import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformRes
 import com.distasilucas.cryptobalancetracker.repository.PlatformRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
-import kotlin.jvm.optionals.getOrNull
 
 @Service
 class PlatformService(

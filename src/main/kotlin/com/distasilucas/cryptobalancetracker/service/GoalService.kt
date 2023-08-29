@@ -17,9 +17,9 @@ import java.math.RoundingMode
 
 @Service
 class GoalService(
-    val goalRepository: GoalRepository,
-    val cryptoService: CryptoService,
-    val userCryptoService: UserCryptoService
+    private val goalRepository: GoalRepository,
+    private val cryptoService: CryptoService,
+    private val userCryptoService: UserCryptoService
 ) {
 
     private val logger = KotlinLogging.logger { }
@@ -79,6 +79,7 @@ class GoalService(
         goalRepository.findById(goalId)
             .ifPresentOrElse({
                 goalRepository.deleteById(goalId)
+                cryptoService.deleteCryptoIfNotUsed(it.coingeckoCryptoId)
                 logger.info { "Deleted goal $it" }
             }, {
                 throw GoalNotFoundException(GOAL_ID_NOT_FOUND.format(goalId))

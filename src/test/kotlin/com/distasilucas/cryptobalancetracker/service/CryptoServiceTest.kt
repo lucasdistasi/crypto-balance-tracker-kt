@@ -2,12 +2,17 @@ package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.COINGECKO_CRYPTO_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.Crypto
+import com.distasilucas.cryptobalancetracker.entity.Goal
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
 import com.distasilucas.cryptobalancetracker.repository.CryptoRepository
+import com.distasilucas.cryptobalancetracker.repository.GoalRepository
+import com.distasilucas.cryptobalancetracker.repository.UserCryptoRepository
 import getCoingeckoCryptoInfo
 import getCryptoEntity
 import getMarketData
+import getUserCrypto
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -26,9 +31,17 @@ class CryptoServiceTest {
 
     private val coingeckoServiceMock = mockk<CoingeckoService>()
     private val cryptoRepositoryMock = mockk<CryptoRepository>()
+    private val userCryptoRepositoryMock = mockk<UserCryptoRepository>()
+    private val goalRepositoryMock = mockk<GoalRepository>()
     private val clockMock = mockk<Clock>()
 
-    private val cryptoService = CryptoService(coingeckoServiceMock, cryptoRepositoryMock, clockMock)
+    private val cryptoService = CryptoService(
+        coingeckoServiceMock,
+        cryptoRepositoryMock,
+        userCryptoRepositoryMock,
+        goalRepositoryMock,
+        clockMock
+    )
 
     @Test
     fun `should retrieve crypto info by id`() {
@@ -144,6 +157,7 @@ class CryptoServiceTest {
         val crypto = cryptoService.retrieveCoingeckoCryptoInfoByName("bitcoin")
 
         assertThat(crypto)
+            .usingRecursiveComparison()
             .isEqualTo(
                 CoingeckoCrypto(
                     id = "bitcoin",
@@ -248,5 +262,81 @@ class CryptoServiceTest {
         cryptoService.saveCryptoIfNotExists("bitcoin")
 
         verify(exactly = 0) { cryptoRepositoryMock.save(any()) }
+    }
+
+    @Test
+    fun `should delete crypto if it is not being used`() {
+        every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns emptyList()
+        every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.empty()
+        justRun { cryptoRepositoryMock.deleteById("bitcoin") }
+
+        cryptoService.deleteCryptoIfNotUsed("bitcoin")
+
+        verify(exactly = 1) { cryptoRepositoryMock.deleteById("bitcoin") }
+    }
+
+    @Test
+    fun `should not delete crypto if it is being used by goals table`() {
+        val goal = Goal(
+            coingeckoCryptoId = "bitcoin",
+            goalQuantity = BigDecimal("1")
+        )
+
+        every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns emptyList()
+        every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.of(goal)
+
+        cryptoService.deleteCryptoIfNotUsed("bitcoin")
+
+        verify(exactly = 0) { cryptoRepositoryMock.deleteById("bitcoin") }
+    }
+
+    @Test
+    fun `should not delete crypto if it is being used by user cryptos table`() {
+        val userCrypto = getUserCrypto()
+
+        every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns listOf(userCrypto)
+
+        cryptoService.deleteCryptoIfNotUsed("bitcoin")
+
+        verify(exactly = 0) { cryptoRepositoryMock.deleteById("bitcoin") }
+    }
+
+    @Test
+    fun `should find top cryptos by last price update`() {
+        val localDateTime = LocalDateTime.now()
+        val cryptosEntities = getCryptoEntity(lastUpdatedAt = localDateTime)
+
+        every {
+            cryptoRepositoryMock.findOldestNCryptosByLastPriceUpdate(localDateTime, 5)
+        } returns listOf(cryptosEntities)
+
+        val cryptos = cryptoService.findOldestNCryptosByLastPriceUpdate(localDateTime, 5)
+
+        assertThat(cryptos)
+            .usingRecursiveComparison()
+            .isEqualTo(
+                listOf(
+                    Crypto(
+                        id = "bitcoin",
+                        name = "Bitcoin",
+                        ticker = "btc",
+                        circulatingSupply = BigDecimal("19000000"),
+                        lastKnownPrice = BigDecimal("30000"),
+                        lastKnownPriceInBTC = BigDecimal("1"),
+                        lastKnownPriceInEUR = BigDecimal("27000"),
+                        maxSupply = BigDecimal("21000000"),
+                        lastUpdatedAt = localDateTime
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `should update cryptos`() {
+        val cryptosEntities = getCryptoEntity()
+
+        every { cryptoRepositoryMock.saveAll(listOf(cryptosEntities)) } returns listOf(cryptosEntities)
+
+        cryptoService.updateCryptos(listOf(cryptosEntities))
     }
 }

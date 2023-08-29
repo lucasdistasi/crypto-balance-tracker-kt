@@ -7,10 +7,8 @@ import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequ
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import com.distasilucas.cryptobalancetracker.repository.PlatformRepository
 import io.mockk.every
-import io.mockk.just
 import io.mockk.justRun
 import io.mockk.mockk
-import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -42,7 +40,9 @@ class PlatformServiceTest {
 
         val platform = platformService.retrievePlatformById(id)
 
-        assertThat(platform).isEqualTo(platformEntity.toPlatformResponse())
+        assertThat(platform)
+            .usingRecursiveComparison()
+            .isEqualTo(platformEntity.toPlatformResponse())
     }
 
     @Test
@@ -92,7 +92,9 @@ class PlatformServiceTest {
 
         verify(exactly = 1) { platformRepositoryMock.save(slot.captured) }
 
-        assertThat(platformResponse).isEqualTo(PlatformResponse(platformEntity.id, platformEntity.name))
+        assertThat(platformResponse)
+            .usingRecursiveComparison()
+            .isEqualTo(PlatformResponse(platformEntity.id, platformEntity.name))
     }
 
     @Test
@@ -125,7 +127,9 @@ class PlatformServiceTest {
 
         verify(exactly = 1) { platformRepositoryMock.save(newPlatform) }
 
-        assertThat(updatedPlatform).isEqualTo(PlatformResponse(id, "OKX"))
+        assertThat(updatedPlatform)
+            .usingRecursiveComparison()
+            .isEqualTo(PlatformResponse(id, "OKX"))
     }
 
     @Test

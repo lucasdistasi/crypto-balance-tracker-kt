@@ -17,6 +17,8 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.Page
@@ -86,9 +88,45 @@ class UserCryptoServiceTest {
             .usingRecursiveComparison()
             .isEqualTo(
                 PageUserCryptoResponse(
-                    page = 0,
+                    page = 1,
                     totalPages = 1,
+                    hasNextPage = false,
                     cryptos = listOf(
+                        userCrypto.toUserCryptoResponse(
+                            cryptoName = "Bitcoin",
+                            platformName = "BINANCE"
+                        )
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `should retrieve user cryptos by page with next page`() {
+        val userCrypto = getUserCrypto()
+        val platformResponse = getPlatformResponse()
+        val crypto = getCryptoEntity()
+        val userCryptosPage = List(2) { userCrypto }
+        val pageImpl = PageImpl(userCryptosPage, PageRequest.of(0, 2), 10L)
+
+        every { userCryptoRepositoryMock.findAll(PageRequest.of(0, 10)) } returns pageImpl
+        every { platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111") } returns platformResponse
+        every { cryptoServiceMock.retrieveCryptoInfoById("bitcoin") } returns crypto
+
+        val pageUserCryptoResponse = userCryptoService.retrieveUserCryptosByPage(0)
+
+        assertThat(pageUserCryptoResponse)
+            .usingRecursiveComparison()
+            .isEqualTo(
+                PageUserCryptoResponse(
+                    page = 1,
+                    totalPages = 5,
+                    hasNextPage = true,
+                    cryptos = listOf(
+                        userCrypto.toUserCryptoResponse(
+                            cryptoName = "Bitcoin",
+                            platformName = "BINANCE"
+                        ),
                         userCrypto.toUserCryptoResponse(
                             cryptoName = "Bitcoin",
                             platformName = "BINANCE"
@@ -108,8 +146,9 @@ class UserCryptoServiceTest {
             .usingRecursiveComparison()
             .isEqualTo(
                 PageUserCryptoResponse(
-                    page = 0,
+                    page = 1,
                     totalPages = 1,
+                    hasNextPage = false,
                     cryptos = emptyList()
                 )
             )
@@ -276,10 +315,12 @@ class UserCryptoServiceTest {
             userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
         } returns Optional.of(userCrypto)
         justRun { userCryptoRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174000") }
+        justRun { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
 
         userCryptoService.deleteUserCrypto("123e4567-e89b-12d3-a456-426614174000")
 
         verify(exactly = 1) { userCryptoRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174000") }
+        verify(exactly = 1) { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
     }
 
     @Test

@@ -192,6 +192,18 @@ class ExceptionController {
             .body(problemDetail)
     }
 
+    @ExceptionHandler(Exception::class)
+    fun handleException(
+        exception: Exception
+    ): ResponseEntity<ProblemDetail> {
+        logger.warn { "An unhandled Exception occurred $exception" }
+
+        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, UNKNOWN_ERROR)
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(problemDetail)
+    }
+
     private fun HttpStatus.withDetailsAndURI(
         detail: String,
         type: URI
