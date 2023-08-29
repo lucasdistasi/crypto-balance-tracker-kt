@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service
 
 <span class="fc" id="L15">@Service</span>
 <span class="fc" id="L16">class UserCryptoService(</span>
-<span class="fc" id="L17">    val userCryptoRepository: UserCryptoRepository,</span>
-<span class="fc" id="L18">    val platformService: PlatformService,</span>
-<span class="fc" id="L19">    val cryptoService: CryptoService</span>
+<span class="fc" id="L17">    private val userCryptoRepository: UserCryptoRepository,</span>
+<span class="fc" id="L18">    private val platformService: PlatformService,</span>
+<span class="fc" id="L19">    private val cryptoService: CryptoService</span>
 ) {
 
 <span class="fc" id="L22">    private val logger = KotlinLogging.logger { }</span>

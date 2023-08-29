@@ -17,9 +17,9 @@ import java.math.RoundingMode
 
 <span class="fc" id="L18">@Service</span>
 <span class="fc" id="L19">class GoalService(</span>
-<span class="fc" id="L20">    val goalRepository: GoalRepository,</span>
-<span class="fc" id="L21">    val cryptoService: CryptoService,</span>
-<span class="fc" id="L22">    val userCryptoService: UserCryptoService</span>
+<span class="fc" id="L20">    private val goalRepository: GoalRepository,</span>
+<span class="fc" id="L21">    private val cryptoService: CryptoService,</span>
+<span class="fc" id="L22">    private val userCryptoService: UserCryptoService</span>
 ) {
 
 <span class="fc" id="L25">    private val logger = KotlinLogging.logger { }</span>

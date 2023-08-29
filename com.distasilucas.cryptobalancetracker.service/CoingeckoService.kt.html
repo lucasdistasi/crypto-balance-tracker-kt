@@ -25,8 +25,8 @@ const val COINS_URI = &quot;$COIN_URI/list&quot;
 <span class="fc" id="L25">@Service</span>
 <span class="pc" id="L26">class CoingeckoService(</span>
 <span class="fc" id="L27">    @Value(&quot;\${coingecko.api-key}&quot;)</span>
-<span class="pc" id="L28">    val coingeckoApiKey: String? = null,</span>
-<span class="fc" id="L29">    val coingeckoWebClient: WebClient</span>
+<span class="nc" id="L28">    private val coingeckoApiKey: String? = null,</span>
+<span class="fc" id="L29">    private val coingeckoWebClient: WebClient</span>
 ) {
 
 <span class="fc" id="L32">    private val logger = KotlinLogging.logger { }</span>

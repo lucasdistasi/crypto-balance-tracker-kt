@@ -12,9 +12,9 @@ import java.time.LocalDateTime
 
 <span class="fc" id="L13">@Service</span>
 <span class="fc" id="L14">class CryptoService(</span>
-<span class="fc" id="L15">    val coingeckoService: CoingeckoService,</span>
-<span class="fc" id="L16">    val cryptoRepository: CryptoRepository,</span>
-<span class="fc" id="L17">    val clock: Clock</span>
+<span class="fc" id="L15">    private val coingeckoService: CoingeckoService,</span>
+<span class="fc" id="L16">    private val cryptoRepository: CryptoRepository,</span>
+<span class="fc" id="L17">    private val clock: Clock</span>
 ) {
 
 <span class="fc" id="L20">    private val logger = KotlinLogging.logger { }</span>
@@ -78,7 +78,16 @@ import java.time.LocalDateTime
 <span class="fc" id="L78">            }</span>
         }
 <span class="fc" id="L80">    }</span>
+
+    fun findOldestNCryptosByLastPriceUpdate(dateFilter: LocalDateTime, limit: Int): List&lt;Crypto&gt; {
+<span class="fc" id="L83">        return cryptoRepository.findOldestNCryptosByLastPriceUpdate(dateFilter, limit)</span>
+    }
+
+    fun updateCryptos(cryptosToUpdate: List&lt;Crypto&gt;) {
+<span class="fc" id="L87">        cryptoRepository.saveAll(cryptosToUpdate)</span>
+<span class="fc" id="L88">        logger.info { &quot;Updated cryptos ${cryptosToUpdate.map { it.name }}&quot; }</span>
+<span class="fc" id="L89">    }</span>
 }
 
-<span class="fc" id="L83">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L92">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
