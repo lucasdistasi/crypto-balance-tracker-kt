@@ -162,19 +162,19 @@ import java.math.BigDecimal
 <span class="fc" id="L162">        val totalToSubtract = quantityToTransfer.add(networkFee)</span>
 
 <span class="fc bfc" id="L164" title="All 2 branches covered.">        return if (transferCryptoRequest.sendFullQuantity == true) {</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">            if (availableQuantity &gt;= totalToSubtract) totalToSubtract else availableQuantity</span>
+            // TODO - what if equals ?
+<span class="fc bfc" id="L166" title="All 2 branches covered.">            if (availableQuantity &gt;= totalToSubtract) totalToSubtract else availableQuantity</span>
         } else {
-<span class="fc" id="L167">            return quantityToTransfer</span>
+<span class="fc" id="L168">            return quantityToTransfer</span>
         }
     }
 
     private fun calculateQuantityToSendReceive(transferCryptoRequest: TransferCryptoRequest): BigDecimal {
-<span class="fc" id="L172">        val quantityToTransfer = transferCryptoRequest.quantityToTransfer!!</span>
-<span class="fc" id="L173">        val networkFee = transferCryptoRequest.networkFee!!</span>
+<span class="fc" id="L173">        val quantityToTransfer = transferCryptoRequest.quantityToTransfer!!</span>
+<span class="fc" id="L174">        val networkFee = transferCryptoRequest.networkFee!!</span>
 
-<span class="fc bfc" id="L175" title="All 2 branches covered.">        return if (transferCryptoRequest.sendFullQuantity == true) quantityToTransfer else quantityToTransfer.subtract(</span>
-<span class="fc" id="L176">            networkFee</span>
-        )
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        return if (transferCryptoRequest.sendFullQuantity == true)</span>
+<span class="fc" id="L177">            quantityToTransfer else quantityToTransfer.subtract(networkFee)</span>
     }
 
     private fun calculateRemainingCryptoQuantity(

@@ -83,9 +83,9 @@ import org.springframework.web.bind.annotation.RestController
     override fun transferUserCrypto(
         @Valid @RequestBody transferCryptoRequest: TransferCryptoRequest
     ): ResponseEntity&lt;TransferCryptoResponse&gt; {
-<span class="nc" id="L86">        val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)</span>
+<span class="fc" id="L86">        val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)</span>
 
-<span class="nc" id="L88">        return ResponseEntity.ok(transferCryptoResponse)</span>
+<span class="fc" id="L88">        return ResponseEntity.ok(transferCryptoResponse)</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Positive
 import org.hibernate.validator.constraints.UUID
 import java.math.BigDecimal
 
-<span class="pc" id="L14">data class TransferCryptoRequest(</span>
+<span class="fc" id="L14">data class TransferCryptoRequest(</span>
 <span class="fc" id="L15">    @field: NotBlank(message = &quot;User crypto id can not be null or blank&quot;)</span>
     @field: UUID(message = INVALID_USER_CRYPTO_UUID)
 <span class="fc" id="L17">    val userCryptoId: String?,</span>
@@ -38,10 +38,10 @@ import java.math.BigDecimal
     @field: Min(0)
 <span class="fc" id="L39">    val networkFee: BigDecimal?,</span>
 
-<span class="pc" id="L41">    val sendFullQuantity: Boolean? = false,</span>
+<span class="fc" id="L41">    val sendFullQuantity: Boolean? = false,</span>
 
 <span class="fc" id="L43">    @field: NotBlank(message = &quot;To platform id can not be null or blank&quot;)</span>
     @field: UUID(message = INVALID_TO_PLATFORM_UUID)
 <span class="fc" id="L45">    val toPlatform: String?</span>
-<span class="nc" id="L46">)</span>
+<span class="fc" id="L46">)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
