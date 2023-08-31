@@ -2,6 +2,7 @@ package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.COINGECKO_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTO_INFO_CACHE
+import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCryptoInfo
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -90,9 +91,4 @@ class CoingeckoService(
 
         return if (StringUtils.isNotBlank(coingeckoApiKey)) proCoingeckoUri else freeCoingeckoUri
     }
-}
-
-class ApiException : RuntimeException {
-    constructor() : super()
-    constructor(message: String) : super(message)
 }

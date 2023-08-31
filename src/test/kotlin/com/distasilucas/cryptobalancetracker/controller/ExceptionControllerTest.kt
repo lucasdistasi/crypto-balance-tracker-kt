@@ -5,18 +5,20 @@ import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_CRYPTO_PLATFOR
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_GOAL
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
 import com.distasilucas.cryptobalancetracker.constants.GOAL_ID_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.constants.NOT_ENOUGH_BALANCE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.constants.UNKNOWN_ERROR
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.Platform
-import com.distasilucas.cryptobalancetracker.service.ApiException
+import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedPlatformException
 import com.distasilucas.cryptobalancetracker.service.GoalNotFoundException
+import com.distasilucas.cryptobalancetracker.service.InsufficientBalanceException
 import com.distasilucas.cryptobalancetracker.service.PlatformNotFoundException
 import com.distasilucas.cryptobalancetracker.service.UserCryptoNotFoundException
-import io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR
 import jakarta.validation.ConstraintViolation
 import jakarta.validation.ConstraintViolationException
 import org.assertj.core.api.Assertions.assertThat
@@ -33,7 +35,6 @@ import org.springframework.validation.BindException
 import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.context.request.ServletWebRequest
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.net.URI
 
 class ExceptionControllerTest {
@@ -145,6 +146,21 @@ class ExceptionControllerTest {
     }
 
     @Test
+    fun `should handle InsufficientBalanceException`() {
+        val exception = InsufficientBalanceException(NOT_ENOUGH_BALANCE)
+        val httpServletRequest = MockHttpServletRequest("POST", "/api/v1/cryptos/transfer")
+        val servletRequest = ServletWebRequest(httpServletRequest)
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = exception.message
+
+        val responseEntity = exceptionController.handleInsufficientBalanceException(exception, servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
+    }
+
+    @Test
     fun `should handle MethodArgumentNotValidException`() {
         val bindException = BindException("target", "objectName")
         bindException.addError(ObjectError("objectName", "Error Message"))
@@ -168,7 +184,7 @@ class ExceptionControllerTest {
         val exception = MethodArgumentNotValidException(methodParameter, bindException)
         val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
         problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
-        problemDetail.detail = "Unknown error"
+        problemDetail.detail = UNKNOWN_ERROR
 
         val responseEntity = exceptionController.handleMethodArgumentNotValidException(exception, servletRequest)
 
@@ -215,6 +231,18 @@ class ExceptionControllerTest {
     }
 
     @Test
+    fun `should handle ApiException with custom http status code`() {
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = "Error"
+
+        val responseEntity = exceptionController.handleApiException(ApiException(HttpStatus.BAD_REQUEST, "Error"), servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
+    }
+
+    @Test
     fun `should handle ApiException with custom message`() {
         val problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR)
         problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
@@ -230,7 +258,7 @@ class ExceptionControllerTest {
     fun `should handle ApiException without custom message`() {
         val problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR)
         problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
-        problemDetail.detail = "Unknown error"
+        problemDetail.detail = UNKNOWN_ERROR
 
         val responseEntity = exceptionController.handleApiException(ApiException(), servletRequest)
 
@@ -243,7 +271,7 @@ class ExceptionControllerTest {
         val nullPointerException = NullPointerException()
 
         val responseEntity = exceptionController.handleException(nullPointerException)
-        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error")
+        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, UNKNOWN_ERROR)
 
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail))

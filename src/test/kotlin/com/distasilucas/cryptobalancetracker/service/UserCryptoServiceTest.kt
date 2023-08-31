@@ -17,8 +17,6 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.Page
@@ -62,7 +60,7 @@ class UserCryptoServiceTest {
     }
 
     @Test
-    fun `should throw UserCryptoNotFoundException if user crypto does not exists`() {
+    fun `should throw UserCryptoNotFoundException if user crypto does not exists when retrieving user crypto by id`() {
         every { userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000") } returns Optional.empty()
 
         val exception = assertThrows<UserCryptoNotFoundException> {
@@ -358,5 +356,78 @@ class UserCryptoServiceTest {
                     )
                 )
             )
+    }
+
+    @Test
+    fun `should find by user crypto id`() {
+        val userCrypto = getUserCrypto()
+
+        every {
+            userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
+        } returns Optional.of(userCrypto)
+
+        val response = userCryptoService.findByUserCryptoId("123e4567-e89b-12d3-a456-426614174000")
+
+        assertThat(response)
+            .usingRecursiveComparison()
+            .isEqualTo(
+                UserCrypto(
+                    id = "123e4567-e89b-12d3-a456-426614174000",
+                    coingeckoCryptoId = "bitcoin",
+                    quantity = BigDecimal("0.25"),
+                    platformId = "123e4567-e89b-12d3-a456-426614174111"
+                )
+            )
+    }
+
+    @Test
+    fun `should throw UserCryptoNotFoundException if user crypto does not exists`() {
+        every {
+            userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
+        } returns Optional.empty()
+
+        val exception = assertThrows<UserCryptoNotFoundException> {
+            userCryptoService.findByUserCryptoId("123e4567-e89b-12d3-a456-426614174000")
+        }
+
+        assertThat(exception.message)
+            .isEqualTo(USER_CRYPTO_ID_NOT_FOUND.format("123e4567-e89b-12d3-a456-426614174000"))
+    }
+
+    @Test
+    fun `should find by coingecko crypto id and platform id`() {
+        val userCrypto = getUserCrypto()
+
+        every {
+            userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
+                "bitcoin", "123e4567-e89b-12d3-a456-426614174111"
+            )
+        } returns Optional.of(userCrypto)
+
+        val response =
+            userCryptoService.findByCoingeckoCryptoIdAndPlatformId("bitcoin", "123e4567-e89b-12d3-a456-426614174111")
+
+        assertThat(response.isPresent)
+        assertThat(response.get())
+            .usingRecursiveComparison()
+            .isEqualTo(
+                UserCrypto(
+                    id = "123e4567-e89b-12d3-a456-426614174000",
+                    coingeckoCryptoId = "bitcoin",
+                    quantity = BigDecimal("0.25"),
+                    platformId = "123e4567-e89b-12d3-a456-426614174111"
+                )
+            )
+    }
+
+    @Test
+    fun `should save or update all`() {
+        val userCryptos = listOf(getUserCrypto())
+
+        every { userCryptoRepositoryMock.saveAll(userCryptos) } returns userCryptos
+
+        userCryptoService.saveOrUpdateAll(userCryptos)
+
+        verify(exactly = 1) { userCryptoRepositoryMock.saveAll(userCryptos) }
     }
 }

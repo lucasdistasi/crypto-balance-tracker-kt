@@ -2,8 +2,10 @@ package com.distasilucas.cryptobalancetracker.controller.swagger
 
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
 import com.distasilucas.cryptobalancetracker.constants.INVALID_USER_CRYPTO_UUID
+import com.distasilucas.cryptobalancetracker.model.request.crypto.TransferCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
+import com.distasilucas.cryptobalancetracker.model.response.crypto.TransferCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -192,7 +194,6 @@ interface UserCryptoControllerAPI {
                     )
                 )]
             ),
-
             ApiResponse(
                 responseCode = "404",
                 description = "User crypto not found",
@@ -247,7 +248,6 @@ interface UserCryptoControllerAPI {
                     )
                 )]
             ),
-
             ApiResponse(
                 responseCode = "404",
                 description = "User crypto not found",
@@ -275,4 +275,57 @@ interface UserCryptoControllerAPI {
     fun deleteUserCrypto(
         @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String
     ): ResponseEntity<Unit>
+
+    @Operation(summary = "Transfer user crypto")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "User crypto transferred",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = TransferCryptoResponse::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [Content(
+                    mediaType = "application/json",
+                    array = ArraySchema(
+                        schema = Schema(
+                            implementation = ProblemDetail::class
+                        )
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "User crypto not found, Platform not found",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal Server Error",
+                content = [Content(
+                    mediaType = "application/json",
+                    array = ArraySchema(
+                        schema = Schema(
+                            implementation = ProblemDetail::class
+                        )
+                    )
+                )]
+            )
+        ]
+    )
+    fun transferUserCrypto(
+        @Valid transferCryptoRequest: TransferCryptoRequest
+    ): ResponseEntity<TransferCryptoResponse>
 }

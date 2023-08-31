@@ -3,9 +3,12 @@ package com.distasilucas.cryptobalancetracker.controller
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
 import com.distasilucas.cryptobalancetracker.constants.INVALID_USER_CRYPTO_UUID
 import com.distasilucas.cryptobalancetracker.controller.swagger.UserCryptoControllerAPI
+import com.distasilucas.cryptobalancetracker.model.request.crypto.TransferCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
+import com.distasilucas.cryptobalancetracker.model.response.crypto.TransferCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
+import com.distasilucas.cryptobalancetracker.service.TransferCryptoService
 import com.distasilucas.cryptobalancetracker.service.UserCryptoService
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
@@ -26,7 +29,10 @@ import org.springframework.web.bind.annotation.RestController
 @Validated
 @RestController
 @RequestMapping("/api/v1/cryptos")
-class UserCryptoController(private val userCryptoService: UserCryptoService) : UserCryptoControllerAPI {
+class UserCryptoController(
+    private val userCryptoService: UserCryptoService,
+    private val transferCryptoService: TransferCryptoService
+) : UserCryptoControllerAPI {
 
     @GetMapping("/{userCryptoId}")
     override fun retrieveUserCrypto(
@@ -71,5 +77,14 @@ class UserCryptoController(private val userCryptoService: UserCryptoService) : U
         userCryptoService.deleteUserCrypto(userCryptoId)
 
         return ResponseEntity.ok().build()
+    }
+
+    @PostMapping("/transfer")
+    override fun transferUserCrypto(
+        @Valid @RequestBody transferCryptoRequest: TransferCryptoRequest
+    ): ResponseEntity<TransferCryptoResponse> {
+        val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)
+
+        return ResponseEntity.ok(transferCryptoResponse)
     }
 }
