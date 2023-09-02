@@ -1,202 +1,209 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransferCryptoService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.service</a> &gt; <span class="el_source">TransferCryptoService.kt</span></div><h1>TransferCryptoService.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.NOT_ENOUGH_BALANCE
+import com.distasilucas.cryptobalancetracker.constants.SAME_FROM_TO_PLATFORM
+import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.model.request.crypto.TransferCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.crypto.FromPlatform
 import com.distasilucas.cryptobalancetracker.model.response.crypto.ToPlatform
 import com.distasilucas.cryptobalancetracker.model.response.crypto.TransferCryptoResponse
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.util.UUID
 
-<span class="fc" id="L12">@Service</span>
-<span class="fc" id="L13">class TransferCryptoService(</span>
-<span class="fc" id="L14">    private val userCryptoService: UserCryptoService,</span>
-<span class="fc" id="L15">    private val platformService: PlatformService</span>
+<span class="fc" id="L16">@Service</span>
+<span class="fc" id="L17">class TransferCryptoService(</span>
+<span class="fc" id="L18">    private val userCryptoService: UserCryptoService,</span>
+<span class="fc" id="L19">    private val platformService: PlatformService</span>
 ) {
 
-<span class="fc" id="L18">    private val logger = KotlinLogging.logger { }</span>
+<span class="fc" id="L22">    private val logger = KotlinLogging.logger { }</span>
 
     fun transferCrypto(transferCryptoRequest: TransferCryptoRequest): TransferCryptoResponse {
-<span class="fc" id="L21">        val toPlatformResponse = platformService.retrievePlatformById(transferCryptoRequest.toPlatform!!)</span>
-<span class="fc" id="L22">        val userCryptoToTransfer = userCryptoService.findByUserCryptoId(transferCryptoRequest.userCryptoId!!)</span>
-<span class="fc" id="L23">        val fromPlatformResponse = platformService.retrievePlatformById(userCryptoToTransfer.platformId)</span>
+<span class="fc" id="L25">        val toPlatformResponse = platformService.retrievePlatformById(transferCryptoRequest.toPlatform!!)</span>
+<span class="fc" id="L26">        val userCryptoToTransfer = userCryptoService.findByUserCryptoId(transferCryptoRequest.userCryptoId!!)</span>
+<span class="fc" id="L27">        val fromPlatformResponse = platformService.retrievePlatformById(userCryptoToTransfer.platformId)</span>
 
-<span class="pc bpc" id="L25" title="1 of 2 branches missed.">        if (isToAndFromSame(toPlatformResponse.id, userCryptoToTransfer.id)) {</span>
-<span class="nc" id="L26">            throw RuntimeException(&quot;From platform and to platform cannot be the same&quot;)</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (isToAndFromSame(toPlatformResponse.id, fromPlatformResponse.id)) {</span>
+<span class="fc" id="L30">            throw ApiException(HttpStatus.BAD_REQUEST, SAME_FROM_TO_PLATFORM)</span>
         }
 
-<span class="fc" id="L29">        val availableQuantity = userCryptoToTransfer.quantity</span>
-<span class="fc" id="L30">        val networkFee = transferCryptoRequest.networkFee!!</span>
-<span class="fc" id="L31">        val quantityToTransfer = transferCryptoRequest.quantityToTransfer!!</span>
-<span class="fc" id="L32">        val totalToSubtract = calculateTotalToSubtract(availableQuantity, transferCryptoRequest)</span>
+<span class="fc" id="L33">        val availableQuantity = userCryptoToTransfer.quantity</span>
+<span class="fc" id="L34">        val networkFee = transferCryptoRequest.networkFee!!</span>
+<span class="fc" id="L35">        val quantityToTransfer = transferCryptoRequest.quantityToTransfer!!</span>
+<span class="fc" id="L36">        val totalToSubtract = calculateTotalToSubtract(transferCryptoRequest)</span>
 
-<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (totalToSubtract &gt; availableQuantity) {</span>
-<span class="fc" id="L35">            throw InsufficientBalanceException(NOT_ENOUGH_BALANCE)</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (availableQuantity.minus(totalToSubtract) &lt; BigDecimal.ZERO) {</span>
+<span class="fc" id="L39">            throw InsufficientBalanceException(NOT_ENOUGH_BALANCE)</span>
         }
 
-<span class="fc" id="L38">        val toPlatformOptionalUserCrypto = userCryptoService.findByCoingeckoCryptoIdAndPlatformId(</span>
-<span class="fc" id="L39">            userCryptoToTransfer.coingeckoCryptoId,</span>
-<span class="fc" id="L40">            transferCryptoRequest.toPlatform</span>
+<span class="fc" id="L42">        val toPlatformOptionalUserCrypto = userCryptoService.findByCoingeckoCryptoIdAndPlatformId(</span>
+<span class="fc" id="L43">            userCryptoToTransfer.coingeckoCryptoId,</span>
+<span class="fc" id="L44">            transferCryptoRequest.toPlatform</span>
         )
-<span class="fc" id="L42">        val remainingCryptoQuantity = calculateRemainingCryptoQuantity(availableQuantity, transferCryptoRequest)</span>
+<span class="fc" id="L46">        val remainingCryptoQuantity = calculateRemainingCryptoQuantity(availableQuantity, transferCryptoRequest)</span>
 
-<span class="fc" id="L44">        var transferCryptoResponse: TransferCryptoResponse? = null</span>
+<span class="fc" id="L48">        var transferCryptoResponse: TransferCryptoResponse? = null</span>
 
-<span class="fc bfc" id="L46" title="All 4 branches covered.">        if (doesFromPlatformHaveRemaining(remainingCryptoQuantity) &amp;&amp; toPlatformOptionalUserCrypto.isPresent) {</span>
-<span class="fc" id="L47">            val quantityToSendReceive = calculateQuantityToSendReceive(transferCryptoRequest)</span>
-<span class="fc" id="L48">            val toPlatformUserCrypto = toPlatformOptionalUserCrypto.get()</span>
-<span class="fc" id="L49">            val newQuantity = toPlatformUserCrypto.quantity.add(quantityToSendReceive)</span>
+<span class="fc bfc" id="L50" title="All 4 branches covered.">        if (doesFromPlatformHaveRemaining(remainingCryptoQuantity) &amp;&amp; toPlatformOptionalUserCrypto.isPresent) {</span>
+<span class="fc" id="L51">            val quantityToSendReceive = calculateQuantityToSendReceive(transferCryptoRequest)</span>
+<span class="fc" id="L52">            val toPlatformUserCrypto = toPlatformOptionalUserCrypto.get()</span>
+<span class="fc" id="L53">            val newQuantity = toPlatformUserCrypto.quantity.add(quantityToSendReceive)</span>
 
-<span class="fc" id="L51">            val updatedFromPlatformUserCrypto = userCryptoToTransfer.copy(quantity = remainingCryptoQuantity)</span>
-<span class="fc" id="L52">            val updatedToPlatformUserCrypto = toPlatformUserCrypto.copy(quantity = newQuantity)</span>
+<span class="fc" id="L55">            val updatedFromPlatformUserCrypto = userCryptoToTransfer.copy(quantity = remainingCryptoQuantity)</span>
+<span class="fc" id="L56">            val updatedToPlatformUserCrypto = toPlatformUserCrypto.copy(quantity = newQuantity)</span>
 
-            // userCryptoService.saveOrUpdateAll(listOf(updatedFromPlatformUserCrypto, updatedToPlatformUserCrypto))
+<span class="fc" id="L58">            userCryptoService.saveOrUpdateAll(listOf(updatedFromPlatformUserCrypto, updatedToPlatformUserCrypto))</span>
 
-<span class="fc" id="L56">            val fromPlatform = FromPlatform(</span>
-<span class="fc" id="L57">                userCryptoId = transferCryptoRequest.userCryptoId,</span>
-<span class="fc" id="L58">                networkFee = networkFee,</span>
-<span class="fc" id="L59">                quantityToTransfer = quantityToTransfer,</span>
-<span class="fc" id="L60">                totalToSubtract = totalToSubtract,</span>
-<span class="fc" id="L61">                quantityToSendReceive = quantityToSendReceive,</span>
-<span class="fc" id="L62">                remainingCryptoQuantity = remainingCryptoQuantity,</span>
-<span class="fc" id="L63">                sendFullQuantity = transferCryptoRequest.sendFullQuantity!!</span>
+<span class="fc" id="L60">            val fromPlatform = FromPlatform(</span>
+<span class="fc" id="L61">                userCryptoId = transferCryptoRequest.userCryptoId,</span>
+<span class="fc" id="L62">                networkFee = networkFee,</span>
+<span class="fc" id="L63">                quantityToTransfer = quantityToTransfer,</span>
+<span class="fc" id="L64">                totalToSubtract = totalToSubtract,</span>
+<span class="fc" id="L65">                quantityToSendReceive = quantityToSendReceive,</span>
+<span class="fc" id="L66">                remainingCryptoQuantity = remainingCryptoQuantity,</span>
+<span class="fc" id="L67">                sendFullQuantity = transferCryptoRequest.sendFullQuantity!!</span>
             )
-<span class="fc" id="L65">            val toPlatform = ToPlatform(</span>
-<span class="fc" id="L66">                platformId = transferCryptoRequest.toPlatform,</span>
-<span class="fc" id="L67">                newQuantity = newQuantity</span>
+<span class="fc" id="L69">            val toPlatform = ToPlatform(</span>
+<span class="fc" id="L70">                platformId = transferCryptoRequest.toPlatform,</span>
+<span class="fc" id="L71">                newQuantity = newQuantity</span>
             )
-<span class="fc" id="L69">            transferCryptoResponse = TransferCryptoResponse(fromPlatform, toPlatform)</span>
+<span class="fc" id="L73">            transferCryptoResponse = TransferCryptoResponse(fromPlatform, toPlatform)</span>
         }
 
-<span class="fc bfc" id="L72" title="All 4 branches covered.">        if (doesFromPlatformHaveRemaining(remainingCryptoQuantity) &amp;&amp; toPlatformOptionalUserCrypto.isEmpty) {</span>
-<span class="fc" id="L73">            val quantityToSendReceive = calculateQuantityToSendReceive(transferCryptoRequest)</span>
-<span class="fc" id="L74">            val toPlatformUserCrypto = userCryptoToTransfer.copy(</span>
-<span class="fc" id="L75">                quantity = quantityToSendReceive,</span>
-<span class="fc" id="L76">                platformId = transferCryptoRequest.toPlatform</span>
+<span class="fc bfc" id="L76" title="All 4 branches covered.">        if (doesFromPlatformHaveRemaining(remainingCryptoQuantity) &amp;&amp; toPlatformOptionalUserCrypto.isEmpty) {</span>
+<span class="fc" id="L77">            val uuid = UUID.randomUUID().toString()</span>
+<span class="fc" id="L78">            val quantityToSendReceive = calculateQuantityToSendReceive(transferCryptoRequest)</span>
+<span class="fc" id="L79">            val toPlatformUserCrypto = userCryptoToTransfer.copy(</span>
+<span class="fc" id="L80">                id = uuid,</span>
+<span class="fc" id="L81">                quantity = quantityToSendReceive,</span>
+<span class="fc" id="L82">                platformId = transferCryptoRequest.toPlatform</span>
             )
-<span class="fc" id="L78">            val updatedUserCryptoToTransfer = userCryptoToTransfer.copy(quantity = remainingCryptoQuantity)</span>
+<span class="fc" id="L84">            val updatedUserCryptoToTransfer = userCryptoToTransfer.copy(quantity = remainingCryptoQuantity)</span>
 
-            // userCryptoService.saveOrUpdateAll(listOf(toPlatformUserCrypto, updatedUserCryptoToTransfer))
+<span class="fc" id="L86">            userCryptoService.saveOrUpdateAll(listOf(updatedUserCryptoToTransfer, toPlatformUserCrypto))</span>
 
-<span class="fc" id="L82">            val fromPlatform = FromPlatform(</span>
-<span class="fc" id="L83">                userCryptoId = transferCryptoRequest.userCryptoId,</span>
-<span class="fc" id="L84">                networkFee = networkFee,</span>
-<span class="fc" id="L85">                quantityToTransfer = quantityToTransfer,</span>
-<span class="fc" id="L86">                totalToSubtract = totalToSubtract,</span>
-<span class="fc" id="L87">                quantityToSendReceive = quantityToSendReceive,</span>
-<span class="fc" id="L88">                remainingCryptoQuantity = remainingCryptoQuantity,</span>
-<span class="fc" id="L89">                sendFullQuantity = transferCryptoRequest.sendFullQuantity!!</span>
+<span class="fc" id="L88">            val fromPlatform = FromPlatform(</span>
+<span class="fc" id="L89">                userCryptoId = transferCryptoRequest.userCryptoId,</span>
+<span class="fc" id="L90">                networkFee = networkFee,</span>
+<span class="fc" id="L91">                quantityToTransfer = quantityToTransfer,</span>
+<span class="fc" id="L92">                totalToSubtract = totalToSubtract,</span>
+<span class="fc" id="L93">                quantityToSendReceive = quantityToSendReceive,</span>
+<span class="fc" id="L94">                remainingCryptoQuantity = remainingCryptoQuantity,</span>
+<span class="fc" id="L95">                sendFullQuantity = transferCryptoRequest.sendFullQuantity!!</span>
             )
-<span class="fc" id="L91">            val toPlatform = ToPlatform(</span>
-<span class="fc" id="L92">                platformId = transferCryptoRequest.toPlatform,</span>
-<span class="fc" id="L93">                newQuantity = quantityToSendReceive</span>
+<span class="fc" id="L97">            val toPlatform = ToPlatform(</span>
+<span class="fc" id="L98">                platformId = transferCryptoRequest.toPlatform,</span>
+<span class="fc" id="L99">                newQuantity = quantityToSendReceive</span>
             )
-<span class="fc" id="L95">            transferCryptoResponse = TransferCryptoResponse(fromPlatform, toPlatform)</span>
+<span class="fc" id="L101">            transferCryptoResponse = TransferCryptoResponse(fromPlatform, toPlatform)</span>
         }
 
-<span class="fc bfc" id="L98" title="All 4 branches covered.">        if (!doesFromPlatformHaveRemaining(remainingCryptoQuantity) &amp;&amp; toPlatformOptionalUserCrypto.isPresent) {</span>
-<span class="fc" id="L99">            val toPlatformUserCrypto = toPlatformOptionalUserCrypto.get()</span>
-<span class="fc" id="L100">            val quantityToSendReceive = quantityToTransfer.minus(networkFee)</span>
-<span class="fc" id="L101">            val newQuantity = toPlatformUserCrypto.quantity.add(quantityToSendReceive)</span>
+<span class="fc bfc" id="L104" title="All 4 branches covered.">        if (!doesFromPlatformHaveRemaining(remainingCryptoQuantity) &amp;&amp; toPlatformOptionalUserCrypto.isPresent) {</span>
+<span class="fc" id="L105">            val toPlatformUserCrypto = toPlatformOptionalUserCrypto.get()</span>
+<span class="fc" id="L106">            val quantityToSendReceive = quantityToTransfer.minus(networkFee)</span>
+<span class="fc" id="L107">            val newQuantity = toPlatformUserCrypto.quantity.add(quantityToSendReceive)</span>
 
-<span class="fc" id="L103">            val updatedToPlatformUserCrypto = toPlatformUserCrypto.copy(quantity = newQuantity)</span>
+<span class="fc" id="L109">            val updatedToPlatformUserCrypto = toPlatformUserCrypto.copy(quantity = newQuantity)</span>
 
-            // userCryptoService.deleteUserCrypto(userCryptoToTransfer.id)
-            // userCryptoService.saveOrUpdateAll(listOf(updatedToPlatformUserCrypto))
+<span class="fc" id="L111">            userCryptoService.deleteUserCrypto(userCryptoToTransfer.id)</span>
+<span class="fc" id="L112">            userCryptoService.saveOrUpdateAll(listOf(updatedToPlatformUserCrypto))</span>
 
-<span class="fc" id="L108">            val fromPlatform = FromPlatform(</span>
-<span class="fc" id="L109">                userCryptoId = transferCryptoRequest.userCryptoId,</span>
-<span class="fc" id="L110">                networkFee = networkFee,</span>
-<span class="fc" id="L111">                quantityToTransfer = quantityToTransfer,</span>
-<span class="fc" id="L112">                totalToSubtract = totalToSubtract,</span>
-<span class="fc" id="L113">                quantityToSendReceive = quantityToSendReceive,</span>
-<span class="fc" id="L114">                remainingCryptoQuantity = remainingCryptoQuantity,</span>
-<span class="fc" id="L115">                sendFullQuantity = transferCryptoRequest.sendFullQuantity!!</span>
+<span class="fc" id="L114">            val fromPlatform = FromPlatform(</span>
+<span class="fc" id="L115">                userCryptoId = transferCryptoRequest.userCryptoId,</span>
+<span class="fc" id="L116">                networkFee = networkFee,</span>
+<span class="fc" id="L117">                quantityToTransfer = quantityToTransfer,</span>
+<span class="fc" id="L118">                totalToSubtract = totalToSubtract,</span>
+<span class="fc" id="L119">                quantityToSendReceive = quantityToSendReceive,</span>
+<span class="fc" id="L120">                remainingCryptoQuantity = remainingCryptoQuantity,</span>
+<span class="fc" id="L121">                sendFullQuantity = transferCryptoRequest.sendFullQuantity!!</span>
             )
-<span class="fc" id="L117">            val toPlatform = ToPlatform(</span>
-<span class="fc" id="L118">                platformId = transferCryptoRequest.toPlatform,</span>
-<span class="fc" id="L119">                newQuantity = newQuantity</span>
+<span class="fc" id="L123">            val toPlatform = ToPlatform(</span>
+<span class="fc" id="L124">                platformId = transferCryptoRequest.toPlatform,</span>
+<span class="fc" id="L125">                newQuantity = newQuantity</span>
             )
-<span class="fc" id="L121">            transferCryptoResponse = TransferCryptoResponse(fromPlatform, toPlatform)</span>
+<span class="fc" id="L127">            transferCryptoResponse = TransferCryptoResponse(fromPlatform, toPlatform)</span>
         }
 
-<span class="fc bfc" id="L124" title="All 4 branches covered.">        if (!doesFromPlatformHaveRemaining(remainingCryptoQuantity) &amp;&amp; toPlatformOptionalUserCrypto.isEmpty) {</span>
-<span class="fc" id="L125">            val quantityToSendReceive = quantityToTransfer.minus(networkFee)</span>
-<span class="fc" id="L126">            val updatedFromPlatformUserCrypto = userCryptoToTransfer.copy(</span>
-<span class="fc" id="L127">                quantity = quantityToSendReceive,</span>
-<span class="fc" id="L128">                platformId = toPlatformResponse.id</span>
+<span class="fc bfc" id="L130" title="All 4 branches covered.">        if (!doesFromPlatformHaveRemaining(remainingCryptoQuantity) &amp;&amp; toPlatformOptionalUserCrypto.isEmpty) {</span>
+<span class="fc" id="L131">            val quantityToSendReceive = quantityToTransfer.minus(networkFee)</span>
+<span class="fc" id="L132">            val updatedFromPlatformUserCrypto = userCryptoToTransfer.copy(</span>
+<span class="fc" id="L133">                quantity = quantityToSendReceive,</span>
+<span class="fc" id="L134">                platformId = toPlatformResponse.id</span>
             )
 
-            // userCryptoService.saveOrUpdateAll(listOf(updatedFromPlatformUserCrypto))
+<span class="fc" id="L137">            userCryptoService.saveOrUpdateAll(listOf(updatedFromPlatformUserCrypto))</span>
 
-<span class="fc" id="L133">            val fromPlatform = FromPlatform(</span>
-<span class="fc" id="L134">                userCryptoId = transferCryptoRequest.userCryptoId,</span>
-<span class="fc" id="L135">                networkFee = networkFee,</span>
-<span class="fc" id="L136">                quantityToTransfer = quantityToTransfer,</span>
-<span class="fc" id="L137">                totalToSubtract = totalToSubtract,</span>
-<span class="fc" id="L138">                quantityToSendReceive = quantityToSendReceive,</span>
-<span class="fc" id="L139">                remainingCryptoQuantity = remainingCryptoQuantity,</span>
-<span class="fc" id="L140">                sendFullQuantity = transferCryptoRequest.sendFullQuantity!!</span>
+<span class="fc" id="L139">            val fromPlatform = FromPlatform(</span>
+<span class="fc" id="L140">                userCryptoId = transferCryptoRequest.userCryptoId,</span>
+<span class="fc" id="L141">                networkFee = networkFee,</span>
+<span class="fc" id="L142">                quantityToTransfer = quantityToTransfer,</span>
+<span class="fc" id="L143">                totalToSubtract = totalToSubtract,</span>
+<span class="fc" id="L144">                quantityToSendReceive = quantityToSendReceive,</span>
+<span class="fc" id="L145">                remainingCryptoQuantity = remainingCryptoQuantity,</span>
+<span class="fc" id="L146">                sendFullQuantity = transferCryptoRequest.sendFullQuantity!!</span>
             )
-<span class="fc" id="L142">            val toPlatform = ToPlatform(</span>
-<span class="fc" id="L143">                platformId = transferCryptoRequest.toPlatform,</span>
-<span class="fc" id="L144">                newQuantity = quantityToSendReceive</span>
+<span class="fc" id="L148">            val toPlatform = ToPlatform(</span>
+<span class="fc" id="L149">                platformId = transferCryptoRequest.toPlatform,</span>
+<span class="fc" id="L150">                newQuantity = quantityToSendReceive</span>
             )
-<span class="fc" id="L146">            transferCryptoResponse = TransferCryptoResponse(fromPlatform, toPlatform)</span>
+<span class="fc" id="L152">            transferCryptoResponse = TransferCryptoResponse(fromPlatform, toPlatform)</span>
         }
 
-<span class="fc" id="L149">        logger.info { &quot;Transferred $quantityToTransfer ${userCryptoToTransfer.coingeckoCryptoId} from platform ${fromPlatformResponse.name} to ${toPlatformResponse.name}&quot; }</span>
+<span class="fc" id="L155">        logger.info { &quot;Transferred $quantityToTransfer ${userCryptoToTransfer.coingeckoCryptoId} from platform ${fromPlatformResponse.name} to ${toPlatformResponse.name}&quot; }</span>
 
-<span class="fc" id="L151">        return transferCryptoResponse!!</span>
+<span class="fc" id="L157">        return transferCryptoResponse!!</span>
     }
 
-<span class="fc" id="L154">    private fun isToAndFromSame(toPlatformId: String, fromPlatformId: String) = toPlatformId == fromPlatformId</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">    private fun isToAndFromSame(toPlatformId: String, fromPlatformId: String) = toPlatformId === fromPlatformId</span>
 
-    private fun calculateTotalToSubtract(
-        availableQuantity: BigDecimal,
-        transferCryptoRequest: TransferCryptoRequest
-    ): BigDecimal {
-<span class="fc" id="L160">        val quantityToTransfer = transferCryptoRequest.quantityToTransfer!!</span>
-<span class="fc" id="L161">        val networkFee = transferCryptoRequest.networkFee!!</span>
-<span class="fc" id="L162">        val totalToSubtract = quantityToTransfer.add(networkFee)</span>
+    private fun calculateTotalToSubtract(transferCryptoRequest: TransferCryptoRequest): BigDecimal {
+<span class="fc" id="L163">        val quantityToTransfer = transferCryptoRequest.quantityToTransfer!!</span>
+<span class="fc" id="L164">        val networkFee = transferCryptoRequest.networkFee!!</span>
 
-<span class="fc bfc" id="L164" title="All 2 branches covered.">        return if (transferCryptoRequest.sendFullQuantity == true) {</span>
-            // TODO - what if equals ?
-<span class="fc bfc" id="L166" title="All 2 branches covered.">            if (availableQuantity &gt;= totalToSubtract) totalToSubtract else availableQuantity</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">        return if (transferCryptoRequest.sendFullQuantity == true) {</span>
+<span class="fc" id="L167">            quantityToTransfer.add(networkFee)</span>
         } else {
-<span class="fc" id="L168">            return quantityToTransfer</span>
+<span class="fc" id="L169">            quantityToTransfer</span>
         }
     }
 
     private fun calculateQuantityToSendReceive(transferCryptoRequest: TransferCryptoRequest): BigDecimal {
-<span class="fc" id="L173">        val quantityToTransfer = transferCryptoRequest.quantityToTransfer!!</span>
-<span class="fc" id="L174">        val networkFee = transferCryptoRequest.networkFee!!</span>
+<span class="fc" id="L174">        val quantityToTransfer = transferCryptoRequest.quantityToTransfer!!</span>
+<span class="fc" id="L175">        val networkFee = transferCryptoRequest.networkFee!!</span>
 
-<span class="fc bfc" id="L176" title="All 2 branches covered.">        return if (transferCryptoRequest.sendFullQuantity == true)</span>
-<span class="fc" id="L177">            quantityToTransfer else quantityToTransfer.subtract(networkFee)</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        return if (transferCryptoRequest.sendFullQuantity == true)</span>
+<span class="fc" id="L178">            quantityToTransfer else quantityToTransfer.minus(networkFee)</span>
     }
 
     private fun calculateRemainingCryptoQuantity(
-        actualCryptoQuantity: BigDecimal,
+        availableQuantity: BigDecimal,
         transferCryptoRequest: TransferCryptoRequest
     ): BigDecimal {
-<span class="fc bfc" id="L184" title="All 2 branches covered.">        return if (transferCryptoRequest.sendFullQuantity == true) {</span>
-<span class="fc" id="L185">            val totalToSubtract = calculateTotalToSubtract(actualCryptoQuantity, transferCryptoRequest)</span>
-<span class="fc" id="L186">            calculateRemainingCryptoQuantity(actualCryptoQuantity, totalToSubtract)</span>
-<span class="fc" id="L187">        } else {</span>
-<span class="fc" id="L188">            calculateRemainingCryptoQuantity(actualCryptoQuantity, transferCryptoRequest.quantityToTransfer!!)</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        return if (transferCryptoRequest.sendFullQuantity == true) {</span>
+<span class="fc" id="L186">            val totalToSubtract = calculateTotalToSubtract(transferCryptoRequest)</span>
+<span class="fc" id="L187">            calculateRemainingCryptoQuantity(availableQuantity, totalToSubtract)</span>
+        } else {
+<span class="fc" id="L189">            calculateRemainingCryptoQuantity(availableQuantity, transferCryptoRequest.quantityToTransfer!!)</span>
         }
     }
 
     private fun calculateRemainingCryptoQuantity(
-        actualCryptoQuantity: BigDecimal,
+        availableQuantity: BigDecimal,
         totalToSubtract: BigDecimal
-<span class="fc bfc" id="L195" title="All 2 branches covered.">    ) = if (actualCryptoQuantity &gt; totalToSubtract) actualCryptoQuantity.subtract(totalToSubtract) else BigDecimal.ZERO</span>
+    ): BigDecimal {
+<span class="fc" id="L197">        val remaining = availableQuantity.minus(totalToSubtract)</span>
+
+        // Sometimes remaining comes as '0E-9', so I need to strip trailing zeros to see if it's zero
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        return if (remaining.stripTrailingZeros() == BigDecimal.ZERO) return BigDecimal.ZERO else remaining</span>
+    }
+
 
     private fun doesFromPlatformHaveRemaining(remainingCryptoQuantity: BigDecimal) =
-<span class="fc bfc" id="L198" title="All 2 branches covered.">        remainingCryptoQuantity &gt; BigDecimal.ZERO</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        remainingCryptoQuantity &gt; BigDecimal.ZERO</span>
 }
 
-<span class="fc" id="L201">class InsufficientBalanceException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L208">class InsufficientBalanceException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

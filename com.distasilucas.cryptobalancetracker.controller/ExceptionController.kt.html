@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExceptionController.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.controller</a> &gt; <span class="el_source">ExceptionController.kt</span></div><h1>ExceptionController.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.controller
 
-import com.distasilucas.cryptobalancetracker.service.ApiException
+import com.distasilucas.cryptobalancetracker.constants.UNKNOWN_ERROR
+import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
@@ -22,25 +23,23 @@ import org.springframework.web.context.request.ServletWebRequest
 import org.springframework.web.context.request.WebRequest
 import java.net.URI
 
-private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
+<span class="fc" id="L26">@RestControllerAdvice</span>
+<span class="fc" id="L27">class ExceptionController {</span>
 
-<span class="fc" id="L27">@RestControllerAdvice</span>
-<span class="fc" id="L28">class ExceptionController {</span>
-
-<span class="fc" id="L30">    private val logger = KotlinLogging.logger { }</span>
+<span class="fc" id="L29">    private val logger = KotlinLogging.logger { }</span>
 
     @ExceptionHandler(PlatformNotFoundException::class)
     fun handlePlatformNotFoundException(
         exception: PlatformNotFoundException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L37">        logger.info { &quot;A PlatformNotFoundException occurred $exception&quot; }</span>
+<span class="fc" id="L36">        logger.info { &quot;A PlatformNotFoundException occurred $exception&quot; }</span>
 
-<span class="fc" id="L39">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L40">        val problemDetail =</span>
-<span class="fc" id="L41">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L38">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L39">        val problemDetail =</span>
+<span class="fc" id="L40">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L43">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
+<span class="fc" id="L42">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
     }
 
     @ExceptionHandler(CoingeckoCryptoNotFoundException::class)
@@ -48,13 +47,13 @@ private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
         exception: CoingeckoCryptoNotFoundException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L51">        logger.info { &quot;A CoingeckoCryptoNotFoundException occurred $exception&quot; }</span>
+<span class="fc" id="L50">        logger.info { &quot;A CoingeckoCryptoNotFoundException occurred $exception&quot; }</span>
 
-<span class="fc" id="L53">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L54">        val problemDetail =</span>
-<span class="fc" id="L55">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L52">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L53">        val problemDetail =</span>
+<span class="fc" id="L54">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L57">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
+<span class="fc" id="L56">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
     }
 
     @ExceptionHandler(UserCryptoNotFoundException::class)
@@ -62,13 +61,13 @@ private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
         exception: UserCryptoNotFoundException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L65">        logger.info { &quot;A UserCryptoNotFoundException occurred $exception&quot; }</span>
+<span class="fc" id="L64">        logger.info { &quot;A UserCryptoNotFoundException occurred $exception&quot; }</span>
 
-<span class="fc" id="L67">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L68">        val problemDetail =</span>
-<span class="fc" id="L69">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L66">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L67">        val problemDetail =</span>
+<span class="fc" id="L68">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L71">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
+<span class="fc" id="L70">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
     }
 
     @ExceptionHandler(GoalNotFoundException::class)
@@ -76,13 +75,13 @@ private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
         exception: GoalNotFoundException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L79">        logger.info { &quot;A GoalNotFoundException occurred $exception&quot; }</span>
+<span class="fc" id="L78">        logger.info { &quot;A GoalNotFoundException occurred $exception&quot; }</span>
 
-<span class="fc" id="L81">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L82">        val problemDetail =</span>
-<span class="fc" id="L83">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L80">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L81">        val problemDetail =</span>
+<span class="fc" id="L82">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L85">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
+<span class="fc" id="L84">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
     }
 
     @ExceptionHandler(DuplicatedPlatformException::class)
@@ -90,13 +89,13 @@ private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
         exception: DuplicatedPlatformException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L93">        logger.info { &quot;A DuplicatedPlatformException occurred $exception&quot; }</span>
+<span class="fc" id="L92">        logger.info { &quot;A DuplicatedPlatformException occurred $exception&quot; }</span>
 
-<span class="fc" id="L95">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L96">        val problemDetail =</span>
-<span class="fc" id="L97">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L94">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L95">        val problemDetail =</span>
+<span class="fc" id="L96">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L99">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
+<span class="fc" id="L98">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
     }
 
     @ExceptionHandler(DuplicatedCryptoPlatFormException::class)
@@ -104,13 +103,13 @@ private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
         exception: DuplicatedCryptoPlatFormException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L107">        logger.info { &quot;A DuplicatedCryptoPlatFormException occurred $exception&quot; }</span>
+<span class="fc" id="L106">        logger.info { &quot;A DuplicatedCryptoPlatFormException occurred $exception&quot; }</span>
 
-<span class="fc" id="L109">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L110">        val problemDetail =</span>
-<span class="fc" id="L111">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L108">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L109">        val problemDetail =</span>
+<span class="fc" id="L110">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L113">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
+<span class="fc" id="L112">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
     }
 
     @ExceptionHandler(DuplicatedGoalException::class)
@@ -118,13 +117,13 @@ private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
         exception: DuplicatedGoalException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L121">        logger.info { &quot;A DuplicatedGoalException occurred $exception&quot; }</span>
+<span class="fc" id="L120">        logger.info { &quot;A DuplicatedGoalException occurred $exception&quot; }</span>
 
-<span class="fc" id="L123">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L124">        val problemDetail =</span>
-<span class="fc" id="L125">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L122">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L123">        val problemDetail =</span>
+<span class="fc" id="L124">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L127">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
+<span class="fc" id="L126">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
     }
 
     @ExceptionHandler(InsufficientBalanceException::class)
@@ -132,13 +131,13 @@ private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
         exception: InsufficientBalanceException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L135">        logger.info { &quot;An InsufficientBalanceException occurred $exception&quot; }</span>
+<span class="fc" id="L134">        logger.info { &quot;An InsufficientBalanceException occurred $exception&quot; }</span>
 
-<span class="fc" id="L137">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L138">        val problemDetail =</span>
-<span class="fc" id="L139">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L136">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L137">        val problemDetail =</span>
+<span class="fc" id="L138">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L141">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
+<span class="fc" id="L140">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
@@ -146,17 +145,17 @@ private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
         exception: MethodArgumentNotValidException,
         webRequest: WebRequest
     ): ResponseEntity&lt;List&lt;ProblemDetail&gt;&gt; {
-<span class="fc" id="L149">        logger.info { &quot;A MethodArgumentNotValidException occurred $exception&quot; }</span>
+<span class="fc" id="L148">        logger.info { &quot;A MethodArgumentNotValidException occurred $exception&quot; }</span>
 
-<span class="fc" id="L151">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L152">        val problemDetails = exception.allErrors.map {</span>
-<span class="fc" id="L153">            HttpStatus.BAD_REQUEST.withDetailsAndURI(</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">                it.defaultMessage ?: UNKNOWN_ERROR,</span>
-<span class="fc" id="L155">                URI.create(request.requestURL.toString())</span>
+<span class="fc" id="L150">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L151">        val problemDetails = exception.allErrors.map {</span>
+<span class="fc" id="L152">            HttpStatus.BAD_REQUEST.withDetailsAndURI(</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">                it.defaultMessage ?: UNKNOWN_ERROR,</span>
+<span class="fc" id="L154">                URI.create(request.requestURL.toString())</span>
             )
         }
 
-<span class="fc" id="L159">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetails)</span>
+<span class="fc" id="L158">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetails)</span>
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
@@ -164,13 +163,13 @@ private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
         exception: HttpMessageNotReadableException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L167">        logger.info { &quot;A HttpMessageNotReadableException occurred $exception&quot; }</span>
+<span class="fc" id="L166">        logger.info { &quot;A HttpMessageNotReadableException occurred $exception&quot; }</span>
 
-<span class="fc" id="L169">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L170">        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)</span>
-<span class="fc" id="L171">        problemDetail.type = URI.create(request.requestURL.toString())</span>
+<span class="fc" id="L168">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L169">        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)</span>
+<span class="fc" id="L170">        problemDetail.type = URI.create(request.requestURL.toString())</span>
 
-<span class="fc" id="L173">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
+<span class="fc" id="L172">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
     }
 
     @ExceptionHandler(ConstraintViolationException::class)
@@ -178,16 +177,16 @@ private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
         exception: ConstraintViolationException,
         webRequest: WebRequest
     ): ResponseEntity&lt;List&lt;ProblemDetail&gt;&gt; {
-<span class="fc" id="L181">        logger.info { &quot;A ConstraintViolationException occurred $exception&quot; }</span>
+<span class="fc" id="L180">        logger.info { &quot;A ConstraintViolationException occurred $exception&quot; }</span>
 
-<span class="fc" id="L183">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L184">        val constraintViolations = exception.constraintViolations.toList()</span>
+<span class="fc" id="L182">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L183">        val constraintViolations = exception.constraintViolations.toList()</span>
 
-<span class="fc" id="L186">        val problemDetails = constraintViolations.map {</span>
-<span class="fc" id="L187">            HttpStatus.BAD_REQUEST.withDetailsAndURI(it.message, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L185">        val problemDetails = constraintViolations.map {</span>
+<span class="fc" id="L186">            HttpStatus.BAD_REQUEST.withDetailsAndURI(it.message, URI.create(request.requestURL.toString()))</span>
         }
 
-<span class="fc" id="L190">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetails)</span>
+<span class="fc" id="L189">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetails)</span>
     }
 
     @ExceptionHandler(ApiException::class)
@@ -195,15 +194,16 @@ private const val UNKNOWN_ERROR = &quot;Unknown error&quot;
         exception: ApiException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L198">        logger.warn { &quot;An ApiException occurred $exception&quot; }</span>
+<span class="fc" id="L197">        logger.warn { &quot;An ApiException occurred $exception&quot; }</span>
 
-<span class="fc" id="L200">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L201">        val problemDetail = HttpStatus.INTERNAL_SERVER_ERROR.withDetailsAndURI(</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">            exception.message ?: UNKNOWN_ERROR,</span>
-<span class="fc" id="L203">            URI.create(request.requestURL.toString())</span>
-        )
+<span class="fc" id="L199">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L200">        val httpStatusCode = exception.httpStatusCode</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">        val message = exception.message ?: UNKNOWN_ERROR</span>
 
-<span class="fc" id="L206">        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="fc" id="L203">        val problemDetail = ProblemDetail.forStatusAndDetail(httpStatusCode, message)</span>
+<span class="fc" id="L204">        problemDetail.type = URI.create(request.requestURL.toString())</span>
+
+<span class="fc" id="L206">        return ResponseEntity.status(httpStatusCode)</span>
 <span class="fc" id="L207">            .body(problemDetail)</span>
     }
 
