@@ -26,7 +26,7 @@ import java.util.UUID
 <span class="fc" id="L26">        val userCryptoToTransfer = userCryptoService.findByUserCryptoId(transferCryptoRequest.userCryptoId!!)</span>
 <span class="fc" id="L27">        val fromPlatformResponse = platformService.retrievePlatformById(userCryptoToTransfer.platformId)</span>
 
-<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (isToAndFromSame(toPlatformResponse.id, fromPlatformResponse.id)) {</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (isToAndFromSamePlatform(toPlatformResponse.id, fromPlatformResponse.id)) {</span>
 <span class="fc" id="L30">            throw ApiException(HttpStatus.BAD_REQUEST, SAME_FROM_TO_PLATFORM)</span>
         }
 
@@ -157,7 +157,7 @@ import java.util.UUID
 <span class="fc" id="L157">        return transferCryptoResponse!!</span>
     }
 
-<span class="fc bfc" id="L160" title="All 2 branches covered.">    private fun isToAndFromSame(toPlatformId: String, fromPlatformId: String) = toPlatformId === fromPlatformId</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">    private fun isToAndFromSamePlatform(toPlatformId: String, fromPlatformId: String) = toPlatformId === fromPlatformId</span>
 
     private fun calculateTotalToSubtract(transferCryptoRequest: TransferCryptoRequest): BigDecimal {
 <span class="fc" id="L163">        val quantityToTransfer = transferCryptoRequest.quantityToTransfer!!</span>
