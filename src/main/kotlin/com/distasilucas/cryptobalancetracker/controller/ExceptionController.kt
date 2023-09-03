@@ -1,11 +1,13 @@
 package com.distasilucas.cryptobalancetracker.controller
 
-import com.distasilucas.cryptobalancetracker.service.ApiException
+import com.distasilucas.cryptobalancetracker.constants.UNKNOWN_ERROR
+import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedPlatformException
 import com.distasilucas.cryptobalancetracker.service.GoalNotFoundException
+import com.distasilucas.cryptobalancetracker.service.InsufficientBalanceException
 import com.distasilucas.cryptobalancetracker.service.PlatformNotFoundException
 import com.distasilucas.cryptobalancetracker.service.UserCryptoNotFoundException
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -20,8 +22,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.ServletWebRequest
 import org.springframework.web.context.request.WebRequest
 import java.net.URI
-
-private const val UNKNOWN_ERROR = "Unknown error"
 
 @RestControllerAdvice
 class ExceptionController {
@@ -126,6 +126,20 @@ class ExceptionController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)
     }
 
+    @ExceptionHandler(InsufficientBalanceException::class)
+    fun handleInsufficientBalanceException(
+        exception: InsufficientBalanceException,
+        webRequest: WebRequest
+    ): ResponseEntity<ProblemDetail> {
+        logger.info { "An InsufficientBalanceException occurred $exception" }
+
+        val request = (webRequest as ServletWebRequest).request
+        val problemDetail =
+            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(
         exception: MethodArgumentNotValidException,
@@ -183,12 +197,12 @@ class ExceptionController {
         logger.warn { "An ApiException occurred $exception" }
 
         val request = (webRequest as ServletWebRequest).request
-        val problemDetail = HttpStatus.INTERNAL_SERVER_ERROR.withDetailsAndURI(
-            exception.message ?: UNKNOWN_ERROR,
-            URI.create(request.requestURL.toString())
-        )
+        val httpStatusCode = exception.httpStatusCode
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        val problemDetail = ProblemDetail.forStatusAndDetail(httpStatusCode, exception.message!!)
+        problemDetail.type = URI.create(request.requestURL.toString())
+
+        return ResponseEntity.status(httpStatusCode)
             .body(problemDetail)
     }
 

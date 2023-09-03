@@ -10,8 +10,6 @@ import com.distasilucas.cryptobalancetracker.repository.GoalRepository
 import getCoingeckoCrypto
 import getCryptoEntity
 import getUserCrypto
-import io.github.oshai.kotlinlogging.KLogger
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
@@ -19,7 +17,6 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.Page

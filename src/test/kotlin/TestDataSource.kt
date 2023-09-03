@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 
 private const val PLATFORMS_ENDPOINT = "/api/v1/platforms"
 private const val USER_CRYPTOS_ENDPOINT = "/api/v1/cryptos"
-private const val GOALS_ENDPONT = "/api/v1/goals"
+private const val GOALS_ENDPOINT = "/api/v1/goals"
 
 fun MockMvc.countPlatforms() = this.perform(
     MockMvcRequestBuilders.get("$PLATFORMS_ENDPOINT/count")
@@ -77,29 +77,35 @@ fun MockMvc.deleteUserCrypto(userCryptoId: String) = this.perform(
 )
 
 fun MockMvc.retrieveGoal(goalId: String) = this.perform(
-    MockMvcRequestBuilders.get("$GOALS_ENDPONT/$goalId")
+    MockMvcRequestBuilders.get("$GOALS_ENDPOINT/$goalId")
         .contentType(APPLICATION_JSON)
 )
 
 fun MockMvc.retrieveGoalsForPage(page: Int) = this.perform(
-    MockMvcRequestBuilders.get("$GOALS_ENDPONT?page=$page")
+    MockMvcRequestBuilders.get("$GOALS_ENDPOINT?page=$page")
         .contentType(APPLICATION_JSON)
 )
 
 fun MockMvc.saveGoal(payload: String) = this.perform(
-    MockMvcRequestBuilders.post(GOALS_ENDPONT)
+    MockMvcRequestBuilders.post(GOALS_ENDPOINT)
         .content(payload)
         .contentType(APPLICATION_JSON)
 )
 
 fun MockMvc.updateGoal(goalId: String, payload: String) = this.perform(
-    MockMvcRequestBuilders.put("$GOALS_ENDPONT/$goalId")
+    MockMvcRequestBuilders.put("$GOALS_ENDPOINT/$goalId")
         .content(payload)
         .contentType(APPLICATION_JSON)
 )
 
 fun MockMvc.deleteGoal(goalId: String) = this.perform(
-    MockMvcRequestBuilders.delete("$GOALS_ENDPONT/$goalId")
+    MockMvcRequestBuilders.delete("$GOALS_ENDPOINT/$goalId")
+        .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.transferUserCrypto(payload: String) = this.perform(
+    MockMvcRequestBuilders.post("$USER_CRYPTOS_ENDPOINT/transfer")
+        .content(payload)
         .contentType(APPLICATION_JSON)
 )
 

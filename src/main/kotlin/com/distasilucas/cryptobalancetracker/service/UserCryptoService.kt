@@ -11,6 +11,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.util.Optional
 
 @Service
 class UserCryptoService(
@@ -24,9 +25,7 @@ class UserCryptoService(
     fun retrieveUserCryptoById(userCryptoId: String): UserCryptoResponse {
         logger.info { "Retrieving user crypto with id $userCryptoId" }
 
-        val userCrypto = userCryptoRepository.findById(userCryptoId)
-            .orElseThrow { UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) }
-
+        val userCrypto = findByUserCryptoId(userCryptoId)
         val crypto = cryptoService.retrieveCryptoInfoById(userCrypto.coingeckoCryptoId)
         val platform = platformService.retrievePlatformById(userCrypto.platformId)
 
@@ -81,8 +80,7 @@ class UserCryptoService(
     }
 
     fun updateUserCrypto(userCryptoId: String, userCryptoRequest: UserCryptoRequest): UserCryptoResponse {
-        val userCrypto = userCryptoRepository.findById(userCryptoId)
-            .orElseThrow { UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) }
+        val userCrypto = findByUserCryptoId(userCryptoId)
         val platform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)
         val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(userCryptoRequest.cryptoName!!)
 
@@ -115,16 +113,28 @@ class UserCryptoService(
     }
 
     fun deleteUserCrypto(userCryptoId: String) {
-        userCryptoRepository.findById(userCryptoId)
-            .ifPresentOrElse({
-                userCryptoRepository.deleteById(userCryptoId)
-                cryptoService.deleteCryptoIfNotUsed(it.coingeckoCryptoId)
-                logger.info { "Deleted user crypto $it" }
-            }, { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) })
+        val userCrypto = findByUserCryptoId(userCryptoId)
+        userCryptoRepository.deleteById(userCryptoId)
+        cryptoService.deleteCryptoIfNotUsed(userCrypto.coingeckoCryptoId)
+
+        logger.info { "Deleted user crypto $userCryptoId" }
     }
 
     fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List<UserCrypto> {
         return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)
+    }
+
+    fun findByUserCryptoId(userCryptoId: String): UserCrypto {
+        return userCryptoRepository.findById(userCryptoId)
+            .orElseThrow { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) }
+    }
+
+    fun findByCoingeckoCryptoIdAndPlatformId(cryptoId: String, platformId: String): Optional<UserCrypto> {
+        return userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(cryptoId, platformId)
+    }
+
+    fun saveOrUpdateAll(userCryptos: List<UserCrypto>) {
+        userCryptoRepository.saveAll(userCryptos)
     }
 }
 

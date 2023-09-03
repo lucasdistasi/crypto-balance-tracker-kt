@@ -1,8 +1,13 @@
 package com.distasilucas.cryptobalancetracker.controller
 
+import com.distasilucas.cryptobalancetracker.model.request.crypto.TransferCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
+import com.distasilucas.cryptobalancetracker.model.response.crypto.FromPlatform
 import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
+import com.distasilucas.cryptobalancetracker.model.response.crypto.ToPlatform
+import com.distasilucas.cryptobalancetracker.model.response.crypto.TransferCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
+import com.distasilucas.cryptobalancetracker.service.TransferCryptoService
 import com.distasilucas.cryptobalancetracker.service.UserCryptoService
 import io.mockk.every
 import io.mockk.justRun
@@ -16,7 +21,9 @@ import java.math.BigDecimal
 class UserCryptoControllerTest {
 
     private val userCryptoServiceMock = mockk<UserCryptoService>()
-    private val userCryptoController = UserCryptoController(userCryptoServiceMock)
+    private val transferCryptoServiceMock = mockk<TransferCryptoService>()
+
+    private val userCryptoController = UserCryptoController(userCryptoServiceMock, transferCryptoServiceMock)
 
     @Test
     fun `should retrieve user crypto with status 200`() {
@@ -124,4 +131,40 @@ class UserCryptoControllerTest {
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.ok().build<Unit>())
     }
+
+    @Test
+    fun `should transfer crypto and return 200`() {
+        val transferCryptoRequest = TransferCryptoRequest(
+            userCryptoId = "9da7b110-8937-4c3a-82d2-bc1923a43278",
+            quantityToTransfer = BigDecimal("0.2"),
+            networkFee = BigDecimal("0.0005"),
+            toPlatformId = "4f996b86-d9b1-4386-af49-5f6a9c66d6ef"
+        )
+        val transferCryptoResponse = TransferCryptoResponse(
+            fromPlatform = getFromPlatform(),
+            toPlatform = getToPlatform()
+        )
+
+        every { transferCryptoServiceMock.transferCrypto(transferCryptoRequest) } returns transferCryptoResponse
+
+        val responseEntity = userCryptoController.transferUserCrypto(transferCryptoRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.ok(transferCryptoResponse))
+    }
+
+    private fun getFromPlatform() = FromPlatform(
+        userCryptoId = "9da7b110-8937-4c3a-82d2-bc1923a43278",
+        networkFee = "0.0005",
+        quantityToTransfer = "0.2",
+        totalToSubtract = "0.1",
+        quantityToSendReceive = "0.105",
+        remainingCryptoQuantity = "0.1",
+        sendFullQuantity = true
+    )
+
+    private fun getToPlatform() = ToPlatform(
+        platformId = "4f996b86-d9b1-4386-af49-5f6a9c66d6ef",
+        newQuantity = "1.15"
+    )
 }
