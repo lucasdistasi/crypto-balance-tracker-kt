@@ -41,7 +41,7 @@ import java.math.BigDecimal
     @field: Min(0)
 <span class="fc" id="L42">    val networkFee: BigDecimal?,</span>
 
-<span class="fc" id="L44">    val sendFullQuantity: Boolean? = false,</span>
+<span class="pc" id="L44">    val sendFullQuantity: Boolean? = false,</span>
 
 <span class="fc" id="L46">    @field: NotBlank(message = &quot;To platform id can not be null or blank&quot;)</span>
     @field: UUID(message = INVALID_TO_PLATFORM_UUID)
@@ -49,26 +49,59 @@ import java.math.BigDecimal
 ) {
 
     fun toTransferCryptoResponse(
-        totalToSubtract: BigDecimal,
         quantityToSendReceive: BigDecimal,
         remainingCryptoQuantity: BigDecimal,
         newQuantity: BigDecimal
     ): TransferCryptoResponse {
-<span class="fc" id="L57">        return TransferCryptoResponse(</span>
-<span class="fc" id="L58">            fromPlatform = FromPlatform(</span>
-<span class="fc" id="L59">                userCryptoId = userCryptoId!!,</span>
-<span class="fc" id="L60">                networkFee = networkFee!!.toPlainString(),</span>
-<span class="fc" id="L61">                quantityToTransfer = quantityToTransfer!!.toPlainString(),</span>
-<span class="fc" id="L62">                totalToSubtract = totalToSubtract.toPlainString(),</span>
-<span class="fc" id="L63">                quantityToSendReceive = quantityToSendReceive.toPlainString(),</span>
-<span class="fc" id="L64">                remainingCryptoQuantity = remainingCryptoQuantity.toPlainString(),</span>
-<span class="fc" id="L65">                sendFullQuantity = sendFullQuantity!!</span>
+<span class="fc" id="L56">        return TransferCryptoResponse(</span>
+<span class="fc" id="L57">            fromPlatform = FromPlatform(</span>
+<span class="fc" id="L58">                userCryptoId = userCryptoId!!,</span>
+<span class="fc" id="L59">                networkFee = networkFee!!.toPlainString(),</span>
+<span class="fc" id="L60">                quantityToTransfer = quantityToTransfer!!.toPlainString(),</span>
+<span class="fc" id="L61">                totalToSubtract = calculateTotalToSubtract().toPlainString(),</span>
+<span class="fc" id="L62">                quantityToSendReceive = quantityToSendReceive.toPlainString(),</span>
+<span class="fc" id="L63">                remainingCryptoQuantity = remainingCryptoQuantity.toPlainString(),</span>
+<span class="fc" id="L64">                sendFullQuantity = sendFullQuantity!!</span>
             ),
-<span class="fc" id="L67">            toPlatform = ToPlatform(</span>
-<span class="fc" id="L68">                platformId = toPlatformId!!,</span>
-<span class="fc" id="L69">                newQuantity = newQuantity.toPlainString()</span>
+<span class="fc" id="L66">            toPlatform = ToPlatform(</span>
+<span class="fc" id="L67">                platformId = toPlatformId!!,</span>
+<span class="fc" id="L68">                newQuantity = newQuantity.toPlainString()</span>
             )
         )
     }
-<span class="fc" id="L73">}</span>
+
+    fun calculateTotalToSubtract(): BigDecimal {
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        return if (sendFullQuantity == true) {</span>
+<span class="fc" id="L75">            quantityToTransfer!!.add(networkFee)</span>
+        } else {
+<span class="fc" id="L77">            quantityToTransfer!!</span>
+        }
+    }
+
+    fun calculateQuantityToSendReceive(): BigDecimal {
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        return if (sendFullQuantity == true)</span>
+<span class="fc" id="L83">            quantityToTransfer!! else quantityToTransfer!!.minus(networkFee!!)</span>
+    }
+
+    fun calculateRemainingCryptoQuantity(
+        availableQuantity: BigDecimal
+    ): BigDecimal {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        return if (sendFullQuantity == true) {</span>
+<span class="fc" id="L90">            val totalToSubtract = calculateTotalToSubtract()</span>
+<span class="fc" id="L91">            calculateRemainingCryptoQuantity(availableQuantity, totalToSubtract)</span>
+        } else {
+<span class="fc" id="L93">            calculateRemainingCryptoQuantity(availableQuantity, quantityToTransfer!!)</span>
+        }
+    }
+
+    private fun calculateRemainingCryptoQuantity(
+        availableQuantity: BigDecimal,
+        totalToSubtract: BigDecimal
+    ): BigDecimal {
+<span class="fc" id="L101">        val remaining = availableQuantity.minus(totalToSubtract)</span>
+
+        // Sometimes remaining comes as '0E-9', so I need to strip trailing zeros to see if it's zero
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        return if (remaining.stripTrailingZeros() == BigDecimal.ZERO) return BigDecimal.ZERO else remaining</span>
+    }
+<span class="fc" id="L106">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
