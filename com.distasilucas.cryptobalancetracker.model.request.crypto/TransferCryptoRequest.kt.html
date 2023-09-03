@@ -2,6 +2,9 @@
 
 import com.distasilucas.cryptobalancetracker.constants.INVALID_TO_PLATFORM_UUID
 import com.distasilucas.cryptobalancetracker.constants.INVALID_USER_CRYPTO_UUID
+import com.distasilucas.cryptobalancetracker.model.response.crypto.FromPlatform
+import com.distasilucas.cryptobalancetracker.model.response.crypto.ToPlatform
+import com.distasilucas.cryptobalancetracker.model.response.crypto.TransferCryptoResponse
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.Min
@@ -11,12 +14,12 @@ import jakarta.validation.constraints.Positive
 import org.hibernate.validator.constraints.UUID
 import java.math.BigDecimal
 
-<span class="fc" id="L14">data class TransferCryptoRequest(</span>
-<span class="fc" id="L15">    @field: NotBlank(message = &quot;User crypto id can not be null or blank&quot;)</span>
+<span class="fc" id="L17">data class TransferCryptoRequest(</span>
+<span class="fc" id="L18">    @field: NotBlank(message = &quot;User crypto id can not be null or blank&quot;)</span>
     @field: UUID(message = INVALID_USER_CRYPTO_UUID)
-<span class="fc" id="L17">    val userCryptoId: String?,</span>
+<span class="fc" id="L20">    val userCryptoId: String?,</span>
 
-<span class="fc" id="L19">    @field: NotNull(message = &quot;Quantity to transfer can not be null&quot;)</span>
+<span class="fc" id="L22">    @field: NotNull(message = &quot;Quantity to transfer can not be null&quot;)</span>
     @field: Digits(
         integer = 16,
         fraction = 12,
@@ -27,21 +30,45 @@ import java.math.BigDecimal
         message = &quot;Quantity to transfer must be less than or equal to 9999999999999999.999999999999&quot;
     )
     @field: Positive(message = &quot;Quantity to transfer must be greater than 0&quot;)
-<span class="fc" id="L30">    val quantityToTransfer: BigDecimal?,</span>
+<span class="fc" id="L33">    val quantityToTransfer: BigDecimal?,</span>
 
-<span class="fc" id="L32">    @field: NotNull(message = &quot;Network fee can not be null&quot;)</span>
+<span class="fc" id="L35">    @field: NotNull(message = &quot;Network fee can not be null&quot;)</span>
     @field: Digits(
         integer = 16,
         fraction = 12,
         message = &quot;Network fee must have up to {integer} digits in the integer part and up to {fraction} digits in the decimal part&quot;
     )
     @field: Min(0)
-<span class="fc" id="L39">    val networkFee: BigDecimal?,</span>
+<span class="fc" id="L42">    val networkFee: BigDecimal?,</span>
 
-<span class="fc" id="L41">    val sendFullQuantity: Boolean? = false,</span>
+<span class="fc" id="L44">    val sendFullQuantity: Boolean? = false,</span>
 
-<span class="fc" id="L43">    @field: NotBlank(message = &quot;To platform id can not be null or blank&quot;)</span>
+<span class="fc" id="L46">    @field: NotBlank(message = &quot;To platform id can not be null or blank&quot;)</span>
     @field: UUID(message = INVALID_TO_PLATFORM_UUID)
-<span class="fc" id="L45">    val toPlatform: String?</span>
-<span class="fc" id="L46">)</span>
+<span class="fc" id="L48">    val toPlatformId: String?</span>
+) {
+
+    fun toTransferCryptoResponse(
+        totalToSubtract: BigDecimal,
+        quantityToSendReceive: BigDecimal,
+        remainingCryptoQuantity: BigDecimal,
+        newQuantity: BigDecimal
+    ): TransferCryptoResponse {
+<span class="fc" id="L57">        return TransferCryptoResponse(</span>
+<span class="fc" id="L58">            fromPlatform = FromPlatform(</span>
+<span class="fc" id="L59">                userCryptoId = userCryptoId!!,</span>
+<span class="fc" id="L60">                networkFee = networkFee!!.toPlainString(),</span>
+<span class="fc" id="L61">                quantityToTransfer = quantityToTransfer!!.toPlainString(),</span>
+<span class="fc" id="L62">                totalToSubtract = totalToSubtract.toPlainString(),</span>
+<span class="fc" id="L63">                quantityToSendReceive = quantityToSendReceive.toPlainString(),</span>
+<span class="fc" id="L64">                remainingCryptoQuantity = remainingCryptoQuantity.toPlainString(),</span>
+<span class="fc" id="L65">                sendFullQuantity = sendFullQuantity!!</span>
+            ),
+<span class="fc" id="L67">            toPlatform = ToPlatform(</span>
+<span class="fc" id="L68">                platformId = toPlatformId!!,</span>
+<span class="fc" id="L69">                newQuantity = newQuantity.toPlainString()</span>
+            )
+        )
+    }
+<span class="fc" id="L73">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

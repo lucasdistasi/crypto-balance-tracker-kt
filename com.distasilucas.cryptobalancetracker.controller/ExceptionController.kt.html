@@ -198,35 +198,34 @@ import java.net.URI
 
 <span class="fc" id="L199">        val request = (webRequest as ServletWebRequest).request</span>
 <span class="fc" id="L200">        val httpStatusCode = exception.httpStatusCode</span>
-<span class="pc bpc" id="L201" title="1 of 2 branches missed.">        val message = exception.message ?: UNKNOWN_ERROR</span>
 
-<span class="fc" id="L203">        val problemDetail = ProblemDetail.forStatusAndDetail(httpStatusCode, message)</span>
-<span class="fc" id="L204">        problemDetail.type = URI.create(request.requestURL.toString())</span>
+<span class="fc" id="L202">        val problemDetail = ProblemDetail.forStatusAndDetail(httpStatusCode, exception.message!!)</span>
+<span class="fc" id="L203">        problemDetail.type = URI.create(request.requestURL.toString())</span>
 
-<span class="fc" id="L206">        return ResponseEntity.status(httpStatusCode)</span>
-<span class="fc" id="L207">            .body(problemDetail)</span>
+<span class="fc" id="L205">        return ResponseEntity.status(httpStatusCode)</span>
+<span class="fc" id="L206">            .body(problemDetail)</span>
     }
 
     @ExceptionHandler(Exception::class)
     fun handleException(
         exception: Exception
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L214">        logger.warn { &quot;An unhandled Exception occurred $exception&quot; }</span>
+<span class="fc" id="L213">        logger.warn { &quot;An unhandled Exception occurred $exception&quot; }</span>
 
-<span class="fc" id="L216">        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, UNKNOWN_ERROR)</span>
+<span class="fc" id="L215">        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, UNKNOWN_ERROR)</span>
 
-<span class="fc" id="L218">        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
-<span class="fc" id="L219">            .body(problemDetail)</span>
+<span class="fc" id="L217">        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="fc" id="L218">            .body(problemDetail)</span>
     }
 
     private fun HttpStatus.withDetailsAndURI(
         detail: String,
         type: URI
     ): ProblemDetail {
-<span class="fc" id="L226">        val problemDetail = ProblemDetail.forStatusAndDetail(this, detail)</span>
-<span class="fc" id="L227">        problemDetail.type = type</span>
+<span class="fc" id="L225">        val problemDetail = ProblemDetail.forStatusAndDetail(this, detail)</span>
+<span class="fc" id="L226">        problemDetail.type = type</span>
 
-<span class="fc" id="L229">        return problemDetail</span>
+<span class="fc" id="L228">        return problemDetail</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
