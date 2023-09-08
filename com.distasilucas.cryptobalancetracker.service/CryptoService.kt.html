@@ -104,7 +104,11 @@ import java.time.LocalDateTime
 <span class="fc" id="L104">        cryptoRepository.saveAll(cryptosToUpdate)</span>
 <span class="fc" id="L105">        logger.info { &quot;Updated cryptos ${cryptosToUpdate.map { it.name }}&quot; }</span>
 <span class="fc" id="L106">    }</span>
+
+    fun findAllByIds(vararg ids: String): List&lt;Crypto&gt; {
+<span class="nc" id="L109">        return cryptoRepository.findAllByIdIn(listOf(*ids))</span>
+    }
 }
 
-<span class="fc" id="L109">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L113">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
