@@ -18,76 +18,78 @@ import org.springframework.stereotype.Service
 
 <span class="fc" id="L19">    fun countPlatforms() = platformRepository.count()</span>
 
-    fun retrievePlatformById(platformId: String): PlatformResponse {
-<span class="fc" id="L22">        logger.info { &quot;Retrieving platformId $platformId&quot; }</span>
+<span class="nc" id="L21">    fun findAllByIds(vararg ids: String) = platformRepository.findAllByIdIn(listOf(*ids)) // TODO - what if not exist?</span>
 
-<span class="fc" id="L24">        return platformRepository.findById(platformId)</span>
-<span class="fc" id="L25">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
-<span class="fc" id="L26">            .toPlatformResponse()</span>
+    fun retrievePlatformById(platformId: String): PlatformResponse {
+<span class="fc" id="L24">        logger.info { &quot;Retrieving platformId $platformId&quot; }</span>
+
+<span class="fc" id="L26">        return platformRepository.findById(platformId)</span>
+<span class="fc" id="L27">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
+<span class="fc" id="L28">            .toPlatformResponse()</span>
     }
 
     fun retrieveAllPlatforms(): List&lt;PlatformResponse&gt; {
-<span class="fc" id="L30">        logger.info { &quot;Retrieving all platforms&quot; }</span>
+<span class="fc" id="L32">        logger.info { &quot;Retrieving all platforms&quot; }</span>
 
-<span class="fc" id="L32">        return platformRepository.findAll()</span>
-<span class="fc" id="L33">            .map { it.toPlatformResponse() }</span>
-<span class="fc" id="L34">            .toList()</span>
+<span class="fc" id="L34">        return platformRepository.findAll()</span>
+<span class="fc" id="L35">            .map { it.toPlatformResponse() }</span>
+<span class="fc" id="L36">            .toList()</span>
     }
 
     fun savePlatform(platformRequest: PlatformRequest): PlatformResponse {
-<span class="fc" id="L38">        validatePlatformNotExists(platformRequest.name!!)</span>
+<span class="fc" id="L40">        validatePlatformNotExists(platformRequest.name!!)</span>
 
-<span class="fc" id="L40">        val platform = platformRequest.toEntity()</span>
-<span class="fc" id="L41">        val platformEntity = platformRepository.save(platform)</span>
+<span class="fc" id="L42">        val platform = platformRequest.toEntity()</span>
+<span class="fc" id="L43">        val platformEntity = platformRepository.save(platform)</span>
 
-<span class="fc" id="L43">        val platformResponse = platformEntity.toPlatformResponse()</span>
-<span class="fc" id="L44">        logger.info { &quot;Saved platform $platformResponse&quot; }</span>
+<span class="fc" id="L45">        val platformResponse = platformEntity.toPlatformResponse()</span>
+<span class="fc" id="L46">        logger.info { &quot;Saved platform $platformResponse&quot; }</span>
 
-<span class="fc" id="L46">        return platformResponse</span>
+<span class="fc" id="L48">        return platformResponse</span>
     }
 
     fun updatePlatform(platformId: String, platformRequest: PlatformRequest): PlatformResponse {
-<span class="fc" id="L50">        validatePlatformNotExists(platformRequest.name!!)</span>
+<span class="fc" id="L52">        validatePlatformNotExists(platformRequest.name!!)</span>
 
-<span class="fc" id="L52">        val existingPlatform = findPlatformById(platformId)</span>
-<span class="fc" id="L53">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
+<span class="fc" id="L54">        val existingPlatform = findPlatformById(platformId)</span>
+<span class="fc" id="L55">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
 
-<span class="fc" id="L55">        val updatedPlatform = Platform(</span>
-<span class="fc" id="L56">            id = existingPlatform.id,</span>
-<span class="fc" id="L57">            name = platformRequest.name</span>
+<span class="fc" id="L57">        val updatedPlatform = Platform(</span>
+<span class="fc" id="L58">            id = existingPlatform.id,</span>
+<span class="fc" id="L59">            name = platformRequest.name</span>
         )
 
-<span class="fc" id="L60">        platformRepository.save(updatedPlatform)</span>
-<span class="fc" id="L61">        val platformResponse = updatedPlatform.toPlatformResponse()</span>
-<span class="fc" id="L62">        logger.info { &quot;Updated platform. Before: $existingPlatform  | After: $updatedPlatform&quot; }</span>
+<span class="fc" id="L62">        platformRepository.save(updatedPlatform)</span>
+<span class="fc" id="L63">        val platformResponse = updatedPlatform.toPlatformResponse()</span>
+<span class="fc" id="L64">        logger.info { &quot;Updated platform. Before: $existingPlatform  | After: $updatedPlatform&quot; }</span>
 
-<span class="fc" id="L64">        return platformResponse</span>
+<span class="fc" id="L66">        return platformResponse</span>
     }
 
     fun deletePlatform(platformId: String) {
-<span class="fc" id="L68">        findPlatformById(platformId)</span>
-<span class="fc" id="L69">            .ifPresentOrElse({</span>
-<span class="fc" id="L70">                platformRepository.deleteById(platformId)</span>
-<span class="fc" id="L71">                logger.info { &quot;Deleted platform $it&quot; }</span>
-<span class="fc" id="L72">            },{</span>
-<span class="fc" id="L73">                throw PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId))</span>
+<span class="fc" id="L70">        findPlatformById(platformId)</span>
+<span class="fc" id="L71">            .ifPresentOrElse({</span>
+<span class="fc" id="L72">                platformRepository.deleteById(platformId)</span>
+<span class="fc" id="L73">                logger.info { &quot;Deleted platform $it&quot; }</span>
+<span class="fc" id="L74">            },{</span>
+<span class="fc" id="L75">                throw PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId))</span>
             })
-<span class="fc" id="L75">    }</span>
+<span class="fc" id="L77">    }</span>
 
-<span class="fc" id="L77">    private fun findPlatformById(platformId: String) = platformRepository.findById(platformId)</span>
+<span class="fc" id="L79">    private fun findPlatformById(platformId: String) = platformRepository.findById(platformId)</span>
 
     private fun validatePlatformNotExists(platformName: String) {
-<span class="fc" id="L80">        val existingPlatform = findByPlatformName(platformName)</span>
+<span class="fc" id="L82">        val existingPlatform = findByPlatformName(platformName)</span>
 
-<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (existingPlatform.isPresent) {</span>
-<span class="fc" id="L83">            throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(existingPlatform.get().name))</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (existingPlatform.isPresent) {</span>
+<span class="fc" id="L85">            throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(existingPlatform.get().name))</span>
         }
-<span class="fc" id="L85">    }</span>
+<span class="fc" id="L87">    }</span>
 
-<span class="fc" id="L87">    private fun findByPlatformName(platformName: String) = platformRepository.findByName(platformName.uppercase())</span>
+<span class="fc" id="L89">    private fun findByPlatformName(platformName: String) = platformRepository.findByName(platformName.uppercase())</span>
 }
 
-<span class="fc" id="L90">class PlatformNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L92">class PlatformNotFoundException(message: String) : RuntimeException(message)</span>
 
-<span class="fc" id="L92">class DuplicatedPlatformException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L94">class DuplicatedPlatformException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
