@@ -26,10 +26,12 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.Optional
+import java.util.UUID
 
 class CryptoServiceTest {
 
     private val coingeckoServiceMock = mockk<CoingeckoService>()
+    private val cacheServiceMock = mockk<CacheService>()
     private val cryptoRepositoryMock = mockk<CryptoRepository>()
     private val userCryptoRepositoryMock = mockk<UserCryptoRepository>()
     private val goalRepositoryMock = mockk<GoalRepository>()
@@ -37,6 +39,7 @@ class CryptoServiceTest {
 
     private val cryptoService = CryptoService(
         coingeckoServiceMock,
+        cacheServiceMock,
         cryptoRepositoryMock,
         userCryptoRepositoryMock,
         goalRepositoryMock,
@@ -59,6 +62,7 @@ class CryptoServiceTest {
                     id = "bitcoin",
                     name = "Bitcoin",
                     ticker = "btc",
+                    image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
                     lastKnownPrice = BigDecimal("30000"),
                     lastKnownPriceInEUR = BigDecimal("27000"),
                     lastKnownPriceInBTC = BigDecimal("1"),
@@ -95,6 +99,7 @@ class CryptoServiceTest {
                     id = "bitcoin",
                     name = "Bitcoin",
                     ticker = "btc",
+                    image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
                     circulatingSupply = BigDecimal("19000000"),
                     lastKnownPrice = BigDecimal("30000"),
                     lastKnownPriceInBTC = BigDecimal("1"),
@@ -134,6 +139,7 @@ class CryptoServiceTest {
                     id = "bitcoin",
                     name = "Bitcoin",
                     ticker = "btc",
+                    image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
                     circulatingSupply = BigDecimal("19000000"),
                     lastKnownPrice = BigDecimal("30000"),
                     lastKnownPriceInBTC = BigDecimal("1"),
@@ -196,6 +202,7 @@ class CryptoServiceTest {
         every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
         every { clockMock.zone } returns zonedDateTime.zone
         every { cryptoRepositoryMock.save(capture(slot)) } answers { slot.captured }
+        justRun { cacheServiceMock.invalidateCryptosCache() }
 
         cryptoService.saveCryptoIfNotExists("bitcoin")
 
@@ -208,6 +215,7 @@ class CryptoServiceTest {
                     id = "bitcoin",
                     name = "Bitcoin",
                     ticker = "btc",
+                    image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
                     lastKnownPrice = BigDecimal("30000"),
                     lastKnownPriceInEUR = BigDecimal("27000"),
                     lastKnownPriceInBTC = BigDecimal("1"),
@@ -231,6 +239,7 @@ class CryptoServiceTest {
         every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
         every { clockMock.zone } returns zonedDateTime.zone
         every { cryptoRepositoryMock.save(capture(slot)) } answers { slot.captured }
+        justRun { cacheServiceMock.invalidateCryptosCache() }
 
         cryptoService.saveCryptoIfNotExists("bitcoin")
 
@@ -243,6 +252,7 @@ class CryptoServiceTest {
                     id = "bitcoin",
                     name = "Bitcoin",
                     ticker = "btc",
+                    image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
                     lastKnownPrice = BigDecimal("30000"),
                     lastKnownPriceInEUR = BigDecimal("27000"),
                     lastKnownPriceInBTC = BigDecimal("1"),
@@ -269,6 +279,7 @@ class CryptoServiceTest {
         every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns emptyList()
         every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.empty()
         justRun { cryptoRepositoryMock.deleteById("bitcoin") }
+        justRun { cacheServiceMock.invalidateCryptosCache() }
 
         cryptoService.deleteCryptoIfNotUsed("bitcoin")
 
@@ -320,6 +331,7 @@ class CryptoServiceTest {
                         id = "bitcoin",
                         name = "Bitcoin",
                         ticker = "btc",
+                        image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
                         circulatingSupply = BigDecimal("19000000"),
                         lastKnownPrice = BigDecimal("30000"),
                         lastKnownPriceInBTC = BigDecimal("1"),
@@ -338,5 +350,38 @@ class CryptoServiceTest {
         every { cryptoRepositoryMock.saveAll(listOf(cryptosEntities)) } returns listOf(cryptosEntities)
 
         cryptoService.updateCryptos(listOf(cryptosEntities))
+    }
+
+    @Test
+    fun `should find all cryptos by id`() {
+        val randomUUID = UUID.randomUUID().toString()
+        val localDateTime = LocalDateTime.now()
+        val crypto = getCryptoEntity(
+            id = randomUUID,
+            lastUpdatedAt = localDateTime
+        )
+
+        every {
+            cryptoRepositoryMock.findAllByIdIn(listOf("bitcoin"))
+        } returns listOf(crypto)
+
+        val cryptos = cryptoService.findAllByIds(listOf("bitcoin"))
+
+        assertThat(cryptos)
+            .usingRecursiveComparison()
+            .isEqualTo(listOf(
+                Crypto(
+                    id = randomUUID,
+                    name = "Bitcoin",
+                    ticker = "btc",
+                    image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+                    circulatingSupply = BigDecimal("19000000"),
+                    lastKnownPrice = BigDecimal("30000"),
+                    lastKnownPriceInBTC = BigDecimal("1"),
+                    lastKnownPriceInEUR = BigDecimal("27000"),
+                    maxSupply = BigDecimal("21000000"),
+                    lastUpdatedAt = localDateTime
+                )
+            ))
     }
 }

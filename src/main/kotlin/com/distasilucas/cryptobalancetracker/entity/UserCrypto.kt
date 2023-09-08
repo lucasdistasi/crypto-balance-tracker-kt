@@ -4,6 +4,7 @@ import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoRes
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
+import java.io.Serializable
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -20,7 +21,7 @@ data class UserCrypto(
     @Field("platform_id")
     val platformId: String
 
-) {
+): Serializable {
 
     fun toUserCryptoResponse(cryptoName: String, platformName: String): UserCryptoResponse {
         return UserCryptoResponse(

@@ -4,6 +4,7 @@ import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformRes
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
+import java.io.Serializable
 import java.util.UUID
 
 @Document("Platforms")
@@ -13,7 +14,7 @@ data class Platform(
 
     @Field
     val name: String
-) {
+): Serializable {
 
     fun toPlatformResponse(): PlatformResponse {
         return PlatformResponse(id, name)

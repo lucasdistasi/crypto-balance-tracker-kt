@@ -1,6 +1,10 @@
 package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_CRYPTO_PLATFORM
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PAGE_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
@@ -8,6 +12,8 @@ import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCrypt
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
 import com.distasilucas.cryptobalancetracker.repository.UserCryptoRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -17,7 +23,8 @@ import java.util.Optional
 class UserCryptoService(
     private val userCryptoRepository: UserCryptoRepository,
     private val platformService: PlatformService,
-    private val cryptoService: CryptoService
+    private val cryptoService: CryptoService,
+    private val cacheService: CacheService
 ) {
 
     private val logger = KotlinLogging.logger { }
@@ -56,10 +63,7 @@ class UserCryptoService(
 
         if (existingUserCrypto.isPresent) {
             throw DuplicatedCryptoPlatFormException(
-                DUPLICATED_CRYPTO_PLATFORM.format(
-                    coingeckoCrypto.name,
-                    platform.name
-                )
+                DUPLICATED_CRYPTO_PLATFORM.format(coingeckoCrypto.name, platform.name)
             )
         }
 
@@ -70,6 +74,7 @@ class UserCryptoService(
         )
 
         userCryptoRepository.save(userCrypto)
+        cacheService.invalidateUserCryptosCaches()
         logger.info { "Saved user crypto $userCrypto" }
         cryptoService.saveCryptoIfNotExists(coingeckoCrypto.id)
 
@@ -87,12 +92,10 @@ class UserCryptoService(
         val existingUserCrypto =
             userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)
 
+        // TODO - possible bug, if the platform has not changed, this should not be evaluated
         if (existingUserCrypto.isPresent) {
             throw DuplicatedCryptoPlatFormException(
-                DUPLICATED_CRYPTO_PLATFORM.format(
-                    coingeckoCrypto.name,
-                    platform.name
-                )
+                DUPLICATED_CRYPTO_PLATFORM.format(coingeckoCrypto.name, platform.name)
             )
         }
 
@@ -104,6 +107,7 @@ class UserCryptoService(
         )
 
         userCryptoRepository.save(updatedUserCrypto)
+        cacheService.invalidateUserCryptosCaches()
         logger.info { "Updated user crypto. Before: $userCrypto | After: $updatedUserCrypto" }
 
         return updatedUserCrypto.toUserCryptoResponse(
@@ -115,13 +119,10 @@ class UserCryptoService(
     fun deleteUserCrypto(userCryptoId: String) {
         val userCrypto = findByUserCryptoId(userCryptoId)
         userCryptoRepository.deleteById(userCryptoId)
+        cacheService.invalidateUserCryptosCaches()
         cryptoService.deleteCryptoIfNotUsed(userCrypto.coingeckoCryptoId)
 
         logger.info { "Deleted user crypto $userCryptoId" }
-    }
-
-    fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List<UserCrypto> {
-        return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)
     }
 
     fun findByUserCryptoId(userCryptoId: String): UserCrypto {
@@ -135,6 +136,35 @@ class UserCryptoService(
 
     fun saveOrUpdateAll(userCryptos: List<UserCrypto>) {
         userCryptoRepository.saveAll(userCryptos)
+        cacheService.invalidateUserCryptosCaches()
+    }
+
+    @Cacheable(cacheNames = [USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE], key = "#coingeckoCryptoId")
+    fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List<UserCrypto> {
+        logger.info { "Retrieving all user cryptos matching coingecko crypto id $coingeckoCryptoId" }
+
+        return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)
+    }
+
+    @Cacheable(cacheNames = [USER_CRYPTOS_PLATFORM_ID_CACHE], key = "#platformId")
+    fun findAllByPlatformId(platformId: String): List<UserCrypto> {
+        logger.info { "Retrieving all user cryptos for platformId $platformId" }
+
+        return userCryptoRepository.findAllByPlatformId(platformId)
+    }
+
+    @Cacheable(cacheNames = [USER_CRYPTOS_CACHE])
+    fun findAll(): List<UserCrypto> {
+        logger.info { "Retrieving all user cryptos" }
+
+        return userCryptoRepository.findAll()
+    }
+
+    @Cacheable(cacheNames = [USER_CRYPTOS_PAGE_CACHE], key = "#page")
+    fun findAllByPage(page: Int): Page<UserCrypto> {
+        logger.info { "Retrieving all user cryptos for page $page" }
+
+        return userCryptoRepository.findAll(PageRequest.of(page, 10))
     }
 }
 

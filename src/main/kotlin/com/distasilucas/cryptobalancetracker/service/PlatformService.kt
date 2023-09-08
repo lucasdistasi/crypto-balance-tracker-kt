@@ -1,17 +1,20 @@
 package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
+import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import com.distasilucas.cryptobalancetracker.repository.PlatformRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
 class PlatformService(
-    private val platformRepository: PlatformRepository
+    private val platformRepository: PlatformRepository,
+    private val cacheService: CacheService
 ) {
 
     private val logger = KotlinLogging.logger { }
@@ -39,6 +42,7 @@ class PlatformService(
 
         val platform = platformRequest.toEntity()
         val platformEntity = platformRepository.save(platform)
+        cacheService.invalidatePlatformsCaches()
 
         val platformResponse = platformEntity.toPlatformResponse()
         logger.info { "Saved platform $platformResponse" }
@@ -58,6 +62,7 @@ class PlatformService(
         )
 
         platformRepository.save(updatedPlatform)
+        cacheService.invalidatePlatformsCaches()
         val platformResponse = updatedPlatform.toPlatformResponse()
         logger.info { "Updated platform. Before: $existingPlatform  | After: $updatedPlatform" }
 
@@ -68,23 +73,29 @@ class PlatformService(
         findPlatformById(platformId)
             .ifPresentOrElse({
                 platformRepository.deleteById(platformId)
+                cacheService.invalidatePlatformsCaches()
                 logger.info { "Deleted platform $it" }
             },{
                 throw PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId))
             })
     }
 
+    @Cacheable(cacheNames = [PLATFORMS_PLATFORMS_IDS_CACHE], key = "#ids")
+    fun findAllByIds(ids: Collection<String>): List<Platform> {
+        logger.info { "Retrieving platforms for ids $ids" }
+
+        return platformRepository.findAllByIdIn(ids)
+    }
+
     private fun findPlatformById(platformId: String) = platformRepository.findById(platformId)
 
     private fun validatePlatformNotExists(platformName: String) {
-        val existingPlatform = findByPlatformName(platformName)
+        val existingPlatform = platformRepository.findByName(platformName.uppercase())
 
         if (existingPlatform.isPresent) {
             throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(existingPlatform.get().name))
         }
     }
-
-    private fun findByPlatformName(platformName: String) = platformRepository.findByName(platformName.uppercase())
 }
 
 class PlatformNotFoundException(message: String) : RuntimeException(message)

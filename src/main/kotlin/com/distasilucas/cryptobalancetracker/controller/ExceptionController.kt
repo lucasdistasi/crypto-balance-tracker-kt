@@ -28,6 +28,8 @@ class ExceptionController {
 
     private val logger = KotlinLogging.logger { }
 
+    // TODO - add MissingServletRequestParameterException (when i dont send page on the url)
+
     @ExceptionHandler(PlatformNotFoundException::class)
     fun handlePlatformNotFoundException(
         exception: PlatformNotFoundException,

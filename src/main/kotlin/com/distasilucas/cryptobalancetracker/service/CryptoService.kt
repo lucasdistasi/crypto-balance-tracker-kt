@@ -1,12 +1,15 @@
 package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.COINGECKO_CRYPTO_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_CRYPTOS_IDS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
 import com.distasilucas.cryptobalancetracker.repository.CryptoRepository
 import com.distasilucas.cryptobalancetracker.repository.GoalRepository
 import com.distasilucas.cryptobalancetracker.repository.UserCryptoRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.Clock
@@ -15,6 +18,7 @@ import java.time.LocalDateTime
 @Service
 class CryptoService(
     private val coingeckoService: CoingeckoService,
+    private val cacheService: CacheService,
     private val cryptoRepository: CryptoRepository,
     private val userCryptoRepository: UserCryptoRepository,
     private val goalRepository: GoalRepository,
@@ -23,6 +27,7 @@ class CryptoService(
 
     private val logger = KotlinLogging.logger { }
 
+    @Cacheable(cacheNames = [CRYPTO_COINGECKO_CRYPTO_ID_CACHE], key = "#coingeckoCryptoId")
     fun retrieveCryptoInfoById(coingeckoCryptoId: String): Crypto {
         logger.info { "Retrieving crypto info for id $coingeckoCryptoId" }
 
@@ -38,6 +43,7 @@ class CryptoService(
             id = coingeckoCryptoId,
             name = coingeckoCryptoInfo.name,
             ticker = coingeckoCryptoInfo.symbol,
+            image = coingeckoCryptoInfo.image.large,
             lastKnownPrice = coingeckoCryptoInfo.marketData.currentPrice.usd,
             lastKnownPriceInEUR = coingeckoCryptoInfo.marketData.currentPrice.eur,
             lastKnownPriceInBTC = coingeckoCryptoInfo.marketData.currentPrice.btc,
@@ -69,6 +75,7 @@ class CryptoService(
                     id = coingeckoCryptoId,
                     name = name,
                     ticker = symbol,
+                    image = image.large,
                     lastKnownPrice = marketData.currentPrice.usd,
                     lastKnownPriceInEUR = marketData.currentPrice.eur,
                     lastKnownPriceInBTC = marketData.currentPrice.btc,
@@ -78,6 +85,7 @@ class CryptoService(
                 )
 
                 cryptoRepository.save(crypto)
+                cacheService.invalidateCryptosCache()
                 logger.info { "Saved crypto $crypto" }
             }
         }
@@ -91,6 +99,7 @@ class CryptoService(
 
             if (goalOptional.isEmpty) {
                 cryptoRepository.deleteById(coingeckoCryptoId)
+                cacheService.invalidateCryptosCache()
                 logger.info { "Deleted crypto $coingeckoCryptoId because it was not used" }
             }
         }
@@ -103,6 +112,13 @@ class CryptoService(
     fun updateCryptos(cryptosToUpdate: List<Crypto>) {
         cryptoRepository.saveAll(cryptosToUpdate)
         logger.info { "Updated cryptos ${cryptosToUpdate.map { it.name }}" }
+    }
+
+    @Cacheable(cacheNames = [CRYPTOS_CRYPTOS_IDS_CACHE], key = "#ids")
+    fun findAllByIds(ids: Collection<String>): List<Crypto> {
+        logger.info { "Retrieving cryptos with ids $ids" }
+
+        return cryptoRepository.findAllByIdIn(ids)
     }
 }
 

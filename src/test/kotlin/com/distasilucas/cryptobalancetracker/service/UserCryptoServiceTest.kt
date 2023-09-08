@@ -30,8 +30,14 @@ class UserCryptoServiceTest {
     private val userCryptoRepositoryMock = mockk<UserCryptoRepository>()
     private val platformServiceMock = mockk<PlatformService>()
     private val cryptoServiceMock = mockk<CryptoService>()
+    private val cacheServiceMock = mockk<CacheService>()
 
-    private val userCryptoService = UserCryptoService(userCryptoRepositoryMock, platformServiceMock, cryptoServiceMock)
+    private val userCryptoService = UserCryptoService(
+        userCryptoRepositoryMock,
+        platformServiceMock,
+        cryptoServiceMock,
+        cacheServiceMock
+    )
 
     @Test
     fun `should retrieve user crypto`() {
@@ -43,7 +49,9 @@ class UserCryptoServiceTest {
             userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
         } returns Optional.of(userCrypto)
         every { cryptoServiceMock.retrieveCryptoInfoById("bitcoin") } returns crypto
-        every { platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111") } returns platform
+        every {
+            platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
+        } returns platform
 
         val userCryptoResponse = userCryptoService.retrieveUserCryptoById("123e4567-e89b-12d3-a456-426614174000")
 
@@ -77,7 +85,9 @@ class UserCryptoServiceTest {
         val crypto = getCryptoEntity()
 
         every { userCryptoRepositoryMock.findAll(PageRequest.of(0, 10)) } returns PageImpl(listOf(userCrypto))
-        every { platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111") } returns platformResponse
+        every {
+            platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
+        } returns platformResponse
         every { cryptoServiceMock.retrieveCryptoInfoById("bitcoin") } returns crypto
 
         val pageUserCryptoResponse = userCryptoService.retrieveUserCryptosByPage(0)
@@ -108,7 +118,9 @@ class UserCryptoServiceTest {
         val pageImpl = PageImpl(userCryptosPage, PageRequest.of(0, 2), 10L)
 
         every { userCryptoRepositoryMock.findAll(PageRequest.of(0, 10)) } returns pageImpl
-        every { platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111") } returns platformResponse
+        every {
+            platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
+        } returns platformResponse
         every { cryptoServiceMock.retrieveCryptoInfoById("bitcoin") } returns crypto
 
         val pageUserCryptoResponse = userCryptoService.retrieveUserCryptosByPage(0)
@@ -160,7 +172,9 @@ class UserCryptoServiceTest {
 
         val slot = slot<UserCrypto>()
         every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
-        every { platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111") } returns platformResponse
+        every {
+            platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
+        } returns platformResponse
         every {
             userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
                 "bitcoin",
@@ -169,10 +183,12 @@ class UserCryptoServiceTest {
         } returns Optional.empty()
         every { userCryptoRepositoryMock.save(capture(slot)) } answers { slot.captured }
         justRun { cryptoServiceMock.saveCryptoIfNotExists("bitcoin") }
+        justRun { cacheServiceMock.invalidateUserCryptosCaches() }
 
         val userCryptoResponse = userCryptoService.saveUserCrypto(userCryptoRequest)
 
         verify(exactly = 1) { userCryptoRepositoryMock.save(slot.captured) }
+        verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosCaches() }
 
         assertThat(userCryptoResponse)
             .usingRecursiveComparison()
@@ -196,7 +212,9 @@ class UserCryptoServiceTest {
         )
 
         every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
-        every { platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111") } returns platformResponse
+        every {
+            platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
+        } returns platformResponse
         every {
             userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
                 "bitcoin",
@@ -228,7 +246,9 @@ class UserCryptoServiceTest {
         every {
             userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
         } returns Optional.of(userCrypto)
-        every { platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111") } returns platformResponse
+        every {
+            platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
+        } returns platformResponse
         every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
         every {
             userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -237,11 +257,13 @@ class UserCryptoServiceTest {
             )
         } returns Optional.empty()
         every { userCryptoRepositoryMock.save(updatedUserCrypto) } returns updatedUserCrypto
+        justRun { cacheServiceMock.invalidateUserCryptosCaches() }
 
         val userCryptoResponse =
             userCryptoService.updateUserCrypto("123e4567-e89b-12d3-a456-426614174000", userCryptoRequest)
 
         verify(exactly = 1) { userCryptoRepositoryMock.save(updatedUserCrypto) }
+        verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosCaches() }
 
         assertThat(userCryptoResponse)
             .usingRecursiveComparison()
@@ -287,7 +309,9 @@ class UserCryptoServiceTest {
         every {
             userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
         } returns Optional.of(userCrypto)
-        every { platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111") } returns platformResponse
+        every {
+            platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
+        } returns platformResponse
         every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
         every {
             userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -314,11 +338,13 @@ class UserCryptoServiceTest {
         } returns Optional.of(userCrypto)
         justRun { userCryptoRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174000") }
         justRun { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
+        justRun { cacheServiceMock.invalidateUserCryptosCaches() }
 
         userCryptoService.deleteUserCrypto("123e4567-e89b-12d3-a456-426614174000")
 
         verify(exactly = 1) { userCryptoRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174000") }
         verify(exactly = 1) { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
+        verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosCaches() }
     }
 
     @Test
@@ -331,7 +357,8 @@ class UserCryptoServiceTest {
 
         verify(exactly = 0) { userCryptoRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174000") }
 
-        assertThat(exception.message).isEqualTo(USER_CRYPTO_ID_NOT_FOUND.format("123e4567-e89b-12d3-a456-426614174000"))
+        assertThat(exception.message)
+            .isEqualTo(USER_CRYPTO_ID_NOT_FOUND.format("123e4567-e89b-12d3-a456-426614174000"))
     }
 
     @Test
@@ -425,9 +452,74 @@ class UserCryptoServiceTest {
         val userCryptos = listOf(getUserCrypto())
 
         every { userCryptoRepositoryMock.saveAll(userCryptos) } returns userCryptos
+        justRun { cacheServiceMock.invalidateUserCryptosCaches() }
 
         userCryptoService.saveOrUpdateAll(userCryptos)
 
         verify(exactly = 1) { userCryptoRepositoryMock.saveAll(userCryptos) }
+        verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosCaches() }
+    }
+
+    @Test
+    fun `should find all user cryptos by platform id`() {
+        val userCrypto = getUserCrypto()
+
+        every {
+            userCryptoRepositoryMock.findAllByPlatformId("123e4567-e89b-12d3-a456-426614174111")
+        } returns listOf(userCrypto)
+
+        val userCryptos = userCryptoService.findAllByPlatformId("123e4567-e89b-12d3-a456-426614174111")
+
+        assertThat(userCryptos)
+            .usingRecursiveComparison()
+            .isEqualTo(
+                listOf(
+                    UserCrypto(
+                        id = "123e4567-e89b-12d3-a456-426614174000",
+                        coingeckoCryptoId = "bitcoin",
+                        quantity = BigDecimal("0.25"),
+                        platformId = "123e4567-e89b-12d3-a456-426614174111"
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `should find all user cryptos`() {
+        val userCrypto = getUserCrypto()
+
+        every {
+            userCryptoRepositoryMock.findAll()
+        } returns listOf(userCrypto)
+
+        val userCryptos = userCryptoService.findAll()
+
+        assertThat(userCryptos)
+            .usingRecursiveComparison()
+            .isEqualTo(
+                listOf(
+                    UserCrypto(
+                        id = "123e4567-e89b-12d3-a456-426614174000",
+                        coingeckoCryptoId = "bitcoin",
+                        quantity = BigDecimal("0.25"),
+                        platformId = "123e4567-e89b-12d3-a456-426614174111"
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `should find all user cryptos by page`() {
+        val userCrypto = getUserCrypto()
+
+        every { userCryptoRepositoryMock.findAll(PageRequest.of(0, 10)) } returns PageImpl(listOf(userCrypto))
+
+        val userCryptos = userCryptoService.findAllByPage(0)
+
+        assertThat(userCryptos)
+            .usingRecursiveComparison()
+            .isEqualTo(
+                PageImpl(listOf(userCrypto), PageRequest.of(0,10), 1)
+            )
     }
 }

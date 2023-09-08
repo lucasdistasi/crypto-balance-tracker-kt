@@ -33,6 +33,7 @@ class CryptoScheduler(
                     id = crypto.id,
                     name = crypto.name,
                     ticker = crypto.symbol,
+                    image = crypto.image.large,
                     lastKnownPrice = crypto.marketData.currentPrice.usd,
                     lastKnownPriceInEUR = crypto.marketData.currentPrice.eur,
                     lastKnownPriceInBTC = crypto.marketData.currentPrice.btc,

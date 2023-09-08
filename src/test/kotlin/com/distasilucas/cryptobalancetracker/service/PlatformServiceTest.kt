@@ -20,7 +20,9 @@ import java.util.UUID
 class PlatformServiceTest {
 
     private val platformRepositoryMock = mockk<PlatformRepository>()
-    private val platformService = PlatformService(platformRepositoryMock)
+    private val cacheServiceMock = mockk<CacheService>()
+
+    private val platformService = PlatformService(platformRepositoryMock, cacheServiceMock)
 
     @Test
     fun `should return count of platforms`() {
@@ -29,6 +31,47 @@ class PlatformServiceTest {
         val countPlatforms = platformService.countPlatforms()
 
         assertThat(countPlatforms).isEqualTo(5)
+    }
+
+    @Test
+    fun `should retrieve all platforms by id`() {
+        val platformsIds = listOf("e86b1068-8635-4606-83fb-a056040d6c9e", "d6fa4d2a-7760-4e7b-9df3-eabb26a92dd8")
+        val platforms = listOf(
+            Platform(
+                id = "e86b1068-8635-4606-83fb-a056040d6c9e",
+                name = "BINANCE"
+            ),
+            Platform(
+                id = "d6fa4d2a-7760-4e7b-9df3-eabb26a92dd8",
+                name = "COINBASE"
+            )
+        )
+
+        every {
+            platformRepositoryMock.findAllByIdIn(platformsIds)
+        } returns platforms
+
+        val platformsList = platformService.findAllByIds(
+            listOf(
+                "e86b1068-8635-4606-83fb-a056040d6c9e",
+                "d6fa4d2a-7760-4e7b-9df3-eabb26a92dd8"
+            )
+        )
+
+        assertThat(platformsList)
+            .usingRecursiveComparison()
+            .isEqualTo(
+                listOf(
+                    Platform(
+                        id = "e86b1068-8635-4606-83fb-a056040d6c9e",
+                        name = "BINANCE"
+                    ),
+                    Platform(
+                        id = "d6fa4d2a-7760-4e7b-9df3-eabb26a92dd8",
+                        name = "COINBASE"
+                    )
+                )
+            )
     }
 
     @Test
@@ -87,6 +130,7 @@ class PlatformServiceTest {
         val slot = slot<Platform>()
         every { platformRepositoryMock.findByName("BINANCE") } returns Optional.empty()
         every { platformRepositoryMock.save(capture(slot)) } returns platformEntity
+        justRun { cacheServiceMock.invalidatePlatformsCaches() }
 
         val platformResponse = platformService.savePlatform(platformRequest)
 
@@ -122,6 +166,7 @@ class PlatformServiceTest {
         every { platformRepositoryMock.findByName("OKX") } returns Optional.empty()
         every { platformRepositoryMock.findById(id) } returns Optional.of(existingPlatform)
         every { platformRepositoryMock.save(newPlatform) } returns newPlatform
+        justRun { cacheServiceMock.invalidatePlatformsCaches() }
 
         val updatedPlatform = platformService.updatePlatform(id, platformRequest)
 
@@ -174,6 +219,7 @@ class PlatformServiceTest {
 
         every { platformRepositoryMock.findById(id) } returns Optional.of(existingPlatform)
         justRun { platformRepositoryMock.deleteById(id) }
+        justRun { cacheServiceMock.invalidatePlatformsCaches() }
 
         platformService.deletePlatform(id)
 
