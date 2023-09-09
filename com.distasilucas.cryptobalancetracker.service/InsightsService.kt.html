@@ -46,13 +46,13 @@ import java.util.Optional
 <span class="fc" id="L46">        val totalBalances = getTotalBalances(cryptos, userCryptosQuantity)</span>
 
 <span class="fc" id="L48">        val cryptosInsights = cryptos.map { crypto -&gt;</span>
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">            val quantity = userCryptosQuantity[crypto.id] ?: BigDecimal.ZERO</span>
+<span class="fc" id="L49">            val quantity = userCryptosQuantity[crypto.id]</span>
 <span class="fc" id="L50">            val cryptoTotalBalances = getCryptoTotalBalances(crypto, quantity)</span>
 
 <span class="fc" id="L52">            val cryptoInsight = CryptoInsights(</span>
 <span class="fc" id="L53">                cryptoName = crypto.name,</span>
 <span class="fc" id="L54">                cryptoId = crypto.id,</span>
-<span class="fc" id="L55">                quantity = quantity.toPlainString(),</span>
+<span class="fc" id="L55">                quantity = quantity!!.toPlainString(),</span>
 <span class="fc" id="L56">                balances = cryptoTotalBalances,</span>
 <span class="fc" id="L57">                percentage = calculatePercentage(totalBalances.totalBalance, cryptoTotalBalances.totalBalance)</span>
             )
@@ -87,63 +87,64 @@ import java.util.Optional
 <span class="fc" id="L87">        val totalBalances = getTotalBalances(listOf(crypto), mapOf(coingeckoCryptoId to totalCryptoQuantity))</span>
 
 <span class="fc" id="L89">        val cryptos = platforms.map { platform -&gt;</span>
-<span class="pc bpc" id="L90" title="2 of 4 branches missed.">            val quantity = platformUserCrypto[platform.id]?.quantity ?: BigDecimal.ZERO</span>
-<span class="fc" id="L91">            val cryptoTotalBalances = getCryptoTotalBalances(crypto, quantity)</span>
+<span class="fc" id="L90">            val userCrypto = platformUserCrypto[platform.id]</span>
+<span class="fc" id="L91">            val quantity = userCrypto!!.quantity</span>
+<span class="fc" id="L92">            val cryptoTotalBalances = getCryptoTotalBalances(crypto, quantity)</span>
 
-<span class="fc" id="L93">            val cryptoInsight = CryptoInsight(</span>
-<span class="fc" id="L94">                quantity = quantity.toPlainString(),</span>
-<span class="fc" id="L95">                balances = cryptoTotalBalances,</span>
-<span class="fc" id="L96">                percentage = calculatePercentage(totalBalances.totalBalance, cryptoTotalBalances.totalBalance),</span>
-<span class="fc" id="L97">                platformName = platform.name</span>
+<span class="fc" id="L94">            val cryptoInsight = CryptoInsight(</span>
+<span class="fc" id="L95">                quantity = quantity.toPlainString(),</span>
+<span class="fc" id="L96">                balances = cryptoTotalBalances,</span>
+<span class="fc" id="L97">                percentage = calculatePercentage(totalBalances.totalBalance, cryptoTotalBalances.totalBalance),</span>
+<span class="fc" id="L98">                platformName = platform.name</span>
             )
 
-<span class="fc" id="L100">            cryptoInsight</span>
+<span class="fc" id="L101">            cryptoInsight</span>
         }
 
-<span class="fc" id="L103">        return Optional.of(</span>
-<span class="fc" id="L104">            CryptoInsightResponse(</span>
-<span class="fc" id="L105">                cryptoName = crypto.name,</span>
-<span class="fc" id="L106">                balances = totalBalances,</span>
-<span class="fc" id="L107">                cryptos = cryptos</span>
+<span class="fc" id="L104">        return Optional.of(</span>
+<span class="fc" id="L105">            CryptoInsightResponse(</span>
+<span class="fc" id="L106">                cryptoName = crypto.name,</span>
+<span class="fc" id="L107">                balances = totalBalances,</span>
+<span class="fc" id="L108">                cryptos = cryptos</span>
             )
         )
     }
 
     private fun getTotalBalances(cryptos: List&lt;Crypto&gt;, userCryptoQuantity: Map&lt;String, BigDecimal&gt;): Balances {
-<span class="fc" id="L113">        var totalBalance = BigDecimal.ZERO</span>
-<span class="fc" id="L114">        var totalBTCBalance = BigDecimal.ZERO</span>
-<span class="fc" id="L115">        var totalEURBalance = BigDecimal.ZERO</span>
+<span class="fc" id="L114">        var totalBalance = BigDecimal.ZERO</span>
+<span class="fc" id="L115">        var totalBTCBalance = BigDecimal.ZERO</span>
+<span class="fc" id="L116">        var totalEURBalance = BigDecimal.ZERO</span>
 
-<span class="fc" id="L117">        userCryptoQuantity.forEach { (coingeckoCryptoId, quantity) -&gt;</span>
-<span class="fc" id="L118">            val crypto = cryptos.first { it.id.equals(coingeckoCryptoId, true) }</span>
-<span class="fc" id="L119">            val lastKnownPrice = crypto.lastKnownPrice</span>
-<span class="fc" id="L120">            val lastKnownPriceInBTC = crypto.lastKnownPriceInBTC</span>
-<span class="fc" id="L121">            val lastKnownPriceInEUR = crypto.lastKnownPriceInEUR</span>
+<span class="fc" id="L118">        userCryptoQuantity.forEach { (coingeckoCryptoId, quantity) -&gt;</span>
+<span class="fc" id="L119">            val crypto = cryptos.first { it.id.equals(coingeckoCryptoId, true) }</span>
+<span class="fc" id="L120">            val lastKnownPrice = crypto.lastKnownPrice</span>
+<span class="fc" id="L121">            val lastKnownPriceInBTC = crypto.lastKnownPriceInBTC</span>
+<span class="fc" id="L122">            val lastKnownPriceInEUR = crypto.lastKnownPriceInEUR</span>
 
-<span class="fc" id="L123">            totalBalance = totalBalance.add(lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP))</span>
-<span class="fc" id="L124">            totalBTCBalance = totalBTCBalance.add(lastKnownPriceInBTC.multiply(quantity))</span>
-<span class="fc" id="L125">            totalEURBalance = totalEURBalance.add(lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP))</span>
-<span class="fc" id="L126">        }</span>
+<span class="fc" id="L124">            totalBalance = totalBalance.add(lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP))</span>
+<span class="fc" id="L125">            totalBTCBalance = totalBTCBalance.add(lastKnownPriceInBTC.multiply(quantity))</span>
+<span class="fc" id="L126">            totalEURBalance = totalEURBalance.add(lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP))</span>
+<span class="fc" id="L127">        }</span>
 
-<span class="fc" id="L128">        return Balances(</span>
-<span class="fc" id="L129">            totalBalance = totalBalance.toPlainString(),</span>
-<span class="fc" id="L130">            totalBTCBalance = totalBTCBalance.toPlainString(),</span>
-<span class="fc" id="L131">            totalEURBalance = totalEURBalance.toPlainString()</span>
+<span class="fc" id="L129">        return Balances(</span>
+<span class="fc" id="L130">            totalBalance = totalBalance.toPlainString(),</span>
+<span class="fc" id="L131">            totalBTCBalance = totalBTCBalance.toPlainString(),</span>
+<span class="fc" id="L132">            totalEURBalance = totalEURBalance.toPlainString()</span>
         )
     }
 
-    private fun getCryptoTotalBalances(crypto: Crypto, quantity: BigDecimal): Balances {
-<span class="fc" id="L136">        return Balances(</span>
-<span class="fc" id="L137">            totalBalance = crypto.lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString(),</span>
-<span class="fc" id="L138">            totalBTCBalance = crypto.lastKnownPriceInBTC.multiply(quantity).toPlainString(),</span>
-<span class="fc" id="L139">            totalEURBalance = crypto.lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString()</span>
+    private fun getCryptoTotalBalances(crypto: Crypto, quantity: BigDecimal?): Balances {
+<span class="fc" id="L137">        return Balances(</span>
+<span class="fc" id="L138">            totalBalance = crypto.lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString(),</span>
+<span class="fc" id="L139">            totalBTCBalance = crypto.lastKnownPriceInBTC.multiply(quantity).toPlainString(),</span>
+<span class="fc" id="L140">            totalEURBalance = crypto.lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString()</span>
         )
     }
 
-<span class="fc" id="L143">    private fun calculatePercentage(totalBalance: String, cryptoBalance: String) = BigDecimal(cryptoBalance)</span>
-<span class="fc" id="L144">        .multiply(BigDecimal(&quot;100&quot;))</span>
-<span class="fc" id="L145">        .divide(BigDecimal(totalBalance), 2, RoundingMode.HALF_UP)</span>
-<span class="fc" id="L146">        .toFloat()</span>
+<span class="fc" id="L144">    private fun calculatePercentage(totalBalance: String, cryptoBalance: String) = BigDecimal(cryptoBalance)</span>
+<span class="fc" id="L145">        .multiply(BigDecimal(&quot;100&quot;))</span>
+<span class="fc" id="L146">        .divide(BigDecimal(totalBalance), 2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L147">        .toFloat()</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
