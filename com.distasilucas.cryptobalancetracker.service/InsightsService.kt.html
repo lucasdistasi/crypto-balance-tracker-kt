@@ -26,8 +26,8 @@ import java.util.Optional
 
 <span class="fc" id="L27">        val userCryptos = userCryptoService.findAllByPlatformId(platformId)</span>
 
-<span class="pc bpc" id="L29" title="1 of 2 branches missed.">        if (userCryptos.isEmpty()) {</span>
-<span class="nc" id="L30">            return Optional.empty()</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
+<span class="fc" id="L30">            return Optional.empty()</span>
         }
 
 <span class="fc" id="L33">        val platformResponse = platformService.retrievePlatformById(platformId)</span>
@@ -74,8 +74,8 @@ import java.util.Optional
 
 <span class="fc" id="L75">        val userCryptos = userCryptoService.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
 
-<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (userCryptos.isEmpty()) {</span>
-<span class="nc" id="L78">            return Optional.empty()</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
+<span class="fc" id="L78">            return Optional.empty()</span>
         }
 
 <span class="fc" id="L81">        val platformsIds = userCryptos.map { it.platformId }.toTypedArray()</span>
