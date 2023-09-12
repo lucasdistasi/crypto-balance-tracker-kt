@@ -45,7 +45,9 @@ import org.springframework.web.bind.annotation.RestController
 
     @GetMapping(&quot;/platforms/{platformId}&quot;)
     fun retrievePlatformInsights(@PathVariable platformId: String): ResponseEntity&lt;PlatformInsightsResponse&gt; {
-<span class="nc" id="L48">        return TODO()</span>
+<span class="nc" id="L48">        val platformsInsights = insightsService.retrievePlatformInsights(platformId)</span>
+
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        return if (platformsInsights.isEmpty) ResponseEntity.noContent().build() else ResponseEntity.ok(platformsInsights.get())</span>
     }
 
 }

@@ -5,10 +5,10 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
 <span class="fc" id="L5">data class CryptoInsightResponse(</span>
 <span class="fc" id="L6">    val cryptoName: String,</span>
 <span class="fc" id="L7">    val balances: Balances,</span>
-<span class="fc" id="L8">    val cryptos: List&lt;CryptoInsight&gt;</span>
+<span class="fc" id="L8">    val platforms: List&lt;PlatformInsight&gt;</span>
 )
 
-<span class="fc" id="L11">data class CryptoInsight(</span>
+<span class="fc" id="L11">data class PlatformInsight(</span>
 <span class="fc" id="L12">    val quantity: String,</span>
 <span class="fc" id="L13">    val balances: Balances,</span>
 <span class="fc" id="L14">    val percentage: Float,</span>
