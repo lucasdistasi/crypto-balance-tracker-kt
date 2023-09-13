@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service
 
 <span class="fc" id="L19">    fun countPlatforms() = platformRepository.count()</span>
 
-<span class="nc" id="L21">    fun findAllByIds(vararg ids: String) = platformRepository.findAllByIdIn(listOf(*ids)) // TODO - what if not exist?</span>
+<span class="fc" id="L21">    fun findAllByIds(vararg ids: String) = platformRepository.findAllByIdIn(listOf(*ids))</span>
 
     fun retrievePlatformById(platformId: String): PlatformResponse {
 <span class="fc" id="L24">        logger.info { &quot;Retrieving platformId $platformId&quot; }</span>

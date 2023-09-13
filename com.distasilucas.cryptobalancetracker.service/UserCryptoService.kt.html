@@ -137,15 +137,11 @@ import java.util.Optional
 <span class="fc" id="L137">        userCryptoRepository.saveAll(userCryptos)</span>
 <span class="fc" id="L138">    }</span>
 
-    fun findAllByPlatformId(platformId: String): List&lt;UserCrypto&gt; {
-<span class="nc" id="L141">        return userCryptoRepository.findAllByPlatformId(platformId)</span>
-    }
+<span class="fc" id="L140">    fun findAllByPlatformId(platformId: String) = userCryptoRepository.findAllByPlatformId(platformId)</span>
 
-    fun findAll(): List&lt;UserCrypto&gt; {
-<span class="nc" id="L145">        return userCryptoRepository.findAll()</span>
-    }
+<span class="fc" id="L142">    fun findAll(): List&lt;UserCrypto&gt; = userCryptoRepository.findAll()</span>
 }
 
-<span class="fc" id="L149">class UserCryptoNotFoundException(message: String) : RuntimeException(message)</span>
-<span class="fc" id="L150">class DuplicatedCryptoPlatFormException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L145">class UserCryptoNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L146">class DuplicatedCryptoPlatFormException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
