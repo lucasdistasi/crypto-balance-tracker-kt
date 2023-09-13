@@ -106,7 +106,7 @@ import java.time.LocalDateTime
 <span class="fc" id="L106">    }</span>
 
     fun findAllByIds(vararg ids: String): List&lt;Crypto&gt; {
-<span class="nc" id="L109">        return cryptoRepository.findAllByIdIn(listOf(*ids)) // TODO - what if not exist?</span>
+<span class="nc" id="L109">        return cryptoRepository.findAllByIdIn(listOf(*ids))</span>
     }
 }
 
