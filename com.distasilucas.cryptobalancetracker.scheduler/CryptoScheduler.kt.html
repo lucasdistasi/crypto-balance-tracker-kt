@@ -33,30 +33,31 @@ import java.time.LocalDateTime
 <span class="fc" id="L33">                    id = crypto.id,</span>
 <span class="fc" id="L34">                    name = crypto.name,</span>
 <span class="fc" id="L35">                    ticker = crypto.symbol,</span>
-<span class="fc" id="L36">                    lastKnownPrice = crypto.marketData.currentPrice.usd,</span>
-<span class="fc" id="L37">                    lastKnownPriceInEUR = crypto.marketData.currentPrice.eur,</span>
-<span class="fc" id="L38">                    lastKnownPriceInBTC = crypto.marketData.currentPrice.btc,</span>
-<span class="fc" id="L39">                    circulatingSupply = crypto.marketData.circulatingSupply,</span>
-<span class="fc bfc" id="L40" title="All 2 branches covered.">                    maxSupply = crypto.marketData.maxSupply ?: BigDecimal.ZERO,</span>
-<span class="fc" id="L41">                    lastUpdatedAt = LocalDateTime.now(clock)</span>
+<span class="fc" id="L36">                    image = crypto.image.large,</span>
+<span class="fc" id="L37">                    lastKnownPrice = crypto.marketData.currentPrice.usd,</span>
+<span class="fc" id="L38">                    lastKnownPriceInEUR = crypto.marketData.currentPrice.eur,</span>
+<span class="fc" id="L39">                    lastKnownPriceInBTC = crypto.marketData.currentPrice.btc,</span>
+<span class="fc" id="L40">                    circulatingSupply = crypto.marketData.circulatingSupply,</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">                    maxSupply = crypto.marketData.maxSupply ?: BigDecimal.ZERO,</span>
+<span class="fc" id="L42">                    lastUpdatedAt = LocalDateTime.now(clock)</span>
                 )
 
-<span class="fc" id="L44">                updatedCrypto</span>
+<span class="fc" id="L45">                updatedCrypto</span>
             }
 
-<span class="fc bfc" id="L47" title="All 4 branches covered.">        if (cryptosToUpdate.isNotEmpty()) {</span>
-<span class="fc" id="L48">            logger.info { &quot;About to update ${cryptosToUpdate.size} crypto(s)&quot; }</span>
+<span class="fc bfc" id="L48" title="All 4 branches covered.">        if (cryptosToUpdate.isNotEmpty()) {</span>
+<span class="fc" id="L49">            logger.info { &quot;About to update ${cryptosToUpdate.size} crypto(s)&quot; }</span>
 
-<span class="fc" id="L50">            cryptoService.updateCryptos(cryptosToUpdate)</span>
+<span class="fc" id="L51">            cryptoService.updateCryptos(cryptosToUpdate)</span>
         } else {
-<span class="fc" id="L52">            logger.info { &quot;No cryptos to update&quot; }</span>
+<span class="fc" id="L53">            logger.info { &quot;No cryptos to update&quot; }</span>
         }
-<span class="fc" id="L54">    }</span>
+<span class="fc" id="L55">    }</span>
 
     private fun getCryptosToUpdate(): List&lt;Crypto&gt; {
-<span class="fc" id="L57">        return cryptoService.findOldestNCryptosByLastPriceUpdate(</span>
-<span class="fc" id="L58">            LocalDateTime.now(clock).minusMinutes(5),</span>
-<span class="fc" id="L59">            maxLimit</span>
+<span class="fc" id="L58">        return cryptoService.findOldestNCryptosByLastPriceUpdate(</span>
+<span class="fc" id="L59">            LocalDateTime.now(clock).minusMinutes(5),</span>
+<span class="fc" id="L60">            maxLimit</span>
         )
     }
 }

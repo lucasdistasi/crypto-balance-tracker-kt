@@ -7,25 +7,30 @@ import java.math.BigDecimal
 <span class="fc" id="L7">    val id: String,</span>
 <span class="fc" id="L8">    val symbol: String,</span>
 <span class="fc" id="L9">    val name: String,</span>
+<span class="fc" id="L10">    val image: Image,</span>
 
-<span class="fc" id="L11">    @JsonProperty(&quot;market_data&quot;)</span>
-<span class="fc" id="L12">    val marketData: MarketData</span>
+<span class="fc" id="L12">    @JsonProperty(&quot;market_data&quot;)</span>
+<span class="fc" id="L13">    val marketData: MarketData</span>
 )
 
-<span class="fc" id="L15">data class MarketData(</span>
-<span class="fc" id="L16">    @JsonProperty(&quot;current_price&quot;)</span>
-<span class="fc" id="L17">    val currentPrice: CurrentPrice,</span>
-
-<span class="fc" id="L19">    @JsonProperty(&quot;circulating_supply&quot;)</span>
-<span class="fc" id="L20">    val circulatingSupply: BigDecimal,</span>
-
-<span class="fc" id="L22">    @JsonProperty(&quot;max_supply&quot;)</span>
-<span class="fc" id="L23">    val maxSupply: BigDecimal?</span>
+<span class="fc" id="L16">data class Image(</span>
+<span class="fc" id="L17">    val large: String</span>
 )
 
-<span class="fc" id="L26">data class CurrentPrice(</span>
-<span class="fc" id="L27">    val usd: BigDecimal,</span>
-<span class="fc" id="L28">    val eur: BigDecimal,</span>
-<span class="fc" id="L29">    val btc: BigDecimal</span>
+<span class="fc" id="L20">data class MarketData(</span>
+<span class="fc" id="L21">    @JsonProperty(&quot;current_price&quot;)</span>
+<span class="fc" id="L22">    val currentPrice: CurrentPrice,</span>
+
+<span class="fc" id="L24">    @JsonProperty(&quot;circulating_supply&quot;)</span>
+<span class="fc" id="L25">    val circulatingSupply: BigDecimal,</span>
+
+<span class="fc" id="L27">    @JsonProperty(&quot;max_supply&quot;)</span>
+<span class="fc" id="L28">    val maxSupply: BigDecimal?</span>
+)
+
+<span class="fc" id="L31">data class CurrentPrice(</span>
+<span class="fc" id="L32">    val usd: BigDecimal,</span>
+<span class="fc" id="L33">    val eur: BigDecimal,</span>
+<span class="fc" id="L34">    val btc: BigDecimal</span>
 )
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
