@@ -3,7 +3,7 @@
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
-import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
@@ -30,7 +30,7 @@ import java.util.Optional
 
 <span class="fc" id="L31">    private val logger = KotlinLogging.logger { }</span>
 
-    fun retrieveTotalBalancesInsights(): Optional&lt;Balances&gt; {
+    fun retrieveTotalBalancesInsights(): Optional&lt;BalancesResponse&gt; {
 <span class="fc" id="L34">        logger.info { &quot;Retrieving total balances&quot; }</span>
 
 <span class="fc" id="L36">        val userCryptos = userCryptoService.findAll()</span>
@@ -40,8 +40,8 @@ import java.util.Optional
         }
 
 <span class="fc" id="L42">        val userCryptoQuantity = getUserCryptoQuantity(userCryptos)</span>
-<span class="fc" id="L43">        val userCryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet().toTypedArray()</span>
-<span class="fc" id="L44">        val cryptos = cryptoService.findAllByIds(*userCryptosIds)</span>
+<span class="fc" id="L43">        val cryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet().toTypedArray()</span>
+<span class="fc" id="L44">        val cryptos = cryptoService.findAllByIds(*cryptosIds)</span>
 <span class="fc" id="L45">        val balances = getTotalBalances(cryptos, userCryptoQuantity)</span>
 
 <span class="fc" id="L47">        return Optional.of(balances)</span>
@@ -158,7 +158,7 @@ import java.util.Optional
 
 <span class="fc" id="L159">            val platformInsight = PlatformsInsights(</span>
 <span class="fc" id="L160">                platformName = platformName,</span>
-<span class="fc" id="L161">                balances = Balances(</span>
+<span class="fc" id="L161">                balances = BalancesResponse(</span>
 <span class="fc" id="L162">                    totalBalance = totalBalance.toPlainString(),</span>
 <span class="fc" id="L163">                    totalBTCBalance = totalBTCBalance.toPlainString(),</span>
 <span class="fc" id="L164">                    totalEURBalance = totalEURBalance.toPlainString()</span>
@@ -216,7 +216,7 @@ import java.util.Optional
     // @GetMapping(&quot;/cryptos&quot;)
 <span class="nc" id="L217">    fun retrieveUserCryptosInsights(): Optional&lt;PageUserCryptosInsightsResponse&gt; = TODO()</span>
 
-    private fun getTotalBalances(cryptos: List&lt;Crypto&gt;, userCryptoQuantity: Map&lt;String, BigDecimal&gt;): Balances {
+    private fun getTotalBalances(cryptos: List&lt;Crypto&gt;, userCryptoQuantity: Map&lt;String, BigDecimal&gt;): BalancesResponse {
 <span class="fc" id="L220">        var totalBalance = BigDecimal.ZERO</span>
 <span class="fc" id="L221">        var totalBTCBalance = BigDecimal.ZERO</span>
 <span class="fc" id="L222">        var totalEURBalance = BigDecimal.ZERO</span>
@@ -233,15 +233,15 @@ import java.util.Optional
 <span class="fc" id="L233">                totalEURBalance.add(lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP))</span>
 <span class="fc" id="L234">        }</span>
 
-<span class="fc" id="L236">        return Balances(</span>
+<span class="fc" id="L236">        return BalancesResponse(</span>
 <span class="fc" id="L237">            totalBalance = totalBalance.toPlainString(),</span>
 <span class="fc" id="L238">            totalBTCBalance = totalBTCBalance.toPlainString(),</span>
 <span class="fc" id="L239">            totalEURBalance = totalEURBalance.toPlainString()</span>
         )
     }
 
-    private fun getCryptoTotalBalances(crypto: Crypto, quantity: BigDecimal): Balances {
-<span class="fc" id="L244">        return Balances(</span>
+    private fun getCryptoTotalBalances(crypto: Crypto, quantity: BigDecimal): BalancesResponse {
+<span class="fc" id="L244">        return BalancesResponse(</span>
 <span class="fc" id="L245">            totalBalance = crypto.lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString(),</span>
 <span class="fc" id="L246">            totalBTCBalance = crypto.lastKnownPriceInBTC.multiply(quantity).stripTrailingZeros().toPlainString(),</span>
 <span class="fc" id="L247">            totalEURBalance = crypto.lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP)</span>
@@ -290,7 +290,7 @@ import java.util.Optional
     }
 
     private fun getCryptoInsightsWithOthers(
-        totalBalances: Balances,
+        totalBalances: BalancesResponse,
         cryptosInsights: List&lt;CryptoInsights&gt;
     ): List&lt;CryptoInsights&gt; {
 <span class="fc" id="L296">        var cryptosInsightsWithOthers: List&lt;CryptoInsights&gt; = ArrayList()</span>
@@ -309,7 +309,7 @@ import java.util.Optional
 
 <span class="fc" id="L310">        val othersCryptoInsights = CryptoInsights(</span>
 <span class="fc" id="L311">            cryptoName = &quot;Others&quot;,</span>
-<span class="fc" id="L312">            balances = Balances(</span>
+<span class="fc" id="L312">            balances = BalancesResponse(</span>
 <span class="fc" id="L313">                totalBalance = totalBalance.toPlainString(),</span>
 <span class="fc" id="L314">                totalBTCBalance = totalBTCBalance.toPlainString(),</span>
 <span class="fc" id="L315">                totalEURBalance = totalEURBalance.toPlainString()</span>

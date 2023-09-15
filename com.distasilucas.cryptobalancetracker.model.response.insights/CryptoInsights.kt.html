@@ -8,10 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include
 <span class="fc" id="L8">    val cryptoName: String,</span>
 <span class="fc" id="L9">    val cryptoId: String?,</span>
 <span class="fc" id="L10">    val quantity: String?,</span>
-<span class="fc" id="L11">    val balances: Balances,</span>
+<span class="fc" id="L11">    val balances: BalancesResponse,</span>
 <span class="fc" id="L12">    val percentage: Float</span>
 ) {
-<span class="fc" id="L14">    constructor(cryptoName: String, balances: Balances, percentage: Float) : this(</span>
+<span class="fc" id="L14">    constructor(cryptoName: String, balances: BalancesResponse, percentage: Float) : this(</span>
 <span class="fc" id="L15">        cryptoName,</span>
 <span class="fc" id="L16">        null,</span>
 <span class="fc" id="L17">        null,</span>
