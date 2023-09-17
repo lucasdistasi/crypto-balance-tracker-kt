@@ -8,140 +8,143 @@ import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCrypt
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
 import com.distasilucas.cryptobalancetracker.repository.UserCryptoRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.util.Optional
 
-<span class="fc" id="L16">@Service</span>
-<span class="fc" id="L17">class UserCryptoService(</span>
-<span class="fc" id="L18">    private val userCryptoRepository: UserCryptoRepository,</span>
-<span class="fc" id="L19">    private val platformService: PlatformService,</span>
-<span class="fc" id="L20">    private val cryptoService: CryptoService</span>
+<span class="fc" id="L17">@Service</span>
+<span class="fc" id="L18">class UserCryptoService(</span>
+<span class="fc" id="L19">    private val userCryptoRepository: UserCryptoRepository,</span>
+<span class="fc" id="L20">    private val platformService: PlatformService,</span>
+<span class="fc" id="L21">    private val cryptoService: CryptoService</span>
 ) {
 
-<span class="fc" id="L23">    private val logger = KotlinLogging.logger { }</span>
+<span class="fc" id="L24">    private val logger = KotlinLogging.logger { }</span>
 
     fun retrieveUserCryptoById(userCryptoId: String): UserCryptoResponse {
-<span class="fc" id="L26">        logger.info { &quot;Retrieving user crypto with id $userCryptoId&quot; }</span>
+<span class="fc" id="L27">        logger.info { &quot;Retrieving user crypto with id $userCryptoId&quot; }</span>
 
-<span class="fc" id="L28">        val userCrypto = findByUserCryptoId(userCryptoId)</span>
-<span class="fc" id="L29">        val crypto = cryptoService.retrieveCryptoInfoById(userCrypto.coingeckoCryptoId)</span>
-<span class="fc" id="L30">        val platform = platformService.retrievePlatformById(userCrypto.platformId)</span>
+<span class="fc" id="L29">        val userCrypto = findByUserCryptoId(userCryptoId)</span>
+<span class="fc" id="L30">        val crypto = cryptoService.retrieveCryptoInfoById(userCrypto.coingeckoCryptoId)</span>
+<span class="fc" id="L31">        val platform = platformService.retrievePlatformById(userCrypto.platformId)</span>
 
-<span class="fc" id="L32">        return userCrypto.toUserCryptoResponse(crypto.name, platform.name)</span>
+<span class="fc" id="L33">        return userCrypto.toUserCryptoResponse(crypto.name, platform.name)</span>
     }
 
     fun retrieveUserCryptosByPage(page: Int): PageUserCryptoResponse {
-<span class="fc" id="L36">        logger.info { &quot;Retrieving user cryptos for page $page&quot; }</span>
+<span class="fc" id="L37">        logger.info { &quot;Retrieving user cryptos for page $page&quot; }</span>
 
-<span class="fc" id="L38">        val pageRequest: Pageable = PageRequest.of(page, 10)</span>
-<span class="fc" id="L39">        val entityUserCryptosPage = userCryptoRepository.findAll(pageRequest)</span>
-<span class="fc" id="L40">        val userCryptosPage = entityUserCryptosPage.content.map { userCrypto -&gt;</span>
-<span class="fc" id="L41">            val platform = platformService.retrievePlatformById(userCrypto.platformId)</span>
-<span class="fc" id="L42">            val crypto = cryptoService.retrieveCryptoInfoById(userCrypto.coingeckoCryptoId)</span>
+<span class="fc" id="L39">        val pageRequest: Pageable = PageRequest.of(page, 10)</span>
+<span class="fc" id="L40">        val entityUserCryptosPage = userCryptoRepository.findAll(pageRequest)</span>
+<span class="fc" id="L41">        val userCryptosPage = entityUserCryptosPage.content.map { userCrypto -&gt;</span>
+<span class="fc" id="L42">            val platform = platformService.retrievePlatformById(userCrypto.platformId)</span>
+<span class="fc" id="L43">            val crypto = cryptoService.retrieveCryptoInfoById(userCrypto.coingeckoCryptoId)</span>
 
-<span class="fc" id="L44">            userCrypto.toUserCryptoResponse(crypto.name, platform.name)</span>
+<span class="fc" id="L45">            userCrypto.toUserCryptoResponse(crypto.name, platform.name)</span>
         }
 
-<span class="fc" id="L47">        return PageUserCryptoResponse(page, entityUserCryptosPage.totalPages, userCryptosPage)</span>
+<span class="fc" id="L48">        return PageUserCryptoResponse(page, entityUserCryptosPage.totalPages, userCryptosPage)</span>
     }
 
     fun saveUserCrypto(userCryptoRequest: UserCryptoRequest): UserCryptoResponse {
-<span class="fc" id="L51">        val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(userCryptoRequest.cryptoName!!)</span>
-<span class="fc" id="L52">        val platform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)</span>
+<span class="fc" id="L52">        val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(userCryptoRequest.cryptoName!!)</span>
+<span class="fc" id="L53">        val platform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)</span>
 
-<span class="fc" id="L54">        val existingUserCrypto =</span>
-<span class="fc" id="L55">            userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)</span>
+<span class="fc" id="L55">        val existingUserCrypto =</span>
+<span class="fc" id="L56">            userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)</span>
 
-<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (existingUserCrypto.isPresent) {</span>
-<span class="fc" id="L58">            throw DuplicatedCryptoPlatFormException(</span>
-<span class="fc" id="L59">                DUPLICATED_CRYPTO_PLATFORM.format(</span>
-<span class="fc" id="L60">                    coingeckoCrypto.name,</span>
-<span class="fc" id="L61">                    platform.name</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        if (existingUserCrypto.isPresent) {</span>
+<span class="fc" id="L59">            throw DuplicatedCryptoPlatFormException(</span>
+<span class="fc" id="L60">                DUPLICATED_CRYPTO_PLATFORM.format(</span>
+<span class="fc" id="L61">                    coingeckoCrypto.name,</span>
+<span class="fc" id="L62">                    platform.name</span>
                 )
             )
         }
 
-<span class="fc" id="L66">        val userCrypto = UserCrypto(</span>
-<span class="fc" id="L67">            coingeckoCryptoId = coingeckoCrypto.id,</span>
-<span class="fc" id="L68">            quantity = userCryptoRequest.quantity!!,</span>
-<span class="fc" id="L69">            platformId = userCryptoRequest.platformId</span>
+<span class="fc" id="L67">        val userCrypto = UserCrypto(</span>
+<span class="fc" id="L68">            coingeckoCryptoId = coingeckoCrypto.id,</span>
+<span class="fc" id="L69">            quantity = userCryptoRequest.quantity!!,</span>
+<span class="fc" id="L70">            platformId = userCryptoRequest.platformId</span>
         )
 
-<span class="fc" id="L72">        userCryptoRepository.save(userCrypto)</span>
-<span class="fc" id="L73">        logger.info { &quot;Saved user crypto $userCrypto&quot; }</span>
-<span class="fc" id="L74">        cryptoService.saveCryptoIfNotExists(coingeckoCrypto.id)</span>
+<span class="fc" id="L73">        userCryptoRepository.save(userCrypto)</span>
+<span class="fc" id="L74">        logger.info { &quot;Saved user crypto $userCrypto&quot; }</span>
+<span class="fc" id="L75">        cryptoService.saveCryptoIfNotExists(coingeckoCrypto.id)</span>
 
-<span class="fc" id="L76">        return userCrypto.toUserCryptoResponse(</span>
-<span class="fc" id="L77">            cryptoName = coingeckoCrypto.name,</span>
-<span class="fc" id="L78">            platformName = platform.name</span>
+<span class="fc" id="L77">        return userCrypto.toUserCryptoResponse(</span>
+<span class="fc" id="L78">            cryptoName = coingeckoCrypto.name,</span>
+<span class="fc" id="L79">            platformName = platform.name</span>
         )
     }
 
     fun updateUserCrypto(userCryptoId: String, userCryptoRequest: UserCryptoRequest): UserCryptoResponse {
-<span class="fc" id="L83">        val userCrypto = findByUserCryptoId(userCryptoId)</span>
-<span class="fc" id="L84">        val platform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)</span>
-<span class="fc" id="L85">        val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(userCryptoRequest.cryptoName!!)</span>
+<span class="fc" id="L84">        val userCrypto = findByUserCryptoId(userCryptoId)</span>
+<span class="fc" id="L85">        val platform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)</span>
+<span class="fc" id="L86">        val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(userCryptoRequest.cryptoName!!)</span>
 
-<span class="fc" id="L87">        val existingUserCrypto =</span>
-<span class="fc" id="L88">            userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)</span>
+<span class="fc" id="L88">        val existingUserCrypto =</span>
+<span class="fc" id="L89">            userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)</span>
 
-<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (existingUserCrypto.isPresent) {</span>
-<span class="fc" id="L91">            throw DuplicatedCryptoPlatFormException(</span>
-<span class="fc" id="L92">                DUPLICATED_CRYPTO_PLATFORM.format(</span>
-<span class="fc" id="L93">                    coingeckoCrypto.name,</span>
-<span class="fc" id="L94">                    platform.name</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (existingUserCrypto.isPresent) {</span>
+<span class="fc" id="L92">            throw DuplicatedCryptoPlatFormException(</span>
+<span class="fc" id="L93">                DUPLICATED_CRYPTO_PLATFORM.format(</span>
+<span class="fc" id="L94">                    coingeckoCrypto.name,</span>
+<span class="fc" id="L95">                    platform.name</span>
                 )
             )
         }
 
-<span class="fc" id="L99">        val updatedUserCrypto = UserCrypto(</span>
-<span class="fc" id="L100">            id = userCrypto.id,</span>
-<span class="fc" id="L101">            coingeckoCryptoId = userCrypto.coingeckoCryptoId,</span>
-<span class="fc" id="L102">            quantity = userCryptoRequest.quantity!!,</span>
-<span class="fc" id="L103">            platformId = userCryptoRequest.platformId</span>
+<span class="fc" id="L100">        val updatedUserCrypto = UserCrypto(</span>
+<span class="fc" id="L101">            id = userCrypto.id,</span>
+<span class="fc" id="L102">            coingeckoCryptoId = userCrypto.coingeckoCryptoId,</span>
+<span class="fc" id="L103">            quantity = userCryptoRequest.quantity!!,</span>
+<span class="fc" id="L104">            platformId = userCryptoRequest.platformId</span>
         )
 
-<span class="fc" id="L106">        userCryptoRepository.save(updatedUserCrypto)</span>
-<span class="fc" id="L107">        logger.info { &quot;Updated user crypto. Before: $userCrypto | After: $updatedUserCrypto&quot; }</span>
+<span class="fc" id="L107">        userCryptoRepository.save(updatedUserCrypto)</span>
+<span class="fc" id="L108">        logger.info { &quot;Updated user crypto. Before: $userCrypto | After: $updatedUserCrypto&quot; }</span>
 
-<span class="fc" id="L109">        return updatedUserCrypto.toUserCryptoResponse(</span>
-<span class="fc" id="L110">            cryptoName = coingeckoCrypto.name,</span>
-<span class="fc" id="L111">            platformName = platform.name</span>
+<span class="fc" id="L110">        return updatedUserCrypto.toUserCryptoResponse(</span>
+<span class="fc" id="L111">            cryptoName = coingeckoCrypto.name,</span>
+<span class="fc" id="L112">            platformName = platform.name</span>
         )
     }
 
     fun deleteUserCrypto(userCryptoId: String) {
-<span class="fc" id="L116">        val userCrypto = findByUserCryptoId(userCryptoId)</span>
-<span class="fc" id="L117">        userCryptoRepository.deleteById(userCryptoId)</span>
-<span class="fc" id="L118">        cryptoService.deleteCryptoIfNotUsed(userCrypto.coingeckoCryptoId)</span>
+<span class="fc" id="L117">        val userCrypto = findByUserCryptoId(userCryptoId)</span>
+<span class="fc" id="L118">        userCryptoRepository.deleteById(userCryptoId)</span>
+<span class="fc" id="L119">        cryptoService.deleteCryptoIfNotUsed(userCrypto.coingeckoCryptoId)</span>
 
-<span class="fc" id="L120">        logger.info { &quot;Deleted user crypto $userCryptoId&quot; }</span>
-<span class="fc" id="L121">    }</span>
+<span class="fc" id="L121">        logger.info { &quot;Deleted user crypto $userCryptoId&quot; }</span>
+<span class="fc" id="L122">    }</span>
 
     fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List&lt;UserCrypto&gt; {
-<span class="fc" id="L124">        return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
+<span class="fc" id="L125">        return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
     }
 
     fun findByUserCryptoId(userCryptoId: String): UserCrypto {
-<span class="fc" id="L128">        return userCryptoRepository.findById(userCryptoId)</span>
-<span class="fc" id="L129">            .orElseThrow { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) }</span>
+<span class="fc" id="L129">        return userCryptoRepository.findById(userCryptoId)</span>
+<span class="fc" id="L130">            .orElseThrow { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) }</span>
     }
 
     fun findByCoingeckoCryptoIdAndPlatformId(cryptoId: String, platformId: String): Optional&lt;UserCrypto&gt; {
-<span class="fc" id="L133">        return userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(cryptoId, platformId)</span>
+<span class="fc" id="L134">        return userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(cryptoId, platformId)</span>
     }
 
     fun saveOrUpdateAll(userCryptos: List&lt;UserCrypto&gt;) {
-<span class="fc" id="L137">        userCryptoRepository.saveAll(userCryptos)</span>
-<span class="fc" id="L138">    }</span>
+<span class="fc" id="L138">        userCryptoRepository.saveAll(userCryptos)</span>
+<span class="fc" id="L139">    }</span>
 
-<span class="fc" id="L140">    fun findAllByPlatformId(platformId: String) = userCryptoRepository.findAllByPlatformId(platformId)</span>
+<span class="fc" id="L141">    fun findAllByPlatformId(platformId: String) = userCryptoRepository.findAllByPlatformId(platformId)</span>
 
-<span class="fc" id="L142">    fun findAll(): List&lt;UserCrypto&gt; = userCryptoRepository.findAll()</span>
+<span class="fc" id="L143">    fun findAll(): List&lt;UserCrypto&gt; = userCryptoRepository.findAll()</span>
+
+<span class="nc" id="L145">    fun findAllByPage(page: Int): Page&lt;UserCrypto&gt; = userCryptoRepository.findAll(PageRequest.of(page, 10))</span>
 }
 
-<span class="fc" id="L145">class UserCryptoNotFoundException(message: String) : RuntimeException(message)</span>
-<span class="fc" id="L146">class DuplicatedCryptoPlatFormException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L148">class UserCryptoNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L149">class DuplicatedCryptoPlatFormException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
