@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CacheService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.service</a> &gt; <span class="el_source">CacheService.kt</span></div><h1>CacheService.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.service
 
+import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_CRYPTOS_IDS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PAGE_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
 import org.springframework.cache.CacheManager
 import org.springframework.cache.interceptor.SimpleKey
+import org.springframework.data.util.CastUtils
 import org.springframework.stereotype.Service
 
-<span class="fc" id="L8">@Service</span>
-<span class="fc" id="L9">class CacheService(private val cacheManager: CacheManager) {</span>
+<span class="fc" id="L14">@Service</span>
+<span class="fc" id="L15">class CacheService(private val cacheManager: CacheManager) {</span>
 
-<span class="fc" id="L11">    fun evictUserCryptosCache() = cacheManager.getCache(USER_CRYPTOS_CACHE)!!.evictIfPresent(SimpleKey::class.java)</span>
+    fun invalidateUserCryptosCaches() {
+<span class="nc bnc" id="L18" title="All 2 branches missed.">        cacheManager.getCache(USER_CRYPTOS_CACHE)?.invalidate()</span>
+<span class="nc bnc" id="L19" title="All 2 branches missed.">        cacheManager.getCache(USER_CRYPTOS_PAGE_CACHE)?.invalidate()</span>
+<span class="nc bnc" id="L20" title="All 2 branches missed.">        cacheManager.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE)?.invalidate()</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">        cacheManager.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE)?.invalidate()</span>
+<span class="nc" id="L22">    }</span>
+
+    fun invalidatePlatformsCaches() {
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">        cacheManager.getCache(PLATFORMS_PLATFORMS_IDS_CACHE)?.invalidate()</span>
+<span class="fc" id="L26">    }</span>
+
+    fun invalidateCryptosCache() {
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        cacheManager.getCache(CRYPTOS_CRYPTOS_IDS_CACHE)?.invalidate()</span>
+<span class="nc" id="L30">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
