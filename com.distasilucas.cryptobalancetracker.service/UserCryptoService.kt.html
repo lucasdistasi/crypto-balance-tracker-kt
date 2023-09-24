@@ -161,9 +161,9 @@ import java.util.Optional
 
     @Cacheable(cacheNames = [USER_CRYPTOS_PAGE_CACHE]) // TODO - CHECK IF CACHE WORKS
     fun findAllByPage(page: Int): Page&lt;UserCrypto&gt; {
-<span class="nc" id="L164">        logger.info { &quot;Retrieving all user cryptos for page $page&quot; }</span>
+<span class="fc" id="L164">        logger.info { &quot;Retrieving all user cryptos for page $page&quot; }</span>
 
-<span class="nc" id="L166">        return userCryptoRepository.findAll(PageRequest.of(page, 10))</span>
+<span class="fc" id="L166">        return userCryptoRepository.findAll(PageRequest.of(page, 10))</span>
     }
 }
 
