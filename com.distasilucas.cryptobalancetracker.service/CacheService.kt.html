@@ -7,26 +7,24 @@ import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CR
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
 import org.springframework.cache.CacheManager
-import org.springframework.cache.interceptor.SimpleKey
-import org.springframework.data.util.CastUtils
 import org.springframework.stereotype.Service
 
-<span class="fc" id="L14">@Service</span>
-<span class="fc" id="L15">class CacheService(private val cacheManager: CacheManager) {</span>
+<span class="fc" id="L12">@Service</span>
+<span class="fc" id="L13">class CacheService(private val cacheManager: CacheManager) {</span>
 
     fun invalidateUserCryptosCaches() {
-<span class="nc bnc" id="L18" title="All 2 branches missed.">        cacheManager.getCache(USER_CRYPTOS_CACHE)?.invalidate()</span>
-<span class="nc bnc" id="L19" title="All 2 branches missed.">        cacheManager.getCache(USER_CRYPTOS_PAGE_CACHE)?.invalidate()</span>
-<span class="nc bnc" id="L20" title="All 2 branches missed.">        cacheManager.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE)?.invalidate()</span>
-<span class="nc bnc" id="L21" title="All 2 branches missed.">        cacheManager.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE)?.invalidate()</span>
-<span class="nc" id="L22">    }</span>
+<span class="nc bnc" id="L16" title="All 2 branches missed.">        cacheManager.getCache(USER_CRYPTOS_CACHE)?.invalidate()</span>
+<span class="nc bnc" id="L17" title="All 2 branches missed.">        cacheManager.getCache(USER_CRYPTOS_PAGE_CACHE)?.invalidate()</span>
+<span class="nc bnc" id="L18" title="All 2 branches missed.">        cacheManager.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE)?.invalidate()</span>
+<span class="nc bnc" id="L19" title="All 2 branches missed.">        cacheManager.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE)?.invalidate()</span>
+<span class="nc" id="L20">    }</span>
 
     fun invalidatePlatformsCaches() {
-<span class="pc bpc" id="L25" title="1 of 2 branches missed.">        cacheManager.getCache(PLATFORMS_PLATFORMS_IDS_CACHE)?.invalidate()</span>
-<span class="fc" id="L26">    }</span>
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">        cacheManager.getCache(PLATFORMS_PLATFORMS_IDS_CACHE)?.invalidate()</span>
+<span class="fc" id="L24">    }</span>
 
     fun invalidateCryptosCache() {
-<span class="nc bnc" id="L29" title="All 2 branches missed.">        cacheManager.getCache(CRYPTOS_CRYPTOS_IDS_CACHE)?.invalidate()</span>
-<span class="nc" id="L30">    }</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        cacheManager.getCache(CRYPTOS_CRYPTOS_IDS_CACHE)?.invalidate()</span>
+<span class="fc" id="L28">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
