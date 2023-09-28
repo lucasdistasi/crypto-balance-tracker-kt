@@ -114,14 +114,13 @@ import java.time.LocalDateTime
 <span class="fc" id="L114">        logger.info { &quot;Updated cryptos ${cryptosToUpdate.map { it.name }}&quot; }</span>
 <span class="fc" id="L115">    }</span>
 
-    // TODO - add cache, evict when adding/deleting crypto
-    @Cacheable(cacheNames = [CRYPTOS_CRYPTOS_IDS_CACHE])
-    fun findAllByIds(vararg ids: String): List&lt;Crypto&gt; {
-<span class="fc" id="L120">        logger.info { &quot;Retrieving cryptos with ids $ids&quot; }</span>
+    @Cacheable(cacheNames = [CRYPTOS_CRYPTOS_IDS_CACHE], key = &quot;#ids&quot;)
+    fun findAllByIds(ids: Collection&lt;String&gt;): List&lt;Crypto&gt; {
+<span class="fc" id="L119">        logger.info { &quot;Retrieving cryptos with ids $ids&quot; }</span>
 
-<span class="fc" id="L122">        return cryptoRepository.findAllByIdIn(listOf(*ids))</span>
+<span class="fc" id="L121">        return cryptoRepository.findAllByIdIn(ids)</span>
     }
 }
 
-<span class="fc" id="L126">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L125">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

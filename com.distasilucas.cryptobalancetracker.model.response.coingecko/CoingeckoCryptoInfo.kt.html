@@ -1,36 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoingeckoCryptoInfo.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.model.response.coingecko</a> &gt; <span class="el_source">CoingeckoCryptoInfo.kt</span></div><h1>CoingeckoCryptoInfo.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.model.response.coingecko
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.io.Serializable
 import java.math.BigDecimal
 
-<span class="fc" id="L6">data class CoingeckoCryptoInfo(</span>
-<span class="fc" id="L7">    val id: String,</span>
-<span class="fc" id="L8">    val symbol: String,</span>
-<span class="fc" id="L9">    val name: String,</span>
-<span class="fc" id="L10">    val image: Image,</span>
+<span class="fc" id="L7">data class CoingeckoCryptoInfo(</span>
+<span class="fc" id="L8">    val id: String,</span>
+<span class="fc" id="L9">    val symbol: String,</span>
+<span class="fc" id="L10">    val name: String,</span>
+<span class="fc" id="L11">    val image: Image,</span>
 
-<span class="fc" id="L12">    @JsonProperty(&quot;market_data&quot;)</span>
-<span class="fc" id="L13">    val marketData: MarketData</span>
-)
+<span class="fc" id="L13">    @JsonProperty(&quot;market_data&quot;)</span>
+<span class="fc" id="L14">    val marketData: MarketData</span>
+): Serializable
 
-<span class="fc" id="L16">data class Image(</span>
-<span class="fc" id="L17">    val large: String</span>
-)
+<span class="fc" id="L17">data class Image(</span>
+<span class="fc" id="L18">    val large: String</span>
+): Serializable
 
-<span class="fc" id="L20">data class MarketData(</span>
-<span class="fc" id="L21">    @JsonProperty(&quot;current_price&quot;)</span>
-<span class="fc" id="L22">    val currentPrice: CurrentPrice,</span>
+<span class="fc" id="L21">data class MarketData(</span>
+<span class="fc" id="L22">    @JsonProperty(&quot;current_price&quot;)</span>
+<span class="fc" id="L23">    val currentPrice: CurrentPrice,</span>
 
-<span class="fc" id="L24">    @JsonProperty(&quot;circulating_supply&quot;)</span>
-<span class="fc" id="L25">    val circulatingSupply: BigDecimal,</span>
+<span class="fc" id="L25">    @JsonProperty(&quot;circulating_supply&quot;)</span>
+<span class="fc" id="L26">    val circulatingSupply: BigDecimal,</span>
 
-<span class="fc" id="L27">    @JsonProperty(&quot;max_supply&quot;)</span>
-<span class="fc" id="L28">    val maxSupply: BigDecimal?</span>
-)
+<span class="fc" id="L28">    @JsonProperty(&quot;max_supply&quot;)</span>
+<span class="fc" id="L29">    val maxSupply: BigDecimal?</span>
+): Serializable
 
-<span class="fc" id="L31">data class CurrentPrice(</span>
-<span class="fc" id="L32">    val usd: BigDecimal,</span>
-<span class="fc" id="L33">    val eur: BigDecimal,</span>
-<span class="fc" id="L34">    val btc: BigDecimal</span>
-)
+<span class="fc" id="L32">data class CurrentPrice(</span>
+<span class="fc" id="L33">    val usd: BigDecimal,</span>
+<span class="fc" id="L34">    val eur: BigDecimal,</span>
+<span class="fc" id="L35">    val btc: BigDecimal</span>
+): Serializable
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

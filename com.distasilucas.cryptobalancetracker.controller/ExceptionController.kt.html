@@ -28,18 +28,20 @@ import java.net.URI
 
 <span class="fc" id="L29">    private val logger = KotlinLogging.logger { }</span>
 
+    // TODO - add MissingServletRequestParameterException (when i dont send page on the url)
+
     @ExceptionHandler(PlatformNotFoundException::class)
     fun handlePlatformNotFoundException(
         exception: PlatformNotFoundException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L36">        logger.info { &quot;A PlatformNotFoundException occurred $exception&quot; }</span>
+<span class="fc" id="L38">        logger.info { &quot;A PlatformNotFoundException occurred $exception&quot; }</span>
 
-<span class="fc" id="L38">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L39">        val problemDetail =</span>
-<span class="fc" id="L40">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L40">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L41">        val problemDetail =</span>
+<span class="fc" id="L42">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L42">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
+<span class="fc" id="L44">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
     }
 
     @ExceptionHandler(CoingeckoCryptoNotFoundException::class)
@@ -47,13 +49,13 @@ import java.net.URI
         exception: CoingeckoCryptoNotFoundException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L50">        logger.info { &quot;A CoingeckoCryptoNotFoundException occurred $exception&quot; }</span>
+<span class="fc" id="L52">        logger.info { &quot;A CoingeckoCryptoNotFoundException occurred $exception&quot; }</span>
 
-<span class="fc" id="L52">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L53">        val problemDetail =</span>
-<span class="fc" id="L54">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L54">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L55">        val problemDetail =</span>
+<span class="fc" id="L56">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L56">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
+<span class="fc" id="L58">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
     }
 
     @ExceptionHandler(UserCryptoNotFoundException::class)
@@ -61,13 +63,13 @@ import java.net.URI
         exception: UserCryptoNotFoundException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L64">        logger.info { &quot;A UserCryptoNotFoundException occurred $exception&quot; }</span>
+<span class="fc" id="L66">        logger.info { &quot;A UserCryptoNotFoundException occurred $exception&quot; }</span>
 
-<span class="fc" id="L66">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L67">        val problemDetail =</span>
-<span class="fc" id="L68">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L68">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L69">        val problemDetail =</span>
+<span class="fc" id="L70">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L70">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
+<span class="fc" id="L72">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
     }
 
     @ExceptionHandler(GoalNotFoundException::class)
@@ -75,13 +77,13 @@ import java.net.URI
         exception: GoalNotFoundException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L78">        logger.info { &quot;A GoalNotFoundException occurred $exception&quot; }</span>
+<span class="fc" id="L80">        logger.info { &quot;A GoalNotFoundException occurred $exception&quot; }</span>
 
-<span class="fc" id="L80">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L81">        val problemDetail =</span>
-<span class="fc" id="L82">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L82">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L83">        val problemDetail =</span>
+<span class="fc" id="L84">            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L84">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
+<span class="fc" id="L86">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail)</span>
     }
 
     @ExceptionHandler(DuplicatedPlatformException::class)
@@ -89,13 +91,13 @@ import java.net.URI
         exception: DuplicatedPlatformException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L92">        logger.info { &quot;A DuplicatedPlatformException occurred $exception&quot; }</span>
+<span class="fc" id="L94">        logger.info { &quot;A DuplicatedPlatformException occurred $exception&quot; }</span>
 
-<span class="fc" id="L94">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L95">        val problemDetail =</span>
-<span class="fc" id="L96">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L96">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L97">        val problemDetail =</span>
+<span class="fc" id="L98">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L98">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
+<span class="fc" id="L100">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
     }
 
     @ExceptionHandler(DuplicatedCryptoPlatFormException::class)
@@ -103,13 +105,13 @@ import java.net.URI
         exception: DuplicatedCryptoPlatFormException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L106">        logger.info { &quot;A DuplicatedCryptoPlatFormException occurred $exception&quot; }</span>
+<span class="fc" id="L108">        logger.info { &quot;A DuplicatedCryptoPlatFormException occurred $exception&quot; }</span>
 
-<span class="fc" id="L108">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L109">        val problemDetail =</span>
-<span class="fc" id="L110">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L110">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L111">        val problemDetail =</span>
+<span class="fc" id="L112">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L112">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
+<span class="fc" id="L114">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
     }
 
     @ExceptionHandler(DuplicatedGoalException::class)
@@ -117,13 +119,13 @@ import java.net.URI
         exception: DuplicatedGoalException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L120">        logger.info { &quot;A DuplicatedGoalException occurred $exception&quot; }</span>
+<span class="fc" id="L122">        logger.info { &quot;A DuplicatedGoalException occurred $exception&quot; }</span>
 
-<span class="fc" id="L122">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L123">        val problemDetail =</span>
-<span class="fc" id="L124">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L124">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L125">        val problemDetail =</span>
+<span class="fc" id="L126">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L126">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
+<span class="fc" id="L128">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
     }
 
     @ExceptionHandler(InsufficientBalanceException::class)
@@ -131,13 +133,13 @@ import java.net.URI
         exception: InsufficientBalanceException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L134">        logger.info { &quot;An InsufficientBalanceException occurred $exception&quot; }</span>
+<span class="fc" id="L136">        logger.info { &quot;An InsufficientBalanceException occurred $exception&quot; }</span>
 
-<span class="fc" id="L136">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L137">        val problemDetail =</span>
-<span class="fc" id="L138">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L138">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L139">        val problemDetail =</span>
+<span class="fc" id="L140">            HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))</span>
 
-<span class="fc" id="L140">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
+<span class="fc" id="L142">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
@@ -145,17 +147,17 @@ import java.net.URI
         exception: MethodArgumentNotValidException,
         webRequest: WebRequest
     ): ResponseEntity&lt;List&lt;ProblemDetail&gt;&gt; {
-<span class="fc" id="L148">        logger.info { &quot;A MethodArgumentNotValidException occurred $exception&quot; }</span>
+<span class="fc" id="L150">        logger.info { &quot;A MethodArgumentNotValidException occurred $exception&quot; }</span>
 
-<span class="fc" id="L150">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L151">        val problemDetails = exception.allErrors.map {</span>
-<span class="fc" id="L152">            HttpStatus.BAD_REQUEST.withDetailsAndURI(</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">                it.defaultMessage ?: UNKNOWN_ERROR,</span>
-<span class="fc" id="L154">                URI.create(request.requestURL.toString())</span>
+<span class="fc" id="L152">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L153">        val problemDetails = exception.allErrors.map {</span>
+<span class="fc" id="L154">            HttpStatus.BAD_REQUEST.withDetailsAndURI(</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">                it.defaultMessage ?: UNKNOWN_ERROR,</span>
+<span class="fc" id="L156">                URI.create(request.requestURL.toString())</span>
             )
         }
 
-<span class="fc" id="L158">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetails)</span>
+<span class="fc" id="L160">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetails)</span>
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
@@ -163,13 +165,13 @@ import java.net.URI
         exception: HttpMessageNotReadableException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L166">        logger.info { &quot;A HttpMessageNotReadableException occurred $exception&quot; }</span>
+<span class="fc" id="L168">        logger.info { &quot;A HttpMessageNotReadableException occurred $exception&quot; }</span>
 
-<span class="fc" id="L168">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L169">        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)</span>
-<span class="fc" id="L170">        problemDetail.type = URI.create(request.requestURL.toString())</span>
+<span class="fc" id="L170">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L171">        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)</span>
+<span class="fc" id="L172">        problemDetail.type = URI.create(request.requestURL.toString())</span>
 
-<span class="fc" id="L172">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
+<span class="fc" id="L174">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)</span>
     }
 
     @ExceptionHandler(ConstraintViolationException::class)
@@ -177,16 +179,16 @@ import java.net.URI
         exception: ConstraintViolationException,
         webRequest: WebRequest
     ): ResponseEntity&lt;List&lt;ProblemDetail&gt;&gt; {
-<span class="fc" id="L180">        logger.info { &quot;A ConstraintViolationException occurred $exception&quot; }</span>
+<span class="fc" id="L182">        logger.info { &quot;A ConstraintViolationException occurred $exception&quot; }</span>
 
-<span class="fc" id="L182">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L183">        val constraintViolations = exception.constraintViolations.toList()</span>
+<span class="fc" id="L184">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L185">        val constraintViolations = exception.constraintViolations.toList()</span>
 
-<span class="fc" id="L185">        val problemDetails = constraintViolations.map {</span>
-<span class="fc" id="L186">            HttpStatus.BAD_REQUEST.withDetailsAndURI(it.message, URI.create(request.requestURL.toString()))</span>
+<span class="fc" id="L187">        val problemDetails = constraintViolations.map {</span>
+<span class="fc" id="L188">            HttpStatus.BAD_REQUEST.withDetailsAndURI(it.message, URI.create(request.requestURL.toString()))</span>
         }
 
-<span class="fc" id="L189">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetails)</span>
+<span class="fc" id="L191">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetails)</span>
     }
 
     @ExceptionHandler(ApiException::class)
@@ -194,38 +196,38 @@ import java.net.URI
         exception: ApiException,
         webRequest: WebRequest
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L197">        logger.warn { &quot;An ApiException occurred $exception&quot; }</span>
+<span class="fc" id="L199">        logger.warn { &quot;An ApiException occurred $exception&quot; }</span>
 
-<span class="fc" id="L199">        val request = (webRequest as ServletWebRequest).request</span>
-<span class="fc" id="L200">        val httpStatusCode = exception.httpStatusCode</span>
+<span class="fc" id="L201">        val request = (webRequest as ServletWebRequest).request</span>
+<span class="fc" id="L202">        val httpStatusCode = exception.httpStatusCode</span>
 
-<span class="fc" id="L202">        val problemDetail = ProblemDetail.forStatusAndDetail(httpStatusCode, exception.message!!)</span>
-<span class="fc" id="L203">        problemDetail.type = URI.create(request.requestURL.toString())</span>
+<span class="fc" id="L204">        val problemDetail = ProblemDetail.forStatusAndDetail(httpStatusCode, exception.message!!)</span>
+<span class="fc" id="L205">        problemDetail.type = URI.create(request.requestURL.toString())</span>
 
-<span class="fc" id="L205">        return ResponseEntity.status(httpStatusCode)</span>
-<span class="fc" id="L206">            .body(problemDetail)</span>
+<span class="fc" id="L207">        return ResponseEntity.status(httpStatusCode)</span>
+<span class="fc" id="L208">            .body(problemDetail)</span>
     }
 
     @ExceptionHandler(Exception::class)
     fun handleException(
         exception: Exception
     ): ResponseEntity&lt;ProblemDetail&gt; {
-<span class="fc" id="L213">        logger.warn { &quot;An unhandled Exception occurred $exception&quot; }</span>
+<span class="fc" id="L215">        logger.warn { &quot;An unhandled Exception occurred $exception&quot; }</span>
 
-<span class="fc" id="L215">        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, UNKNOWN_ERROR)</span>
+<span class="fc" id="L217">        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, UNKNOWN_ERROR)</span>
 
-<span class="fc" id="L217">        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
-<span class="fc" id="L218">            .body(problemDetail)</span>
+<span class="fc" id="L219">        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="fc" id="L220">            .body(problemDetail)</span>
     }
 
     private fun HttpStatus.withDetailsAndURI(
         detail: String,
         type: URI
     ): ProblemDetail {
-<span class="fc" id="L225">        val problemDetail = ProblemDetail.forStatusAndDetail(this, detail)</span>
-<span class="fc" id="L226">        problemDetail.type = type</span>
+<span class="fc" id="L227">        val problemDetail = ProblemDetail.forStatusAndDetail(this, detail)</span>
+<span class="fc" id="L228">        problemDetail.type = type</span>
 
-<span class="fc" id="L228">        return problemDetail</span>
+<span class="fc" id="L230">        return problemDetail</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
