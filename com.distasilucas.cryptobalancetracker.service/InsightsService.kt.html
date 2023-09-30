@@ -24,454 +24,456 @@ import java.util.Optional
 import kotlin.math.ceil
 
 private const val ELEMENTS_PER_PAGE = 10.0
+private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
 
-<span class="fc" id="L28">@Service</span>
-<span class="fc" id="L29">class InsightsService(</span>
-<span class="fc" id="L30">    private val platformService: PlatformService,</span>
-<span class="fc" id="L31">    private val userCryptoService: UserCryptoService,</span>
-<span class="fc" id="L32">    private val cryptoService: CryptoService</span>
+<span class="fc" id="L29">@Service</span>
+<span class="fc" id="L30">class InsightsService(</span>
+<span class="fc" id="L31">    private val platformService: PlatformService,</span>
+<span class="fc" id="L32">    private val userCryptoService: UserCryptoService,</span>
+<span class="fc" id="L33">    private val cryptoService: CryptoService</span>
 ) {
 
-<span class="fc" id="L35">    private val logger = KotlinLogging.logger { }</span>
+<span class="fc" id="L36">    private val logger = KotlinLogging.logger { }</span>
 
     fun retrieveTotalBalancesInsights(): Optional&lt;BalancesResponse&gt; {
-<span class="fc" id="L38">        logger.info { &quot;Retrieving total balances&quot; }</span>
+<span class="fc" id="L39">        logger.info { &quot;Retrieving total balances&quot; }</span>
 
-<span class="fc" id="L40">        val userCryptos = userCryptoService.findAll()</span>
+<span class="fc" id="L41">        val userCryptos = userCryptoService.findAll()</span>
 
-<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
-<span class="fc" id="L43">            return Optional.empty()</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
+<span class="fc" id="L44">            return Optional.empty()</span>
         }
 
-<span class="fc" id="L46">        val userCryptoQuantity = getUserCryptoQuantity(userCryptos)</span>
-<span class="fc" id="L47">        val cryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet()</span>
-<span class="fc" id="L48">        val cryptos = cryptoService.findAllByIds(cryptosIds)</span>
-<span class="fc" id="L49">        val balances = getTotalBalances(cryptos, userCryptoQuantity)</span>
+<span class="fc" id="L47">        val userCryptoQuantity = getUserCryptoQuantity(userCryptos)</span>
+<span class="fc" id="L48">        val cryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet()</span>
+<span class="fc" id="L49">        val cryptos = cryptoService.findAllByIds(cryptosIds)</span>
+<span class="fc" id="L50">        val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)</span>
 
-<span class="fc" id="L51">        return Optional.of(balances)</span>
+<span class="fc" id="L52">        return Optional.of(totalBalances)</span>
     }
 
     fun retrievePlatformInsights(platformId: String): Optional&lt;PlatformInsightsResponse&gt; {
-<span class="fc" id="L55">        logger.info { &quot;Retrieving insights for platform with id $platformId&quot; }</span>
+<span class="fc" id="L56">        logger.info { &quot;Retrieving insights for platform with id $platformId&quot; }</span>
 
-<span class="fc" id="L57">        val userCryptos = userCryptoService.findAllByPlatformId(platformId)</span>
+<span class="fc" id="L58">        val userCryptos = userCryptoService.findAllByPlatformId(platformId)</span>
 
-<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
-<span class="fc" id="L60">            return Optional.empty()</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
+<span class="fc" id="L61">            return Optional.empty()</span>
         }
 
-<span class="fc" id="L63">        val platformResponse = platformService.retrievePlatformById(platformId)</span>
-<span class="fc" id="L64">        val cryptosIds = userCryptos.map { it.coingeckoCryptoId }</span>
-<span class="fc" id="L65">        val cryptos = cryptoService.findAllByIds(cryptosIds)</span>
-<span class="fc" id="L66">        val userCryptosQuantity = getUserCryptoQuantity(userCryptos)</span>
-<span class="fc" id="L67">        val totalBalances = getTotalBalances(cryptos, userCryptosQuantity)</span>
+<span class="fc" id="L64">        val platformResponse = platformService.retrievePlatformById(platformId)</span>
+<span class="fc" id="L65">        val cryptosIds = userCryptos.map { it.coingeckoCryptoId }</span>
+<span class="fc" id="L66">        val cryptos = cryptoService.findAllByIds(cryptosIds)</span>
+<span class="fc" id="L67">        val userCryptosQuantity = getUserCryptoQuantity(userCryptos)</span>
+<span class="fc" id="L68">        val totalBalances = getTotalBalances(cryptos, userCryptosQuantity)</span>
 
-<span class="fc" id="L69">        val cryptosInsights = cryptos.map { crypto -&gt;</span>
-<span class="fc" id="L70">            val quantity = userCryptosQuantity[crypto.id]</span>
-<span class="fc" id="L71">            val cryptoTotalBalances = getCryptoTotalBalances(crypto, quantity!!)</span>
+<span class="fc" id="L70">        val cryptosInsights = cryptos.map { crypto -&gt;</span>
+<span class="fc" id="L71">            val quantity = userCryptosQuantity[crypto.id]</span>
+<span class="fc" id="L72">            val cryptoTotalBalances = getCryptoTotalBalances(crypto, quantity!!)</span>
 
-<span class="fc" id="L73">            val cryptoInsight = CryptoInsights(</span>
-<span class="fc" id="L74">                cryptoName = crypto.name,</span>
-<span class="fc" id="L75">                cryptoId = crypto.id,</span>
-<span class="fc" id="L76">                quantity = quantity.toPlainString(),</span>
-<span class="fc" id="L77">                balances = cryptoTotalBalances,</span>
-<span class="fc" id="L78">                percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance)</span>
+<span class="fc" id="L74">            val cryptoInsight = CryptoInsights(</span>
+<span class="fc" id="L75">                cryptoName = crypto.name,</span>
+<span class="fc" id="L76">                cryptoId = crypto.id,</span>
+<span class="fc" id="L77">                quantity = quantity.toPlainString(),</span>
+<span class="fc" id="L78">                balances = cryptoTotalBalances,</span>
+<span class="fc" id="L79">                percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance)</span>
             )
 
-<span class="fc" id="L81">            cryptoInsight</span>
-<span class="fc" id="L82">        }.sortedByDescending { it.percentage }</span>
+<span class="fc" id="L82">            cryptoInsight</span>
+<span class="fc" id="L83">        }.sortedByDescending { it.percentage }</span>
 
-<span class="fc" id="L84">        return Optional.of(</span>
-<span class="fc" id="L85">            PlatformInsightsResponse(</span>
-<span class="fc" id="L86">                platformName = platformResponse.name,</span>
-<span class="fc" id="L87">                balances = totalBalances,</span>
-<span class="fc" id="L88">                cryptos = cryptosInsights</span>
+<span class="fc" id="L85">        return Optional.of(</span>
+<span class="fc" id="L86">            PlatformInsightsResponse(</span>
+<span class="fc" id="L87">                platformName = platformResponse.name,</span>
+<span class="fc" id="L88">                balances = totalBalances,</span>
+<span class="fc" id="L89">                cryptos = cryptosInsights</span>
             )
         )
     }
 
     fun retrieveCryptoInsights(coingeckoCryptoId: String): Optional&lt;CryptoInsightResponse&gt; {
-<span class="fc" id="L94">        logger.info { &quot;Retrieving insights for crypto with coingeckoCryptoId $coingeckoCryptoId&quot; }</span>
+<span class="fc" id="L95">        logger.info { &quot;Retrieving insights for crypto with coingeckoCryptoId $coingeckoCryptoId&quot; }</span>
 
-<span class="fc" id="L96">        val userCryptos = userCryptoService.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
+<span class="fc" id="L97">        val userCryptos = userCryptoService.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
 
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
-<span class="fc" id="L99">            return Optional.empty()</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
+<span class="fc" id="L100">            return Optional.empty()</span>
         }
 
-<span class="fc" id="L102">        val platformsIds = userCryptos.map { it.platformId }</span>
-<span class="fc" id="L103">        val platforms = platformService.findAllByIds(platformsIds)</span>
-<span class="fc" id="L104">        val crypto = cryptoService.retrieveCryptoInfoById(coingeckoCryptoId)</span>
+<span class="fc" id="L103">        val platformsIds = userCryptos.map { it.platformId }</span>
+<span class="fc" id="L104">        val platforms = platformService.findAllByIds(platformsIds)</span>
+<span class="fc" id="L105">        val crypto = cryptoService.retrieveCryptoInfoById(coingeckoCryptoId)</span>
 
-<span class="fc" id="L106">        val platformUserCryptoQuantity = userCryptos.associateBy({ it.platformId }, { it.quantity })</span>
-<span class="fc" id="L107">        val totalCryptoQuantity = userCryptos.map { it.quantity }.fold(BigDecimal.ZERO, BigDecimal::add)</span>
-<span class="fc" id="L108">        val totalBalances = getTotalBalances(listOf(crypto), mapOf(coingeckoCryptoId to totalCryptoQuantity))</span>
+<span class="fc" id="L107">        val platformUserCryptoQuantity = userCryptos.associateBy({ it.platformId }, { it.quantity })</span>
+<span class="fc" id="L108">        val totalCryptoQuantity = userCryptos.map { it.quantity }.fold(BigDecimal.ZERO, BigDecimal::add)</span>
+<span class="fc" id="L109">        val totalBalances = getTotalBalances(listOf(crypto), mapOf(coingeckoCryptoId to totalCryptoQuantity))</span>
 
-<span class="fc" id="L110">        val platformInsights = platforms.map { platform -&gt;</span>
-<span class="fc" id="L111">            val quantity = platformUserCryptoQuantity[platform.id]</span>
-<span class="fc" id="L112">            val cryptoTotalBalances = getCryptoTotalBalances(crypto, quantity!!)</span>
+<span class="fc" id="L111">        val platformInsights = platforms.map { platform -&gt;</span>
+<span class="fc" id="L112">            val quantity = platformUserCryptoQuantity[platform.id]</span>
+<span class="fc" id="L113">            val cryptoTotalBalances = getCryptoTotalBalances(crypto, quantity!!)</span>
 
-<span class="fc" id="L114">            val platformInsight = PlatformInsight(</span>
-<span class="fc" id="L115">                quantity = quantity.toPlainString(),</span>
-<span class="fc" id="L116">                balances = cryptoTotalBalances,</span>
-<span class="fc" id="L117">                percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),</span>
-<span class="fc" id="L118">                platformName = platform.name</span>
+<span class="fc" id="L115">            val platformInsight = PlatformInsight(</span>
+<span class="fc" id="L116">                quantity = quantity.toPlainString(),</span>
+<span class="fc" id="L117">                balances = cryptoTotalBalances,</span>
+<span class="fc" id="L118">                percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),</span>
+<span class="fc" id="L119">                platformName = platform.name</span>
             )
 
-<span class="fc" id="L121">            platformInsight</span>
-<span class="fc" id="L122">        }.sortedByDescending { it.percentage }</span>
+<span class="fc" id="L122">            platformInsight</span>
+<span class="fc" id="L123">        }.sortedByDescending { it.percentage }</span>
 
-<span class="fc" id="L124">        return Optional.of(</span>
-<span class="fc" id="L125">            CryptoInsightResponse(</span>
-<span class="fc" id="L126">                cryptoName = crypto.name,</span>
-<span class="fc" id="L127">                balances = totalBalances,</span>
-<span class="fc" id="L128">                platforms = platformInsights</span>
+<span class="fc" id="L125">        return Optional.of(</span>
+<span class="fc" id="L126">            CryptoInsightResponse(</span>
+<span class="fc" id="L127">                cryptoName = crypto.name,</span>
+<span class="fc" id="L128">                balances = totalBalances,</span>
+<span class="fc" id="L129">                platforms = platformInsights</span>
             )
         )
     }
 
     fun retrievePlatformsBalancesInsights(): Optional&lt;PlatformsBalancesInsightsResponse&gt; {
-<span class="fc" id="L134">        logger.info { &quot;Retrieving all platforms balances insights&quot; }</span>
+<span class="fc" id="L135">        logger.info { &quot;Retrieving all platforms balances insights&quot; }</span>
 
-<span class="fc" id="L136">        val userCryptos = userCryptoService.findAll()</span>
+<span class="fc" id="L137">        val userCryptos = userCryptoService.findAll()</span>
 
-<span class="fc bfc" id="L138" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
-<span class="fc" id="L139">            return Optional.empty()</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
+<span class="fc" id="L140">            return Optional.empty()</span>
         }
 
-<span class="fc" id="L142">        val platformsIds = userCryptos.map { it.platformId }.toSet()</span>
-<span class="fc" id="L143">        val platforms = platformService.findAllByIds(platformsIds)</span>
-<span class="fc" id="L144">        val userCryptoQuantity = getUserCryptoQuantity(userCryptos)</span>
-<span class="fc" id="L145">        val platformsUserCryptos = getPlatformsUserCryptos(userCryptos, platforms)</span>
-<span class="fc" id="L146">        val cryptosIds = platformsUserCryptos.values.flatMap { it.map { it.coingeckoCryptoId } }.toSet()</span>
-<span class="fc" id="L147">        val cryptos = cryptoService.findAllByIds(cryptosIds)</span>
-<span class="fc" id="L148">        val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)</span>
+<span class="fc" id="L143">        val platformsIds = userCryptos.map { it.platformId }.toSet()</span>
+<span class="fc" id="L144">        val platforms = platformService.findAllByIds(platformsIds)</span>
+<span class="fc" id="L145">        val userCryptoQuantity = getUserCryptoQuantity(userCryptos)</span>
+<span class="fc" id="L146">        val platformsUserCryptos = getPlatformsUserCryptos(userCryptos, platforms)</span>
+<span class="fc" id="L147">        val cryptosIds = platformsUserCryptos.values.flatMap { it.map { it.coingeckoCryptoId } }.toSet()</span>
+<span class="fc" id="L148">        val cryptos = cryptoService.findAllByIds(cryptosIds)</span>
+<span class="fc" id="L149">        val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)</span>
 
-<span class="fc" id="L150">        val platformsInsights = platformsUserCryptos.map { (platformName, userCryptos) -&gt;</span>
-<span class="fc" id="L151">            var totalUSDBalance = BigDecimal.ZERO</span>
-<span class="fc" id="L152">            var totalBTCBalance = BigDecimal.ZERO</span>
-<span class="fc" id="L153">            var totalEURBalance = BigDecimal.ZERO</span>
+<span class="fc" id="L151">        val platformsInsights = platformsUserCryptos.map { (platformName, userCryptos) -&gt;</span>
+<span class="fc" id="L152">            var totalUSDBalance = BigDecimal.ZERO</span>
+<span class="fc" id="L153">            var totalBTCBalance = BigDecimal.ZERO</span>
+<span class="fc" id="L154">            var totalEURBalance = BigDecimal.ZERO</span>
 
-<span class="fc" id="L155">            userCryptos.forEach { crypto -&gt;</span>
-<span class="fc" id="L156">                val balance = getCryptoTotalBalances(cryptos.first { it.id == crypto.coingeckoCryptoId }, crypto.quantity)</span>
-<span class="fc" id="L157">                totalUSDBalance = totalUSDBalance.plus(BigDecimal(balance.totalUSDBalance))</span>
-<span class="fc" id="L158">                totalBTCBalance = totalBTCBalance.plus(BigDecimal(balance.totalBTCBalance))</span>
-<span class="fc" id="L159">                totalEURBalance = totalEURBalance.plus(BigDecimal(balance.totalEURBalance))</span>
-<span class="fc" id="L160">            }</span>
+<span class="fc" id="L156">            userCryptos.forEach { crypto -&gt;</span>
+<span class="fc" id="L157">                val balance = getCryptoTotalBalances(cryptos.first { it.id == crypto.coingeckoCryptoId }, crypto.quantity)</span>
+<span class="fc" id="L158">                totalUSDBalance = totalUSDBalance.plus(BigDecimal(balance.totalUSDBalance))</span>
+<span class="fc" id="L159">                totalBTCBalance = totalBTCBalance.plus(BigDecimal(balance.totalBTCBalance))</span>
+<span class="fc" id="L160">                totalEURBalance = totalEURBalance.plus(BigDecimal(balance.totalEURBalance))</span>
+<span class="fc" id="L161">            }</span>
 
-<span class="fc" id="L162">            val platformInsight = PlatformsInsights(</span>
-<span class="fc" id="L163">                platformName = platformName,</span>
-<span class="fc" id="L164">                balances = BalancesResponse(</span>
-<span class="fc" id="L165">                    totalUSDBalance = totalUSDBalance.toPlainString(),</span>
-<span class="fc" id="L166">                    totalBTCBalance = totalBTCBalance.toPlainString(),</span>
-<span class="fc" id="L167">                    totalEURBalance = totalEURBalance.toPlainString()</span>
+<span class="fc" id="L163">            val platformInsight = PlatformsInsights(</span>
+<span class="fc" id="L164">                platformName = platformName,</span>
+<span class="fc" id="L165">                balances = BalancesResponse(</span>
+<span class="fc" id="L166">                    totalUSDBalance = totalUSDBalance.toPlainString(),</span>
+<span class="fc" id="L167">                    totalBTCBalance = totalBTCBalance.toPlainString(),</span>
+<span class="fc" id="L168">                    totalEURBalance = totalEURBalance.toPlainString()</span>
                 ),
-<span class="fc" id="L169">                percentage = calculatePercentage(totalBalances.totalUSDBalance, totalUSDBalance.toPlainString())</span>
+<span class="fc" id="L170">                percentage = calculatePercentage(totalBalances.totalUSDBalance, totalUSDBalance.toPlainString())</span>
             )
 
-<span class="fc" id="L172">            platformInsight</span>
-<span class="fc" id="L173">        }.sortedByDescending { it.percentage }</span>
+<span class="fc" id="L173">            platformInsight</span>
+<span class="fc" id="L174">        }.sortedByDescending { it.percentage }</span>
 
-<span class="fc" id="L175">        return Optional.of(</span>
-<span class="fc" id="L176">            PlatformsBalancesInsightsResponse(</span>
-<span class="fc" id="L177">                balances = totalBalances,</span>
-<span class="fc" id="L178">                platforms = platformsInsights</span>
+<span class="fc" id="L176">        return Optional.of(</span>
+<span class="fc" id="L177">            PlatformsBalancesInsightsResponse(</span>
+<span class="fc" id="L178">                balances = totalBalances,</span>
+<span class="fc" id="L179">                platforms = platformsInsights</span>
             )
         )
     }
 
     fun retrieveCryptosBalancesInsights(): Optional&lt;CryptosBalancesInsightsResponse&gt; {
-<span class="fc" id="L184">        logger.info { &quot;Retrieving all cryptos balances insights&quot; }</span>
+<span class="fc" id="L185">        logger.info { &quot;Retrieving all cryptos balances insights&quot; }</span>
 
-<span class="fc" id="L186">        val userCryptos = userCryptoService.findAll()</span>
+<span class="fc" id="L187">        val userCryptos = userCryptoService.findAll()</span>
 
-<span class="fc bfc" id="L188" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
-<span class="fc" id="L189">            return Optional.empty()</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
+<span class="fc" id="L190">            return Optional.empty()</span>
         }
 
-<span class="fc" id="L192">        val userCryptoQuantity = getUserCryptoQuantity(userCryptos)</span>
-<span class="fc" id="L193">        val cryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet()</span>
-<span class="fc" id="L194">        val cryptos = cryptoService.findAllByIds(cryptosIds)</span>
-<span class="fc" id="L195">        val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)</span>
+<span class="fc" id="L193">        val userCryptoQuantity = getUserCryptoQuantity(userCryptos)</span>
+<span class="fc" id="L194">        val cryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet()</span>
+<span class="fc" id="L195">        val cryptos = cryptoService.findAllByIds(cryptosIds)</span>
+<span class="fc" id="L196">        val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)</span>
 
-<span class="fc" id="L197">        val cryptosInsights = userCryptoQuantity.map { (coingeckoCryptoId, quantity) -&gt;</span>
-<span class="fc" id="L198">            val crypto = cryptos.first { it.id == coingeckoCryptoId }</span>
-<span class="fc" id="L199">            val cryptoBalances = getCryptoTotalBalances(crypto, quantity)</span>
+<span class="fc" id="L198">        val cryptosInsights = userCryptoQuantity.map { (coingeckoCryptoId, quantity) -&gt;</span>
+<span class="fc" id="L199">            val crypto = cryptos.first { it.id == coingeckoCryptoId }</span>
+<span class="fc" id="L200">            val cryptoBalances = getCryptoTotalBalances(crypto, quantity)</span>
 
-<span class="fc" id="L201">            CryptoInsights(</span>
-<span class="fc" id="L202">                cryptoName = crypto.name,</span>
-<span class="fc" id="L203">                cryptoId = coingeckoCryptoId,</span>
-<span class="fc" id="L204">                quantity = quantity.toPlainString(),</span>
-<span class="fc" id="L205">                balances = cryptoBalances,</span>
-<span class="fc" id="L206">                percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoBalances.totalUSDBalance)</span>
+<span class="fc" id="L202">            CryptoInsights(</span>
+<span class="fc" id="L203">                cryptoName = crypto.name,</span>
+<span class="fc" id="L204">                cryptoId = coingeckoCryptoId,</span>
+<span class="fc" id="L205">                quantity = quantity.toPlainString(),</span>
+<span class="fc" id="L206">                balances = cryptoBalances,</span>
+<span class="fc" id="L207">                percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoBalances.totalUSDBalance)</span>
             )
-<span class="fc" id="L208">        }.sortedByDescending { it.percentage }</span>
+<span class="fc" id="L209">        }.sortedByDescending { it.percentage }</span>
 
-<span class="fc" id="L210">        return Optional.of(</span>
-<span class="fc" id="L211">            CryptosBalancesInsightsResponse(</span>
-<span class="fc" id="L212">                balances = totalBalances,</span>
-<span class="fc bfc" id="L213" title="All 2 branches covered.">                cryptos = if (cryptosInsights.size &gt; 12)</span>
-<span class="fc" id="L214">                    getCryptoInsightsWithOthers(totalBalances, cryptosInsights) else cryptosInsights</span>
+<span class="fc" id="L211">        return Optional.of(</span>
+<span class="fc" id="L212">            CryptosBalancesInsightsResponse(</span>
+<span class="fc" id="L213">                balances = totalBalances,</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">                cryptos = if (cryptosInsights.size &gt; 12)</span>
+<span class="fc" id="L215">                    getCryptoInsightsWithOthers(totalBalances, cryptosInsights) else cryptosInsights</span>
             )
         )
     }
 
     fun retrieveUserCryptosInsights(page: Int): Optional&lt;PageUserCryptosInsightsResponse&gt; {
-<span class="fc" id="L220">        logger.info { &quot;Retrieving user cryptos insights for page $page&quot; }</span>
+<span class="fc" id="L221">        logger.info { &quot;Retrieving user cryptos insights for page $page&quot; }</span>
 
-<span class="fc" id="L222">        val userCryptosPage = userCryptoService.findAllByPage(page)</span>
+<span class="fc" id="L223">        val userCryptosPage = userCryptoService.findAllByPage(page)</span>
 
-<span class="fc bfc" id="L224" title="All 2 branches covered.">        if (userCryptosPage.isEmpty) {</span>
-<span class="fc" id="L225">            return Optional.empty()</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">        if (userCryptosPage.isEmpty) {</span>
+<span class="fc" id="L226">            return Optional.empty()</span>
         }
 
-<span class="fc" id="L228">        val cryptosIds = userCryptosPage.map { it.coingeckoCryptoId }.toSet()</span>
-<span class="fc" id="L229">        val platformsIds = userCryptosPage.map { it.platformId }.toSet()</span>
-<span class="fc" id="L230">        val cryptos = cryptoService.findAllByIds(cryptosIds)</span>
-<span class="fc" id="L231">        val platforms = platformService.findAllByIds(platformsIds)</span>
+<span class="fc" id="L229">        val cryptosIds = userCryptosPage.map { it.coingeckoCryptoId }.toSet()</span>
+<span class="fc" id="L230">        val platformsIds = userCryptosPage.map { it.platformId }.toSet()</span>
+<span class="fc" id="L231">        val cryptos = cryptoService.findAllByIds(cryptosIds)</span>
+<span class="fc" id="L232">        val platforms = platformService.findAllByIds(platformsIds)</span>
 
         // Not the best because I'm paginating, but I need total balances to calculate individual percentages
-<span class="fc" id="L234">        val userCryptos = userCryptoService.findAll()</span>
-<span class="fc" id="L235">        val userCryptoQuantity = getUserCryptoQuantity(userCryptos)</span>
-<span class="fc" id="L236">        val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)</span>
+<span class="fc" id="L235">        val userCryptos = userCryptoService.findAll()</span>
+<span class="fc" id="L236">        val userCryptoQuantity = getUserCryptoQuantity(userCryptos)</span>
+<span class="fc" id="L237">        val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)</span>
 
-<span class="fc" id="L238">        val cryptosInsights = userCryptosPage.content.map {</span>
-<span class="fc" id="L239">            val crypto = cryptos.first { crypto -&gt; crypto.id == it.coingeckoCryptoId }</span>
-<span class="fc" id="L240">            val platform = platforms.first { platform -&gt; platform.id == it.platformId }</span>
-<span class="fc" id="L241">            val balances = getCryptoTotalBalances(crypto, it.quantity)</span>
+<span class="fc" id="L239">        val cryptosInsights = userCryptosPage.content.map {</span>
+<span class="fc" id="L240">            val crypto = cryptos.first { crypto -&gt; crypto.id == it.coingeckoCryptoId }</span>
+<span class="fc" id="L241">            val platform = platforms.first { platform -&gt; platform.id == it.platformId }</span>
+<span class="fc" id="L242">            val balances = getCryptoTotalBalances(crypto, it.quantity)</span>
 
-<span class="fc" id="L243">            UserCryptosInsights(</span>
-<span class="fc" id="L244">                cryptoInfo = CryptoInfo(</span>
-<span class="fc" id="L245">                    id = it.id,</span>
-<span class="fc" id="L246">                    cryptoName = crypto.name,</span>
-<span class="fc" id="L247">                    coingeckoCryptoId = crypto.id,</span>
-<span class="fc" id="L248">                    symbol = crypto.ticker,</span>
-<span class="fc" id="L249">                    image = crypto.image</span>
+<span class="fc" id="L244">            UserCryptosInsights(</span>
+<span class="fc" id="L245">                cryptoInfo = CryptoInfo(</span>
+<span class="fc" id="L246">                    id = it.id,</span>
+<span class="fc" id="L247">                    cryptoName = crypto.name,</span>
+<span class="fc" id="L248">                    coingeckoCryptoId = crypto.id,</span>
+<span class="fc" id="L249">                    symbol = crypto.ticker,</span>
+<span class="fc" id="L250">                    image = crypto.image</span>
                 ),
-<span class="fc" id="L251">                quantity = it.quantity.toPlainString(),</span>
-<span class="fc" id="L252">                percentage = calculatePercentage(totalBalances.totalUSDBalance, balances.totalUSDBalance),</span>
-<span class="fc" id="L253">                balances = balances,</span>
-<span class="fc" id="L254">                marketData = MarketData(</span>
-<span class="fc" id="L255">                    circulatingSupply = crypto.circulatingSupply.toPlainString(),</span>
-<span class="fc" id="L256">                    maxSupply = crypto.maxSupply.toPlainString(),</span>
-<span class="fc" id="L257">                    currentPrice = CurrentPrice(</span>
-<span class="fc" id="L258">                        usd = crypto.lastKnownPrice.toPlainString(),</span>
-<span class="fc" id="L259">                        eur = crypto.lastKnownPriceInEUR.toPlainString(),</span>
-<span class="fc" id="L260">                        btc = crypto.lastKnownPriceInBTC.toPlainString()</span>
+<span class="fc" id="L252">                quantity = it.quantity.toPlainString(),</span>
+<span class="fc" id="L253">                percentage = calculatePercentage(totalBalances.totalUSDBalance, balances.totalUSDBalance),</span>
+<span class="fc" id="L254">                balances = balances,</span>
+<span class="fc" id="L255">                marketData = MarketData(</span>
+<span class="fc" id="L256">                    circulatingSupply = crypto.circulatingSupply.toPlainString(),</span>
+<span class="fc" id="L257">                    maxSupply = crypto.maxSupply.toPlainString(),</span>
+<span class="fc" id="L258">                    currentPrice = CurrentPrice(</span>
+<span class="fc" id="L259">                        usd = crypto.lastKnownPrice.toPlainString(),</span>
+<span class="fc" id="L260">                        eur = crypto.lastKnownPriceInEUR.toPlainString(),</span>
+<span class="fc" id="L261">                        btc = crypto.lastKnownPriceInBTC.toPlainString()</span>
                     )
                 ),
-<span class="fc" id="L263">                platforms = listOf(platform.name)</span>
+<span class="fc" id="L264">                platforms = listOf(platform.name)</span>
             )
         }
 
-<span class="fc" id="L267">        return Optional.of(</span>
-<span class="fc" id="L268">            PageUserCryptosInsightsResponse(</span>
-<span class="fc" id="L269">                page = page,</span>
-<span class="fc" id="L270">                totalPages = userCryptosPage.totalPages,</span>
-<span class="fc" id="L271">                balances = totalBalances,</span>
-<span class="fc" id="L272">                cryptos = cryptosInsights</span>
+<span class="fc" id="L268">        return Optional.of(</span>
+<span class="fc" id="L269">            PageUserCryptosInsightsResponse(</span>
+<span class="fc" id="L270">                page = page,</span>
+<span class="fc" id="L271">                totalPages = userCryptosPage.totalPages,</span>
+<span class="fc" id="L272">                balances = totalBalances,</span>
+<span class="fc" id="L273">                cryptos = cryptosInsights</span>
             )
         )
     }
 
     fun retrieveUserCryptosPlatformsInsights(page: Int): Optional&lt;PageUserCryptosInsightsResponse&gt; {
-<span class="fc" id="L278">        logger.info { &quot;Retrieving user cryptos in platforms insights for page $page&quot; }</span>
+<span class="fc" id="L279">        logger.info { &quot;Retrieving user cryptos in platforms insights for page $page&quot; }</span>
 
-<span class="fc" id="L280">        val userCryptos = userCryptoService.findAll()</span>
+<span class="fc" id="L281">        val userCryptos = userCryptoService.findAll()</span>
 
-<span class="pc bpc" id="L282" title="1 of 2 branches missed.">        if (userCryptos.isEmpty()) {</span>
-<span class="nc" id="L283">            return Optional.empty()</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">        if (userCryptos.isEmpty()) {</span>
+<span class="fc" id="L284">            return Optional.empty()</span>
         }
 
-<span class="fc" id="L286">        val userCryptoQuantity = getUserCryptoQuantity(userCryptos)</span>
-<span class="fc" id="L287">        val cryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet()</span>
-<span class="fc" id="L288">        val cryptos = cryptoService.findAllByIds(cryptosIds)</span>
-<span class="fc" id="L289">        val platformsIds = userCryptos.map { it.platformId }.toSet()</span>
-<span class="fc" id="L290">        val platforms = platformService.findAllByIds(platformsIds)</span>
-<span class="fc" id="L291">        val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)</span>
+<span class="fc" id="L287">        val userCryptoQuantity = getUserCryptoQuantity(userCryptos)</span>
+<span class="fc" id="L288">        val cryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet()</span>
+<span class="fc" id="L289">        val cryptos = cryptoService.findAllByIds(cryptosIds)</span>
+<span class="fc" id="L290">        val platformsIds = userCryptos.map { it.platformId }.toSet()</span>
+<span class="fc" id="L291">        val platforms = platformService.findAllByIds(platformsIds)</span>
+<span class="fc" id="L292">        val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)</span>
 
-        // If one of the user cryptos happens to be at the end and another of the same (i.e: bitcoin), at the start
-        // pagination will cause issues, so I need to calculate everything from all the user cryptos.
+        // If one of the user cryptos happens to be at the end, and another of the same (i.e: bitcoin), at the start
+        // pagination will display the same crypto twice (in this example).
+        // So I need to calculate everything from all the user cryptos.
         // Maybe create a query that returns the coingeckoCryptoId summing all balances for that crypto and
-        // doing the same for the platformId.
-<span class="fc" id="L297">        val userCryptosQuantityPlatforms = getUserCryptosQuantityPlatforms(userCryptos, platforms)</span>
+        // returning an array of the platforms for that crypto.
+<span class="fc" id="L299">        val userCryptosQuantityPlatforms = getUserCryptosQuantityPlatforms(userCryptos, platforms)</span>
 
-<span class="fc" id="L299">        val userCryptosInsights = userCryptosQuantityPlatforms.map {</span>
-<span class="fc" id="L300">            val (cryptoTotalQuantity, cryptoPlatforms) = it.value</span>
-<span class="fc bfc" id="L301" title="All 2 branches covered.">            val crypto = cryptos.first { crypto -&gt; crypto.id === it.key }</span>
-<span class="fc" id="L302">            val cryptoTotalBalances = getCryptoTotalBalances(crypto, cryptoTotalQuantity)</span>
+<span class="fc" id="L301">        val userCryptosInsights = userCryptosQuantityPlatforms.map {</span>
+<span class="fc" id="L302">            val (cryptoTotalQuantity, cryptoPlatforms) = it.value</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">            val crypto = cryptos.first { crypto -&gt; crypto.id === it.key }</span>
+<span class="fc" id="L304">            val cryptoTotalBalances = getCryptoTotalBalances(crypto, cryptoTotalQuantity)</span>
 
-<span class="fc" id="L304">            UserCryptosInsights(</span>
-<span class="fc" id="L305">                cryptoInfo = CryptoInfo(</span>
-<span class="fc" id="L306">                    cryptoName = crypto.name,</span>
-<span class="fc" id="L307">                    coingeckoCryptoId = crypto.id,</span>
-<span class="fc" id="L308">                    symbol = crypto.ticker,</span>
-<span class="fc" id="L309">                    image = crypto.image</span>
+<span class="fc" id="L306">            UserCryptosInsights(</span>
+<span class="fc" id="L307">                cryptoInfo = CryptoInfo(</span>
+<span class="fc" id="L308">                    cryptoName = crypto.name,</span>
+<span class="fc" id="L309">                    coingeckoCryptoId = crypto.id,</span>
+<span class="fc" id="L310">                    symbol = crypto.ticker,</span>
+<span class="fc" id="L311">                    image = crypto.image</span>
                 ),
-<span class="fc" id="L311">                quantity = cryptoTotalQuantity.toPlainString(),</span>
-<span class="fc" id="L312">                percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),</span>
-<span class="fc" id="L313">                balances = cryptoTotalBalances,</span>
-<span class="fc" id="L314">                marketData = MarketData(</span>
-<span class="fc" id="L315">                    circulatingSupply = crypto.circulatingSupply.toPlainString(),</span>
-<span class="fc" id="L316">                    maxSupply = crypto.maxSupply.toPlainString(),</span>
-<span class="fc" id="L317">                    currentPrice = CurrentPrice(</span>
-<span class="fc" id="L318">                        usd = crypto.lastKnownPrice.toPlainString(),</span>
-<span class="fc" id="L319">                        eur = crypto.lastKnownPriceInEUR.toPlainString(),</span>
-<span class="fc" id="L320">                        btc = crypto.lastKnownPriceInBTC.toPlainString()</span>
+<span class="fc" id="L313">                quantity = cryptoTotalQuantity.toPlainString(),</span>
+<span class="fc" id="L314">                percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),</span>
+<span class="fc" id="L315">                balances = cryptoTotalBalances,</span>
+<span class="fc" id="L316">                marketData = MarketData(</span>
+<span class="fc" id="L317">                    circulatingSupply = crypto.circulatingSupply.toPlainString(),</span>
+<span class="fc" id="L318">                    maxSupply = crypto.maxSupply.toPlainString(),</span>
+<span class="fc" id="L319">                    currentPrice = CurrentPrice(</span>
+<span class="fc" id="L320">                        usd = crypto.lastKnownPrice.toPlainString(),</span>
+<span class="fc" id="L321">                        eur = crypto.lastKnownPriceInEUR.toPlainString(),</span>
+<span class="fc" id="L322">                        btc = crypto.lastKnownPriceInBTC.toPlainString()</span>
                     )
                 ),
-<span class="fc" id="L323">                platforms = cryptoPlatforms</span>
+<span class="fc" id="L325">                platforms = cryptoPlatforms</span>
             )
-<span class="fc" id="L325">        }.sortedByDescending { it.percentage }</span>
+<span class="fc" id="L327">        }.sortedByDescending { it.percentage }</span>
 
-<span class="fc" id="L327">        val startIndex = page * 10</span>
-<span class="pc bpc" id="L328" title="1 of 2 branches missed.">        val endIndex = if (page + 10 &gt; userCryptosInsights.size) userCryptosInsights.size else page + 10</span>
+<span class="fc" id="L329">        val startIndex = page * INT_ELEMENTS_PER_PAGE</span>
+<span class="pc bpc" id="L330" title="1 of 2 branches missed.">        val endIndex = if (page + INT_ELEMENTS_PER_PAGE &gt; userCryptosInsights.size) userCryptosInsights.size else page + INT_ELEMENTS_PER_PAGE</span>
 
-<span class="pc bpc" id="L330" title="1 of 2 branches missed.">        if (startIndex &gt; userCryptosInsights.size) {</span>
-<span class="nc" id="L331">            return Optional.empty()</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">        if (startIndex &gt; userCryptosInsights.size) {</span>
+<span class="fc" id="L333">            return Optional.empty()</span>
         }
 
-<span class="fc" id="L334">        val totalPages = ceil(userCryptos.size.toDouble() / ELEMENTS_PER_PAGE).toInt()</span>
-<span class="fc" id="L335">        val cryptosInsights = userCryptosInsights.subList(startIndex, endIndex)</span>
+<span class="fc" id="L336">        val totalPages = ceil(userCryptos.size.toDouble() / ELEMENTS_PER_PAGE).toInt()</span>
+<span class="fc" id="L337">        val cryptosInsights = userCryptosInsights.subList(startIndex, endIndex)</span>
 
-<span class="fc" id="L337">        return Optional.of(</span>
-<span class="fc" id="L338">            PageUserCryptosInsightsResponse(</span>
-<span class="fc" id="L339">                page = page,</span>
-<span class="fc" id="L340">                totalPages = totalPages,</span>
-<span class="fc" id="L341">                balances = totalBalances,</span>
-<span class="fc" id="L342">                cryptos = cryptosInsights</span>
+<span class="fc" id="L339">        return Optional.of(</span>
+<span class="fc" id="L340">            PageUserCryptosInsightsResponse(</span>
+<span class="fc" id="L341">                page = page,</span>
+<span class="fc" id="L342">                totalPages = totalPages,</span>
+<span class="fc" id="L343">                balances = totalBalances,</span>
+<span class="fc" id="L344">                cryptos = cryptosInsights</span>
             )
         )
     }
 
     private fun getTotalBalances(cryptos: List&lt;Crypto&gt;, userCryptoQuantity: Map&lt;String, BigDecimal&gt;): BalancesResponse {
-<span class="fc" id="L348">        var totalUSDBalance = BigDecimal.ZERO</span>
-<span class="fc" id="L349">        var totalBTCBalance = BigDecimal.ZERO</span>
-<span class="fc" id="L350">        var totalEURBalance = BigDecimal.ZERO</span>
+<span class="fc" id="L350">        var totalUSDBalance = BigDecimal.ZERO</span>
+<span class="fc" id="L351">        var totalBTCBalance = BigDecimal.ZERO</span>
+<span class="fc" id="L352">        var totalEURBalance = BigDecimal.ZERO</span>
 
-<span class="fc" id="L352">        userCryptoQuantity.forEach { (coingeckoCryptoId, quantity) -&gt;</span>
-<span class="fc" id="L353">            val crypto = cryptos.first { it.id.equals(coingeckoCryptoId, true) }</span>
-<span class="fc" id="L354">            val lastKnownPrice = crypto.lastKnownPrice</span>
-<span class="fc" id="L355">            val lastKnownPriceInBTC = crypto.lastKnownPriceInBTC</span>
-<span class="fc" id="L356">            val lastKnownPriceInEUR = crypto.lastKnownPriceInEUR</span>
+<span class="fc" id="L354">        userCryptoQuantity.forEach { (coingeckoCryptoId, quantity) -&gt;</span>
+<span class="fc" id="L355">            val crypto = cryptos.first { it.id.equals(coingeckoCryptoId, true) }</span>
+<span class="fc" id="L356">            val lastKnownPrice = crypto.lastKnownPrice</span>
+<span class="fc" id="L357">            val lastKnownPriceInBTC = crypto.lastKnownPriceInBTC</span>
+<span class="fc" id="L358">            val lastKnownPriceInEUR = crypto.lastKnownPriceInEUR</span>
 
-<span class="fc" id="L358">            totalUSDBalance = totalUSDBalance.plus(lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP))</span>
-<span class="fc" id="L359">            totalBTCBalance = totalBTCBalance.plus(lastKnownPriceInBTC.multiply(quantity)).stripTrailingZeros()</span>
-<span class="fc" id="L360">            totalEURBalance = totalEURBalance.plus(lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP))</span>
-<span class="fc" id="L361">        }</span>
+<span class="fc" id="L360">            totalUSDBalance = totalUSDBalance.plus(lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP))</span>
+<span class="fc" id="L361">            totalBTCBalance = totalBTCBalance.plus(lastKnownPriceInBTC.multiply(quantity)).stripTrailingZeros()</span>
+<span class="fc" id="L362">            totalEURBalance = totalEURBalance.plus(lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP))</span>
+<span class="fc" id="L363">        }</span>
 
-<span class="fc" id="L363">        return BalancesResponse(</span>
-<span class="fc" id="L364">            totalUSDBalance = totalUSDBalance.toPlainString(),</span>
-<span class="fc" id="L365">            totalBTCBalance = totalBTCBalance.toPlainString(), // TODO - first 12 decimals</span>
-<span class="fc" id="L366">            totalEURBalance = totalEURBalance.toPlainString()</span>
+<span class="fc" id="L365">        return BalancesResponse(</span>
+<span class="fc" id="L366">            totalUSDBalance = totalUSDBalance.toPlainString(),</span>
+<span class="fc" id="L367">            totalBTCBalance = totalBTCBalance.setScale(12, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),</span>
+<span class="fc" id="L368">            totalEURBalance = totalEURBalance.toPlainString()</span>
         )
     }
 
     private fun getCryptoTotalBalances(crypto: Crypto, quantity: BigDecimal): BalancesResponse {
-<span class="fc" id="L371">        return BalancesResponse(</span>
-<span class="fc" id="L372">            totalUSDBalance = crypto.lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString(),</span>
-<span class="fc" id="L373">            totalBTCBalance = crypto.lastKnownPriceInBTC.multiply(quantity).stripTrailingZeros().toPlainString(),</span>
-<span class="fc" id="L374">            totalEURBalance = crypto.lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP)</span>
-<span class="fc" id="L375">                .toPlainString()</span>
+<span class="fc" id="L373">        return BalancesResponse(</span>
+<span class="fc" id="L374">            totalUSDBalance = crypto.lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString(),</span>
+<span class="fc" id="L375">            totalBTCBalance = crypto.lastKnownPriceInBTC.multiply(quantity).setScale(12, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),</span>
+<span class="fc" id="L376">            totalEURBalance = crypto.lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString()</span>
         )
     }
 
-<span class="fc" id="L379">    private fun calculatePercentage(totalUSDBalance: String, cryptoBalance: String) = BigDecimal(cryptoBalance)</span>
-<span class="fc" id="L380">        .multiply(BigDecimal(&quot;100&quot;))</span>
-<span class="fc" id="L381">        .divide(BigDecimal(totalUSDBalance), 2, RoundingMode.HALF_UP)</span>
-<span class="fc" id="L382">        .toFloat()</span>
+<span class="fc" id="L380">    private fun calculatePercentage(totalUSDBalance: String, cryptoBalance: String) = BigDecimal(cryptoBalance)</span>
+<span class="fc" id="L381">        .multiply(BigDecimal(&quot;100&quot;))</span>
+<span class="fc" id="L382">        .divide(BigDecimal(totalUSDBalance), 2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L383">        .toFloat()</span>
 
     private fun getUserCryptoQuantity(userCryptos: List&lt;UserCrypto&gt;): Map&lt;String, BigDecimal&gt; {
-<span class="fc" id="L385">        val userCryptoQuantity = HashMap&lt;String, BigDecimal&gt;()</span>
+<span class="fc" id="L386">        val userCryptoQuantity = HashMap&lt;String, BigDecimal&gt;()</span>
 
-<span class="fc" id="L387">        userCryptos.forEach { userCrypto -&gt;</span>
-<span class="fc bfc" id="L388" title="All 2 branches covered.">            if (userCryptoQuantity.containsKey(userCrypto.coingeckoCryptoId)) {</span>
-<span class="fc" id="L389">                val quantity = userCryptoQuantity[userCrypto.coingeckoCryptoId]</span>
-<span class="fc" id="L390">                userCryptoQuantity[userCrypto.coingeckoCryptoId] = quantity!!.plus(userCrypto.quantity)</span>
+<span class="fc" id="L388">        userCryptos.forEach { userCrypto -&gt;</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">            if (userCryptoQuantity.containsKey(userCrypto.coingeckoCryptoId)) {</span>
+<span class="fc" id="L390">                val quantity = userCryptoQuantity[userCrypto.coingeckoCryptoId]</span>
+<span class="fc" id="L391">                userCryptoQuantity[userCrypto.coingeckoCryptoId] = quantity!!.plus(userCrypto.quantity)</span>
             } else {
-<span class="fc" id="L392">                userCryptoQuantity[userCrypto.coingeckoCryptoId] = userCrypto.quantity</span>
+<span class="fc" id="L393">                userCryptoQuantity[userCrypto.coingeckoCryptoId] = userCrypto.quantity</span>
             }
-<span class="fc" id="L394">        }</span>
+<span class="fc" id="L395">        }</span>
 
-<span class="fc" id="L396">        return userCryptoQuantity</span>
+<span class="fc" id="L397">        return userCryptoQuantity</span>
     }
 
     private fun getPlatformsUserCryptos(
         userCryptos: List&lt;UserCrypto&gt;,
         platforms: List&lt;Platform&gt;
     ): Map&lt;String, List&lt;UserCrypto&gt;&gt; {
-<span class="fc" id="L403">        val platformsUserCryptos = HashMap&lt;String, List&lt;UserCrypto&gt;&gt;()</span>
+<span class="fc" id="L404">        val platformsUserCryptos = HashMap&lt;String, List&lt;UserCrypto&gt;&gt;()</span>
 
-<span class="fc" id="L405">        userCryptos.forEach { userCrypto -&gt;</span>
-<span class="fc" id="L406">            val platform = platforms.first { it.id == userCrypto.platformId }</span>
+<span class="fc" id="L406">        userCryptos.forEach { userCrypto -&gt;</span>
+<span class="fc" id="L407">            val platform = platforms.first { it.id == userCrypto.platformId }</span>
 
-<span class="fc bfc" id="L408" title="All 2 branches covered.">            if (platformsUserCryptos.containsKey(platform.name)) {</span>
-<span class="fc" id="L409">                val cryptos = platformsUserCryptos[platform.name]</span>
-<span class="fc" id="L410">                platformsUserCryptos[platform.name] = cryptos!!.plus(userCrypto)</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">            if (platformsUserCryptos.containsKey(platform.name)) {</span>
+<span class="fc" id="L410">                val cryptos = platformsUserCryptos[platform.name]</span>
+<span class="fc" id="L411">                platformsUserCryptos[platform.name] = cryptos!!.plus(userCrypto)</span>
             } else {
-<span class="fc" id="L412">                platformsUserCryptos[platform.name] = listOf(userCrypto)</span>
+<span class="fc" id="L413">                platformsUserCryptos[platform.name] = listOf(userCrypto)</span>
             }
-<span class="fc" id="L414">        }</span>
+<span class="fc" id="L415">        }</span>
 
-<span class="fc" id="L416">        return platformsUserCryptos</span>
+<span class="fc" id="L417">        return platformsUserCryptos</span>
     }
 
     private fun getCryptoInsightsWithOthers(
         totalBalances: BalancesResponse,
         cryptosInsights: List&lt;CryptoInsights&gt;
     ): List&lt;CryptoInsights&gt; {
-<span class="fc" id="L423">        var cryptosInsightsWithOthers: List&lt;CryptoInsights&gt; = ArrayList()</span>
-<span class="fc" id="L424">        val topCryptos = cryptosInsights.subList(0, 12)</span>
-<span class="fc" id="L425">        val others = cryptosInsights.subList(12, cryptosInsights.size)</span>
+<span class="fc" id="L424">        var cryptosInsightsWithOthers: List&lt;CryptoInsights&gt; = ArrayList()</span>
+<span class="fc" id="L425">        val topCryptos = cryptosInsights.subList(0, 12)</span>
+<span class="fc" id="L426">        val others = cryptosInsights.subList(12, cryptosInsights.size)</span>
 
-<span class="fc" id="L427">        var totalUSDBalance = BigDecimal.ZERO</span>
-<span class="fc" id="L428">        var totalBTCBalance = BigDecimal.ZERO</span>
-<span class="fc" id="L429">        var totalEURBalance = BigDecimal.ZERO</span>
-<span class="fc" id="L430">        others.forEach {</span>
-<span class="fc" id="L431">            totalUSDBalance = totalUSDBalance.plus(BigDecimal(it.balances.totalUSDBalance))</span>
-<span class="fc" id="L432">            totalBTCBalance = totalBTCBalance.plus(BigDecimal(it.balances.totalBTCBalance))</span>
-<span class="fc" id="L433">            totalEURBalance = totalEURBalance.plus(BigDecimal(it.balances.totalEURBalance))</span>
-<span class="fc" id="L434">        }</span>
-<span class="fc" id="L435">        val othersTotalPercentage = calculatePercentage(totalBalances.totalUSDBalance, totalUSDBalance.toPlainString())</span>
+<span class="fc" id="L428">        var totalUSDBalance = BigDecimal.ZERO</span>
+<span class="fc" id="L429">        var totalBTCBalance = BigDecimal.ZERO</span>
+<span class="fc" id="L430">        var totalEURBalance = BigDecimal.ZERO</span>
+<span class="fc" id="L431">        others.forEach {</span>
+<span class="fc" id="L432">            totalUSDBalance = totalUSDBalance.plus(BigDecimal(it.balances.totalUSDBalance))</span>
+<span class="fc" id="L433">            totalBTCBalance = totalBTCBalance.plus(BigDecimal(it.balances.totalBTCBalance))</span>
+<span class="fc" id="L434">            totalEURBalance = totalEURBalance.plus(BigDecimal(it.balances.totalEURBalance))</span>
+<span class="fc" id="L435">        }</span>
+<span class="fc" id="L436">        val othersTotalPercentage = calculatePercentage(totalBalances.totalUSDBalance, totalUSDBalance.toPlainString())</span>
 
-<span class="fc" id="L437">        val othersCryptoInsights = CryptoInsights(</span>
-<span class="fc" id="L438">            cryptoName = &quot;Others&quot;,</span>
-<span class="fc" id="L439">            balances = BalancesResponse(</span>
-<span class="fc" id="L440">                totalUSDBalance = totalUSDBalance.toPlainString(),</span>
-<span class="fc" id="L441">                totalBTCBalance = totalBTCBalance.toPlainString(),</span>
-<span class="fc" id="L442">                totalEURBalance = totalEURBalance.toPlainString()</span>
+<span class="fc" id="L438">        val othersCryptoInsights = CryptoInsights(</span>
+<span class="fc" id="L439">            cryptoName = &quot;Others&quot;,</span>
+<span class="fc" id="L440">            balances = BalancesResponse(</span>
+<span class="fc" id="L441">                totalUSDBalance = totalUSDBalance.toPlainString(),</span>
+<span class="fc" id="L442">                totalBTCBalance = totalBTCBalance.toPlainString(),</span>
+<span class="fc" id="L443">                totalEURBalance = totalEURBalance.toPlainString()</span>
             ),
-<span class="fc" id="L444">            percentage = othersTotalPercentage</span>
+<span class="fc" id="L445">            percentage = othersTotalPercentage</span>
         )
 
-<span class="fc" id="L447">        cryptosInsightsWithOthers = cryptosInsightsWithOthers.plus(topCryptos).plus(othersCryptoInsights)</span>
+<span class="fc" id="L448">        cryptosInsightsWithOthers = cryptosInsightsWithOthers.plus(topCryptos).plus(othersCryptoInsights)</span>
 
-<span class="fc" id="L449">        return cryptosInsightsWithOthers</span>
+<span class="fc" id="L450">        return cryptosInsightsWithOthers</span>
     }
 
     private fun getUserCryptosQuantityPlatforms(
         userCryptos: List&lt;UserCrypto&gt;,
         platforms: List&lt;Platform&gt;
     ): Map&lt;String, Pair&lt;BigDecimal, List&lt;String&gt;&gt;&gt; {
-<span class="fc" id="L456">        val map = HashMap&lt;String, Pair&lt;BigDecimal, List&lt;String&gt;&gt;&gt;()</span>
+<span class="fc" id="L457">        val map = HashMap&lt;String, Pair&lt;BigDecimal, List&lt;String&gt;&gt;&gt;()</span>
 
-<span class="fc" id="L458">        userCryptos.forEach { userCrypto -&gt;</span>
-<span class="fc bfc" id="L459" title="All 2 branches covered.">            val platformName = platforms.first { it.id === userCrypto.platformId }.name</span>
+<span class="fc" id="L459">        userCryptos.forEach { userCrypto -&gt;</span>
+<span class="fc bfc" id="L460" title="All 2 branches covered.">            val platformName = platforms.first { it.id === userCrypto.platformId }.name</span>
 
-<span class="fc bfc" id="L461" title="All 2 branches covered.">            if (map.containsKey(userCrypto.coingeckoCryptoId)) {</span>
-<span class="pc bpc" id="L462" title="1 of 2 branches missed.">                val actualQuantity = map[userCrypto.coingeckoCryptoId]?.first!!</span>
-<span class="pc bpc" id="L463" title="1 of 2 branches missed.">                val actualPlatforms = map[userCrypto.coingeckoCryptoId]?.second!!</span>
+<span class="fc bfc" id="L462" title="All 2 branches covered.">            if (map.containsKey(userCrypto.coingeckoCryptoId)) {</span>
+<span class="fc" id="L463">                val crypto = map[userCrypto.coingeckoCryptoId]</span>
+<span class="fc" id="L464">                val actualQuantity = crypto!!.first</span>
+<span class="fc" id="L465">                val actualPlatforms = crypto.second</span>
 
-<span class="fc" id="L465">                val newQuantity = actualQuantity.plus(userCrypto.quantity)</span>
-<span class="fc" id="L466">                val newPlatforms = actualPlatforms.plus(platformName)</span>
+<span class="fc" id="L467">                val newQuantity = actualQuantity.plus(userCrypto.quantity)</span>
+<span class="fc" id="L468">                val newPlatforms = actualPlatforms.plus(platformName)</span>
 
-<span class="fc" id="L468">                map[userCrypto.coingeckoCryptoId] = Pair(newQuantity, newPlatforms)</span>
+<span class="fc" id="L470">                map[userCrypto.coingeckoCryptoId] = Pair(newQuantity, newPlatforms)</span>
             } else {
-<span class="fc" id="L470">                map[userCrypto.coingeckoCryptoId] = Pair(userCrypto.quantity, listOf(platformName))</span>
+<span class="fc" id="L472">                map[userCrypto.coingeckoCryptoId] = Pair(userCrypto.quantity, listOf(platformName))</span>
             }
-<span class="fc" id="L472">        }</span>
+<span class="fc" id="L474">        }</span>
 
-<span class="fc" id="L474">        return map</span>
+<span class="fc" id="L476">        return map</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

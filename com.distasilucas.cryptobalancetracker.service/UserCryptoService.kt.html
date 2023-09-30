@@ -139,28 +139,28 @@ import java.util.Optional
 <span class="fc" id="L139">        cacheService.invalidateUserCryptosCaches()</span>
 <span class="fc" id="L140">    }</span>
 
-    @Cacheable(cacheNames = [USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE]) // TODO - CHECK IF CACHE WORKS
+    @Cacheable(cacheNames = [USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE], key = &quot;#coingeckoCryptoId&quot;)
     fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List&lt;UserCrypto&gt; {
 <span class="fc" id="L144">        logger.info { &quot;Retrieving all user cryptos matching coingecko crypto id $coingeckoCryptoId&quot; }</span>
 
 <span class="fc" id="L146">        return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
     }
 
-    @Cacheable(cacheNames = [USER_CRYPTOS_PLATFORM_ID_CACHE]) // TODO - CHECK IF CACHE WORKS
+    @Cacheable(cacheNames = [USER_CRYPTOS_PLATFORM_ID_CACHE], key = &quot;#platformId&quot;)
     fun findAllByPlatformId(platformId: String): List&lt;UserCrypto&gt; {
 <span class="fc" id="L151">        logger.info { &quot;Retrieving all user cryptos for platformId $platformId&quot; }</span>
 
 <span class="fc" id="L153">        return userCryptoRepository.findAllByPlatformId(platformId)</span>
     }
 
-    @Cacheable(cacheNames = [USER_CRYPTOS_CACHE]) // TODO - CHECK IF CACHE WORKS
+    @Cacheable(cacheNames = [USER_CRYPTOS_CACHE])
     fun findAll(): List&lt;UserCrypto&gt; {
 <span class="fc" id="L158">        logger.info { &quot;Retrieving all user cryptos&quot; }</span>
 
 <span class="fc" id="L160">        return userCryptoRepository.findAll()</span>
     }
 
-    @Cacheable(cacheNames = [USER_CRYPTOS_PAGE_CACHE]) // TODO - CHECK IF CACHE WORKS
+    @Cacheable(cacheNames = [USER_CRYPTOS_PAGE_CACHE], key = &quot;#page&quot;)
     fun findAllByPage(page: Int): Page&lt;UserCrypto&gt; {
 <span class="fc" id="L165">        logger.info { &quot;Retrieving all user cryptos for page $page&quot; }</span>
 
