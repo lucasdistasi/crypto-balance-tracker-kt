@@ -327,7 +327,7 @@ private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
 <span class="fc" id="L327">        }.sortedByDescending { it.percentage }</span>
 
 <span class="fc" id="L329">        val startIndex = page * INT_ELEMENTS_PER_PAGE</span>
-<span class="pc bpc" id="L330" title="1 of 2 branches missed.">        val endIndex = if (page + INT_ELEMENTS_PER_PAGE &gt; userCryptosInsights.size) userCryptosInsights.size else page + INT_ELEMENTS_PER_PAGE</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">        val endIndex = if (page + INT_ELEMENTS_PER_PAGE &gt; userCryptosInsights.size) userCryptosInsights.size else page + INT_ELEMENTS_PER_PAGE</span>
 
 <span class="fc bfc" id="L332" title="All 2 branches covered.">        if (startIndex &gt; userCryptosInsights.size) {</span>
 <span class="fc" id="L333">            return Optional.empty()</span>

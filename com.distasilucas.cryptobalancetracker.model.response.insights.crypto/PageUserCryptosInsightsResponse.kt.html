@@ -14,7 +14,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptos
 <span class="fc" id="L14">    constructor(page: Int, totalPages: Int, balances: BalancesResponse, cryptos: List&lt;UserCryptosInsights&gt;) : this(</span>
 <span class="fc" id="L15">        page = page + 1,</span>
 <span class="fc" id="L16">        totalPages = totalPages,</span>
-<span class="pc bpc" id="L17" title="1 of 2 branches missed.">        hasNextPage = totalPages - 1 &gt; page,</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">        hasNextPage = totalPages - 1 &gt; page,</span>
 <span class="fc" id="L18">        balances = balances,</span>
 <span class="fc" id="L19">        cryptos = cryptos</span>
 <span class="fc" id="L20">    )</span>
