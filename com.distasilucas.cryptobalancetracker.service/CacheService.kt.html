@@ -18,22 +18,22 @@ import org.springframework.stereotype.Service
     fun invalidateUserCryptosCaches() {
 <span class="fc" id="L19">        logger.info { &quot;Invalidating user cryptos cache&quot; }</span>
 
-<span class="fc bfc" id="L21" title="All 2 branches covered.">        cacheManager.getCache(USER_CRYPTOS_CACHE)?.invalidate()</span>
-<span class="fc bfc" id="L22" title="All 2 branches covered.">        cacheManager.getCache(USER_CRYPTOS_PAGE_CACHE)?.invalidate()</span>
-<span class="fc bfc" id="L23" title="All 2 branches covered.">        cacheManager.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE)?.invalidate()</span>
-<span class="fc bfc" id="L24" title="All 2 branches covered.">        cacheManager.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE)?.invalidate()</span>
+<span class="fc" id="L21">        cacheManager.getCache(USER_CRYPTOS_CACHE)!!.invalidate()</span>
+<span class="fc" id="L22">        cacheManager.getCache(USER_CRYPTOS_PAGE_CACHE)!!.invalidate()</span>
+<span class="fc" id="L23">        cacheManager.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE)!!.invalidate()</span>
+<span class="fc" id="L24">        cacheManager.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE)!!.invalidate()</span>
 <span class="fc" id="L25">    }</span>
 
     fun invalidatePlatformsCaches() {
 <span class="fc" id="L28">        logger.info { &quot;Invalidating platforms cache&quot; }</span>
 
-<span class="fc bfc" id="L30" title="All 2 branches covered.">        cacheManager.getCache(PLATFORMS_PLATFORMS_IDS_CACHE)?.invalidate()</span>
+<span class="fc" id="L30">        cacheManager.getCache(PLATFORMS_PLATFORMS_IDS_CACHE)!!.invalidate()</span>
 <span class="fc" id="L31">    }</span>
 
     fun invalidateCryptosCache() {
 <span class="fc" id="L34">        logger.info { &quot;Invalidating cryptos cache&quot; }</span>
 
-<span class="fc bfc" id="L36" title="All 2 branches covered.">        cacheManager.getCache(CRYPTOS_CRYPTOS_IDS_CACHE)?.invalidate()</span>
+<span class="fc" id="L36">        cacheManager.getCache(CRYPTOS_CRYPTOS_IDS_CACHE)!!.invalidate()</span>
 <span class="fc" id="L37">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
