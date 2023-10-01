@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InsightsController.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.controller</a> &gt; <span class="el_source">InsightsController.kt</span></div><h1>InsightsController.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.controller
 
+import com.distasilucas.cryptobalancetracker.constants.INVALID_PLATFORM_UUID
 import com.distasilucas.cryptobalancetracker.controller.swagger.InsightsControllerAPI
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
@@ -9,6 +10,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.platform.Pl
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.service.InsightsService
 import jakarta.validation.constraints.Min
+import org.hibernate.validator.constraints.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,16 +20,16 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.Optional
 
-<span class="fc" id="L21">@Validated</span>
+<span class="fc" id="L23">@Validated</span>
 @RestController
 @RequestMapping(&quot;/api/v1/insights&quot;)
-<span class="fc" id="L24">class InsightsController(private val insightsService: InsightsService) : InsightsControllerAPI {</span>
+<span class="fc" id="L26">class InsightsController(private val insightsService: InsightsService) : InsightsControllerAPI {</span>
 
     @GetMapping(&quot;/balances&quot;)
     override fun retrieveTotalBalancesInsights(): ResponseEntity&lt;BalancesResponse&gt; {
-<span class="fc" id="L28">        val totalBalances = insightsService.retrieveTotalBalancesInsights()</span>
+<span class="fc" id="L30">        val totalBalances = insightsService.retrieveTotalBalancesInsights()</span>
 
-<span class="fc" id="L30">        return okOrNoContent(totalBalances)</span>
+<span class="fc" id="L32">        return okOrNoContent(totalBalances)</span>
     }
 
     @GetMapping(&quot;/cryptos&quot;)
@@ -36,9 +38,9 @@ import java.util.Optional
         @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
         page: Int
     ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt; {
-<span class="fc" id="L39">        val serCryptosInsights = insightsService.retrieveUserCryptosInsights(page)</span>
+<span class="fc" id="L41">        val serCryptosInsights = insightsService.retrieveUserCryptosInsights(page)</span>
 
-<span class="fc" id="L41">        return okOrNoContent(serCryptosInsights)</span>
+<span class="fc" id="L43">        return okOrNoContent(serCryptosInsights)</span>
     }
 
     @GetMapping(&quot;/cryptos/platforms&quot;)
@@ -47,41 +49,45 @@ import java.util.Optional
         @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
         page: Int
     ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt; {
-<span class="fc" id="L50">        val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(page)</span>
+<span class="fc" id="L52">        val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(page)</span>
 
-<span class="fc" id="L52">        return okOrNoContent(userCryptosPlatformsInsights)</span>
+<span class="fc" id="L54">        return okOrNoContent(userCryptosPlatformsInsights)</span>
     }
 
     @GetMapping(&quot;/cryptos/balances&quot;)
     override fun retrieveCryptosBalancesInsights(): ResponseEntity&lt;CryptosBalancesInsightsResponse&gt; {
-<span class="fc" id="L57">        val cryptosBalancesInsights = insightsService.retrieveCryptosBalancesInsights()</span>
+<span class="fc" id="L59">        val cryptosBalancesInsights = insightsService.retrieveCryptosBalancesInsights()</span>
 
-<span class="fc" id="L59">        return okOrNoContent(cryptosBalancesInsights)</span>
+<span class="fc" id="L61">        return okOrNoContent(cryptosBalancesInsights)</span>
     }
 
     @GetMapping(&quot;/platforms/balances&quot;)
     override fun retrievePlatformsBalancesInsights(): ResponseEntity&lt;PlatformsBalancesInsightsResponse&gt; {
-<span class="fc" id="L64">        val platformsBalancesInsights = insightsService.retrievePlatformsBalancesInsights()</span>
+<span class="fc" id="L66">        val platformsBalancesInsights = insightsService.retrievePlatformsBalancesInsights()</span>
 
-<span class="fc" id="L66">        return okOrNoContent(platformsBalancesInsights)</span>
+<span class="fc" id="L68">        return okOrNoContent(platformsBalancesInsights)</span>
     }
 
     @GetMapping(&quot;/cryptos/{coingeckoCryptoId}&quot;)
     override fun retrieveCryptoInsights(@PathVariable coingeckoCryptoId: String): ResponseEntity&lt;CryptoInsightResponse&gt; {
-<span class="fc" id="L71">        val cryptoInsights = insightsService.retrieveCryptoInsights(coingeckoCryptoId)</span>
+<span class="fc" id="L73">        val cryptoInsights = insightsService.retrieveCryptoInsights(coingeckoCryptoId)</span>
 
-<span class="fc" id="L73">        return okOrNoContent(cryptoInsights)</span>
+<span class="fc" id="L75">        return okOrNoContent(cryptoInsights)</span>
     }
 
     @GetMapping(&quot;/platforms/{platformId}&quot;)
-    override fun retrievePlatformInsights(@PathVariable platformId: String): ResponseEntity&lt;PlatformInsightsResponse&gt; {
-<span class="fc" id="L78">        val platformsInsights = insightsService.retrievePlatformInsights(platformId)</span>
+    override fun retrievePlatformInsights(
+        @PathVariable
+        @UUID(message = INVALID_PLATFORM_UUID)
+        platformId: String
+    ): ResponseEntity&lt;PlatformInsightsResponse&gt; {
+<span class="fc" id="L84">        val platformsInsights = insightsService.retrievePlatformInsights(platformId)</span>
 
-<span class="fc" id="L80">        return okOrNoContent(platformsInsights)</span>
+<span class="fc" id="L86">        return okOrNoContent(platformsInsights)</span>
     }
 
     private fun &lt;T&gt; okOrNoContent(body: Optional&lt;T&gt;): ResponseEntity&lt;T&gt; {
-<span class="fc bfc" id="L84" title="All 2 branches covered.">        return if (body.isEmpty) ResponseEntity.noContent().build() else ResponseEntity.ok(body.get())</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        return if (body.isEmpty) ResponseEntity.noContent().build() else ResponseEntity.ok(body.get())</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
