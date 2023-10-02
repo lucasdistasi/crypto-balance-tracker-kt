@@ -3,6 +3,7 @@ package com.distasilucas.cryptobalancetracker.entity
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
+import java.io.Serializable
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -12,6 +13,7 @@ data class Crypto(
     val id: String,
     val name: String,
     val ticker: String,
+    val image: String,
 
     @Field("last_known_price")
     val lastKnownPrice: BigDecimal,
@@ -30,4 +32,4 @@ data class Crypto(
 
     @Field("last_updated_at")
     val lastUpdatedAt: LocalDateTime
-)
+): Serializable

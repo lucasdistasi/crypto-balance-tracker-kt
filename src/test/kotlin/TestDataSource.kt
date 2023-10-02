@@ -4,8 +4,10 @@ import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequ
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CurrentPrice
+import com.distasilucas.cryptobalancetracker.model.response.coingecko.Image
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
@@ -13,9 +15,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-private const val PLATFORMS_ENDPOINT = "/api/v1/platforms"
-private const val USER_CRYPTOS_ENDPOINT = "/api/v1/cryptos"
-private const val GOALS_ENDPOINT = "/api/v1/goals"
+private const val BASE_PATH = "/api/v1"
+private const val PLATFORMS_ENDPOINT = "$BASE_PATH/platforms"
+private const val USER_CRYPTOS_ENDPOINT = "$BASE_PATH/cryptos"
+private const val GOALS_ENDPOINT = "$BASE_PATH/goals"
+private const val INSIGHTS_ENDPOINT = "$BASE_PATH/insights"
 
 fun MockMvc.countPlatforms() = this.perform(
     MockMvcRequestBuilders.get("$PLATFORMS_ENDPOINT/count")
@@ -109,10 +113,46 @@ fun MockMvc.transferUserCrypto(payload: String) = this.perform(
         .contentType(APPLICATION_JSON)
 )
 
+fun MockMvc.retrieveTotalBalancesInsights() = this.perform(
+    MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/balances")
+        .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.retrieveUserCryptosInsights(page: Int) = this.perform(
+    MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/cryptos?page=$page")
+        .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.retrieveUserCryptosPlatformsInsights(page: Int) = this.perform(
+    MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/cryptos/platforms?page=$page")
+        .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.retrieveCryptosBalancesInsights() = this.perform(
+    MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/cryptos/balances")
+        .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.retrievePlatformsBalancesInsights() = this.perform(
+    MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/platforms/balances")
+        .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.retrieveCryptoInsights(coingeckoCryptoId: String) = this.perform(
+    MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/cryptos/$coingeckoCryptoId")
+        .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.retrievePlatformInsights(platformId: String) = this.perform(
+    MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/platforms/$platformId")
+        .contentType(APPLICATION_JSON)
+)
+
 fun getCryptoEntity(
     id: String = "bitcoin",
     name: String = "Bitcoin",
     ticker: String = "btc",
+    image: String = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
     lastKnownPrice: BigDecimal = BigDecimal("30000"),
     lastKnownPriceInEUR: BigDecimal = BigDecimal("27000"),
     lastKnownPriceInBTC: BigDecimal = BigDecimal("1"),
@@ -124,6 +164,7 @@ fun getCryptoEntity(
         id = id,
         name = name,
         ticker = ticker,
+        image = image,
         circulatingSupply = circulatingSupply,
         lastKnownPrice = lastKnownPrice,
         lastKnownPriceInBTC = lastKnownPriceInBTC,
@@ -205,12 +246,14 @@ fun getCoingeckoCryptoInfo(
     id: String = "bitcoin",
     symbol: String = "btc",
     name: String = "Bitcoin",
-    marketData: MarketData = getMarketData()
+    marketData: MarketData = getMarketData(),
+    image: Image = getImage()
 ): CoingeckoCryptoInfo {
     return CoingeckoCryptoInfo(
         id = id,
         symbol = symbol,
         name = name,
+        image = image,
         marketData = marketData
     )
 }
@@ -227,6 +270,8 @@ fun getMarketData(
     )
 }
 
+fun getImage() = Image("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")
+
 fun getCurrentPrince(
     usd: BigDecimal = BigDecimal("30000"),
     eur: BigDecimal = BigDecimal("27000"),
@@ -235,4 +280,10 @@ fun getCurrentPrince(
     usd = usd,
     eur = eur,
     btc = btc
+)
+
+fun balances() = BalancesResponse(
+    totalUSDBalance = "100",
+    totalBTCBalance = "0.1",
+    totalEURBalance = "70"
 )

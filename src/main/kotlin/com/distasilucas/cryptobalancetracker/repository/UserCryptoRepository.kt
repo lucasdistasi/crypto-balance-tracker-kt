@@ -8,4 +8,5 @@ interface UserCryptoRepository : MongoRepository<UserCrypto, String> {
 
     fun findByCoingeckoCryptoIdAndPlatformId(coingeckoCryptoId: String, platformId: String): Optional<UserCrypto>
     fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List<UserCrypto>
+    fun findAllByPlatformId(platformId: String): List<UserCrypto>
 }

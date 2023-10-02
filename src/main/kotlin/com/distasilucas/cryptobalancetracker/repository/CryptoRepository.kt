@@ -16,4 +16,5 @@ interface CryptoRepository : MongoRepository<Crypto, String> {
     )
     fun findOldestNCryptosByLastPriceUpdate(dateFilter: LocalDateTime, limit: Int): List<Crypto>
 
+    fun findAllByIdIn(ids: Collection<String>): List<Crypto>
 }
