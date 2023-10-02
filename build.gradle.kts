@@ -110,3 +110,8 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 	finalizedBy(tasks.jacocoTestReport)
 }
+
+tasks.bootJar {
+	archiveFileName = "${project.name}.jar"
+	launchScript()
+}
