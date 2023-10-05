@@ -11,6 +11,7 @@ val javaxCacheVersion = "1.1.1"
 val aspectjweaverVersion = "1.9.19"
 val okHttp3Version = "4.11.0"
 val jacocoVersion = "0.8.8"
+val jsonWebTokenVersion = "0.11.5"
 
 plugins {
 	id("org.springframework.boot") version "3.1.2"
@@ -38,6 +39,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springframework.boot:spring-boot-starter-cache")
+	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -48,7 +50,10 @@ dependencies {
 	implementation("org.ehcache:ehcache:$ehcacheVersion")
 	implementation("javax.cache:cache-api:$javaxCacheVersion")
 	implementation("com.squareup.okhttp3:okhttp:$okHttp3Version")
+	implementation("io.jsonwebtoken:jjwt-api:${jsonWebTokenVersion}")
 
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:${jsonWebTokenVersion}")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:${jsonWebTokenVersion}")
 	runtimeOnly("org.aspectj:aspectjweaver:$aspectjweaverVersion")
 
 	testImplementation("io.mockk:mockk:$ioMockkVersion")
@@ -58,6 +63,7 @@ dependencies {
 		exclude(module = "mockito-core")
 	}
 	testImplementation("com.squareup.okhttp3:mockwebserver:$okHttp3Version")
+	testImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks.withType<KotlinCompile> {

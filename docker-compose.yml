@@ -9,9 +9,9 @@ services:
     volumes:
       - crypto-db-volume:/data/db
 
-  crypto-balance-tracker:
-    image: 'crypto-balance-tracker:latest'
-    container_name: 'crypto-balance-tracker'
+  crypto-balance-tracker-kt:
+    image: 'crypto-balance-tracker-kt:latest'
+    container_name: 'crypto-balance-tracker-kt'
     depends_on:
       - mongo-crypto-db
     environment:
@@ -25,7 +25,7 @@ services:
     image: 'crypto-balance-tracker-ui:latest'
     container_name: 'crypto-balance-tracker-ui'
     depends_on:
-      - crypto-balance-tracker
+      - crypto-balance-tracker-kt
     ports:
       - '5173:5173'
 

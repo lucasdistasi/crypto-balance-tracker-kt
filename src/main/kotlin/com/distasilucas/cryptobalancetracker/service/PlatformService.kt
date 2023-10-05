@@ -29,6 +29,7 @@ class PlatformService(
             .toPlatformResponse()
     }
 
+    // TODO - ADD CACHE
     fun retrieveAllPlatforms(): List<PlatformResponse> {
         logger.info { "Retrieving all platforms" }
 

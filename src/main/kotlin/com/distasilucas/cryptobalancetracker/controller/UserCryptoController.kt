@@ -16,6 +16,7 @@ import org.hibernate.validator.constraints.UUID
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController
 @Validated
 @RestController
 @RequestMapping("/api/v1/cryptos")
+@CrossOrigin(origins = ["\${allowed-origins}"])
 class UserCryptoController(
     private val userCryptoService: UserCryptoService,
     private val transferCryptoService: TransferCryptoService

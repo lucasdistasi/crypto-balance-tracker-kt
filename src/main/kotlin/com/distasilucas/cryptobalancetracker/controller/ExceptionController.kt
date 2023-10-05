@@ -10,6 +10,7 @@ import com.distasilucas.cryptobalancetracker.service.GoalNotFoundException
 import com.distasilucas.cryptobalancetracker.service.InsufficientBalanceException
 import com.distasilucas.cryptobalancetracker.service.PlatformNotFoundException
 import com.distasilucas.cryptobalancetracker.service.UserCryptoNotFoundException
+import com.distasilucas.cryptobalancetracker.service.UsernameNotFoundException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
@@ -140,6 +141,20 @@ class ExceptionController {
             HttpStatus.BAD_REQUEST.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail)
+    }
+
+    @ExceptionHandler(UsernameNotFoundException::class)
+    fun handleUsernameNotFoundException(
+        exception: UsernameNotFoundException,
+        webRequest: WebRequest
+    ): ResponseEntity<List<ProblemDetail>> {
+        logger.info { "An UsernameNotFoundException occurred $exception" }
+
+        val request = (webRequest as ServletWebRequest).request
+        val problemDetail =
+            HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf(problemDetail))
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
