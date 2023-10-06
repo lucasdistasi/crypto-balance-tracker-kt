@@ -1,15 +1,11 @@
 package com.distasilucas.cryptobalancetracker.model.response.goal
 
-import java.math.BigDecimal
-
-// TODO - replace BigDecimal with String and test with low bigdecimals
-
 data class GoalResponse(
     val id: String,
     val cryptoName: String,
-    val actualQuantity: BigDecimal,
-    val progress: BigDecimal,
-    val remainingQuantity: BigDecimal,
-    val goalQuantity: BigDecimal,
-    val moneyNeeded: BigDecimal
+    val actualQuantity: String,
+    val progress: Float,
+    val remainingQuantity: String,
+    val goalQuantity: String,
+    val moneyNeeded: String
 )

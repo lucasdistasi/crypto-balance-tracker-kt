@@ -4,8 +4,10 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@localhost:27017
-      database: ${MONGODB_DATABASE}
+      database: crypto_db # TODO
+      auto-index-creation: true
+      host: mongo-crypto-db
+      port: 27017
 
 coingecko:
   api-key: ${COINGECKO_API_KEY}
@@ -26,3 +28,5 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %cyan([ %thread ]) %green(%logger) - %boldCyan(%msg%n)"
 
 max-limit-crypto: 9
+
+allowed-origins: "http://localhost:5173"

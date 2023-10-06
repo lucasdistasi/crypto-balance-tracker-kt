@@ -1,6 +1,6 @@
 package com.distasilucas.cryptobalancetracker.controller.swagger
 
-import com.distasilucas.cryptobalancetracker.constants.INVALID_PLATFORM_UUID
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -96,7 +96,7 @@ interface PlatformControllerAPI {
             )
         ]
     )
-    fun retrievePlatform(@UUID(message = INVALID_PLATFORM_UUID) platformId: String): ResponseEntity<PlatformResponse>
+    fun retrievePlatform(@UUID(message = PLATFORM_ID_UUID) platformId: String): ResponseEntity<PlatformResponse>
 
     @Operation(summary = "Retrieve all platforms")
     @ApiResponses(
@@ -234,7 +234,7 @@ interface PlatformControllerAPI {
         ]
     )
     fun updatePlatform(
-        @UUID(message = INVALID_PLATFORM_UUID) platformId: String,
+        @UUID(message = PLATFORM_ID_UUID) platformId: String,
         @Valid platformRequest: PlatformRequest
     ): ResponseEntity<PlatformResponse>
 
@@ -289,5 +289,5 @@ interface PlatformControllerAPI {
             )
         ]
     )
-    fun deletePlatform(@UUID(message = INVALID_PLATFORM_UUID) platformId: String): ResponseEntity<Unit>
+    fun deletePlatform(@UUID(message = PLATFORM_ID_UUID) platformId: String): ResponseEntity<Unit>
 }

@@ -5,6 +5,7 @@ import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
+import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import com.distasilucas.cryptobalancetracker.repository.UserCryptoRepository
 import getCoingeckoCrypto
 import getCryptoEntity
@@ -61,7 +62,7 @@ class UserCryptoServiceTest {
                 UserCryptoResponse(
                     id = "123e4567-e89b-12d3-a456-426614174000",
                     cryptoName = "Bitcoin",
-                    quantity = BigDecimal("0.25"),
+                    quantity = "0.25",
                     platform = "BINANCE"
                 )
             )
@@ -196,7 +197,7 @@ class UserCryptoServiceTest {
                 UserCryptoResponse(
                     id = slot.captured.id,
                     cryptoName = "Bitcoin",
-                    quantity = BigDecimal("1"),
+                    quantity = "1",
                     platform = "BINANCE"
                 )
             )
@@ -271,8 +272,59 @@ class UserCryptoServiceTest {
                 UserCryptoResponse(
                     id = "123e4567-e89b-12d3-a456-426614174000",
                     cryptoName = "Bitcoin",
-                    quantity = BigDecimal("1.25"),
+                    quantity = "1.25",
                     platform = "BINANCE"
+                )
+            )
+    }
+
+    @Test
+    fun `should update user crypto with different platform`() {
+        val userCryptoRequest = getUserCryptoRequest(
+            quantity = BigDecimal("1.25"),
+            platformId = "123e4567-e89b-12d3-a456-426614174333"
+        )
+        val userCrypto = getUserCrypto()
+        val updatedUserCrypto = getUserCrypto(
+            quantity = BigDecimal("1.25"),
+            platformId = "123e4567-e89b-12d3-a456-426614174333"
+        )
+        val platformResponse = PlatformResponse(
+            id = "123e4567-e89b-12d3-a456-426614174333",
+            name = "COINBASE"
+        )
+        val coingeckoCrypto = getCoingeckoCrypto()
+
+        every {
+            userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
+        } returns Optional.of(userCrypto)
+        every {
+            platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174333")
+        } returns platformResponse
+        every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
+        every {
+            userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
+                "bitcoin",
+                "123e4567-e89b-12d3-a456-426614174333"
+            )
+        } returns Optional.empty()
+        every { userCryptoRepositoryMock.save(updatedUserCrypto) } returns updatedUserCrypto
+        justRun { cacheServiceMock.invalidateUserCryptosCaches() }
+
+        val userCryptoResponse =
+            userCryptoService.updateUserCrypto("123e4567-e89b-12d3-a456-426614174000", userCryptoRequest)
+
+        verify(exactly = 1) { userCryptoRepositoryMock.save(updatedUserCrypto) }
+        verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosCaches() }
+
+        assertThat(userCryptoResponse)
+            .usingRecursiveComparison()
+            .isEqualTo(
+                UserCryptoResponse(
+                    id = "123e4567-e89b-12d3-a456-426614174000",
+                    cryptoName = "Bitcoin",
+                    quantity = "1.25",
+                    platform = "COINBASE"
                 )
             )
     }
@@ -297,26 +349,30 @@ class UserCryptoServiceTest {
     }
 
     @Test
-    fun `should throw DuplicatedCryptoPlatFormException when updating user crypto`() {
+    fun `should throw DuplicatedCryptoPlatFormException when updating user crypto with different platform`() {
         val userCryptoRequest = getUserCryptoRequest(
-            quantity = BigDecimal("1.25")
+            quantity = BigDecimal("1.25"),
+            platformId = "123e4567-e89b-12d3-a456-426614174333"
         )
         val userCrypto = getUserCrypto()
         val duplicatedUserCrypto = getUserCrypto()
-        val platformResponse = getPlatformResponse()
+        val platformResponse = PlatformResponse(
+            id = "123e4567-e89b-12d3-a456-426614174333",
+            name = "COINBASE"
+        )
         val coingeckoCrypto = getCoingeckoCrypto()
 
         every {
             userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
         } returns Optional.of(userCrypto)
         every {
-            platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
+            platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174333")
         } returns platformResponse
         every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
         every {
             userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
                 "bitcoin",
-                "123e4567-e89b-12d3-a456-426614174111"
+                "123e4567-e89b-12d3-a456-426614174333"
             )
         } returns Optional.of(duplicatedUserCrypto)
 
@@ -326,7 +382,7 @@ class UserCryptoServiceTest {
 
         verify(exactly = 0) { userCryptoRepositoryMock.save(any()) }
 
-        assertThat(exception.message).isEqualTo(DUPLICATED_CRYPTO_PLATFORM.format("Bitcoin", "BINANCE"))
+        assertThat(exception.message).isEqualTo(DUPLICATED_CRYPTO_PLATFORM.format("Bitcoin", "COINBASE"))
     }
 
     @Test

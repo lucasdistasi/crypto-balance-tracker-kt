@@ -1,7 +1,9 @@
 package com.distasilucas.cryptobalancetracker.service
 
+import com.distasilucas.cryptobalancetracker.constants.ALL_PLATFORMS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_CRYPTOS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PAGE_CACHE
@@ -85,16 +87,27 @@ class CacheServiceTest {
             id = "123e4567-e89b-12d3-a456-426614174000",
             name = "BINANCE"
         )
-        val map = mapOf(listOf("123e4567-e89b-12d3-a456-426614174000") to listOf(platform))
-        val cache = ConcurrentMapCache(PLATFORMS_PLATFORMS_IDS_CACHE, ConcurrentHashMap(map), false)
+        val platformsIdsMap = mapOf(listOf("123e4567-e89b-12d3-a456-426614174000") to listOf(platform))
+        val allPlatformsMap = mapOf(SimpleKey::class.java to listOf(platform))
+        val platformIdMap = mapOf("123e4567-e89b-12d3-a456-426614174000" to platform)
 
-        every { cacheManagerMock.getCache(PLATFORMS_PLATFORMS_IDS_CACHE) } returns cache
+        val platformsIdsCache = ConcurrentMapCache(PLATFORMS_PLATFORMS_IDS_CACHE, ConcurrentHashMap(platformsIdsMap), false)
+        val allPlatformsCache = ConcurrentMapCache(ALL_PLATFORMS_CACHE, ConcurrentHashMap(allPlatformsMap), false)
+        val platformIdCache = ConcurrentMapCache(PLATFORM_PLATFORM_ID_CACHE, ConcurrentHashMap(platformIdMap), false)
+
+        every { cacheManagerMock.getCache(PLATFORMS_PLATFORMS_IDS_CACHE) } returns platformsIdsCache
+        every { cacheManagerMock.getCache(ALL_PLATFORMS_CACHE) } returns allPlatformsCache
+        every { cacheManagerMock.getCache(PLATFORM_PLATFORM_ID_CACHE) } returns platformIdCache
 
         cacheService.invalidatePlatformsCaches()
 
-        val store = cache.nativeCache
+        val platformsIdsStore = platformsIdsCache.nativeCache
+        val allPlatformsStore = allPlatformsCache.nativeCache
+        val platformIdStore = platformIdCache.nativeCache
 
-        assertThat(store).isEmpty()
+        assertThat(platformsIdsStore).isEmpty()
+        assertThat(allPlatformsStore).isEmpty()
+        assertThat(platformIdStore).isEmpty()
         verify(exactly = 1) { cacheManagerMock.getCache(PLATFORMS_PLATFORMS_IDS_CACHE) }
     }
 

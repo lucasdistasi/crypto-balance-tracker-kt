@@ -1,8 +1,10 @@
 package com.distasilucas.cryptobalancetracker.service
 
+import com.distasilucas.cryptobalancetracker.constants.ALL_PLATFORMS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
@@ -21,6 +23,7 @@ class PlatformService(
 
     fun countPlatforms() = platformRepository.count()
 
+    @Cacheable(cacheNames = [PLATFORM_PLATFORM_ID_CACHE], key = "#platformId")
     fun retrievePlatformById(platformId: String): PlatformResponse {
         logger.info { "Retrieving platformId $platformId" }
 
@@ -29,6 +32,7 @@ class PlatformService(
             .toPlatformResponse()
     }
 
+    @Cacheable(cacheNames = [ALL_PLATFORMS_CACHE])
     fun retrieveAllPlatforms(): List<PlatformResponse> {
         logger.info { "Retrieving all platforms" }
 

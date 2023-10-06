@@ -1,5 +1,7 @@
 package com.distasilucas.cryptobalancetracker.controller
 
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NAME_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NAME_SIZE
 import com.distasilucas.cryptobalancetracker.constants.INVALID_GOAL_UUID
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
 import com.distasilucas.cryptobalancetracker.model.request.goal.GoalRequest
@@ -47,11 +49,11 @@ class GoalControllerMvcTest(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174111")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`(0)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`(0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`("1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100.0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`("0")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`("1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`("0")))
     }
 
     @ParameterizedTest
@@ -95,11 +97,11 @@ class GoalControllerMvcTest(
                 )
             )
             .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].actualQuantity", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].progress", Matchers.`is`(100)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].remainingQuantity", Matchers.`is`(0)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].goalQuantity", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].moneyNeeded", Matchers.`is`(0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].actualQuantity", Matchers.`is`("1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].progress", Matchers.`is`(100.0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].remainingQuantity", Matchers.`is`("0")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].goalQuantity", Matchers.`is`("1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].moneyNeeded", Matchers.`is`("0")))
     }
 
     @Test
@@ -138,11 +140,11 @@ class GoalControllerMvcTest(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174111")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`(0)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`(0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`("1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100.0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`("0")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`("1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`("0")))
     }
 
     @Test
@@ -165,11 +167,11 @@ class GoalControllerMvcTest(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174111")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`(0)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`(0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`("1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100.0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`("0")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`("1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`("0")))
     }
 
     @Test
@@ -195,7 +197,7 @@ class GoalControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Crypto name can not be null or blank",
+                            CRYPTO_NAME_NOT_BLANK,
                             "Invalid crypto name"
                         )
                     )
@@ -225,8 +227,8 @@ class GoalControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Crypto name can not be null or blank",
-                            "Crypto name must be between 1 and 64 characters",
+                            CRYPTO_NAME_NOT_BLANK,
+                            CRYPTO_NAME_SIZE,
                             "Invalid crypto name"
                         )
                     )
@@ -257,7 +259,7 @@ class GoalControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Crypto name must be between 1 and 64 characters",
+                            CRYPTO_NAME_SIZE,
                             "Invalid crypto name"
                         )
                     )
@@ -309,7 +311,7 @@ class GoalControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Crypto name can not be null or blank",
+                            CRYPTO_NAME_NOT_BLANK,
                             "Invalid crypto name"
                         )
                     )
@@ -435,11 +437,11 @@ class GoalControllerMvcTest(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174111")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`(0)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`(0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`("1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100.0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`("0")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`("1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`("0")))
     }
 
     @Test
@@ -462,11 +464,11 @@ class GoalControllerMvcTest(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174111")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`(0)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`(0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`("1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100.0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`("0")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`("1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`("0")))
     }
 
     @Test
@@ -492,7 +494,7 @@ class GoalControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Crypto name can not be null or blank",
+                            CRYPTO_NAME_NOT_BLANK,
                             "Invalid crypto name"
                         )
                     )
@@ -522,8 +524,8 @@ class GoalControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Crypto name can not be null or blank",
-                            "Crypto name must be between 1 and 64 characters",
+                            CRYPTO_NAME_NOT_BLANK,
+                            CRYPTO_NAME_SIZE,
                             "Invalid crypto name"
                         )
                     )
@@ -554,7 +556,7 @@ class GoalControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Crypto name must be between 1 and 64 characters",
+                            CRYPTO_NAME_SIZE,
                             "Invalid crypto name"
                         )
                     )
@@ -606,7 +608,7 @@ class GoalControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Crypto name can not be null or blank",
+                            CRYPTO_NAME_NOT_BLANK,
                             "Invalid crypto name"
                         )
                     )

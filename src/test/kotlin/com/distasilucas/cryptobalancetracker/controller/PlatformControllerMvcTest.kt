@@ -1,5 +1,6 @@
 package com.distasilucas.cryptobalancetracker.controller
 
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import com.distasilucas.cryptobalancetracker.service.PlatformService
@@ -75,7 +76,7 @@ class PlatformControllerMvcTest(
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("Platform id must be a valid UUID")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`(PLATFORM_ID_UUID)))
     }
 
     @Test
@@ -246,7 +247,7 @@ class PlatformControllerMvcTest(
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("Platform id must be a valid UUID")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`(PLATFORM_ID_UUID)))
     }
 
     @ParameterizedTest
@@ -359,7 +360,7 @@ class PlatformControllerMvcTest(
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("Platform id must be a valid UUID")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`(PLATFORM_ID_UUID)))
     }
 }
 

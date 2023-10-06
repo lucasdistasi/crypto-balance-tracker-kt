@@ -1,5 +1,7 @@
 package com.distasilucas.cryptobalancetracker.model.request.goal
 
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NAME_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NAME_SIZE
 import com.distasilucas.cryptobalancetracker.entity.Goal
 import com.distasilucas.cryptobalancetracker.validation.ValidCryptoName
 import jakarta.validation.constraints.DecimalMax
@@ -11,8 +13,8 @@ import jakarta.validation.constraints.Size
 import java.math.BigDecimal
 
 data class GoalRequest(
-    @field: NotBlank(message = "Crypto name can not be null or blank")
-    @field: Size(min = 1, max = 64, message = "Crypto name must be between 1 and 64 characters")
+    @field: NotBlank(message = CRYPTO_NAME_NOT_BLANK)
+    @field: Size(min = 1, max = 64, message = CRYPTO_NAME_SIZE)
     @field: ValidCryptoName
     val cryptoName: String?,
 

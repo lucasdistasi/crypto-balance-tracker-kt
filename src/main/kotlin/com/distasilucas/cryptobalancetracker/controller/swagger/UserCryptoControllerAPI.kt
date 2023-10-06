@@ -1,7 +1,7 @@
 package com.distasilucas.cryptobalancetracker.controller.swagger
 
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
-import com.distasilucas.cryptobalancetracker.constants.INVALID_USER_CRYPTO_UUID
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.request.crypto.TransferCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
@@ -74,7 +74,7 @@ interface UserCryptoControllerAPI {
         ]
     )
     fun retrieveUserCrypto(
-        @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String
+        @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
     ): ResponseEntity<UserCryptoResponse>
 
     @Operation(summary = "Retrieves user cryptos by page")
@@ -219,7 +219,7 @@ interface UserCryptoControllerAPI {
         ]
     )
     fun updateUserCrypto(
-        @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String,
+        @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String,
         @Valid userCryptoRequest: UserCryptoRequest
     ): ResponseEntity<UserCryptoResponse>
 
@@ -273,7 +273,7 @@ interface UserCryptoControllerAPI {
         ]
     )
     fun deleteUserCrypto(
-        @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String
+        @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
     ): ResponseEntity<Unit>
 
     @Operation(summary = "Transfer user crypto")

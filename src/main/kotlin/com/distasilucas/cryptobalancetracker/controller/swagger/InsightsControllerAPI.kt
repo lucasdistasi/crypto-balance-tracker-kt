@@ -1,6 +1,6 @@
 package com.distasilucas.cryptobalancetracker.controller.swagger
 
-import com.distasilucas.cryptobalancetracker.constants.INVALID_PLATFORM_UUID
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
@@ -32,16 +32,6 @@ interface InsightsControllerAPI {
                     mediaType = "application/json",
                     schema = Schema(
                         implementation = BalancesResponse::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = "204",
-                description = "No user cryptos saved",
-                content = [Content(
-                    mediaType = "application/json",
-                    schema = Schema(
-                        implementation = Void::class
                     )
                 )]
             ),
@@ -300,7 +290,7 @@ interface InsightsControllerAPI {
         ]
     )
     fun retrievePlatformInsights(
-        @UUID(message = INVALID_PLATFORM_UUID)
+        @UUID(message = PLATFORM_ID_UUID)
         platformId: String
     ): ResponseEntity<PlatformInsightsResponse>
 }

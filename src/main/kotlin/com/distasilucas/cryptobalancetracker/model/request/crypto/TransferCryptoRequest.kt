@@ -1,7 +1,16 @@
 package com.distasilucas.cryptobalancetracker.model.request.crypto
 
-import com.distasilucas.cryptobalancetracker.constants.INVALID_TO_PLATFORM_UUID
-import com.distasilucas.cryptobalancetracker.constants.INVALID_USER_CRYPTO_UUID
+import com.distasilucas.cryptobalancetracker.constants.TO_PLATFORM_ID_UUID
+import com.distasilucas.cryptobalancetracker.constants.NETWORK_FEE_DIGITS
+import com.distasilucas.cryptobalancetracker.constants.NETWORK_FEE_MIN
+import com.distasilucas.cryptobalancetracker.constants.NETWORK_FEE_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_DECIMAL_MAX
+import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_DIGITS
+import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_POSITIVE
+import com.distasilucas.cryptobalancetracker.constants.TO_PLATFORM_ID_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_UUID
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_BLANK
 import com.distasilucas.cryptobalancetracker.model.response.crypto.FromPlatform
 import com.distasilucas.cryptobalancetracker.model.response.crypto.ToPlatform
 import com.distasilucas.cryptobalancetracker.model.response.crypto.TransferCryptoResponse
@@ -15,36 +24,36 @@ import org.hibernate.validator.constraints.UUID
 import java.math.BigDecimal
 
 data class TransferCryptoRequest(
-    @field: NotBlank(message = "User crypto id can not be null or blank")
-    @field: UUID(message = INVALID_USER_CRYPTO_UUID)
+    @field: NotBlank(message = USER_CRYPTO_ID_NOT_BLANK)
+    @field: UUID(message = USER_CRYPTO_ID_UUID)
     val userCryptoId: String?,
 
-    @field: NotNull(message = "Quantity to transfer can not be null")
+    @field: NotNull(message = QUANTITY_TO_TRANSFER_NOT_NULL)
     @field: Digits(
         integer = 16,
         fraction = 12,
-        message = "Quantity to transfer must have up to {integer} digits in the integer part and up to {fraction} digits in the decimal part"
+        message = QUANTITY_TO_TRANSFER_DIGITS
     )
     @field: DecimalMax(
         value = "9999999999999999.999999999999",
-        message = "Quantity to transfer must be less than or equal to 9999999999999999.999999999999"
+        message = QUANTITY_TO_TRANSFER_DECIMAL_MAX
     )
-    @field: Positive(message = "Quantity to transfer must be greater than 0")
+    @field: Positive(message = QUANTITY_TO_TRANSFER_POSITIVE)
     val quantityToTransfer: BigDecimal?,
 
-    @field: NotNull(message = "Network fee can not be null")
+    @field: NotNull(message = NETWORK_FEE_NOT_NULL)
     @field: Digits(
         integer = 16,
         fraction = 12,
-        message = "Network fee must have up to {integer} digits in the integer part and up to {fraction} digits in the decimal part"
+        message = NETWORK_FEE_DIGITS
     )
-    @field: Min(value = 0, message = "Network fee must be greater than or equal to 0")
+    @field: Min(value = 0, message = NETWORK_FEE_MIN)
     val networkFee: BigDecimal?,
 
     val sendFullQuantity: Boolean? = false,
 
-    @field: NotBlank(message = "To platform id can not be null or blank")
-    @field: UUID(message = INVALID_TO_PLATFORM_UUID)
+    @field: NotBlank(message = TO_PLATFORM_ID_NOT_BLANK)
+    @field: UUID(message = TO_PLATFORM_ID_UUID)
     val toPlatformId: String?
 ) {
 

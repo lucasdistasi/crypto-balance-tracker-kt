@@ -226,7 +226,7 @@ fun getGoalResponse(
     id: String = "123e4567-e89b-12d3-a456-426614174111",
     cryptoName: String = "Bitcoin",
     actualQuantity: BigDecimal = BigDecimal("1"),
-    progress: BigDecimal = BigDecimal("100"),
+    progress: Float = 100f,
     remainingQuantity: BigDecimal = BigDecimal.ZERO,
     goalQuantity: BigDecimal = BigDecimal("1"),
     moneyNeeded: BigDecimal = BigDecimal.ZERO
@@ -234,11 +234,11 @@ fun getGoalResponse(
     return GoalResponse(
         id = id,
         cryptoName = cryptoName,
-        actualQuantity = actualQuantity,
+        actualQuantity = actualQuantity.toPlainString(),
         progress = progress,
-        remainingQuantity = remainingQuantity,
-        goalQuantity = goalQuantity,
-        moneyNeeded = moneyNeeded
+        remainingQuantity = remainingQuantity.toPlainString(),
+        goalQuantity = goalQuantity.toPlainString(),
+        moneyNeeded = moneyNeeded.toPlainString()
     )
 }
 

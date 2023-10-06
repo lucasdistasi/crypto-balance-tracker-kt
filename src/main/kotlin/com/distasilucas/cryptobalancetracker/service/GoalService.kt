@@ -109,10 +109,11 @@ class GoalService(
         return if (goalQuantity <= actualQuantity) BigDecimal.ZERO else goalQuantity.minus(actualQuantity)
     }
 
-    private fun getProgress(goalQuantity: BigDecimal, actualQuantity: BigDecimal): BigDecimal {
-        return if (goalQuantity <= actualQuantity) BigDecimal("100") else actualQuantity.multiply(BigDecimal("100"))
+    private fun getProgress(goalQuantity: BigDecimal, actualQuantity: BigDecimal): Float {
+        return if (goalQuantity <= actualQuantity) 100F else actualQuantity.multiply(BigDecimal("100"))
             .divide(goalQuantity, RoundingMode.HALF_UP)
             .setScale(2, RoundingMode.HALF_UP)
+            .toFloat()
     }
 
     private fun Crypto.getMoneyNeeded(remainingQuantity: BigDecimal): BigDecimal {

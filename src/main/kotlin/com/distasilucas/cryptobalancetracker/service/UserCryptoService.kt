@@ -39,11 +39,11 @@ class UserCryptoService(
         return userCrypto.toUserCryptoResponse(crypto.name, platform.name)
     }
 
-    fun retrieveUserCryptosByPage(page: Int): PageUserCryptoResponse {
+    fun retrieveUserCryptosByPage(page: Int): PageUserCryptoResponse { // TODO - ADD CACHE??
         logger.info { "Retrieving user cryptos for page $page" }
 
         val pageRequest: Pageable = PageRequest.of(page, 10)
-        val entityUserCryptosPage = userCryptoRepository.findAll(pageRequest)
+        val entityUserCryptosPage = userCryptoRepository.findAll(pageRequest) // TODO - ADD CACHE??
         val userCryptosPage = entityUserCryptosPage.content.map { userCrypto ->
             val platform = platformService.retrievePlatformById(userCrypto.platformId)
             val crypto = cryptoService.retrieveCryptoInfoById(userCrypto.coingeckoCryptoId)
@@ -86,17 +86,18 @@ class UserCryptoService(
 
     fun updateUserCrypto(userCryptoId: String, userCryptoRequest: UserCryptoRequest): UserCryptoResponse {
         val userCrypto = findByUserCryptoId(userCryptoId)
-        val platform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)
+        val requestPlatform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)
         val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(userCryptoRequest.cryptoName!!)
 
-        val existingUserCrypto =
-            userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)
+        if (didChangePlatform(requestPlatform.id, userCrypto.platformId)) {
+            val existingUserCrypto =
+                userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)
 
-        // TODO - possible bug, if the platform has not changed, this should not be evaluated
-        if (existingUserCrypto.isPresent) {
-            throw DuplicatedCryptoPlatFormException(
-                DUPLICATED_CRYPTO_PLATFORM.format(coingeckoCrypto.name, platform.name)
-            )
+            if (existingUserCrypto.isPresent) {
+                throw DuplicatedCryptoPlatFormException(
+                    DUPLICATED_CRYPTO_PLATFORM.format(coingeckoCrypto.name, requestPlatform.name)
+                )
+            }
         }
 
         val updatedUserCrypto = UserCrypto(
@@ -112,7 +113,7 @@ class UserCryptoService(
 
         return updatedUserCrypto.toUserCryptoResponse(
             cryptoName = coingeckoCrypto.name,
-            platformName = platform.name
+            platformName = requestPlatform.name
         )
     }
 
@@ -166,6 +167,8 @@ class UserCryptoService(
 
         return userCryptoRepository.findAll(PageRequest.of(page, 10))
     }
+
+    private fun didChangePlatform(newPlatform: String, originalPlatform: String) = newPlatform != originalPlatform
 }
 
 class UserCryptoNotFoundException(message: String) : RuntimeException(message)
