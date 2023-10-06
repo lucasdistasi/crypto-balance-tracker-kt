@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PlatformService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.service</a> &gt; <span class="el_source">PlatformService.kt</span></div><h1>PlatformService.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.service
 
+import com.distasilucas.cryptobalancetracker.constants.ALL_PLATFORMS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
@@ -11,94 +13,96 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
-<span class="fc" id="L14">@Service</span>
-<span class="fc" id="L15">class PlatformService(</span>
-<span class="fc" id="L16">    private val platformRepository: PlatformRepository,</span>
-<span class="fc" id="L17">    private val cacheService: CacheService</span>
+<span class="fc" id="L16">@Service</span>
+<span class="fc" id="L17">class PlatformService(</span>
+<span class="fc" id="L18">    private val platformRepository: PlatformRepository,</span>
+<span class="fc" id="L19">    private val cacheService: CacheService</span>
 ) {
 
-<span class="fc" id="L20">    private val logger = KotlinLogging.logger { }</span>
+<span class="fc" id="L22">    private val logger = KotlinLogging.logger { }</span>
 
-<span class="fc" id="L22">    fun countPlatforms() = platformRepository.count()</span>
+<span class="fc" id="L24">    fun countPlatforms() = platformRepository.count()</span>
 
+    @Cacheable(cacheNames = [PLATFORM_PLATFORM_ID_CACHE], key = &quot;#platformId&quot;)
     fun retrievePlatformById(platformId: String): PlatformResponse {
-<span class="fc" id="L25">        logger.info { &quot;Retrieving platformId $platformId&quot; }</span>
+<span class="fc" id="L28">        logger.info { &quot;Retrieving platformId $platformId&quot; }</span>
 
-<span class="fc" id="L27">        return platformRepository.findById(platformId)</span>
-<span class="fc" id="L28">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
-<span class="fc" id="L29">            .toPlatformResponse()</span>
+<span class="fc" id="L30">        return platformRepository.findById(platformId)</span>
+<span class="fc" id="L31">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
+<span class="fc" id="L32">            .toPlatformResponse()</span>
     }
 
-    fun retrieveAllPlatforms(): List&lt;PlatformResponse&gt; {
-<span class="fc" id="L33">        logger.info { &quot;Retrieving all platforms&quot; }</span>
+    @Cacheable(cacheNames = [ALL_PLATFORMS_CACHE])
+    fun retrieveAllPlatforms(): List&lt;PlatformResponse&gt; { // TODO - ADD CACHE. INVALIDATE
+<span class="fc" id="L37">        logger.info { &quot;Retrieving all platforms&quot; }</span>
 
-<span class="fc" id="L35">        return platformRepository.findAll()</span>
-<span class="fc" id="L36">            .map { it.toPlatformResponse() }</span>
-<span class="fc" id="L37">            .toList()</span>
+<span class="fc" id="L39">        return platformRepository.findAll()</span>
+<span class="fc" id="L40">            .map { it.toPlatformResponse() }</span>
+<span class="fc" id="L41">            .toList()</span>
     }
 
     fun savePlatform(platformRequest: PlatformRequest): PlatformResponse {
-<span class="fc" id="L41">        validatePlatformNotExists(platformRequest.name!!)</span>
+<span class="fc" id="L45">        validatePlatformNotExists(platformRequest.name!!)</span>
 
-<span class="fc" id="L43">        val platform = platformRequest.toEntity()</span>
-<span class="fc" id="L44">        val platformEntity = platformRepository.save(platform)</span>
-<span class="fc" id="L45">        cacheService.invalidatePlatformsCaches()</span>
+<span class="fc" id="L47">        val platform = platformRequest.toEntity()</span>
+<span class="fc" id="L48">        val platformEntity = platformRepository.save(platform)</span>
+<span class="fc" id="L49">        cacheService.invalidatePlatformsCaches()</span>
 
-<span class="fc" id="L47">        val platformResponse = platformEntity.toPlatformResponse()</span>
-<span class="fc" id="L48">        logger.info { &quot;Saved platform $platformResponse&quot; }</span>
+<span class="fc" id="L51">        val platformResponse = platformEntity.toPlatformResponse()</span>
+<span class="fc" id="L52">        logger.info { &quot;Saved platform $platformResponse&quot; }</span>
 
-<span class="fc" id="L50">        return platformResponse</span>
+<span class="fc" id="L54">        return platformResponse</span>
     }
 
     fun updatePlatform(platformId: String, platformRequest: PlatformRequest): PlatformResponse {
-<span class="fc" id="L54">        validatePlatformNotExists(platformRequest.name!!)</span>
+<span class="fc" id="L58">        validatePlatformNotExists(platformRequest.name!!)</span>
 
-<span class="fc" id="L56">        val existingPlatform = findPlatformById(platformId)</span>
-<span class="fc" id="L57">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
+<span class="fc" id="L60">        val existingPlatform = findPlatformById(platformId)</span>
+<span class="fc" id="L61">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
 
-<span class="fc" id="L59">        val updatedPlatform = Platform(</span>
-<span class="fc" id="L60">            id = existingPlatform.id,</span>
-<span class="fc" id="L61">            name = platformRequest.name</span>
+<span class="fc" id="L63">        val updatedPlatform = Platform(</span>
+<span class="fc" id="L64">            id = existingPlatform.id,</span>
+<span class="fc" id="L65">            name = platformRequest.name</span>
         )
 
-<span class="fc" id="L64">        platformRepository.save(updatedPlatform)</span>
-<span class="fc" id="L65">        cacheService.invalidatePlatformsCaches()</span>
-<span class="fc" id="L66">        val platformResponse = updatedPlatform.toPlatformResponse()</span>
-<span class="fc" id="L67">        logger.info { &quot;Updated platform. Before: $existingPlatform  | After: $updatedPlatform&quot; }</span>
+<span class="fc" id="L68">        platformRepository.save(updatedPlatform)</span>
+<span class="fc" id="L69">        cacheService.invalidatePlatformsCaches()</span>
+<span class="fc" id="L70">        val platformResponse = updatedPlatform.toPlatformResponse()</span>
+<span class="fc" id="L71">        logger.info { &quot;Updated platform. Before: $existingPlatform  | After: $updatedPlatform&quot; }</span>
 
-<span class="fc" id="L69">        return platformResponse</span>
+<span class="fc" id="L73">        return platformResponse</span>
     }
 
     fun deletePlatform(platformId: String) {
-<span class="fc" id="L73">        findPlatformById(platformId)</span>
-<span class="fc" id="L74">            .ifPresentOrElse({</span>
-<span class="fc" id="L75">                platformRepository.deleteById(platformId)</span>
-<span class="fc" id="L76">                cacheService.invalidatePlatformsCaches()</span>
-<span class="fc" id="L77">                logger.info { &quot;Deleted platform $it&quot; }</span>
-<span class="fc" id="L78">            },{</span>
-<span class="fc" id="L79">                throw PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId))</span>
+<span class="fc" id="L77">        findPlatformById(platformId)</span>
+<span class="fc" id="L78">            .ifPresentOrElse({</span>
+<span class="fc" id="L79">                platformRepository.deleteById(platformId)</span>
+<span class="fc" id="L80">                cacheService.invalidatePlatformsCaches()</span>
+<span class="fc" id="L81">                logger.info { &quot;Deleted platform $it&quot; }</span>
+<span class="fc" id="L82">            },{</span>
+<span class="fc" id="L83">                throw PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId))</span>
             })
-<span class="fc" id="L81">    }</span>
+<span class="fc" id="L85">    }</span>
 
     @Cacheable(cacheNames = [PLATFORMS_PLATFORMS_IDS_CACHE], key = &quot;#ids&quot;)
     fun findAllByIds(ids: Collection&lt;String&gt;): List&lt;Platform&gt; {
-<span class="fc" id="L85">        logger.info { &quot;Retrieving platforms for ids $ids&quot; }</span>
+<span class="fc" id="L89">        logger.info { &quot;Retrieving platforms for ids $ids&quot; }</span>
 
-<span class="fc" id="L87">        return platformRepository.findAllByIdIn(ids)</span>
+<span class="fc" id="L91">        return platformRepository.findAllByIdIn(ids)</span>
     }
 
-<span class="fc" id="L90">    private fun findPlatformById(platformId: String) = platformRepository.findById(platformId)</span>
+<span class="fc" id="L94">    private fun findPlatformById(platformId: String) = platformRepository.findById(platformId)</span>
 
     private fun validatePlatformNotExists(platformName: String) {
-<span class="fc" id="L93">        val existingPlatform = platformRepository.findByName(platformName.uppercase())</span>
+<span class="fc" id="L97">        val existingPlatform = platformRepository.findByName(platformName.uppercase())</span>
 
-<span class="fc bfc" id="L95" title="All 2 branches covered.">        if (existingPlatform.isPresent) {</span>
-<span class="fc" id="L96">            throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(existingPlatform.get().name))</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (existingPlatform.isPresent) {</span>
+<span class="fc" id="L100">            throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(existingPlatform.get().name))</span>
         }
-<span class="fc" id="L98">    }</span>
+<span class="fc" id="L102">    }</span>
 }
 
-<span class="fc" id="L101">class PlatformNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L105">class PlatformNotFoundException(message: String) : RuntimeException(message)</span>
 
-<span class="fc" id="L103">class DuplicatedPlatformException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L107">class DuplicatedPlatformException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

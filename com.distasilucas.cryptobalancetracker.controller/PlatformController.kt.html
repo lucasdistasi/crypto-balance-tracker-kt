@@ -9,6 +9,7 @@ import jakarta.validation.Valid
 import org.hibernate.validator.constraints.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -18,55 +19,56 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-<span class="fc" id="L21">@Validated</span>
+<span class="fc" id="L22">@Validated</span>
 @RestController
 @RequestMapping(&quot;/api/v1/platforms&quot;)
-<span class="fc" id="L24">class PlatformController(private val platformService: PlatformService) : PlatformControllerAPI {</span>
+@CrossOrigin(origins = [&quot;\${allowed-origins}&quot;])
+<span class="fc" id="L26">class PlatformController(private val platformService: PlatformService) : PlatformControllerAPI {</span>
 
     @GetMapping(&quot;/count&quot;)
     override fun countPlatforms(): ResponseEntity&lt;Long&gt; {
-<span class="fc" id="L28">        val totalPlatforms = platformService.countPlatforms()</span>
+<span class="fc" id="L30">        val totalPlatforms = platformService.countPlatforms()</span>
 
-<span class="fc" id="L30">        return ResponseEntity.ok(totalPlatforms)</span>
+<span class="fc" id="L32">        return ResponseEntity.ok(totalPlatforms)</span>
     }
 
     @GetMapping(&quot;/{platformId}&quot;)
     override fun retrievePlatform(@PathVariable @UUID(message = INVALID_PLATFORM_UUID) platformId: String): ResponseEntity&lt;PlatformResponse&gt; {
-<span class="fc" id="L35">        val platformResponse = platformService.retrievePlatformById(platformId)</span>
+<span class="fc" id="L37">        val platformResponse = platformService.retrievePlatformById(platformId)</span>
 
-<span class="fc" id="L37">        return ResponseEntity.ok(platformResponse)</span>
+<span class="fc" id="L39">        return ResponseEntity.ok(platformResponse)</span>
     }
 
     @GetMapping
     override fun retrieveAllPlatforms(): ResponseEntity&lt;List&lt;PlatformResponse&gt;&gt; {
-<span class="fc" id="L42">        val allPlatforms = platformService.retrieveAllPlatforms()</span>
+<span class="fc" id="L44">        val allPlatforms = platformService.retrieveAllPlatforms()</span>
 
-<span class="fc bfc" id="L44" title="All 2 branches covered.">        return if (allPlatforms.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(allPlatforms)</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        return if (allPlatforms.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(allPlatforms)</span>
     }
 
     @PostMapping
     override fun savePlatform(
         @Valid @RequestBody platformRequest: PlatformRequest
     ): ResponseEntity&lt;PlatformResponse&gt; {
-<span class="fc" id="L51">        val platformResponse = platformService.savePlatform(platformRequest)</span>
+<span class="fc" id="L53">        val platformResponse = platformService.savePlatform(platformRequest)</span>
 
-<span class="fc" id="L53">        return ResponseEntity.ok(platformResponse)</span>
+<span class="fc" id="L55">        return ResponseEntity.ok(platformResponse)</span>
     }
 
     @PutMapping(&quot;/{platformId}&quot;)
     override fun updatePlatform(
         @PathVariable @UUID(message = INVALID_PLATFORM_UUID) platformId: String, @Valid @RequestBody platformRequest: PlatformRequest
     ): ResponseEntity&lt;PlatformResponse&gt; {
-<span class="fc" id="L60">        val updatedPlatform = platformService.updatePlatform(platformId, platformRequest)</span>
+<span class="fc" id="L62">        val updatedPlatform = platformService.updatePlatform(platformId, platformRequest)</span>
 
-<span class="fc" id="L62">        return ResponseEntity.ok(updatedPlatform)</span>
+<span class="fc" id="L64">        return ResponseEntity.ok(updatedPlatform)</span>
     }
 
     @DeleteMapping(&quot;/{platformId}&quot;)
     override fun deletePlatform(@PathVariable @UUID(message = INVALID_PLATFORM_UUID) platformId: String): ResponseEntity&lt;Unit&gt; {
-<span class="fc" id="L67">        platformService.deletePlatform(platformId)</span>
+<span class="fc" id="L69">        platformService.deletePlatform(platformId)</span>
 
-<span class="fc" id="L69">        return ResponseEntity.ok().build()</span>
+<span class="fc" id="L71">        return ResponseEntity.ok().build()</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

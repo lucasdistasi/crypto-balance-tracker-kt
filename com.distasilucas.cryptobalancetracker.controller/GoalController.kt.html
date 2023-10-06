@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Min
 import org.hibernate.validator.constraints.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -22,33 +23,34 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
-<span class="fc" id="L25">@Validated</span>
+<span class="fc" id="L26">@Validated</span>
 @RestController
 @RequestMapping(&quot;/api/v1/goals&quot;)
-<span class="fc" id="L28">class GoalController(private val goalService: GoalService) : GoalControllerAPI {</span>
+@CrossOrigin(origins = [&quot;\${allowed-origins}&quot;])
+<span class="fc" id="L30">class GoalController(private val goalService: GoalService) : GoalControllerAPI {</span>
 
     @GetMapping(&quot;/{goalId}&quot;)
     override fun retrieveGoal(@PathVariable @UUID(message = INVALID_GOAL_UUID) goalId: String): ResponseEntity&lt;GoalResponse&gt; {
-<span class="fc" id="L32">        val goal = goalService.retrieveGoalById(goalId)</span>
+<span class="fc" id="L34">        val goal = goalService.retrieveGoalById(goalId)</span>
 
-<span class="fc" id="L34">        return ResponseEntity.ok(goal)</span>
+<span class="fc" id="L36">        return ResponseEntity.ok(goal)</span>
     }
 
     @GetMapping
     override fun retrieveGoalsForPage(
         @RequestParam @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int
     ): ResponseEntity&lt;PageGoalResponse&gt; {
-<span class="fc" id="L41">        val pageGoalResponse = goalService.retrieveGoalsForPage(page)</span>
+<span class="fc" id="L43">        val pageGoalResponse = goalService.retrieveGoalsForPage(page)</span>
 
-<span class="fc bfc" id="L43" title="All 2 branches covered.">        return if (pageGoalResponse.goals.isEmpty())</span>
-<span class="fc" id="L44">            ResponseEntity.noContent().build() else ResponseEntity.ok(pageGoalResponse)</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        return if (pageGoalResponse.goals.isEmpty())</span>
+<span class="fc" id="L46">            ResponseEntity.noContent().build() else ResponseEntity.ok(pageGoalResponse)</span>
     }
 
     @PostMapping
     override fun saveGoal(@RequestBody @Valid goalRequest: GoalRequest): ResponseEntity&lt;GoalResponse&gt; {
-<span class="fc" id="L49">        val goal = goalService.saveGoal(goalRequest)</span>
+<span class="fc" id="L51">        val goal = goalService.saveGoal(goalRequest)</span>
 
-<span class="fc" id="L51">        return ResponseEntity.ok(goal)</span>
+<span class="fc" id="L53">        return ResponseEntity.ok(goal)</span>
     }
 
     @PutMapping(&quot;/{goalId}&quot;)
@@ -56,16 +58,16 @@ import org.springframework.web.bind.annotation.RestController
         @PathVariable @UUID(message = INVALID_GOAL_UUID) goalId: String,
         @Valid @RequestBody goalRequest: GoalRequest
     ): ResponseEntity&lt;GoalResponse&gt; {
-<span class="fc" id="L59">        val goal = goalService.updateGoal(goalId, goalRequest)</span>
+<span class="fc" id="L61">        val goal = goalService.updateGoal(goalId, goalRequest)</span>
 
-<span class="fc" id="L61">        return ResponseEntity.ok(goal)</span>
+<span class="fc" id="L63">        return ResponseEntity.ok(goal)</span>
     }
 
     @DeleteMapping(&quot;/{goalId}&quot;)
     override fun deleteGoal(@PathVariable @UUID(message = INVALID_GOAL_UUID) goalId: String): ResponseEntity&lt;Unit&gt; {
-<span class="fc" id="L66">        goalService.deleteGoal(goalId)</span>
+<span class="fc" id="L68">        goalService.deleteGoal(goalId)</span>
 
-<span class="fc" id="L68">        return ResponseEntity.ok().build()</span>
+<span class="fc" id="L70">        return ResponseEntity.ok().build()</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
