@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PlatformController.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.controller</a> &gt; <span class="el_source">PlatformController.kt</span></div><h1>PlatformController.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.controller
 
-import com.distasilucas.cryptobalancetracker.constants.INVALID_PLATFORM_UUID
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.controller.swagger.PlatformControllerAPI
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController
     }
 
     @GetMapping(&quot;/{platformId}&quot;)
-    override fun retrievePlatform(@PathVariable @UUID(message = INVALID_PLATFORM_UUID) platformId: String): ResponseEntity&lt;PlatformResponse&gt; {
+    override fun retrievePlatform(@PathVariable @UUID(message = PLATFORM_ID_UUID) platformId: String): ResponseEntity&lt;PlatformResponse&gt; {
 <span class="fc" id="L37">        val platformResponse = platformService.retrievePlatformById(platformId)</span>
 
 <span class="fc" id="L39">        return ResponseEntity.ok(platformResponse)</span>
@@ -57,7 +57,7 @@ import org.springframework.web.bind.annotation.RestController
 
     @PutMapping(&quot;/{platformId}&quot;)
     override fun updatePlatform(
-        @PathVariable @UUID(message = INVALID_PLATFORM_UUID) platformId: String, @Valid @RequestBody platformRequest: PlatformRequest
+        @PathVariable @UUID(message = PLATFORM_ID_UUID) platformId: String, @Valid @RequestBody platformRequest: PlatformRequest
     ): ResponseEntity&lt;PlatformResponse&gt; {
 <span class="fc" id="L62">        val updatedPlatform = platformService.updatePlatform(platformId, platformRequest)</span>
 
@@ -65,7 +65,7 @@ import org.springframework.web.bind.annotation.RestController
     }
 
     @DeleteMapping(&quot;/{platformId}&quot;)
-    override fun deletePlatform(@PathVariable @UUID(message = INVALID_PLATFORM_UUID) platformId: String): ResponseEntity&lt;Unit&gt; {
+    override fun deletePlatform(@PathVariable @UUID(message = PLATFORM_ID_UUID) platformId: String): ResponseEntity&lt;Unit&gt; {
 <span class="fc" id="L69">        platformService.deletePlatform(platformId)</span>
 
 <span class="fc" id="L71">        return ResponseEntity.ok().build()</span>

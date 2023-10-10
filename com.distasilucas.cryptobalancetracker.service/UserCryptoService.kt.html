@@ -43,7 +43,7 @@ import java.util.Optional
 <span class="fc" id="L43">        logger.info { &quot;Retrieving user cryptos for page $page&quot; }</span>
 
 <span class="fc" id="L45">        val pageRequest: Pageable = PageRequest.of(page, 10)</span>
-<span class="fc" id="L46">        val entityUserCryptosPage = userCryptoRepository.findAll(pageRequest)</span>
+<span class="fc" id="L46">        val entityUserCryptosPage = userCryptoRepository.findAll(pageRequest) // TODO - ADD CACHE??</span>
 <span class="fc" id="L47">        val userCryptosPage = entityUserCryptosPage.content.map { userCrypto -&gt;</span>
 <span class="fc" id="L48">            val platform = platformService.retrievePlatformById(userCrypto.platformId)</span>
 <span class="fc" id="L49">            val crypto = cryptoService.retrieveCryptoInfoById(userCrypto.coingeckoCryptoId)</span>
@@ -86,16 +86,16 @@ import java.util.Optional
 
     fun updateUserCrypto(userCryptoId: String, userCryptoRequest: UserCryptoRequest): UserCryptoResponse {
 <span class="fc" id="L88">        val userCrypto = findByUserCryptoId(userCryptoId)</span>
-<span class="fc" id="L89">        val platform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)</span>
+<span class="fc" id="L89">        val requestPlatform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)</span>
 <span class="fc" id="L90">        val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(userCryptoRequest.cryptoName!!)</span>
 
-<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (didChangePlatform(platform.id, userCrypto.platformId)) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (didChangePlatform(requestPlatform.id, userCrypto.platformId)) {</span>
 <span class="fc" id="L93">            val existingUserCrypto =</span>
 <span class="fc" id="L94">                userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)</span>
 
 <span class="fc bfc" id="L96" title="All 2 branches covered.">            if (existingUserCrypto.isPresent) {</span>
 <span class="fc" id="L97">                throw DuplicatedCryptoPlatFormException(</span>
-<span class="fc" id="L98">                    DUPLICATED_CRYPTO_PLATFORM.format(coingeckoCrypto.name, platform.name)</span>
+<span class="fc" id="L98">                    DUPLICATED_CRYPTO_PLATFORM.format(coingeckoCrypto.name, requestPlatform.name)</span>
                 )
             }
         }
@@ -113,7 +113,7 @@ import java.util.Optional
 
 <span class="fc" id="L114">        return updatedUserCrypto.toUserCryptoResponse(</span>
 <span class="fc" id="L115">            cryptoName = coingeckoCrypto.name,</span>
-<span class="fc" id="L116">            platformName = platform.name</span>
+<span class="fc" id="L116">            platformName = requestPlatform.name</span>
         )
     }
 
@@ -168,7 +168,7 @@ import java.util.Optional
 <span class="fc" id="L168">        return userCryptoRepository.findAll(PageRequest.of(page, 10))</span>
     }
 
-<span class="fc bfc" id="L171" title="All 2 branches covered.">    private fun didChangePlatform(a: String, b: String) = a != b</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">    private fun didChangePlatform(newPlatform: String, originalPlatform: String) = newPlatform != originalPlatform</span>
 }
 
 <span class="fc" id="L174">class UserCryptoNotFoundException(message: String) : RuntimeException(message)</span>

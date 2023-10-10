@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service
     }
 
     @Cacheable(cacheNames = [ALL_PLATFORMS_CACHE])
-    fun retrieveAllPlatforms(): List&lt;PlatformResponse&gt; { // TODO - ADD CACHE. INVALIDATE
+    fun retrieveAllPlatforms(): List&lt;PlatformResponse&gt; {
 <span class="fc" id="L37">        logger.info { &quot;Retrieving all platforms&quot; }</span>
 
 <span class="fc" id="L39">        return platformRepository.findAll()</span>
