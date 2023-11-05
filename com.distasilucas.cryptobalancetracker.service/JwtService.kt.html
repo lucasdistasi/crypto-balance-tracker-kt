@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.service</a> &gt; <span class="el_source">JwtService.kt</span></div><h1>JwtService.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.service
+
+import com.distasilucas.cryptobalancetracker.constants.TOKEN_EXPIRED
+import com.distasilucas.cryptobalancetracker.exception.ApiException
+import io.github.oshai.kotlinlogging.KotlinLogging
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.io.Decoders
+import io.jsonwebtoken.security.Keys
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.http.HttpStatus
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.stereotype.Service
+import java.security.Key
+import java.util.Date
+import java.util.function.Function
+
+<span class="nc" id="L20">@Service</span>
+@ConditionalOnProperty(prefix = &quot;security&quot;, name = [&quot;enabled&quot;], havingValue = &quot;true&quot;)
+<span class="nc" id="L22">class JwtService(</span>
+<span class="nc" id="L23">    @Value(&quot;\${jwt.signing-key}&quot;)</span>
+    private val jwtSigningKey: String
+) {
+
+<span class="nc" id="L27">    private val logger = KotlinLogging.logger { }</span>
+
+    fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
+<span class="nc" id="L30">        logger.info { &quot;Validating JWT token for ${userDetails.username}&quot; }</span>
+
+<span class="nc bnc" id="L32" title="All 4 branches missed.">        return isTokenNonExpired(token) &amp;&amp; extractUsername(token) == userDetails.username</span>
+    }
+
+    fun extractUsername(token: String): String {
+<span class="nc" id="L36">        return extractClaim&lt;String&gt;(token, Claims::getSubject)</span>
+    }
+
+    private fun isTokenNonExpired(token: String): Boolean {
+<span class="nc" id="L40">        val date = extractClaim&lt;Date&gt;(token, Claims::getExpiration)</span>
+<span class="nc" id="L41">        return date.after(Date())</span>
+    }
+
+    private fun &lt;T&gt; extractClaim(token: String, claims: Function&lt;Claims, T&gt;): T {
+<span class="nc" id="L45">        val claim: Claims = extractClaims(token)</span>
+<span class="nc" id="L46">        return claims.apply(claim)</span>
+    }
+
+    private fun extractClaims(token: String): Claims {
+<span class="nc" id="L50">        return try {</span>
+<span class="nc" id="L51">            Jwts.parserBuilder()</span>
+<span class="nc" id="L52">                .setSigningKey(getSigningKey())</span>
+<span class="nc" id="L53">                .build()</span>
+<span class="nc" id="L54">                .parseClaimsJws(token)</span>
+<span class="nc" id="L55">                .body</span>
+<span class="nc" id="L56">        } catch (ex: ExpiredJwtException) {</span>
+<span class="nc" id="L57">            throw ApiException(HttpStatus.BAD_REQUEST, TOKEN_EXPIRED)</span>
+<span class="nc" id="L58">        } catch (ex: Exception) {</span>
+<span class="nc" id="L59">            logger.warn { &quot;Exception when parsing JWT Token. ${ex.message}&quot; }</span>
+<span class="nc" id="L60">            throw ApiException()</span>
+        }
+    }
+
+    private fun getSigningKey(): Key {
+<span class="nc" id="L65">        val decoders: ByteArray = Decoders.BASE64.decode(jwtSigningKey)</span>
+
+<span class="nc" id="L67">        return Keys.hmacShaKeyFor(decoders)</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

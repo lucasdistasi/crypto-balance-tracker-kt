@@ -23,18 +23,18 @@ import java.util.UUID
         id: String,
         cryptoName: String,
         actualQuantity: BigDecimal,
-        progress: Float,
+        progress: BigDecimal,
         remainingQuantity: BigDecimal,
         moneyNeeded: BigDecimal
     ): GoalResponse {
 <span class="fc" id="L30">        return GoalResponse(</span>
 <span class="fc" id="L31">            id = id,</span>
 <span class="fc" id="L32">            cryptoName = cryptoName,</span>
-<span class="fc" id="L33">            actualQuantity = actualQuantity.toPlainString(),</span>
+<span class="fc" id="L33">            actualQuantity = actualQuantity,</span>
 <span class="fc" id="L34">            progress = progress,</span>
-<span class="fc" id="L35">            remainingQuantity = remainingQuantity.toPlainString(),</span>
-<span class="fc" id="L36">            goalQuantity = goalQuantity.toPlainString(),</span>
-<span class="fc" id="L37">            moneyNeeded = moneyNeeded.toPlainString()</span>
+<span class="fc" id="L35">            remainingQuantity = remainingQuantity,</span>
+<span class="fc" id="L36">            goalQuantity = goalQuantity,</span>
+<span class="fc" id="L37">            moneyNeeded = moneyNeeded</span>
         )
     }
 <span class="fc" id="L40">}</span>
