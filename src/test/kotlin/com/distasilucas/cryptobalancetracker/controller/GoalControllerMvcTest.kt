@@ -27,7 +27,7 @@ import saveGoal
 import updateGoal
 import java.math.BigDecimal
 
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(SpringExtension::class)
 @WebMvcTest(GoalController::class)
 class GoalControllerMvcTest(

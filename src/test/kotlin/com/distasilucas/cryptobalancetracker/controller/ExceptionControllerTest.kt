@@ -8,6 +8,7 @@ import com.distasilucas.cryptobalancetracker.constants.GOAL_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.constants.NOT_ENOUGH_BALANCE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.constants.UNKNOWN_ERROR
+import com.distasilucas.cryptobalancetracker.constants.USERNAME_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.exception.ApiException
@@ -19,6 +20,7 @@ import com.distasilucas.cryptobalancetracker.service.GoalNotFoundException
 import com.distasilucas.cryptobalancetracker.service.InsufficientBalanceException
 import com.distasilucas.cryptobalancetracker.service.PlatformNotFoundException
 import com.distasilucas.cryptobalancetracker.service.UserCryptoNotFoundException
+import com.distasilucas.cryptobalancetracker.service.UsernameNotFoundException
 import jakarta.validation.ConstraintViolation
 import jakarta.validation.ConstraintViolationException
 import org.assertj.core.api.Assertions.assertThat
@@ -158,6 +160,18 @@ class ExceptionControllerTest {
 
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
+    }
+
+    @Test
+    fun `should handle UsernameNotFoundException`() {
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = USERNAME_NOT_FOUND
+
+        val responseEntity = exceptionController.handleUsernameNotFoundException(UsernameNotFoundException(), servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf(problemDetail)))
     }
 
     @Test
