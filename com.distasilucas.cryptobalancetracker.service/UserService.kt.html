@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.service</a> &gt; <span class="el_source">UserService.kt</span></div><h1>UserService.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.service
 
+import com.distasilucas.cryptobalancetracker.constants.USERNAME_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.User
 import com.distasilucas.cryptobalancetracker.repository.UserRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import java.lang.RuntimeException
 
-<span class="nc" id="L9">@Service</span>
-<span class="nc" id="L10">class UserService(private val userRepository: UserRepository) {</span>
+<span class="nc" id="L10">@Service</span>
+<span class="nc" id="L11">class UserService(private val userRepository: UserRepository) {</span>
 
-<span class="nc" id="L12">    private val logger = KotlinLogging.logger { }</span>
+<span class="nc" id="L13">    private val logger = KotlinLogging.logger { }</span>
 
     fun findByUsername(username: String): User {
-<span class="nc" id="L15">        logger.info { &quot;Searching for username $username&quot; }</span>
+<span class="nc" id="L16">        logger.info { &quot;Searching for username $username&quot; }</span>
 
-<span class="nc" id="L17">        return userRepository.findByUsername(username)</span>
-<span class="nc" id="L18">            .orElseThrow { RuntimeException(&quot;TODO&quot;) } // TODO</span>
+<span class="nc" id="L18">        return userRepository.findByUsername(username)</span>
+<span class="nc" id="L19">            .orElseThrow { UsernameNotFoundException() }</span>
     }
 }
+
+<span class="fc" id="L23">class UsernameNotFoundException : RuntimeException(USERNAME_NOT_FOUND)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
