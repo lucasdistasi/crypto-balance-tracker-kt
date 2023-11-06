@@ -7,16 +7,16 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import java.lang.RuntimeException
 
-<span class="nc" id="L10">@Service</span>
-<span class="nc" id="L11">class UserService(private val userRepository: UserRepository) {</span>
+<span class="fc" id="L10">@Service</span>
+<span class="fc" id="L11">class UserService(private val userRepository: UserRepository) {</span>
 
-<span class="nc" id="L13">    private val logger = KotlinLogging.logger { }</span>
+<span class="fc" id="L13">    private val logger = KotlinLogging.logger { }</span>
 
     fun findByUsername(username: String): User {
-<span class="nc" id="L16">        logger.info { &quot;Searching for username $username&quot; }</span>
+<span class="fc" id="L16">        logger.info { &quot;Searching for username $username&quot; }</span>
 
-<span class="nc" id="L18">        return userRepository.findByUsername(username)</span>
-<span class="nc" id="L19">            .orElseThrow { UsernameNotFoundException() }</span>
+<span class="fc" id="L18">        return userRepository.findByUsername(username)</span>
+<span class="fc" id="L19">            .orElseThrow { UsernameNotFoundException() }</span>
     }
 }
 

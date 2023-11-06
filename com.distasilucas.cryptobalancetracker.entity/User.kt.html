@@ -9,23 +9,23 @@ import org.springframework.security.core.userdetails.UserDetails
 import java.time.LocalDateTime
 import java.util.UUID
 
-<span class="nc" id="L12">@Document(&quot;Users&quot;)</span>
-<span class="nc" id="L13">data class User(</span>
-<span class="nc" id="L14">    @Id</span>
-<span class="nc" id="L15">    private val id: String = UUID.randomUUID().toString(),</span>
-<span class="nc" id="L16">    private val username: String,</span>
-<span class="nc" id="L17">    private val password: String,</span>
-<span class="nc" id="L18">    private val role: Role,</span>
+<span class="fc" id="L12">@Document(&quot;Users&quot;)</span>
+<span class="fc" id="L13">data class User(</span>
+<span class="fc" id="L14">    @Id</span>
+<span class="fc" id="L15">    private val id: String = UUID.randomUUID().toString(),</span>
+<span class="fc" id="L16">    private val username: String,</span>
+<span class="fc" id="L17">    private val password: String,</span>
+<span class="fc" id="L18">    private val role: Role,</span>
 
-<span class="nc" id="L20">    @Field(&quot;created_at&quot;)</span>
+<span class="fc" id="L20">    @Field(&quot;created_at&quot;)</span>
     private val createdAt: LocalDateTime
 
 ): UserDetails {
 <span class="nc" id="L24">    override fun getAuthorities() = listOf(SimpleGrantedAuthority(role.name))</span>
 
-<span class="nc" id="L26">    override fun getPassword() = password</span>
+<span class="fc" id="L26">    override fun getPassword() = password</span>
 
-<span class="nc" id="L28">    override fun getUsername() = username</span>
+<span class="fc" id="L28">    override fun getUsername() = username</span>
 
 <span class="nc" id="L30">    override fun isAccountNonExpired() = true</span>
 
@@ -35,5 +35,5 @@ import java.util.UUID
 
 <span class="nc" id="L36">    override fun isEnabled() = true</span>
 
-<span class="nc" id="L38">}</span>
+<span class="fc" id="L38">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
