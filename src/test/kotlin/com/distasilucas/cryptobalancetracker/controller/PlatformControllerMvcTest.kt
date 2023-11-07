@@ -26,7 +26,7 @@ import retrievePlatform
 import savePlatform
 import updatePlatform
 
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(SpringExtension::class)
 @WebMvcTest(PlatformController::class)
 class PlatformControllerMvcTest(

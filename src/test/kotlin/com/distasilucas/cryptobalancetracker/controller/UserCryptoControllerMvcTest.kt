@@ -51,7 +51,7 @@ import updateUserCrypto
 import java.math.BigDecimal
 import java.util.UUID
 
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(SpringExtension::class)
 @WebMvcTest(UserCryptoController::class)
 class UserCryptoControllerMvcTest(

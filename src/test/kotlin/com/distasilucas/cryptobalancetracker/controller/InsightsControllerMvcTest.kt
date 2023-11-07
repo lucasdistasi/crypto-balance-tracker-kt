@@ -38,7 +38,7 @@ import retrieveUserCryptosInsights
 import retrieveUserCryptosPlatformsInsights
 import java.util.Optional
 
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(SpringExtension::class)
 @WebMvcTest(InsightsController::class)
 class InsightsControllerMvcTest(
@@ -49,7 +49,7 @@ class InsightsControllerMvcTest(
     private lateinit var insightsServiceMock: InsightsService
 
     @Test
-    fun `should retrieve all balances with status 200`() {
+    fun `should retrieve total balances with status 200`() {
         every { insightsServiceMock.retrieveTotalBalancesInsights() } returns Optional.of(balances())
 
         mockMvc.retrieveTotalBalancesInsights()

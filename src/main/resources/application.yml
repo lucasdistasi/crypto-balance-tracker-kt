@@ -29,4 +29,10 @@ logging:
 
 max-limit-crypto: 9
 
+security:
+  enabled: false
+
+jwt:
+  signing-key: ${JWT_SIGNING_KEY}
+
 allowed-origins: "http://localhost:5173"

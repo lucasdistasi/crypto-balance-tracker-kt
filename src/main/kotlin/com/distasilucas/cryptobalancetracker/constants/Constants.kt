@@ -47,6 +47,8 @@ const val GOAL_ID_NOT_FOUND = "Goal with id %s not found"
 const val DUPLICATED_GOAL = "You already have a goal for %s"
 const val NOT_ENOUGH_BALANCE = "You don't have enough balance to perform this action"
 const val SAME_FROM_TO_PLATFORM = "From platform and to platform cannot be the same"
+const val TOKEN_EXPIRED = "Token is expired"
+const val USERNAME_NOT_FOUND = "Username not found"
 
 // Regex validations
 const val PLATFORM_NAME_REGEX = "^[a-zA-Z]{1,24}$"

@@ -18,6 +18,8 @@ import org.hibernate.validator.constraints.UUID
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 
+// TODO - ADD 401 - 403 RESPONSE CODES
+
 @Tag(name = "Goal Controller", description = "API endpoints for goal management")
 interface GoalControllerAPI {
 
