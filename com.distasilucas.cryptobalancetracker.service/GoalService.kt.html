@@ -109,17 +109,18 @@ import java.math.RoundingMode
 <span class="fc bfc" id="L109" title="All 2 branches covered.">        return if (goalQuantity &lt;= actualQuantity) BigDecimal.ZERO else goalQuantity.minus(actualQuantity)</span>
     }
 
-    private fun getProgress(goalQuantity: BigDecimal, actualQuantity: BigDecimal): BigDecimal {
-<span class="fc bfc" id="L113" title="All 2 branches covered.">        return if (goalQuantity &lt;= actualQuantity) BigDecimal(&quot;100&quot;) else actualQuantity.multiply(BigDecimal(&quot;100&quot;))</span>
+    private fun getProgress(goalQuantity: BigDecimal, actualQuantity: BigDecimal): Float {
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        return if (goalQuantity &lt;= actualQuantity) 100F else actualQuantity.multiply(BigDecimal(&quot;100&quot;))</span>
 <span class="fc" id="L114">            .divide(goalQuantity, RoundingMode.HALF_UP)</span>
 <span class="fc" id="L115">            .setScale(2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L116">            .toFloat()</span>
     }
 
     private fun Crypto.getMoneyNeeded(remainingQuantity: BigDecimal): BigDecimal {
-<span class="fc" id="L119">        return lastKnownPrice.multiply(remainingQuantity).setScale(2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L120">        return lastKnownPrice.multiply(remainingQuantity).setScale(2, RoundingMode.HALF_UP)</span>
     }
 }
 
-<span class="fc" id="L123">class GoalNotFoundException(message: String) : RuntimeException(message)</span>
-<span class="fc" id="L124">class DuplicatedGoalException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L124">class GoalNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L125">class DuplicatedGoalException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

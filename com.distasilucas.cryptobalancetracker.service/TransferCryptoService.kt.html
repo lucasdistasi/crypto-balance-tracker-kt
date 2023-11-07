@@ -114,7 +114,7 @@ import java.util.UUID
 <span class="fc" id="L114">        return transferCryptoResponse!!</span>
     }
 
-<span class="fc bfc" id="L117" title="All 2 branches covered.">    private fun isToAndFromSamePlatform(toPlatformId: String, fromPlatformId: String) = toPlatformId === fromPlatformId</span>
+<span class="fc" id="L117">    private fun isToAndFromSamePlatform(toPlatformId: String, fromPlatformId: String) = toPlatformId == fromPlatformId</span>
 
     private fun doesFromPlatformHaveRemaining(remainingCryptoQuantity: BigDecimal) =
 <span class="fc bfc" id="L120" title="All 2 branches covered.">        remainingCryptoQuantity &gt; BigDecimal.ZERO</span>
