@@ -33,6 +33,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.mock.http.client.MockClientHttpResponse
 import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.validation.BindException
 import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -256,6 +257,32 @@ class ExceptionControllerTest {
 
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
+    }
+
+    @Test
+    fun `should handle AccessDeniedException with custom message`() {
+        val exception = AccessDeniedException("AccessDeniedException")
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = "AccessDeniedException"
+
+        val responseEntity = exceptionController.handleAccessDeniedException(exception, servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail))
+    }
+
+    @Test
+    fun `should handle AccessDeniedException with default message`() {
+        val exception = AccessDeniedException(null)
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = "Forbidden"
+
+        val responseEntity = exceptionController.handleAccessDeniedException(exception, servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail))
     }
 
     @Test

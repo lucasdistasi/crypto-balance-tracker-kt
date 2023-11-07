@@ -404,6 +404,24 @@ class UserCryptoServiceTest {
     }
 
     @Test
+    fun `should delete user cryptos`() {
+        val userCryptos = UserCrypto(
+            id = "123e4567-e89b-12d3-a456-426614174000",
+            coingeckoCryptoId = "bitcoin",
+            quantity = BigDecimal("1"),
+            platformId = "123e4567-e89b-12d3-a456-426614174444"
+        )
+
+        justRun { cacheServiceMock.invalidateUserCryptosCaches() }
+        justRun { userCryptoRepositoryMock.deleteAllById(listOf("123e4567-e89b-12d3-a456-426614174000")) }
+
+        userCryptoService.deleteUserCryptos(listOf(userCryptos))
+
+        verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosCaches() }
+        verify(exactly = 1) { userCryptoRepositoryMock.deleteAllById(listOf("123e4567-e89b-12d3-a456-426614174000")) }
+    }
+
+    @Test
     fun `should throw UserCryptoNotFoundException when deleting user crypto`() {
         every { userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000") } returns Optional.empty()
 

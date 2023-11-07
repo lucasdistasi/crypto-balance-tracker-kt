@@ -3,6 +3,7 @@ package com.distasilucas.cryptobalancetracker.service
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.Platform
+import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import com.distasilucas.cryptobalancetracker.repository.PlatformRepository
@@ -14,15 +15,17 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.math.BigDecimal
 import java.util.Optional
 import java.util.UUID
 
 class PlatformServiceTest {
 
     private val platformRepositoryMock = mockk<PlatformRepository>()
+    private val userCryptoServiceMock = mockk<UserCryptoService>()
     private val cacheServiceMock = mockk<CacheService>()
 
-    private val platformService = PlatformService(platformRepositoryMock, cacheServiceMock)
+    private val platformService = PlatformService(platformRepositoryMock, userCryptoServiceMock, cacheServiceMock)
 
     @Test
     fun `should return count of platforms`() {
@@ -216,14 +219,23 @@ class PlatformServiceTest {
     fun `should delete platform`() {
         val id = UUID.randomUUID().toString()
         val existingPlatform = Platform(id, "BINANCE")
+        val userCryptos = UserCrypto(
+            id = "123e4567-e89b-12d3-a456-426614174000",
+            coingeckoCryptoId = "bitcoin",
+            quantity = BigDecimal("1"),
+            platformId = id
+        )
 
         every { platformRepositoryMock.findById(id) } returns Optional.of(existingPlatform)
+        every { userCryptoServiceMock.findAllByPlatformId(id) } returns listOf(userCryptos)
+        justRun { userCryptoServiceMock.deleteUserCryptos(listOf(userCryptos)) }
         justRun { platformRepositoryMock.deleteById(id) }
         justRun { cacheServiceMock.invalidatePlatformsCaches() }
 
         platformService.deletePlatform(id)
 
         verify(exactly = 1) { platformRepositoryMock.deleteById(id) }
+        verify(exactly = 1) { userCryptoServiceMock.deleteUserCryptos(listOf(userCryptos)) }
     }
 
     @Test

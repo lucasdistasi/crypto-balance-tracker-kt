@@ -11,11 +11,13 @@ import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformRes
 import com.distasilucas.cryptobalancetracker.repository.PlatformRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
 class PlatformService(
     private val platformRepository: PlatformRepository,
+    @Lazy private val userCryptoService: UserCryptoService,
     private val cacheService: CacheService
 ) {
 
@@ -76,6 +78,9 @@ class PlatformService(
     fun deletePlatform(platformId: String) {
         findPlatformById(platformId)
             .ifPresentOrElse({
+                val userCryptosToDelete = userCryptoService.findAllByPlatformId(it.id)
+                userCryptoService.deleteUserCryptos(userCryptosToDelete)
+
                 platformRepository.deleteById(platformId)
                 cacheService.invalidatePlatformsCaches()
                 logger.info { "Deleted platform $it" }

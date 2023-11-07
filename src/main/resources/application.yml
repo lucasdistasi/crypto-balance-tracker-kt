@@ -1,13 +1,10 @@
-server:
-  port: 8080
-
 spring:
-  data:
-    mongodb:
-      database: crypto_db # TODO
-      auto-index-creation: true
-      host: mongo-crypto-db
-      port: 27017
+  application:
+    name: crypto-balance-tracker-kt
+  profiles:
+    active: ${ENV_PROFILE:local}
+    group:
+      default: local
 
 coingecko:
   api-key: ${COINGECKO_API_KEY}

@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -220,6 +221,20 @@ class ExceptionController {
 
 
         return ResponseEntity.status(BAD_REQUEST_STATUS).body(listOf(problemDetail))
+    }
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDeniedException(
+        exception: AccessDeniedException,
+        webRequest: WebRequest
+    ): ResponseEntity<ProblemDetail> {
+        logger.info { "An AccessDeniedException occurred $exception" }
+
+        val request = (webRequest as ServletWebRequest).request
+        val detail = exception.message ?: "Forbidden"
+        val problemDetail = HttpStatus.FORBIDDEN.withDetailsAndURI(detail, URI.create(request.requestURL.toString()))
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail)
     }
 
     @ExceptionHandler(ApiException::class)

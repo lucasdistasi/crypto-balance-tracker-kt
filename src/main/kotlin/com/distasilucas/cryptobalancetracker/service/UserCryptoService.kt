@@ -126,6 +126,12 @@ class UserCryptoService(
         logger.info { "Deleted user crypto $userCryptoId" }
     }
 
+    fun deleteUserCryptos(userCryptos: List<UserCrypto>) {
+        logger.info { "Deleting user cryptos ${userCryptos.map { it.coingeckoCryptoId }}" }
+        userCryptoRepository.deleteAllById(userCryptos.map { it.id })
+        cacheService.invalidateUserCryptosCaches()
+    }
+
     fun findByUserCryptoId(userCryptoId: String): UserCrypto {
         return userCryptoRepository.findById(userCryptoId)
             .orElseThrow { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) }

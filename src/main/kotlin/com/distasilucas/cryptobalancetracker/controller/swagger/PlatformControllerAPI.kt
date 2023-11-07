@@ -32,6 +32,25 @@ interface PlatformControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "500",
                 description = "Internal Server Error",
                 content = [Content(
@@ -69,6 +88,25 @@ interface PlatformControllerAPI {
                         schema = Schema(
                             implementation = ProblemDetail::class
                         )
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
                     )
                 )]
             ),
@@ -124,6 +162,25 @@ interface PlatformControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "500",
                 description = "Internal Server Error",
                 content = [Content(
@@ -167,6 +224,25 @@ interface PlatformControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "500",
                 description = "Internal Server Error",
                 content = [Content(
@@ -206,6 +282,25 @@ interface PlatformControllerAPI {
                         schema = Schema(
                             implementation = ProblemDetail::class
                         )
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
                     )
                 )]
             ),
@@ -262,6 +357,25 @@ interface PlatformControllerAPI {
                         schema = Schema(
                             implementation = ProblemDetail::class
                         )
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
                     )
                 )]
             ),

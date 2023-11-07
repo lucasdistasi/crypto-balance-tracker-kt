@@ -31,11 +31,12 @@ services:
     container_name: 'crypto-balance-tracker-kt'
     depends_on:
       - mongo-crypto-db
-      - crypto-balance-tracker-kt
+      - crypto-balance-tracker-login
     environment:
       - MONGODB_DATABASE=${MONGODB_DATABASE}
       - JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
       - COINGECKO_API_KEY=${COINGECKO_API_KEY}
+      - ENV_PROFILE=docker
     ports:
       - '8080:8080'
 
