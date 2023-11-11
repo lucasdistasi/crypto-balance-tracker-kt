@@ -33,9 +33,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.mock.http.client.MockClientHttpResponse
 import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.validation.BindException
 import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.context.request.ServletWebRequest
 import java.net.URI
 
@@ -56,7 +58,7 @@ class ExceptionControllerTest {
         val responseEntity = exceptionController.handlePlatformNotFoundException(exception, servletRequest)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf(problemDetail)))
     }
 
     @Test
@@ -71,7 +73,7 @@ class ExceptionControllerTest {
         val responseEntity = exceptionController.handleCoingeckoCryptoNotFoundException(exception, servletRequest)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf(problemDetail)))
     }
 
     @Test
@@ -86,7 +88,7 @@ class ExceptionControllerTest {
         val responseEntity = exceptionController.handleUserCryptoNotFoundException(exception, servletRequest)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf(problemDetail)))
     }
 
     @Test
@@ -101,7 +103,7 @@ class ExceptionControllerTest {
         val responseEntity = exceptionController.handleGoalNotFoundException(exception, servletRequest)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf(problemDetail)))
     }
 
     @Test
@@ -114,7 +116,7 @@ class ExceptionControllerTest {
         val responseEntity = exceptionController.handleDuplicatedPlatformException(exception, servletRequest)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
     }
 
     @Test
@@ -129,7 +131,7 @@ class ExceptionControllerTest {
         val responseEntity = exceptionController.handleDuplicatedCryptoPlatFormException(exception, servletRequest)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
     }
 
     @Test
@@ -144,7 +146,7 @@ class ExceptionControllerTest {
         val responseEntity = exceptionController.handleDuplicatedGoalException(exception, servletRequest)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
     }
 
     @Test
@@ -159,7 +161,7 @@ class ExceptionControllerTest {
         val responseEntity = exceptionController.handleInsufficientBalanceException(exception, servletRequest)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
     }
 
     @Test
@@ -215,7 +217,7 @@ class ExceptionControllerTest {
         val responseEntity = exceptionController.handleHttpMessageNotReadableException(exception, servletRequest)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
     }
 
     @Test
@@ -245,6 +247,45 @@ class ExceptionControllerTest {
     }
 
     @Test
+    fun `should handle MissingServletRequestParameterException`() {
+        val exception = MissingServletRequestParameterException("parameterName", "parameterType")
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = "Required parameter 'parameterName' is not present."
+
+        val responseEntity = exceptionController.handleMissingServletRequestParameterException(exception, servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
+    }
+
+    @Test
+    fun `should handle AccessDeniedException with custom message`() {
+        val exception = AccessDeniedException("AccessDeniedException")
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = "AccessDeniedException"
+
+        val responseEntity = exceptionController.handleAccessDeniedException(exception, servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail))
+    }
+
+    @Test
+    fun `should handle AccessDeniedException with default message`() {
+        val exception = AccessDeniedException(null)
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = "Forbidden"
+
+        val responseEntity = exceptionController.handleAccessDeniedException(exception, servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail))
+    }
+
+    @Test
     fun `should handle ApiException with custom http status code`() {
         val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
         problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
@@ -253,7 +294,7 @@ class ExceptionControllerTest {
         val responseEntity = exceptionController.handleApiException(ApiException(HttpStatus.BAD_REQUEST, "Error"), servletRequest)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
     }
 
     @Test
@@ -265,7 +306,7 @@ class ExceptionControllerTest {
         val responseEntity = exceptionController.handleApiException(ApiException("Error"), servletRequest)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(listOf(problemDetail)))
     }
 
     @Test
@@ -277,7 +318,7 @@ class ExceptionControllerTest {
         val responseEntity = exceptionController.handleApiException(ApiException(), servletRequest)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(listOf(problemDetail)))
     }
 
     @Test
@@ -288,7 +329,7 @@ class ExceptionControllerTest {
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, UNKNOWN_ERROR)
 
         assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail))
+            .isEqualTo(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(listOf(problemDetail)))
     }
 }
 

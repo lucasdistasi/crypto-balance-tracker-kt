@@ -1,7 +1,7 @@
 package com.distasilucas.cryptobalancetracker.controller
 
 import balances
-import com.distasilucas.cryptobalancetracker.constants.INVALID_PLATFORM_UUID
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
@@ -401,7 +401,7 @@ class InsightsControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`(INVALID_PLATFORM_UUID)
+                    Matchers.`is`(PLATFORM_ID_UUID)
                 )
             )
     }

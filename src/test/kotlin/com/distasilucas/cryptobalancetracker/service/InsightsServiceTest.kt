@@ -805,7 +805,7 @@ class InsightsServiceTest {
 
     @Test
     fun `should retrieve empty if no user cryptos are found for retrieveUserCryptosInsights`() {
-        every { userCryptoServiceMock.findAllByPage(0) } returns PageImpl(emptyList())
+        every { userCryptoServiceMock.findAll() } returns emptyList()
 
         val userCryptosInsights = insightsService.retrieveUserCryptosInsights(0)
 

@@ -1,11 +1,10 @@
-server:
-  port: 8080
-
 spring:
-  data:
-    mongodb:
-      uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@localhost:27017
-      database: ${MONGODB_DATABASE}
+  application:
+    name: crypto-balance-tracker-kt
+  profiles:
+    active: ${ENV_PROFILE:local}
+    group:
+      default: local
 
 coingecko:
   api-key: ${COINGECKO_API_KEY}

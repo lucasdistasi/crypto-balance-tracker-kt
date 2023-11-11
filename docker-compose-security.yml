@@ -36,6 +36,7 @@ services:
       - MONGODB_DATABASE=${MONGODB_DATABASE}
       - JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
       - COINGECKO_API_KEY=${COINGECKO_API_KEY}
+      - ENV_PROFILE=docker
     ports:
       - '8080:8080'
 

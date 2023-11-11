@@ -1,10 +1,12 @@
 package com.distasilucas.cryptobalancetracker.configuration
 
+import com.distasilucas.cryptobalancetracker.constants.ALL_PLATFORMS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.COINGECKO_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_CRYPTOS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTO_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTO_INFO_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PAGE_CACHE
@@ -14,6 +16,7 @@ import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCryptoInfo
+import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import org.ehcache.config.CacheConfiguration
 import org.ehcache.config.builders.CacheConfigurationBuilder
 import org.ehcache.config.builders.ExpiryPolicyBuilder
@@ -44,6 +47,8 @@ class EhCacheConfiguration {
         val platformsIdsCache = getPlatformsIdsCache()
         val cryptoCoingeckoCryptoIdCache = getCryptoCoingeckoCryptoIdCache()
         val cryptosIdsCache = getCryptosIdsCache()
+        val allPlatformsCache = getAllPlatformsCache()
+        val platformCache = getPlatformCache()
 
         cacheManager.createCache(COINGECKO_CRYPTOS_CACHE, getCacheConfiguration(coingeckoCryptosCache))
         cacheManager.createCache(CRYPTO_INFO_CACHE, getCacheConfiguration(coingeckoCryptoInfoCache))
@@ -54,6 +59,8 @@ class EhCacheConfiguration {
         cacheManager.createCache(PLATFORMS_PLATFORMS_IDS_CACHE, getCacheConfiguration(platformsIdsCache))
         cacheManager.createCache(CRYPTO_COINGECKO_CRYPTO_ID_CACHE, getCacheConfiguration(cryptoCoingeckoCryptoIdCache))
         cacheManager.createCache(CRYPTOS_CRYPTOS_IDS_CACHE, getCacheConfiguration(cryptosIdsCache))
+        cacheManager.createCache(ALL_PLATFORMS_CACHE, getCacheConfiguration(allPlatformsCache))
+        cacheManager.createCache(PLATFORM_PLATFORM_ID_CACHE, getCacheConfiguration(platformCache))
 
         return cacheManager
     }
@@ -63,7 +70,7 @@ class EhCacheConfiguration {
         val resourcePools = ResourcePoolsBuilder.newResourcePoolsBuilder()
             .offheap(1, MemoryUnit.MB)
             .build()
-        val expirationPolicyBuilder = ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofDays(30))
+        val expirationPolicyBuilder = ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofDays(3))
 
         return CacheConfigurationBuilder.newCacheConfigurationBuilder(
             SimpleKey::class.java,
@@ -180,6 +187,33 @@ class EhCacheConfiguration {
         return CacheConfigurationBuilder.newCacheConfigurationBuilder(
             stringCollectionClass,
             cryptoListClass,
+            resourcePools
+        ).withExpiry(expirationPolicyBuilder).build()
+    }
+
+    private fun getAllPlatformsCache(): CacheConfiguration<SimpleKey, List<PlatformResponse>> {
+        val platformsListClass = CastUtils.cast<Class<List<PlatformResponse>>>(MutableList::class.java)
+        val resourcePools = ResourcePoolsBuilder.newResourcePoolsBuilder()
+            .offheap(1, MemoryUnit.MB)
+            .build()
+        val expirationPolicyBuilder = ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofDays(10))
+
+        return CacheConfigurationBuilder.newCacheConfigurationBuilder(
+            SimpleKey::class.java,
+            platformsListClass,
+            resourcePools
+        ).withExpiry(expirationPolicyBuilder).build()
+    }
+
+    private fun getPlatformCache(): CacheConfiguration<String, PlatformResponse> {
+        val resourcePools = ResourcePoolsBuilder.newResourcePoolsBuilder()
+            .offheap(1, MemoryUnit.MB)
+            .build()
+        val expirationPolicyBuilder = ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofDays(10))
+
+        return CacheConfigurationBuilder.newCacheConfigurationBuilder(
+            String::class.java,
+            PlatformResponse::class.java,
             resourcePools
         ).withExpiry(expirationPolicyBuilder).build()
     }

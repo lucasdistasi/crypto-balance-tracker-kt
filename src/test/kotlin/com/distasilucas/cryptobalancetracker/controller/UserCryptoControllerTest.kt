@@ -30,7 +30,7 @@ class UserCryptoControllerTest {
         val userCryptoResponse = UserCryptoResponse(
             id = "123e4567-e89b-12d3-a456-426614174000",
             cryptoName = "bitcoin",
-            quantity = BigDecimal("0.25"),
+            quantity = "0.25",
             platform = "Coinbase"
         )
 
@@ -49,7 +49,7 @@ class UserCryptoControllerTest {
         val userCryptoResponse = UserCryptoResponse(
             id = "123e4567-e89b-12d3-a456-426614174000",
             cryptoName = "bitcoin",
-            quantity = BigDecimal("0.25"),
+            quantity = "0.25",
             platform = "Coinbase"
         )
         val pageUserCryptoResponse = PageUserCryptoResponse(

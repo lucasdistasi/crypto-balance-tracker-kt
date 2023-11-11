@@ -1,6 +1,6 @@
 package com.distasilucas.cryptobalancetracker.controller.swagger
 
-import com.distasilucas.cryptobalancetracker.constants.INVALID_PLATFORM_UUID
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -28,6 +28,25 @@ interface PlatformControllerAPI {
                     mediaType = "application/json",
                     schema = Schema(
                         implementation = Long::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
                     )
                 )]
             ),
@@ -73,6 +92,25 @@ interface PlatformControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "404",
                 description = "Platform not found",
                 content = [Content(
@@ -96,7 +134,7 @@ interface PlatformControllerAPI {
             )
         ]
     )
-    fun retrievePlatform(@UUID(message = INVALID_PLATFORM_UUID) platformId: String): ResponseEntity<PlatformResponse>
+    fun retrievePlatform(@UUID(message = PLATFORM_ID_UUID) platformId: String): ResponseEntity<PlatformResponse>
 
     @Operation(summary = "Retrieve all platforms")
     @ApiResponses(
@@ -120,6 +158,25 @@ interface PlatformControllerAPI {
                     mediaType = "application/json",
                     schema = Schema(
                         implementation = Unit::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
                     )
                 )]
             ),
@@ -167,6 +224,25 @@ interface PlatformControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "500",
                 description = "Internal Server Error",
                 content = [Content(
@@ -210,6 +286,25 @@ interface PlatformControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "404",
                 description = "Platform not found",
                 content = [Content(
@@ -234,7 +329,7 @@ interface PlatformControllerAPI {
         ]
     )
     fun updatePlatform(
-        @UUID(message = INVALID_PLATFORM_UUID) platformId: String,
+        @UUID(message = PLATFORM_ID_UUID) platformId: String,
         @Valid platformRequest: PlatformRequest
     ): ResponseEntity<PlatformResponse>
 
@@ -266,6 +361,25 @@ interface PlatformControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "404",
                 description = "Platform not found",
                 content = [Content(
@@ -289,5 +403,5 @@ interface PlatformControllerAPI {
             )
         ]
     )
-    fun deletePlatform(@UUID(message = INVALID_PLATFORM_UUID) platformId: String): ResponseEntity<Unit>
+    fun deletePlatform(@UUID(message = PLATFORM_ID_UUID) platformId: String): ResponseEntity<Unit>
 }

@@ -37,7 +37,7 @@ class InsightsControllerTest {
     }
 
     @Test
-    fun `should retrieve empty for total balances with status 204`() {
+    fun `should retrieve zero for total balances when empty cryptos with status 200`() {
         every {
             insightsServiceMock.retrieveTotalBalancesInsights()
         } returns Optional.empty()
@@ -46,7 +46,7 @@ class InsightsControllerTest {
 
         assertThat(totalBalancesInsights)
             .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.noContent().build<BalancesResponse>())
+            .isEqualTo(ResponseEntity.ok(BalancesResponse("0", "0", "0")))
     }
 
     @Test

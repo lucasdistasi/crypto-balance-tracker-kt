@@ -29,7 +29,8 @@ class CryptoScheduler(
         val cryptosToUpdate = getCryptosToUpdate()
             .map {
                 val crypto = coingeckoService.retrieveCryptoInfo(it.id)
-                val updatedCrypto = Crypto(
+
+                Crypto(
                     id = crypto.id,
                     name = crypto.name,
                     ticker = crypto.symbol,
@@ -41,8 +42,6 @@ class CryptoScheduler(
                     maxSupply = crypto.marketData.maxSupply ?: BigDecimal.ZERO,
                     lastUpdatedAt = LocalDateTime.now(clock)
                 )
-
-                updatedCrypto
             }
 
         if (cryptosToUpdate.isNotEmpty()) {

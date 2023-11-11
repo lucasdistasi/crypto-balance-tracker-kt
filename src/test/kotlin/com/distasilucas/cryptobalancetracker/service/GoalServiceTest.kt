@@ -54,11 +54,11 @@ class GoalServiceTest {
                 GoalResponse(
                     id = "123e4567-e89b-12d3-a456-426614174111",
                     cryptoName = "Bitcoin",
-                    actualQuantity = BigDecimal("0.25"),
-                    progress = BigDecimal("25.00"),
-                    remainingQuantity = BigDecimal("0.75"),
-                    goalQuantity = BigDecimal("1"),
-                    moneyNeeded = BigDecimal("22500.00")
+                    actualQuantity = "0.25",
+                    progress = 25f,
+                    remainingQuantity = "0.75",
+                    goalQuantity = "1",
+                    moneyNeeded = "22500.00"
                 )
             )
     }
@@ -86,11 +86,11 @@ class GoalServiceTest {
                 GoalResponse(
                     id = "123e4567-e89b-12d3-a456-426614174111",
                     cryptoName = "Bitcoin",
-                    actualQuantity = BigDecimal("1"),
-                    progress = BigDecimal("100"),
-                    remainingQuantity = BigDecimal("0"),
-                    goalQuantity = BigDecimal("1"),
-                    moneyNeeded = BigDecimal("0.00")
+                    actualQuantity = "1",
+                    progress = 100f,
+                    remainingQuantity = "0",
+                    goalQuantity = "1",
+                    moneyNeeded = "0.00"
                 )
             )
     }
@@ -134,11 +134,11 @@ class GoalServiceTest {
                         GoalResponse(
                             id = "123e4567-e89b-12d3-a456-426614174111",
                             cryptoName = "Bitcoin",
-                            actualQuantity = BigDecimal("0.25"),
-                            progress = BigDecimal("25.00"),
-                            remainingQuantity = BigDecimal("0.75"),
-                            goalQuantity = BigDecimal("1"),
-                            moneyNeeded = BigDecimal("22500.00")
+                            actualQuantity = "0.25",
+                            progress = 25f,
+                            remainingQuantity = "0.75",
+                            goalQuantity = "1",
+                            moneyNeeded = "22500.00"
                         )
                     )
                 )
@@ -174,20 +174,20 @@ class GoalServiceTest {
                         GoalResponse(
                             id = "123e4567-e89b-12d3-a456-426614174111",
                             cryptoName = "Bitcoin",
-                            actualQuantity = BigDecimal("0.25"),
-                            progress = BigDecimal("25.00"),
-                            remainingQuantity = BigDecimal("0.75"),
-                            goalQuantity = BigDecimal("1"),
-                            moneyNeeded = BigDecimal("22500.00")
+                            actualQuantity = "0.25",
+                            progress = 25f,
+                            remainingQuantity = "0.75",
+                            goalQuantity = "1",
+                            moneyNeeded = "22500.00"
                         ),
                         GoalResponse(
                             id = "123e4567-e89b-12d3-a456-426614174111",
                             cryptoName = "Bitcoin",
-                            actualQuantity = BigDecimal("0.25"),
-                            progress = BigDecimal("25.00"),
-                            remainingQuantity = BigDecimal("0.75"),
-                            goalQuantity = BigDecimal("1"),
-                            moneyNeeded = BigDecimal("22500.00")
+                            actualQuantity = "0.25",
+                            progress = 25f,
+                            remainingQuantity = "0.75",
+                            goalQuantity = "1",
+                            moneyNeeded = "22500.00"
                         )
                     )
                 )
@@ -243,11 +243,11 @@ class GoalServiceTest {
                 GoalResponse(
                     id = slot.captured.id,
                     cryptoName = "Bitcoin",
-                    actualQuantity = BigDecimal("0.25"),
-                    progress = BigDecimal("25.00"),
-                    remainingQuantity = BigDecimal("0.75"),
-                    goalQuantity = BigDecimal("1"),
-                    moneyNeeded = BigDecimal("22500.00")
+                    actualQuantity = "0.25",
+                    progress = 25f,
+                    remainingQuantity = "0.75",
+                    goalQuantity = "1",
+                    moneyNeeded = "22500.00"
                 )
             )
     }
@@ -304,11 +304,11 @@ class GoalServiceTest {
                 GoalResponse(
                     id = "123e4567-e89b-12d3-a456-426614174111",
                     cryptoName = "Bitcoin",
-                    actualQuantity = BigDecimal("0.25"),
-                    progress = BigDecimal("33.33"),
-                    remainingQuantity = BigDecimal("0.50"),
-                    goalQuantity = BigDecimal("0.75"),
-                    moneyNeeded = BigDecimal("15000.00")
+                    actualQuantity = "0.25",
+                    progress = 33.33f,
+                    remainingQuantity = "0.50",
+                    goalQuantity = "0.75",
+                    moneyNeeded = "15000.00"
                 )
             )
     }

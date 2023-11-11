@@ -1,7 +1,9 @@
 package com.distasilucas.cryptobalancetracker.service
 
+import com.distasilucas.cryptobalancetracker.constants.ALL_PLATFORMS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_CRYPTOS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PAGE_CACHE
@@ -28,6 +30,8 @@ class CacheService(private val cacheManager: CacheManager) {
         logger.info { "Invalidating platforms cache" }
 
         cacheManager.getCache(PLATFORMS_PLATFORMS_IDS_CACHE)!!.invalidate()
+        cacheManager.getCache(ALL_PLATFORMS_CACHE)!!.invalidate()
+        cacheManager.getCache(PLATFORM_PLATFORM_ID_CACHE)!!.invalidate()
     }
 
     fun invalidateCryptosCache() {

@@ -1,19 +1,23 @@
 package com.distasilucas.cryptobalancetracker.service
 
+import com.distasilucas.cryptobalancetracker.constants.ALL_PLATFORMS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import com.distasilucas.cryptobalancetracker.repository.PlatformRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
 class PlatformService(
     private val platformRepository: PlatformRepository,
+    @Lazy private val userCryptoService: UserCryptoService,
     private val cacheService: CacheService
 ) {
 
@@ -21,6 +25,7 @@ class PlatformService(
 
     fun countPlatforms() = platformRepository.count()
 
+    @Cacheable(cacheNames = [PLATFORM_PLATFORM_ID_CACHE], key = "#platformId")
     fun retrievePlatformById(platformId: String): PlatformResponse {
         logger.info { "Retrieving platformId $platformId" }
 
@@ -29,7 +34,7 @@ class PlatformService(
             .toPlatformResponse()
     }
 
-    // TODO - ADD CACHE
+    @Cacheable(cacheNames = [ALL_PLATFORMS_CACHE])
     fun retrieveAllPlatforms(): List<PlatformResponse> {
         logger.info { "Retrieving all platforms" }
 
@@ -73,6 +78,9 @@ class PlatformService(
     fun deletePlatform(platformId: String) {
         findPlatformById(platformId)
             .ifPresentOrElse({
+                val userCryptosToDelete = userCryptoService.findAllByPlatformId(it.id)
+                userCryptoService.deleteUserCryptos(userCryptosToDelete)
+
                 platformRepository.deleteById(platformId)
                 cacheService.invalidatePlatformsCaches()
                 logger.info { "Deleted platform $it" }

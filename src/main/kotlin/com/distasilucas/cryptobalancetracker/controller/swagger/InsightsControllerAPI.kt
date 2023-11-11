@@ -1,6 +1,6 @@
 package com.distasilucas.cryptobalancetracker.controller.swagger
 
-import com.distasilucas.cryptobalancetracker.constants.INVALID_PLATFORM_UUID
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
@@ -36,12 +36,21 @@ interface InsightsControllerAPI {
                 )]
             ),
             ApiResponse(
-                responseCode = "204",
-                description = "No user cryptos saved",
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(
-                        implementation = Void::class
+                        implementation = ProblemDetail::class
                     )
                 )]
             ),
@@ -81,6 +90,25 @@ interface InsightsControllerAPI {
                     mediaType = "application/json",
                     schema = Schema(
                         implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
                     )
                 )]
             ),
@@ -127,6 +155,25 @@ interface InsightsControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "500",
                 description = "Internal Server Error",
                 content = [Content(
@@ -165,6 +212,25 @@ interface InsightsControllerAPI {
                     mediaType = "application/json",
                     schema = Schema(
                         implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
                     )
                 )]
             ),
@@ -208,6 +274,25 @@ interface InsightsControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "500",
                 description = "Internal Server Error",
                 content = [Content(
@@ -243,6 +328,25 @@ interface InsightsControllerAPI {
                     mediaType = "application/json",
                     schema = Schema(
                         implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
                     )
                 )]
             ),
@@ -286,6 +390,25 @@ interface InsightsControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "500",
                 description = "Internal Server Error",
                 content = [Content(
@@ -300,7 +423,7 @@ interface InsightsControllerAPI {
         ]
     )
     fun retrievePlatformInsights(
-        @UUID(message = INVALID_PLATFORM_UUID)
+        @UUID(message = PLATFORM_ID_UUID)
         platformId: String
     ): ResponseEntity<PlatformInsightsResponse>
 }

@@ -26,7 +26,7 @@ data class UserCrypto(
     fun toUserCryptoResponse(cryptoName: String, platformName: String): UserCryptoResponse {
         return UserCryptoResponse(
             id = id,
-            quantity = quantity,
+            quantity = quantity.toPlainString(),
             cryptoName = cryptoName,
             platform = platformName
         )

@@ -1,7 +1,7 @@
 package com.distasilucas.cryptobalancetracker.controller.swagger
 
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
-import com.distasilucas.cryptobalancetracker.constants.INVALID_USER_CRYPTO_UUID
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.request.crypto.TransferCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
@@ -50,6 +50,25 @@ interface UserCryptoControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "404",
                 description = "User crypto not found",
                 content = [Content(
@@ -74,7 +93,7 @@ interface UserCryptoControllerAPI {
         ]
     )
     fun retrieveUserCrypto(
-        @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String
+        @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
     ): ResponseEntity<UserCryptoResponse>
 
     @Operation(summary = "Retrieves user cryptos by page")
@@ -109,6 +128,25 @@ interface UserCryptoControllerAPI {
                         schema = Schema(
                             implementation = ProblemDetail::class
                         )
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
                     )
                 )]
             ),
@@ -154,6 +192,25 @@ interface UserCryptoControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "500",
                 description = "Internal Server Error",
                 content = [Content(
@@ -195,6 +252,25 @@ interface UserCryptoControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "404",
                 description = "User crypto not found",
                 content = [Content(
@@ -219,7 +295,7 @@ interface UserCryptoControllerAPI {
         ]
     )
     fun updateUserCrypto(
-        @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String,
+        @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String,
         @Valid userCryptoRequest: UserCryptoRequest
     ): ResponseEntity<UserCryptoResponse>
 
@@ -249,6 +325,25 @@ interface UserCryptoControllerAPI {
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
+                    )
+                )]
+            ),
+            ApiResponse(
                 responseCode = "404",
                 description = "User crypto not found",
                 content = [Content(
@@ -273,7 +368,7 @@ interface UserCryptoControllerAPI {
         ]
     )
     fun deleteUserCrypto(
-        @UUID(message = INVALID_USER_CRYPTO_UUID) userCryptoId: String
+        @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
     ): ResponseEntity<Unit>
 
     @Operation(summary = "Transfer user crypto")
@@ -298,6 +393,25 @@ interface UserCryptoControllerAPI {
                         schema = Schema(
                             implementation = ProblemDetail::class
                         )
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content(
+                    schema = Schema(
+                        implementation = Void::class
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden. Not yet implemented",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(
+                        implementation = ProblemDetail::class
                     )
                 )]
             ),

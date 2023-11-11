@@ -1,8 +1,22 @@
 package com.distasilucas.cryptobalancetracker.controller
 
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NAME_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NAME_SIZE
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_DECIMAL_MAX
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_POSITIVE
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
-import com.distasilucas.cryptobalancetracker.constants.INVALID_TO_PLATFORM_UUID
-import com.distasilucas.cryptobalancetracker.constants.INVALID_USER_CRYPTO_UUID
+import com.distasilucas.cryptobalancetracker.constants.TO_PLATFORM_ID_UUID
+import com.distasilucas.cryptobalancetracker.constants.NETWORK_FEE_MIN
+import com.distasilucas.cryptobalancetracker.constants.NETWORK_FEE_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
+import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_DECIMAL_MAX
+import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_POSITIVE
+import com.distasilucas.cryptobalancetracker.constants.TO_PLATFORM_ID_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_UUID
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_BLANK
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.request.crypto.TransferCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
@@ -68,7 +82,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174000")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.quantity", Matchers.`is`(0.5)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.quantity", Matchers.`is`("0.5")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.platform", Matchers.`is`("BINANCE")))
     }
 
@@ -97,7 +111,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$.quantity",
-                    Matchers.`is`(BigDecimal("9999999999999999.999999999999"))
+                    Matchers.`is`("9999999999999999.999999999999")
                 )
             )
             .andExpect(MockMvcResultMatchers.jsonPath("$.platform", Matchers.`is`("BINANCE")))
@@ -133,7 +147,7 @@ class UserCryptoControllerMvcTest(
             id = id,
             cryptoName = "Bitcoin",
             platform = "Binance",
-            quantity = BigDecimal("0.5")
+            quantity = "0.5"
         )
 
         val pageUserCryptoResponse = PageUserCryptoResponse(
@@ -155,7 +169,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos.[0].id", Matchers.`is`(id)))
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos.[0].cryptoName", Matchers.`is`("Bitcoin")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos.[0].platform", Matchers.`is`("Binance")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos.[0].quantity", Matchers.`is`(0.5)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos.[0].quantity", Matchers.`is`("0.5")))
     }
 
     @Test
@@ -205,7 +219,7 @@ class UserCryptoControllerMvcTest(
         val userCryptoResponse = UserCryptoResponse(
             id = "123e4567-e89b-12d3-a456-426614174333",
             cryptoName = "Bitcoin",
-            quantity = BigDecimal("1"),
+            quantity = "1",
             platform = "Binance"
         )
 
@@ -217,7 +231,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174333")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.quantity", Matchers.`is`(1)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.quantity", Matchers.`is`("1")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.platform", Matchers.`is`("Binance")))
     }
 
@@ -238,7 +252,7 @@ class UserCryptoControllerMvcTest(
         val userCryptoResponse = UserCryptoResponse(
             id = "123e4567-e89b-12d3-a456-426614174333",
             cryptoName = "Bitcoin",
-            quantity = BigDecimal("9999999999999999.999999999999"),
+            quantity = "9999999999999999.999999999999",
             platform = "Binance"
         )
 
@@ -253,7 +267,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$.quantity",
-                    Matchers.`is`(BigDecimal("9999999999999999.999999999999"))
+                    Matchers.`is`("9999999999999999.999999999999")
                 )
             )
             .andExpect(MockMvcResultMatchers.jsonPath("$.platform", Matchers.`is`("Binance")))
@@ -288,7 +302,7 @@ class UserCryptoControllerMvcTest(
                     .value(
                         Matchers.containsInAnyOrder(
                             "Invalid crypto name",
-                            "Crypto name can not be null or blank"
+                            CRYPTO_NAME_NOT_BLANK
                         )
                     )
             )
@@ -322,7 +336,7 @@ class UserCryptoControllerMvcTest(
                     .value(
                         Matchers.containsInAnyOrder(
                             "Invalid crypto name",
-                            "Crypto name can not be null or blank"
+                            CRYPTO_NAME_NOT_BLANK
                         )
                     )
             )
@@ -357,7 +371,7 @@ class UserCryptoControllerMvcTest(
                     .value(
                         Matchers.containsInAnyOrder(
                             "Invalid crypto name",
-                            "Crypto name must be between 1 and 64 characters"
+                            CRYPTO_NAME_SIZE
                         )
                     )
             )
@@ -392,8 +406,8 @@ class UserCryptoControllerMvcTest(
                     .value(
                         Matchers.containsInAnyOrder(
                             "Invalid crypto name",
-                            "Crypto name can not be null or blank",
-                            "Crypto name must be between 1 and 64 characters"
+                            CRYPTO_NAME_NOT_BLANK,
+                            CRYPTO_NAME_SIZE
                         )
                     )
             )
@@ -453,7 +467,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("Crypto quantity can not be null")
+                    Matchers.`is`(CRYPTO_QUANTITY_NOT_NULL)
                 )
             )
     }
@@ -490,7 +504,7 @@ class UserCryptoControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Crypto quantity must be less than or equal to 9999999999999999.999999999999",
+                            CRYPTO_QUANTITY_DECIMAL_MAX,
                             "Crypto quantity must have up to 16 digits in the integer part and up to 12 digits in the decimal part"
                         )
                     )
@@ -547,7 +561,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("Crypto quantity must be greater than 0")
+                    Matchers.`is`(CRYPTO_QUANTITY_POSITIVE)
                 )
             )
     }
@@ -579,8 +593,8 @@ class UserCryptoControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Platform id can not be null or blank",
-                            "Platform id must be a valid UUID"
+                            PLATFORM_ID_NOT_BLANK,
+                            PLATFORM_ID_UUID
                         )
                     )
             )
@@ -608,7 +622,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("Platform id can not be null or blank")
+                    Matchers.`is`(PLATFORM_ID_NOT_BLANK)
                 )
             )
     }
@@ -630,7 +644,7 @@ class UserCryptoControllerMvcTest(
         val userCryptoResponse = UserCryptoResponse(
             id = "123e4567-e89b-12d3-a456-426614174222",
             cryptoName = "Bitcoin",
-            quantity = BigDecimal("9999999999999999.999999999999"),
+            quantity = "9999999999999999.999999999999",
             platform = "Binance"
         )
 
@@ -648,7 +662,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$.quantity",
-                    Matchers.`is`(BigDecimal("9999999999999999.999999999999"))
+                    Matchers.`is`("9999999999999999.999999999999")
                 )
             )
             .andExpect(MockMvcResultMatchers.jsonPath("$.platform", Matchers.`is`("Binance")))
@@ -671,7 +685,7 @@ class UserCryptoControllerMvcTest(
         val userCryptoResponse = UserCryptoResponse(
             id = "123e4567-e89b-12d3-a456-426614174222",
             cryptoName = "Bitcoin",
-            quantity = BigDecimal("9999999999999999.999999999999"),
+            quantity = "9999999999999999.999999999999",
             platform = "Binance"
         )
 
@@ -689,7 +703,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$.quantity",
-                    Matchers.`is`(BigDecimal("9999999999999999.999999999999"))
+                    Matchers.`is`("9999999999999999.999999999999")
                 )
             )
             .andExpect(MockMvcResultMatchers.jsonPath("$.platform", Matchers.`is`("Binance")))
@@ -752,7 +766,7 @@ class UserCryptoControllerMvcTest(
                     .value(
                         Matchers.containsInAnyOrder(
                             "Invalid crypto name",
-                            "Crypto name can not be null or blank"
+                            CRYPTO_NAME_NOT_BLANK
                         )
                     )
             )
@@ -786,7 +800,7 @@ class UserCryptoControllerMvcTest(
                     .value(
                         Matchers.containsInAnyOrder(
                             "Invalid crypto name",
-                            "Crypto name can not be null or blank"
+                            CRYPTO_NAME_NOT_BLANK
                         )
                     )
             )
@@ -821,7 +835,7 @@ class UserCryptoControllerMvcTest(
                     .value(
                         Matchers.containsInAnyOrder(
                             "Invalid crypto name",
-                            "Crypto name must be between 1 and 64 characters"
+                            CRYPTO_NAME_SIZE
                         )
                     )
             )
@@ -856,8 +870,8 @@ class UserCryptoControllerMvcTest(
                     .value(
                         Matchers.containsInAnyOrder(
                             "Invalid crypto name",
-                            "Crypto name can not be null or blank",
-                            "Crypto name must be between 1 and 64 characters"
+                            CRYPTO_NAME_NOT_BLANK,
+                            CRYPTO_NAME_SIZE
                         )
                     )
             )
@@ -917,7 +931,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("Crypto quantity can not be null")
+                    Matchers.`is`(CRYPTO_QUANTITY_NOT_NULL)
                 )
             )
     }
@@ -954,7 +968,7 @@ class UserCryptoControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Crypto quantity must be less than or equal to 9999999999999999.999999999999",
+                            CRYPTO_QUANTITY_DECIMAL_MAX,
                             "Crypto quantity must have up to 16 digits in the integer part and up to 12 digits in the decimal part"
                         )
                     )
@@ -1011,7 +1025,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("Crypto quantity must be greater than 0")
+                    Matchers.`is`(CRYPTO_QUANTITY_POSITIVE)
                 )
             )
     }
@@ -1043,8 +1057,8 @@ class UserCryptoControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Platform id can not be null or blank",
-                            "Platform id must be a valid UUID"
+                            PLATFORM_ID_NOT_BLANK,
+                            PLATFORM_ID_UUID
                         )
                     )
             )
@@ -1072,7 +1086,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("Platform id can not be null or blank")
+                    Matchers.`is`(PLATFORM_ID_NOT_BLANK)
                 )
             )
     }
@@ -1402,8 +1416,8 @@ class UserCryptoControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "User crypto id can not be null or blank",
-                            INVALID_USER_CRYPTO_UUID
+                            USER_CRYPTO_ID_NOT_BLANK,
+                            USER_CRYPTO_ID_UUID
                         )
                     )
             )
@@ -1430,7 +1444,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("User crypto id can not be null or blank")
+                    Matchers.`is`(USER_CRYPTO_ID_NOT_BLANK)
                 )
             )
     }
@@ -1464,7 +1478,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`(INVALID_USER_CRYPTO_UUID)
+                    Matchers.`is`(USER_CRYPTO_ID_UUID)
                 )
             )
     }
@@ -1489,7 +1503,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("Quantity to transfer can not be null")
+                    Matchers.`is`(QUANTITY_TO_TRANSFER_NOT_NULL)
                 )
             )
     }
@@ -1525,7 +1539,7 @@ class UserCryptoControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "Quantity to transfer must be less than or equal to 9999999999999999.999999999999",
+                            QUANTITY_TO_TRANSFER_DECIMAL_MAX,
                             "Quantity to transfer must have up to 16 digits in the integer part and up to 12 digits in the decimal part"
                         )
                     )
@@ -1558,7 +1572,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("Quantity to transfer must be greater than 0")
+                    Matchers.`is`(QUANTITY_TO_TRANSFER_POSITIVE)
                 )
             )
     }
@@ -1583,7 +1597,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("Network fee can not be null")
+                    Matchers.`is`(NETWORK_FEE_NOT_NULL)
                 )
             )
     }
@@ -1645,7 +1659,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("Network fee must be greater than or equal to 0")
+                    Matchers.`is`(NETWORK_FEE_MIN)
                 )
             )
     }
@@ -1676,8 +1690,8 @@ class UserCryptoControllerMvcTest(
                 MockMvcResultMatchers.jsonPath("$[*].detail")
                     .value(
                         Matchers.containsInAnyOrder(
-                            "To platform id can not be null or blank",
-                            INVALID_TO_PLATFORM_UUID
+                            TO_PLATFORM_ID_NOT_BLANK,
+                            TO_PLATFORM_ID_UUID
                         )
                     )
             )
@@ -1704,7 +1718,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`("To platform id can not be null or blank")
+                    Matchers.`is`(TO_PLATFORM_ID_NOT_BLANK)
                 )
             )
     }
@@ -1738,7 +1752,7 @@ class UserCryptoControllerMvcTest(
             .andExpect(
                 MockMvcResultMatchers.jsonPath(
                     "$[0].detail",
-                    Matchers.`is`(INVALID_TO_PLATFORM_UUID)
+                    Matchers.`is`(TO_PLATFORM_ID_UUID)
                 )
             )
     }

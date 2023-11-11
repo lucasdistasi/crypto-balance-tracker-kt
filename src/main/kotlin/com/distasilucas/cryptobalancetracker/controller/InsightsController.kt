@@ -1,6 +1,6 @@
 package com.distasilucas.cryptobalancetracker.controller
 
-import com.distasilucas.cryptobalancetracker.constants.INVALID_PLATFORM_UUID
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.controller.swagger.InsightsControllerAPI
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
@@ -30,8 +30,9 @@ class InsightsController(private val insightsService: InsightsService) : Insight
     @GetMapping("/balances")
     override fun retrieveTotalBalancesInsights(): ResponseEntity<BalancesResponse> {
         val totalBalances = insightsService.retrieveTotalBalancesInsights()
+        val response = if (totalBalances.isEmpty) BalancesResponse("0", "0", "0") else totalBalances.get()
 
-        return okOrNoContent(totalBalances)
+        return ResponseEntity.ok(response)
     }
 
     @GetMapping("/cryptos")
@@ -80,7 +81,7 @@ class InsightsController(private val insightsService: InsightsService) : Insight
     @GetMapping("/platforms/{platformId}")
     override fun retrievePlatformInsights(
         @PathVariable
-        @UUID(message = INVALID_PLATFORM_UUID)
+        @UUID(message = PLATFORM_ID_UUID)
         platformId: String
     ): ResponseEntity<PlatformInsightsResponse> {
         val platformsInsights = insightsService.retrievePlatformInsights(platformId)

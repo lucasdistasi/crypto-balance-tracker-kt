@@ -114,7 +114,7 @@ class TransferCryptoService(
         return transferCryptoResponse!!
     }
 
-    private fun isToAndFromSamePlatform(toPlatformId: String, fromPlatformId: String) = toPlatformId === fromPlatformId
+    private fun isToAndFromSamePlatform(toPlatformId: String, fromPlatformId: String) = toPlatformId == fromPlatformId
 
     private fun doesFromPlatformHaveRemaining(remainingCryptoQuantity: BigDecimal) =
         remainingCryptoQuantity > BigDecimal.ZERO

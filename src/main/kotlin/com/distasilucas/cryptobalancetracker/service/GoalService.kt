@@ -36,7 +36,7 @@ class GoalService(
         logger.info { "Retrieving goals for page $page" }
 
         val pageRequest: Pageable = PageRequest.of(page, 10)
-        val entityGoalsPage = goalRepository.findAll(pageRequest)
+        val entityGoalsPage = goalRepository.findAll(pageRequest) // TODO - ADD CACHE??
         val goalsResponse = entityGoalsPage.content.map { it.toGoalResponse(id = it.id) }
 
         return PageGoalResponse(
@@ -109,10 +109,11 @@ class GoalService(
         return if (goalQuantity <= actualQuantity) BigDecimal.ZERO else goalQuantity.minus(actualQuantity)
     }
 
-    private fun getProgress(goalQuantity: BigDecimal, actualQuantity: BigDecimal): BigDecimal {
-        return if (goalQuantity <= actualQuantity) BigDecimal("100") else actualQuantity.multiply(BigDecimal("100"))
+    private fun getProgress(goalQuantity: BigDecimal, actualQuantity: BigDecimal): Float {
+        return if (goalQuantity <= actualQuantity) 100F else actualQuantity.multiply(BigDecimal("100"))
             .divide(goalQuantity, RoundingMode.HALF_UP)
             .setScale(2, RoundingMode.HALF_UP)
+            .toFloat()
     }
 
     private fun Crypto.getMoneyNeeded(remainingQuantity: BigDecimal): BigDecimal {

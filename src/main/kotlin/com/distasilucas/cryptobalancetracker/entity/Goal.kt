@@ -23,18 +23,18 @@ data class Goal(
         id: String,
         cryptoName: String,
         actualQuantity: BigDecimal,
-        progress: BigDecimal,
+        progress: Float,
         remainingQuantity: BigDecimal,
         moneyNeeded: BigDecimal
     ): GoalResponse {
         return GoalResponse(
             id = id,
             cryptoName = cryptoName,
-            actualQuantity = actualQuantity,
+            actualQuantity = actualQuantity.toPlainString(),
             progress = progress,
-            remainingQuantity = remainingQuantity,
-            goalQuantity = goalQuantity,
-            moneyNeeded = moneyNeeded
+            remainingQuantity = remainingQuantity.toPlainString(),
+            goalQuantity = goalQuantity.toPlainString(),
+            moneyNeeded = moneyNeeded.toPlainString()
         )
     }
 }
