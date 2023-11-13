@@ -13,9 +13,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
-import java.security.Key
 import java.util.Date
 import java.util.function.Function
+import javax.crypto.SecretKey
 
 <span class="nc" id="L20">@Service</span>
 @ConditionalOnProperty(prefix = &quot;security&quot;, name = [&quot;enabled&quot;], havingValue = &quot;true&quot;)
@@ -48,11 +48,11 @@ import java.util.function.Function
 
     private fun extractClaims(token: String): Claims {
 <span class="nc" id="L50">        return try {</span>
-<span class="nc" id="L51">            Jwts.parserBuilder()</span>
-<span class="nc" id="L52">                .setSigningKey(getSigningKey())</span>
+<span class="nc" id="L51">            Jwts.parser()</span>
+<span class="nc" id="L52">                .verifyWith(getSigningKey())</span>
 <span class="nc" id="L53">                .build()</span>
-<span class="nc" id="L54">                .parseClaimsJws(token)</span>
-<span class="nc" id="L55">                .body</span>
+<span class="nc" id="L54">                .parseSignedClaims(token)</span>
+<span class="nc" id="L55">                .payload</span>
 <span class="nc" id="L56">        } catch (ex: ExpiredJwtException) {</span>
 <span class="nc" id="L57">            throw ApiException(HttpStatus.BAD_REQUEST, TOKEN_EXPIRED)</span>
 <span class="nc" id="L58">        } catch (ex: Exception) {</span>
@@ -61,11 +61,11 @@ import java.util.function.Function
         }
     }
 
-    private fun getSigningKey(): Key {
+    private fun getSigningKey(): SecretKey {
 <span class="nc" id="L65">        val decoders: ByteArray = Decoders.BASE64.decode(jwtSigningKey)</span>
 
 <span class="nc" id="L67">        return Keys.hmacShaKeyFor(decoders)</span>
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
