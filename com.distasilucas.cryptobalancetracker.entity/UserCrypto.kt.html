@@ -26,7 +26,7 @@ import java.util.UUID
     fun toUserCryptoResponse(cryptoName: String, platformName: String): UserCryptoResponse {
 <span class="fc" id="L27">        return UserCryptoResponse(</span>
 <span class="fc" id="L28">            id = id,</span>
-<span class="fc" id="L29">            quantity = quantity,</span>
+<span class="fc" id="L29">            quantity = quantity.toPlainString(),</span>
 <span class="fc" id="L30">            cryptoName = cryptoName,</span>
 <span class="fc" id="L31">            platform = platformName</span>
         )

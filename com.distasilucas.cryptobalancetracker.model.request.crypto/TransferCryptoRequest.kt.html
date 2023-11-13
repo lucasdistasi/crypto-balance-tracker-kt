@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransferCryptoRequest.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.model.request.crypto</a> &gt; <span class="el_source">TransferCryptoRequest.kt</span></div><h1>TransferCryptoRequest.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.model.request.crypto
 
-import com.distasilucas.cryptobalancetracker.constants.INVALID_TO_PLATFORM_UUID
-import com.distasilucas.cryptobalancetracker.constants.INVALID_USER_CRYPTO_UUID
+import com.distasilucas.cryptobalancetracker.constants.TO_PLATFORM_ID_UUID
+import com.distasilucas.cryptobalancetracker.constants.NETWORK_FEE_DIGITS
+import com.distasilucas.cryptobalancetracker.constants.NETWORK_FEE_MIN
+import com.distasilucas.cryptobalancetracker.constants.NETWORK_FEE_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_DECIMAL_MAX
+import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_DIGITS
+import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_POSITIVE
+import com.distasilucas.cryptobalancetracker.constants.TO_PLATFORM_ID_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_UUID
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_BLANK
 import com.distasilucas.cryptobalancetracker.model.response.crypto.FromPlatform
 import com.distasilucas.cryptobalancetracker.model.response.crypto.ToPlatform
 import com.distasilucas.cryptobalancetracker.model.response.crypto.TransferCryptoResponse
@@ -14,87 +23,87 @@ import jakarta.validation.constraints.Positive
 import org.hibernate.validator.constraints.UUID
 import java.math.BigDecimal
 
-<span class="fc" id="L17">data class TransferCryptoRequest(</span>
-<span class="fc" id="L18">    @field: NotBlank(message = &quot;User crypto id can not be null or blank&quot;)</span>
-    @field: UUID(message = INVALID_USER_CRYPTO_UUID)
-<span class="fc" id="L20">    val userCryptoId: String?,</span>
+<span class="fc" id="L26">data class TransferCryptoRequest(</span>
+<span class="fc" id="L27">    @field: NotBlank(message = USER_CRYPTO_ID_NOT_BLANK)</span>
+    @field: UUID(message = USER_CRYPTO_ID_UUID)
+<span class="fc" id="L29">    val userCryptoId: String?,</span>
 
-<span class="fc" id="L22">    @field: NotNull(message = &quot;Quantity to transfer can not be null&quot;)</span>
+<span class="fc" id="L31">    @field: NotNull(message = QUANTITY_TO_TRANSFER_NOT_NULL)</span>
     @field: Digits(
         integer = 16,
         fraction = 12,
-        message = &quot;Quantity to transfer must have up to {integer} digits in the integer part and up to {fraction} digits in the decimal part&quot;
+        message = QUANTITY_TO_TRANSFER_DIGITS
     )
     @field: DecimalMax(
         value = &quot;9999999999999999.999999999999&quot;,
-        message = &quot;Quantity to transfer must be less than or equal to 9999999999999999.999999999999&quot;
+        message = QUANTITY_TO_TRANSFER_DECIMAL_MAX
     )
-    @field: Positive(message = &quot;Quantity to transfer must be greater than 0&quot;)
-<span class="fc" id="L33">    val quantityToTransfer: BigDecimal?,</span>
+    @field: Positive(message = QUANTITY_TO_TRANSFER_POSITIVE)
+<span class="fc" id="L42">    val quantityToTransfer: BigDecimal?,</span>
 
-<span class="fc" id="L35">    @field: NotNull(message = &quot;Network fee can not be null&quot;)</span>
+<span class="fc" id="L44">    @field: NotNull(message = NETWORK_FEE_NOT_NULL)</span>
     @field: Digits(
         integer = 16,
         fraction = 12,
-        message = &quot;Network fee must have up to {integer} digits in the integer part and up to {fraction} digits in the decimal part&quot;
+        message = NETWORK_FEE_DIGITS
     )
-    @field: Min(value = 0, message = &quot;Network fee must be greater than or equal to 0&quot;)
-<span class="nc" id="L42">    val networkFee: BigDecimal?,</span>
+    @field: Min(value = 0, message = NETWORK_FEE_MIN)
+<span class="nc" id="L51">    val networkFee: BigDecimal?,</span>
 
-<span class="pc" id="L44">    val sendFullQuantity: Boolean? = false,</span>
+<span class="pc" id="L53">    val sendFullQuantity: Boolean? = false,</span>
 
-<span class="fc" id="L46">    @field: NotBlank(message = &quot;To platform id can not be null or blank&quot;)</span>
-    @field: UUID(message = INVALID_TO_PLATFORM_UUID)
-<span class="fc" id="L48">    val toPlatformId: String?</span>
+<span class="fc" id="L55">    @field: NotBlank(message = TO_PLATFORM_ID_NOT_BLANK)</span>
+    @field: UUID(message = TO_PLATFORM_ID_UUID)
+<span class="fc" id="L57">    val toPlatformId: String?</span>
 ) {
 
     fun toTransferCryptoResponse(
         remainingCryptoQuantity: BigDecimal,
         newQuantity: BigDecimal
     ): TransferCryptoResponse {
-<span class="fc" id="L55">        return TransferCryptoResponse(</span>
-<span class="fc" id="L56">            fromPlatform = FromPlatform(</span>
-<span class="fc" id="L57">                userCryptoId = userCryptoId!!,</span>
-<span class="fc" id="L58">                networkFee = networkFee!!.toPlainString(),</span>
-<span class="fc" id="L59">                quantityToTransfer = quantityToTransfer!!.toPlainString(),</span>
-<span class="fc" id="L60">                totalToSubtract = calculateTotalToSubtract().toPlainString(),</span>
-<span class="fc" id="L61">                quantityToSendReceive = calculateQuantityToSendReceive(remainingCryptoQuantity).toPlainString(),</span>
-<span class="fc" id="L62">                remainingCryptoQuantity = remainingCryptoQuantity.toPlainString(),</span>
-<span class="fc" id="L63">                sendFullQuantity = sendFullQuantity!!</span>
+<span class="fc" id="L64">        return TransferCryptoResponse(</span>
+<span class="fc" id="L65">            fromPlatform = FromPlatform(</span>
+<span class="fc" id="L66">                userCryptoId = userCryptoId!!,</span>
+<span class="fc" id="L67">                networkFee = networkFee!!.toPlainString(),</span>
+<span class="fc" id="L68">                quantityToTransfer = quantityToTransfer!!.toPlainString(),</span>
+<span class="fc" id="L69">                totalToSubtract = calculateTotalToSubtract().toPlainString(),</span>
+<span class="fc" id="L70">                quantityToSendReceive = calculateQuantityToSendReceive(remainingCryptoQuantity).toPlainString(),</span>
+<span class="fc" id="L71">                remainingCryptoQuantity = remainingCryptoQuantity.toPlainString(),</span>
+<span class="fc" id="L72">                sendFullQuantity = sendFullQuantity!!</span>
             ),
-<span class="fc" id="L65">            toPlatform = ToPlatform(</span>
-<span class="fc" id="L66">                platformId = toPlatformId!!,</span>
-<span class="fc" id="L67">                newQuantity = newQuantity.toPlainString()</span>
+<span class="fc" id="L74">            toPlatform = ToPlatform(</span>
+<span class="fc" id="L75">                platformId = toPlatformId!!,</span>
+<span class="fc" id="L76">                newQuantity = newQuantity.toPlainString()</span>
             )
         )
     }
 
     fun calculateTotalToSubtract(): BigDecimal {
-<span class="fc bfc" id="L73" title="All 2 branches covered.">        return if (sendFullQuantity == true) {</span>
-<span class="fc" id="L74">            quantityToTransfer!!.add(networkFee)</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        return if (sendFullQuantity == true) {</span>
+<span class="fc" id="L83">            quantityToTransfer!!.add(networkFee)</span>
         } else {
-<span class="fc" id="L76">            quantityToTransfer!!</span>
+<span class="fc" id="L85">            quantityToTransfer!!</span>
         }
     }
 
     fun calculateQuantityToSendReceive(remainingCryptoQuantity: BigDecimal): BigDecimal {
         // If there is no remaining in from platform, it does not matter if full quantity is true or false.
-<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (remainingCryptoQuantity == BigDecimal.ZERO) {</span>
-<span class="fc" id="L83">            return quantityToTransfer!!.minus(networkFee!!)</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (remainingCryptoQuantity == BigDecimal.ZERO) {</span>
+<span class="fc" id="L92">            return quantityToTransfer!!.minus(networkFee!!)</span>
         }
 
-<span class="fc bfc" id="L86" title="All 2 branches covered.">        return if (sendFullQuantity == true)</span>
-<span class="fc" id="L87">            quantityToTransfer!! else quantityToTransfer!!.minus(networkFee!!)</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        return if (sendFullQuantity == true)</span>
+<span class="fc" id="L96">            quantityToTransfer!! else quantityToTransfer!!.minus(networkFee!!)</span>
     }
 
     fun calculateRemainingCryptoQuantity(
         availableQuantity: BigDecimal
     ): BigDecimal {
-<span class="fc bfc" id="L93" title="All 2 branches covered.">        return if (sendFullQuantity == true) {</span>
-<span class="fc" id="L94">            val totalToSubtract = calculateTotalToSubtract()</span>
-<span class="fc" id="L95">            calculateRemainingCryptoQuantity(availableQuantity, totalToSubtract)</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        return if (sendFullQuantity == true) {</span>
+<span class="fc" id="L103">            val totalToSubtract = calculateTotalToSubtract()</span>
+<span class="fc" id="L104">            calculateRemainingCryptoQuantity(availableQuantity, totalToSubtract)</span>
         } else {
-<span class="fc" id="L97">            calculateRemainingCryptoQuantity(availableQuantity, quantityToTransfer!!)</span>
+<span class="fc" id="L106">            calculateRemainingCryptoQuantity(availableQuantity, quantityToTransfer!!)</span>
         }
     }
 
@@ -102,10 +111,10 @@ import java.math.BigDecimal
         availableQuantity: BigDecimal,
         totalToSubtract: BigDecimal
     ): BigDecimal {
-<span class="fc" id="L105">        val remaining = availableQuantity.minus(totalToSubtract)</span>
+<span class="fc" id="L114">        val remaining = availableQuantity.minus(totalToSubtract)</span>
 
         // Sometimes remaining comes as '0E-9', so I need to strip trailing zeros to see if it's zero
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        return if (remaining.stripTrailingZeros() == BigDecimal.ZERO) return BigDecimal.ZERO else remaining</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        return if (remaining.stripTrailingZeros() == BigDecimal.ZERO) return BigDecimal.ZERO else remaining</span>
     }
-<span class="fc" id="L110">}</span>
+<span class="fc" id="L119">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

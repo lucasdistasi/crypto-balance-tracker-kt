@@ -1,40 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserCryptoRequest.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.model.request.crypto</a> &gt; <span class="el_source">UserCryptoRequest.kt</span></div><h1>UserCryptoRequest.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.model.request.crypto
 
-import com.distasilucas.cryptobalancetracker.constants.INVALID_PLATFORM_UUID
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NAME_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NAME_SIZE
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_DECIMAL_MAX
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_DIGITS
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_POSITIVE
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.validation.ValidCryptoName
 import jakarta.validation.constraints.*
 import org.hibernate.validator.constraints.UUID
 import java.math.BigDecimal
 
-<span class="fc" id="L10">data class UserCryptoRequest(</span>
-<span class="fc" id="L11">    @field: NotBlank(message = &quot;Crypto name can not be null or blank&quot;)</span>
-    @field: Size(min = 1, max = 64, message = &quot;Crypto name must be between 1 and 64 characters&quot;)
+<span class="fc" id="L17">data class UserCryptoRequest(</span>
+<span class="fc" id="L18">    @field: NotBlank(message = CRYPTO_NAME_NOT_BLANK)</span>
+    @field: Size(min = 1, max = 64, message = CRYPTO_NAME_SIZE)
     @field: ValidCryptoName
-<span class="fc" id="L14">    val cryptoName: String?,</span>
+<span class="fc" id="L21">    val cryptoName: String?,</span>
 
-<span class="fc" id="L16">    @field: NotNull(message = &quot;Crypto quantity can not be null&quot;)</span>
+<span class="fc" id="L23">    @field: NotNull(message = CRYPTO_QUANTITY_NOT_NULL)</span>
     @field: Digits(
         integer = 16,
         fraction = 12,
-        message = &quot;Crypto quantity must have up to {integer} digits in the integer part and up to {fraction} digits in the decimal part&quot;
+        message = CRYPTO_QUANTITY_DIGITS
     )
     @field: DecimalMax(
         value = &quot;9999999999999999.999999999999&quot;,
-        message = &quot;Crypto quantity must be less than or equal to 9999999999999999.999999999999&quot;
+        message = CRYPTO_QUANTITY_DECIMAL_MAX
     )
-    @field: Positive(message = &quot;Crypto quantity must be greater than 0&quot;)
-<span class="fc" id="L27">    val quantity: BigDecimal?,</span>
+    @field: Positive(message = CRYPTO_QUANTITY_POSITIVE)
+<span class="fc" id="L34">    val quantity: BigDecimal?,</span>
 
-<span class="fc" id="L29">    @field: NotBlank(message = &quot;Platform id can not be null or blank&quot;)</span>
-    @field: UUID(message = INVALID_PLATFORM_UUID)
-<span class="fc" id="L31">    val platformId: String?</span>
+<span class="fc" id="L36">    @field: NotBlank(message = PLATFORM_ID_NOT_BLANK)</span>
+    @field: UUID(message = PLATFORM_ID_UUID)
+<span class="fc" id="L38">    val platformId: String?</span>
 ) {
 
-<span class="fc" id="L34">    fun toEntity(coingeckoCryptoId: String) = UserCrypto(</span>
-<span class="fc" id="L35">        coingeckoCryptoId = coingeckoCryptoId,</span>
-<span class="fc" id="L36">        quantity = quantity!!,</span>
-<span class="fc" id="L37">        platformId = platformId!!</span>
-<span class="fc" id="L38">    )</span>
+<span class="fc" id="L41">    fun toEntity(coingeckoCryptoId: String) = UserCrypto(</span>
+<span class="fc" id="L42">        coingeckoCryptoId = coingeckoCryptoId,</span>
+<span class="fc" id="L43">        quantity = quantity!!,</span>
+<span class="fc" id="L44">        platformId = platformId!!</span>
+<span class="fc" id="L45">    )</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
