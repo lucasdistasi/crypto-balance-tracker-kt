@@ -53,9 +53,9 @@ Do your own research before investing money you are not willing to loss.
 
 ## Features
 
-- TODO
-- TODO
-- TODO
+- Add/Update/Delete Platforms, Cryptos, Goals.
+- Transfer crypto and automatically calculate new quantities.
+- View crypto/s and platform/s insights.
 
 ### I want to try this API on my local machine. What should I do? :tada:
 
@@ -91,7 +91,7 @@ That being said, below you can find the instructions to run the application.
    - [crypto-balance-tracker-login](https://github.com/lucasdistasi/crypto-balance-tracker-login) (not needed if security is disabled)
 8. On this project folder run `docker ompose up` if you don't want to use it with security
    or `docker-compose -f docker-compose-security.yml up` if you want to use it with security.
-9. Open the URL http://localhost:5173 on your favourite web browser.
+9. Open the URL `http://localhost:5173` on your favourite web browser.
 10. Boila!
 
 ## Contributing :coffee:
