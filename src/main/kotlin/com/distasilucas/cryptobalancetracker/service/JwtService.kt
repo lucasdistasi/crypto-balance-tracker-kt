@@ -13,9 +13,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
-import java.security.Key
 import java.util.Date
 import java.util.function.Function
+import javax.crypto.SecretKey
 
 @Service
 @ConditionalOnProperty(prefix = "security", name = ["enabled"], havingValue = "true")
@@ -48,11 +48,11 @@ class JwtService(
 
     private fun extractClaims(token: String): Claims {
         return try {
-            Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+            Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .body
+                .parseSignedClaims(token)
+                .payload
         } catch (ex: ExpiredJwtException) {
             throw ApiException(HttpStatus.BAD_REQUEST, TOKEN_EXPIRED)
         } catch (ex: Exception) {
@@ -61,7 +61,7 @@ class JwtService(
         }
     }
 
-    private fun getSigningKey(): Key {
+    private fun getSigningKey(): SecretKey {
         val decoders: ByteArray = Decoders.BASE64.decode(jwtSigningKey)
 
         return Keys.hmacShaKeyFor(decoders)

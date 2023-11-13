@@ -23,6 +23,7 @@ services:
     environment:
       - MONGODB_DATABASE=${MONGODB_DATABASE}
       - JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
+      - ENV_PROFILE=docker
     ports:
       - '8081:8081'
 
