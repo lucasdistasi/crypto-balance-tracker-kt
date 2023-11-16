@@ -2,6 +2,7 @@ package com.distasilucas.cryptobalancetracker.controller
 
 import com.distasilucas.cryptobalancetracker.constants.UNKNOWN_ERROR
 import com.distasilucas.cryptobalancetracker.exception.ApiException
+import com.distasilucas.cryptobalancetracker.exception.TooManyRequestsException
 import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
@@ -157,6 +158,20 @@ class ExceptionController {
             HttpStatus.NOT_FOUND.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf(problemDetail))
+    }
+
+    @ExceptionHandler(TooManyRequestsException::class)
+    fun handleTooManyRequestsException(
+        exception: TooManyRequestsException,
+        webRequest: WebRequest
+    ): ResponseEntity<List<ProblemDetail>> {
+        logger.warn { "A TooManyRequestsException occurred $exception" }
+
+        val request = (webRequest as ServletWebRequest).request
+        val problemDetail =
+            HttpStatus.TOO_MANY_REQUESTS.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
+
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(listOf(problemDetail))
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)

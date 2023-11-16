@@ -7,11 +7,13 @@ import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
 import com.distasilucas.cryptobalancetracker.constants.GOAL_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.constants.NOT_ENOUGH_BALANCE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.constants.REQUEST_LIMIT_REACHED
 import com.distasilucas.cryptobalancetracker.constants.UNKNOWN_ERROR
 import com.distasilucas.cryptobalancetracker.constants.USERNAME_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.exception.ApiException
+import com.distasilucas.cryptobalancetracker.exception.TooManyRequestsException
 import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
@@ -174,6 +176,18 @@ class ExceptionControllerTest {
 
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf(problemDetail)))
+    }
+
+    @Test
+    fun `should handle TooManyRequestsException`() {
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.TOO_MANY_REQUESTS)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = REQUEST_LIMIT_REACHED
+
+        val responseEntity = exceptionController.handleTooManyRequestsException(TooManyRequestsException(), servletRequest)
+
+        assertThat(responseEntity)
+            .isEqualTo(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(listOf(problemDetail)))
     }
 
     @Test
