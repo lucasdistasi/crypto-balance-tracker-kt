@@ -49,6 +49,7 @@ const val NOT_ENOUGH_BALANCE = "You don't have enough balance to perform this ac
 const val SAME_FROM_TO_PLATFORM = "From platform and to platform cannot be the same"
 const val TOKEN_EXPIRED = "Token is expired"
 const val USERNAME_NOT_FOUND = "Username not found"
+const val REQUEST_LIMIT_REACHED = "Request limit reached"
 
 // Regex validations
 const val PLATFORM_NAME_REGEX = "^[a-zA-Z]{1,24}$"
