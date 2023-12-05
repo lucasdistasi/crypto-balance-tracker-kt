@@ -11,11 +11,9 @@ class PlatformNameValidatorTest {
     private val platformNameValidator = PlatformNameValidator()
 
     @ParameterizedTest
-    @ValueSource(
-        strings = [
-            "binance", "OKX", "Kraken", "Safepal", "Coinbase"
-        ]
-    )
+    @ValueSource(strings = [
+            "binance", "OKX", "Kraken", "Safepal", "Coinbase", "Trezor One", "Trezor T", "Ledger Nano X",
+            "LOOOOOOOOOOOOOOOONG NAME"])
     fun `should return true when validating platform`(platformName: String) {
         val isValid = platformNameValidator.isValid(platformName, null)
 
@@ -23,12 +21,9 @@ class PlatformNameValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(
-        strings = [
-            "INVALID PLATFORM", "INVALID-PLATFORM", "INVALID_PLATFORM", "LOOOOOOONGINVALIDPLATFORM", "",
-            "1NV4L1D"
-        ]
-    )
+    @ValueSource(strings = [
+            "INVALID-PLATFORM", "INVALID_PLATFORM", "LOOOOOOONGINVALIDPLATFORM", "", "1NV4L1D",
+            " invalid", "inv  alid", "invalid "])
     fun `should return false when validating platform`(platformName: String) {
         val isValid = platformNameValidator.isValid(platformName, null)
 

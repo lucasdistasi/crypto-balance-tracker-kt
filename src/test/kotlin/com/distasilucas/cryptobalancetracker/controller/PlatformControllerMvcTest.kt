@@ -94,7 +94,7 @@ class PlatformControllerMvcTest(
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "binance", "OKX", "Coinbase", "Kraken"
+            "binance", "OKX", "Coinbase", "Kraken", "Gate Io"
         ]
     )
     fun `should save platform with status 200`(platformName: String) {
@@ -117,7 +117,7 @@ class PlatformControllerMvcTest(
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "123", "Coin base", "C01nb453", "NmkwRsgZuYqEPvDbAtIoCfLHX", "Coinba#e"
+            "123", "Coin  base", "C01nb453", "NmkwRsgZuYqEPvDbAtIoCfLHX", "Coinba#e", " Gate Io", "Gate Io "
         ]
     )
     fun `should fail with status 400 with 1 message when saving invalid platform`(platformName: String) {
@@ -207,7 +207,7 @@ class PlatformControllerMvcTest(
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "binance", "OKX", "Coinbase", "Kraken"
+            "binance", "OKX", "Coinbase", "Kraken", "Gate Io"
         ]
     )
     fun `should update platform with status 200`(platformName: String) {
@@ -253,7 +253,7 @@ class PlatformControllerMvcTest(
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "123", "Coin base", "C01nb453", "NmkwRsgZuYqEPvDbAtIoCfLHX", "Coinba#e"
+            "123", "Coin  base", "C01nb453", "NmkwRsgZuYqEPvDbAtIoCfLHX", "Coinba#e", " Gate Io", "Gate Io "
         ]
     )
     fun `should fail with status 400 with 1 messages when updating invalid platform`(platformName: String) {

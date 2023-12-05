@@ -51,5 +51,5 @@ const val USERNAME_NOT_FOUND = "Username not found"
 const val REQUEST_LIMIT_REACHED = "Request limit reached"
 
 // Regex validations
-const val PLATFORM_NAME_REGEX = "^[a-zA-Z]{1,24}$"
+const val PLATFORM_NAME_REGEX = "^[a-zA-Z](?:(?!\\s{2,})[a-zA-Z\\s]){0,22}[a-zA-Z]$"
 const val CRYPTO_NAME_REGEX = "^(?! )(?!.* {2})[a-zA-Z0-9]{1,64}(?: [a-zA-Z0-9]{1,64})*$(?<! )"
