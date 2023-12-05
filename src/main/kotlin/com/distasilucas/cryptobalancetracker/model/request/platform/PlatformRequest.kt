@@ -6,6 +6,7 @@ import jakarta.validation.Constraint
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 import jakarta.validation.constraints.NotBlank
+import java.util.*
 import kotlin.reflect.KClass
 
 data class PlatformRequest(
@@ -14,8 +15,8 @@ data class PlatformRequest(
     val name: String?
 ) {
 
-    fun toEntity(): Platform {
-        return Platform(name = name!!.uppercase())
+    fun toEntity(id: String = UUID.randomUUID().toString()): Platform {
+        return Platform(id, name = name!!.uppercase())
     }
 }
 

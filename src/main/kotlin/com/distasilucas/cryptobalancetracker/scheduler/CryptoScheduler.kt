@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.web.client.RestClientResponseException
 import java.math.BigDecimal
 import java.time.Clock
 import java.time.LocalDateTime
@@ -46,7 +46,7 @@ class CryptoScheduler(
                         maxSupply = crypto.marketData.maxSupply ?: BigDecimal.ZERO,
                         lastUpdatedAt = LocalDateTime.now(clock)
                     )
-                } catch (exception: WebClientResponseException) {
+                } catch (exception: RestClientResponseException) {
                     if (exception.statusCode == HttpStatus.TOO_MANY_REQUESTS) {
                         throw TooManyRequestsException()
                     } else {

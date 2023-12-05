@@ -6,7 +6,6 @@ import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_C
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
-import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.CacheManager
@@ -21,7 +20,6 @@ class CacheService(private val cacheManager: CacheManager) {
         logger.info { "Invalidating user cryptos cache" }
 
         cacheManager.getCache(USER_CRYPTOS_CACHE)!!.invalidate()
-        cacheManager.getCache(USER_CRYPTOS_PAGE_CACHE)!!.invalidate()
         cacheManager.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE)!!.invalidate()
         cacheManager.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE)!!.invalidate()
     }
