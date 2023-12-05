@@ -5,19 +5,18 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import java.io.Serializable
-import java.util.UUID
 
-<span class="fc" id="L10">@Document(&quot;Platforms&quot;)</span>
-<span class="fc" id="L11">data class Platform(</span>
-<span class="fc" id="L12">    @Id</span>
-<span class="fc" id="L13">    val id: String = UUID.randomUUID().toString(),</span>
+<span class="fc" id="L9">@Document(&quot;Platforms&quot;)</span>
+<span class="fc" id="L10">data class Platform(</span>
+<span class="fc" id="L11">    @Id</span>
+<span class="fc" id="L12">    val id: String,</span>
 
-<span class="fc" id="L15">    @Field</span>
-<span class="fc" id="L16">    val name: String</span>
+<span class="fc" id="L14">    @Field</span>
+<span class="fc" id="L15">    val name: String</span>
 ): Serializable {
 
     fun toPlatformResponse(): PlatformResponse {
-<span class="fc" id="L20">        return PlatformResponse(id, name)</span>
+<span class="fc" id="L19">        return PlatformResponse(id, name)</span>
     }
-<span class="fc" id="L22">}</span>
+}
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

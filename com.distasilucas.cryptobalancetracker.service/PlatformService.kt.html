@@ -62,52 +62,49 @@ import org.springframework.stereotype.Service
 <span class="fc" id="L62">        val existingPlatform = findPlatformById(platformId)</span>
 <span class="fc" id="L63">            .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }</span>
 
-<span class="fc" id="L65">        val updatedPlatform = Platform(</span>
-<span class="fc" id="L66">            id = existingPlatform.id,</span>
-<span class="fc" id="L67">            name = platformRequest.name</span>
-        )
+<span class="fc" id="L65">        val updatedPlatform = platformRequest.toEntity(id = existingPlatform.id)</span>
 
-<span class="fc" id="L70">        platformRepository.save(updatedPlatform)</span>
-<span class="fc" id="L71">        cacheService.invalidatePlatformsCaches()</span>
-<span class="fc" id="L72">        val platformResponse = updatedPlatform.toPlatformResponse()</span>
-<span class="fc" id="L73">        logger.info { &quot;Updated platform. Before: $existingPlatform  | After: $updatedPlatform&quot; }</span>
+<span class="fc" id="L67">        platformRepository.save(updatedPlatform)</span>
+<span class="fc" id="L68">        cacheService.invalidatePlatformsCaches()</span>
+<span class="fc" id="L69">        val platformResponse = updatedPlatform.toPlatformResponse()</span>
+<span class="fc" id="L70">        logger.info { &quot;Updated platform. Before: $existingPlatform  | After: $updatedPlatform&quot; }</span>
 
-<span class="fc" id="L75">        return platformResponse</span>
+<span class="fc" id="L72">        return platformResponse</span>
     }
 
     fun deletePlatform(platformId: String) {
-<span class="fc" id="L79">        findPlatformById(platformId)</span>
-<span class="fc" id="L80">            .ifPresentOrElse({</span>
-<span class="fc" id="L81">                val userCryptosToDelete = userCryptoService.findAllByPlatformId(it.id)</span>
-<span class="fc" id="L82">                userCryptoService.deleteUserCryptos(userCryptosToDelete)</span>
+<span class="fc" id="L76">        findPlatformById(platformId)</span>
+<span class="fc" id="L77">            .ifPresentOrElse({</span>
+<span class="fc" id="L78">                val userCryptosToDelete = userCryptoService.findAllByPlatformId(it.id)</span>
+<span class="fc" id="L79">                userCryptoService.deleteUserCryptos(userCryptosToDelete)</span>
 
-<span class="fc" id="L84">                platformRepository.deleteById(platformId)</span>
-<span class="fc" id="L85">                cacheService.invalidatePlatformsCaches()</span>
-<span class="fc" id="L86">                logger.info { &quot;Deleted platform $it&quot; }</span>
-<span class="fc" id="L87">            },{</span>
-<span class="fc" id="L88">                throw PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId))</span>
+<span class="fc" id="L81">                platformRepository.deleteById(platformId)</span>
+<span class="fc" id="L82">                cacheService.invalidatePlatformsCaches()</span>
+<span class="fc" id="L83">                logger.info { &quot;Deleted platform $it&quot; }</span>
+<span class="fc" id="L84">            },{</span>
+<span class="fc" id="L85">                throw PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId))</span>
             })
-<span class="fc" id="L90">    }</span>
+<span class="fc" id="L87">    }</span>
 
     @Cacheable(cacheNames = [PLATFORMS_PLATFORMS_IDS_CACHE], key = &quot;#ids&quot;)
     fun findAllByIds(ids: Collection&lt;String&gt;): List&lt;Platform&gt; {
-<span class="fc" id="L94">        logger.info { &quot;Retrieving platforms for ids $ids&quot; }</span>
+<span class="fc" id="L91">        logger.info { &quot;Retrieving platforms for ids $ids&quot; }</span>
 
-<span class="fc" id="L96">        return platformRepository.findAllByIdIn(ids)</span>
+<span class="fc" id="L93">        return platformRepository.findAllByIdIn(ids)</span>
     }
 
-<span class="fc" id="L99">    private fun findPlatformById(platformId: String) = platformRepository.findById(platformId)</span>
+<span class="fc" id="L96">    private fun findPlatformById(platformId: String) = platformRepository.findById(platformId)</span>
 
     private fun validatePlatformNotExists(platformName: String) {
-<span class="fc" id="L102">        val existingPlatform = platformRepository.findByName(platformName.uppercase())</span>
+<span class="fc" id="L99">        val existingPlatform = platformRepository.findByName(platformName.uppercase())</span>
 
-<span class="fc bfc" id="L104" title="All 2 branches covered.">        if (existingPlatform.isPresent) {</span>
-<span class="fc" id="L105">            throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(existingPlatform.get().name))</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        if (existingPlatform.isPresent) {</span>
+<span class="fc" id="L102">            throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(existingPlatform.get().name))</span>
         }
-<span class="fc" id="L107">    }</span>
+<span class="fc" id="L104">    }</span>
 }
 
-<span class="fc" id="L110">class PlatformNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L107">class PlatformNotFoundException(message: String) : RuntimeException(message)</span>
 
-<span class="fc" id="L112">class DuplicatedPlatformException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L109">class DuplicatedPlatformException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

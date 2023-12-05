@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.web.client.RestClientResponseException
 import java.math.BigDecimal
 import java.time.Clock
 import java.time.LocalDateTime
@@ -46,7 +46,7 @@ import java.time.LocalDateTime
 <span class="fc bfc" id="L46" title="All 2 branches covered.">                        maxSupply = crypto.marketData.maxSupply ?: BigDecimal.ZERO,</span>
 <span class="fc" id="L47">                        lastUpdatedAt = LocalDateTime.now(clock)</span>
                     )
-<span class="fc" id="L49">                } catch (exception: WebClientResponseException) {</span>
+<span class="fc" id="L49">                } catch (exception: RestClientResponseException) {</span>
 <span class="fc bfc" id="L50" title="All 2 branches covered.">                    if (exception.statusCode == HttpStatus.TOO_MANY_REQUESTS) {</span>
 <span class="fc" id="L51">                        throw TooManyRequestsException()</span>
                     } else {
