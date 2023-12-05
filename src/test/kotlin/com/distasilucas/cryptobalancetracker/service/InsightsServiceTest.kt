@@ -24,7 +24,6 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.Optional
@@ -717,7 +716,6 @@ class InsightsServiceTest {
             name = "COINBASE"
         )
 
-        every { userCryptoServiceMock.findAllByPage(0) } returns PageImpl(userCryptos)
         every { cryptoServiceMock.findAllByIds(setOf("litecoin", "bitcoin")) } returns cryptosEntities
         every {
             platformServiceMock.findAllByIds(
@@ -1439,7 +1437,6 @@ class InsightsServiceTest {
             name = "COINBASE"
         )
 
-        every { userCryptoServiceMock.findAllByPage(0) } returns PageImpl(userCryptos)
         every { cryptoServiceMock.findAllByIds(setOf("bitcoin", "tether", "ethereum")) } returns cryptosEntities
         every {
             platformServiceMock.findAllByIds(

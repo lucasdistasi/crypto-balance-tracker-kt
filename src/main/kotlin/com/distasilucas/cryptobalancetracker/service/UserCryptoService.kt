@@ -3,7 +3,6 @@ package com.distasilucas.cryptobalancetracker.service
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_CRYPTO_PLATFORM
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
-import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
@@ -13,7 +12,6 @@ import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoRes
 import com.distasilucas.cryptobalancetracker.repository.UserCryptoRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -165,13 +163,6 @@ class UserCryptoService(
         logger.info { "Retrieving all user cryptos" }
 
         return userCryptoRepository.findAll()
-    }
-
-    @Cacheable(cacheNames = [USER_CRYPTOS_PAGE_CACHE], key = "#page")
-    fun findAllByPage(page: Int): Page<UserCrypto> {
-        logger.info { "Retrieving all user cryptos for page $page" }
-
-        return userCryptoRepository.findAll(PageRequest.of(page, 10))
     }
 
     private fun didChangePlatform(newPlatform: String, originalPlatform: String) = newPlatform != originalPlatform

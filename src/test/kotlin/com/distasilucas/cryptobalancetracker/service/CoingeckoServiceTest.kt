@@ -3,16 +3,12 @@ package com.distasilucas.cryptobalancetracker.service
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.springframework.http.HttpStatus
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClientResponseException
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-import reactor.test.StepVerifier
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.RestClientResponseException
 
 private const val COINGECKO_API_URL = "https://api.coingecko.com/api/v3"
 
@@ -41,14 +37,12 @@ class CoingeckoServiceTest {
         val mockResponse = MockResponse()
         mockWebServer.enqueue(mockResponse)
 
-        val webClient = WebClient.create(COINGECKO_API_URL)
+        val webClient = RestClient.create(COINGECKO_API_URL)
         coingeckoService = CoingeckoService("", webClient)
 
         val cryptos = coingeckoService.retrieveAllCryptos()
 
-        StepVerifier.create(Flux.just(cryptos))
-            .expectNextMatches { it.isNotEmpty() }
-            .verifyComplete()
+        assertFalse(cryptos.isEmpty())
     }
 
     @Test
@@ -56,14 +50,12 @@ class CoingeckoServiceTest {
         val mockResponse = MockResponse()
         mockWebServer.enqueue(mockResponse)
 
-        val webClient = WebClient.create(COINGECKO_API_URL)
+        val webClient = RestClient.create(COINGECKO_API_URL)
         coingeckoService = CoingeckoService("", webClient)
 
         val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo("bitcoin")
 
-        StepVerifier.create(Mono.just(coingeckoCryptoInfo))
-            .expectNextMatches { it.id == "bitcoin" }
-            .verifyComplete()
+        assertEquals("bitcoin", coingeckoCryptoInfo.id)
     }
 
     @Test
@@ -71,10 +63,10 @@ class CoingeckoServiceTest {
         val mockResponse = MockResponse()
         mockWebServer.enqueue(mockResponse)
 
-        val webClient = WebClient.create(COINGECKO_API_URL)
+        val webClient = RestClient.create(COINGECKO_API_URL)
         coingeckoService = CoingeckoService("", webClient)
 
-        val exception = assertThrows<WebClientResponseException> { coingeckoService.retrieveCryptoInfo("pipicoin") }
+        val exception = assertThrows<RestClientResponseException> { coingeckoService.retrieveCryptoInfo("pipicoin") }
 
         assertThat(exception)
             .usingRecursiveComparison()
@@ -87,10 +79,10 @@ class CoingeckoServiceTest {
         val mockResponse = MockResponse()
         mockWebServer.enqueue(mockResponse)
 
-        val webClient = WebClient.create(COINGECKO_API_URL)
+        val webClient = RestClient.create(COINGECKO_API_URL)
         coingeckoService = CoingeckoService("TEST123", webClient)
 
-        val exception = assertThrows<WebClientResponseException> { coingeckoService.retrieveCryptoInfo("bitcoin") }
+        val exception = assertThrows<RestClientResponseException> { coingeckoService.retrieveCryptoInfo("bitcoin") }
 
         assertThat(exception)
             .usingRecursiveComparison()
@@ -103,10 +95,10 @@ class CoingeckoServiceTest {
         val mockResponse = MockResponse()
         mockWebServer.enqueue(mockResponse)
 
-        val webClient = WebClient.create(COINGECKO_API_URL)
+        val webClient = RestClient.create(COINGECKO_API_URL)
         coingeckoService = CoingeckoService("TEST123", webClient)
 
-        val exception = assertThrows<WebClientResponseException> { coingeckoService.retrieveAllCryptos() }
+        val exception = assertThrows<RestClientResponseException> { coingeckoService.retrieveAllCryptos() }
 
         assertThat(exception)
             .usingRecursiveComparison()

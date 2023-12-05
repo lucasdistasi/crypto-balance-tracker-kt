@@ -9,7 +9,6 @@ import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_C
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
-import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.Platform
@@ -26,7 +25,6 @@ import org.ehcache.jsr107.Eh107Configuration
 import org.springframework.cache.interceptor.SimpleKey
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.data.domain.Page
 import org.springframework.data.util.CastUtils
 import java.time.Duration
 import javax.cache.CacheManager
@@ -41,7 +39,6 @@ class EhCacheConfiguration {
         val coingeckoCryptosCache = getCoingeckoCryptosCache()
         val coingeckoCryptoInfoCache = getCoingeckoCryptoInfoCache()
         val userCryptosCache = getAllUserCryptosCache()
-        val userCryptosPageCache = getUserCryptosPageCache()
         val userCryptosPlatformIdCache = getUserCryptosPlatformIdCache()
         val userCryptosCoingeckoCryptoIdCache = getUserCryptosCoingeckoCryptoIdCache()
         val platformsIdsCache = getPlatformsIdsCache()
@@ -53,7 +50,6 @@ class EhCacheConfiguration {
         cacheManager.createCache(COINGECKO_CRYPTOS_CACHE, getCacheConfiguration(coingeckoCryptosCache))
         cacheManager.createCache(CRYPTO_INFO_CACHE, getCacheConfiguration(coingeckoCryptoInfoCache))
         cacheManager.createCache(USER_CRYPTOS_CACHE, getCacheConfiguration(userCryptosCache))
-        cacheManager.createCache(USER_CRYPTOS_PAGE_CACHE, getCacheConfiguration(userCryptosPageCache))
         cacheManager.createCache(USER_CRYPTOS_PLATFORM_ID_CACHE, getCacheConfiguration(userCryptosPlatformIdCache))
         cacheManager.createCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE, getCacheConfiguration(userCryptosCoingeckoCryptoIdCache))
         cacheManager.createCache(PLATFORMS_PLATFORMS_IDS_CACHE, getCacheConfiguration(platformsIdsCache))
@@ -102,20 +98,6 @@ class EhCacheConfiguration {
         return CacheConfigurationBuilder.newCacheConfigurationBuilder(
             SimpleKey::class.java,
             userCryptoListClass,
-            resourcePools
-        ).withExpiry(expirationPolicyBuilder).build()
-    }
-
-    private fun getUserCryptosPageCache(): CacheConfiguration<Int, Page<UserCrypto>> {
-        val userCryptoPageClass = CastUtils.cast<Class<Page<UserCrypto>>>(Page::class.java)
-        val resourcePools = ResourcePoolsBuilder.newResourcePoolsBuilder()
-            .offheap(1, MemoryUnit.MB)
-            .build()
-        val expirationPolicyBuilder = ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofMinutes(60))
-
-        return CacheConfigurationBuilder.newCacheConfigurationBuilder(
-            Int::class.javaObjectType,
-            userCryptoPageClass,
             resourcePools
         ).withExpiry(expirationPolicyBuilder).build()
     }

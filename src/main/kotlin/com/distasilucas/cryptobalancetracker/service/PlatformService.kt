@@ -62,10 +62,7 @@ class PlatformService(
         val existingPlatform = findPlatformById(platformId)
             .orElseThrow { PlatformNotFoundException(PLATFORM_ID_NOT_FOUND.format(platformId)) }
 
-        val updatedPlatform = Platform(
-            id = existingPlatform.id,
-            name = platformRequest.name
-        )
+        val updatedPlatform = platformRequest.toEntity(id = existingPlatform.id)
 
         platformRepository.save(updatedPlatform)
         cacheService.invalidatePlatformsCaches()

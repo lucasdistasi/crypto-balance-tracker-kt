@@ -15,7 +15,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
-import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.web.client.RestClientResponseException
 import java.time.Clock
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -107,10 +107,10 @@ class CryptoSchedulerTest {
         every { cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(queryLocalDateTime, LIMIT) } returns listOf(cryptos)
         every {
             coingeckoServiceMock.retrieveCryptoInfo("bitcoin")
-        } throws WebClientResponseException(
+        } throws RestClientResponseException(
+                "message",
             HttpStatus.TOO_MANY_REQUESTS,
-            "reasonPhrase",
-            null,
+            "statusText",
             null,
             null,
             null
@@ -123,7 +123,7 @@ class CryptoSchedulerTest {
     }
 
     @Test
-    fun `should save same crypto when WebClientResponseException occurs with status != 429`() {
+    fun `should save same crypto when RestClientResponseException occurs with status != 429`() {
         val cryptos = getCryptoEntity()
         val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
         val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
@@ -134,10 +134,10 @@ class CryptoSchedulerTest {
         every { cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(queryLocalDateTime, LIMIT) } returns listOf(cryptos)
         every {
             coingeckoServiceMock.retrieveCryptoInfo("bitcoin")
-        } throws WebClientResponseException(
+        } throws RestClientResponseException(
+                "message",
             HttpStatus.I_AM_A_TEAPOT,
-            "reasonPhrase",
-            null,
+            "statusText",
             null,
             null,
             null

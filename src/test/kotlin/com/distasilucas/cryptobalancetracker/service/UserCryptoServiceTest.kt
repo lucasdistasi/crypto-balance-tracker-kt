@@ -581,19 +581,4 @@ class UserCryptoServiceTest {
                 )
             )
     }
-
-    @Test
-    fun `should find all user cryptos by page`() {
-        val userCrypto = getUserCrypto()
-
-        every { userCryptoRepositoryMock.findAll(PageRequest.of(0, 10)) } returns PageImpl(listOf(userCrypto))
-
-        val userCryptos = userCryptoService.findAllByPage(0)
-
-        assertThat(userCryptos)
-            .usingRecursiveComparison()
-            .isEqualTo(
-                PageImpl(listOf(userCrypto), PageRequest.of(0,10), 1)
-            )
-    }
 }

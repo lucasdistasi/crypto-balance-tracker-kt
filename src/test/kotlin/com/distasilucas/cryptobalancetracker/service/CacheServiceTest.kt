@@ -6,7 +6,6 @@ import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_C
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
-import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import getCryptoEntity
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.cache.CacheManager
 import org.springframework.cache.concurrent.ConcurrentMapCache
 import org.springframework.cache.interceptor.SimpleKey
-import org.springframework.data.domain.PageImpl
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.NullPointerException
 
@@ -33,40 +31,32 @@ class CacheServiceTest {
     @Test
     fun `should invalidate user cryptos cache if it exists`() {
         val userCrypto = getUserCrypto()
-        val pageImpl = PageImpl(listOf(userCrypto))
 
         val userCryptosCacheMap = mapOf(SimpleKey::class.java to listOf(userCrypto))
-        val userCryptosPageCacheMap = mapOf(0 to pageImpl)
         val userCryptosPlatformIdMap = mapOf("123e4567-e89b-12d3-a456-426614174111" to listOf(userCrypto))
         val userCryptosCoingeckoCryptoIdMap = mapOf("bitcoin" to listOf(userCrypto))
 
         val userCryptosCacheCache =
             ConcurrentMapCache(USER_CRYPTOS_CACHE, ConcurrentHashMap(userCryptosCacheMap), false)
-        val userCryptosPageCacheCache =
-            ConcurrentMapCache(USER_CRYPTOS_PAGE_CACHE, ConcurrentHashMap(userCryptosPageCacheMap), false)
         val userCryptosPlatformIdCache =
             ConcurrentMapCache(USER_CRYPTOS_PLATFORM_ID_CACHE, ConcurrentHashMap(userCryptosPlatformIdMap), false)
         val userCryptosCoingeckoCryptoIdCache =
             ConcurrentMapCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE, ConcurrentHashMap(userCryptosCoingeckoCryptoIdMap), false)
 
         every { cacheManagerMock.getCache(USER_CRYPTOS_CACHE) } returns userCryptosCacheCache
-        every { cacheManagerMock.getCache(USER_CRYPTOS_PAGE_CACHE) } returns userCryptosPageCacheCache
         every { cacheManagerMock.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE) } returns userCryptosPlatformIdCache
         every { cacheManagerMock.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE) } returns userCryptosCoingeckoCryptoIdCache
 
         cacheService.invalidateUserCryptosCaches()
 
         val userCryptosCacheStore = userCryptosCacheCache.nativeCache
-        val userCryptosPageCacheStore = userCryptosPageCacheCache.nativeCache
         val userCryptosPlatformIdStore = userCryptosPlatformIdCache.nativeCache
         val userCryptosCoingeckoCryptoIdStore = userCryptosCoingeckoCryptoIdCache.nativeCache
 
         assertThat(userCryptosCacheStore).isEmpty()
-        assertThat(userCryptosPageCacheStore).isEmpty()
         assertThat(userCryptosPlatformIdStore).isEmpty()
         assertThat(userCryptosCoingeckoCryptoIdStore).isEmpty()
         verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_CACHE) }
-        verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_PAGE_CACHE) }
         verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE) }
         verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE) }
     }
@@ -74,7 +64,6 @@ class CacheServiceTest {
     @Test
     fun `should throw NullPointerException if user cryptos caches dont exists`() {
         every { cacheManagerMock.getCache(USER_CRYPTOS_CACHE) } returns null
-        every { cacheManagerMock.getCache(USER_CRYPTOS_PAGE_CACHE) } returns null
         every { cacheManagerMock.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE) } returns null
         every { cacheManagerMock.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE) } returns null
 
