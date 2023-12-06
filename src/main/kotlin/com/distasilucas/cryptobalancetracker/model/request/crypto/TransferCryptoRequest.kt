@@ -59,15 +59,16 @@ data class TransferCryptoRequest(
 
     fun toTransferCryptoResponse(
         remainingCryptoQuantity: BigDecimal,
-        newQuantity: BigDecimal
+        newQuantity: BigDecimal,
+        quantityToSendReceive: BigDecimal
     ): TransferCryptoResponse {
         return TransferCryptoResponse(
             fromPlatform = FromPlatform(
                 userCryptoId = userCryptoId!!,
                 networkFee = networkFee!!.toPlainString(),
                 quantityToTransfer = quantityToTransfer!!.toPlainString(),
-                totalToSubtract = calculateTotalToSubtract().toPlainString(),
-                quantityToSendReceive = calculateQuantityToSendReceive(remainingCryptoQuantity).toPlainString(),
+                totalToSubtract = calculateTotalToSubtract(remainingCryptoQuantity).toPlainString(),
+                quantityToSendReceive = quantityToSendReceive.toPlainString(),
                 remainingCryptoQuantity = remainingCryptoQuantity.toPlainString(),
                 sendFullQuantity = sendFullQuantity!!
             ),
@@ -78,42 +79,34 @@ data class TransferCryptoRequest(
         )
     }
 
-    fun calculateTotalToSubtract(): BigDecimal {
+    fun calculateTotalToSubtract(remainingCryptoQuantity: BigDecimal): BigDecimal {
         return if (sendFullQuantity == true) {
-            quantityToTransfer!!.add(networkFee)
+            if (remainingCryptoQuantity > BigDecimal.ZERO) networkFee!!.add(quantityToTransfer) else quantityToTransfer!!
         } else {
             quantityToTransfer!!
         }
     }
 
-    fun calculateQuantityToSendReceive(remainingCryptoQuantity: BigDecimal): BigDecimal {
-        // If there is no remaining in from platform, it does not matter if full quantity is true or false.
-        if (remainingCryptoQuantity == BigDecimal.ZERO) {
-            return quantityToTransfer!!.minus(networkFee!!)
-        }
-
-        return if (sendFullQuantity == true)
-            quantityToTransfer!! else quantityToTransfer!!.minus(networkFee!!)
-    }
-
-    fun calculateRemainingCryptoQuantity(
-        availableQuantity: BigDecimal
-    ): BigDecimal {
-        return if (sendFullQuantity == true) {
-            val totalToSubtract = calculateTotalToSubtract()
-            calculateRemainingCryptoQuantity(availableQuantity, totalToSubtract)
+    fun calculateQuantityToSendReceive(remainingCryptoQuantity: BigDecimal, availableQuantity: BigDecimal): BigDecimal {
+        val quantityToSendReceive = if (sendFullQuantity == true) {
+            if (remainingCryptoQuantity == BigDecimal.ZERO) availableQuantity.subtract(networkFee) else quantityToTransfer!!
         } else {
-            calculateRemainingCryptoQuantity(availableQuantity, quantityToTransfer!!)
+            quantityToTransfer!!.subtract(networkFee)
         }
+
+        return quantityToSendReceive.stripTrailingZeros()
     }
 
-    private fun calculateRemainingCryptoQuantity(
-        availableQuantity: BigDecimal,
-        totalToSubtract: BigDecimal
-    ): BigDecimal {
-        val remaining = availableQuantity.minus(totalToSubtract)
+    fun calculateRemainingCryptoQuantity(availableQuantity: BigDecimal): BigDecimal {
+        val remaining = if (sendFullQuantity == true) {
+            availableQuantity.subtract(quantityToTransfer!!.add(networkFee))
+        } else {
+            availableQuantity.subtract(quantityToTransfer)
+        }
 
-        // Sometimes remaining comes as '0E-9', so I need to strip trailing zeros to see if it's zero
-        return if (remaining.stripTrailingZeros() == BigDecimal.ZERO) return BigDecimal.ZERO else remaining
+        return if (remaining < BigDecimal.ZERO) BigDecimal.ZERO else remaining.stripTrailingZeros()
     }
+
+    fun hasInsufficientBalance(availableQuantity: BigDecimal) = availableQuantity < quantityToTransfer || networkFee!! > availableQuantity
+
 }
