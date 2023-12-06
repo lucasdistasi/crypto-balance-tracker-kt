@@ -9,17 +9,13 @@ import com.distasilucas.cryptobalancetracker.model.response.crypto.FromPlatform
 import com.distasilucas.cryptobalancetracker.model.response.crypto.ToPlatform
 import com.distasilucas.cryptobalancetracker.model.response.crypto.TransferCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
-import io.mockk.every
-import io.mockk.justRun
-import io.mockk.mockk
-import io.mockk.mockkStatic
+import io.mockk.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 
 class TransferCryptoServiceTest {
 
@@ -101,6 +97,66 @@ class TransferCryptoServiceTest {
                     )
                 )
             )
+    }
+
+    @Test
+    fun `should transfer from platform with remaining to platform without existing crypto and full quantity disabled`() {
+        val transferCryptoRequest = getTransferCryptoRequest(sendFullQuantity = false)
+        val userCryptoToTransfer = getUserCryptoToTransfer()
+        val toPlatformResponse = getToPlatformResponse()
+        val fromPlatformResponse = getFromPlatformResponse()
+
+        every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
+        every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+        every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
+        every {
+            userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
+                    "bitcoin",
+                    "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
+            )
+        } returns Optional.empty()
+        mockkStatic(UUID::class)
+        every { UUID.randomUUID().toString() } returns "60560fe6-8be2-460f-89ba-ef2e1c2e405b"
+        justRun {
+            userCryptoServiceMock.saveOrUpdateAll(
+                    listOf(
+                            UserCrypto(
+                                    id = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                                    coingeckoCryptoId = "bitcoin",
+                                    quantity = BigDecimal("1.865321283"),
+                                    platformId = "d5f63c4d-98e7-4d26-b380-e7d0f5c423e9"
+                            ),
+                            UserCrypto(
+                                    id = "60560fe6-8be2-460f-89ba-ef2e1c2e405b",
+                                    coingeckoCryptoId = "bitcoin",
+                                    quantity = BigDecimal("0.5095"),
+                                    platformId = "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
+                            )
+                    )
+            )
+        }
+
+        val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)
+
+        assertThat(transferCryptoResponse)
+                .usingRecursiveComparison()
+                .isEqualTo(
+                        TransferCryptoResponse(
+                                fromPlatform = FromPlatform(
+                                        userCryptoId = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                                        networkFee = "0.0005",
+                                        quantityToTransfer = "0.51",
+                                        totalToSubtract = "0.51",
+                                        quantityToSendReceive = "0.5095",
+                                        remainingCryptoQuantity = "1.865321283",
+                                        sendFullQuantity = false
+                                ),
+                                toPlatform = ToPlatform(
+                                        platformId = "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b",
+                                        newQuantity = "0.5095"
+                                )
+                        )
+                )
     }
 
     @Test
@@ -223,8 +279,11 @@ class TransferCryptoServiceTest {
     }
 
     @Test
-    fun `should transfer from platform with remaining to platform without existing crypto and full quantity disabled`() {
-        val transferCryptoRequest = getTransferCryptoRequest(sendFullQuantity = false)
+    fun `should transfer from platform with remaining to platform without existing crypto and full quantity disabled and update only one crypto`() {
+        val transferCryptoRequest = getTransferCryptoRequest(
+                sendFullQuantity = false,
+                networkFee = BigDecimal("0.51")
+        )
         val userCryptoToTransfer = getUserCryptoToTransfer()
         val toPlatformResponse = getToPlatformResponse()
         val fromPlatformResponse = getFromPlatformResponse()
@@ -234,52 +293,51 @@ class TransferCryptoServiceTest {
         every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
         every {
             userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
-                "bitcoin",
-                "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
+                    "bitcoin",
+                    "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
             )
         } returns Optional.empty()
         mockkStatic(UUID::class)
         every { UUID.randomUUID().toString() } returns "60560fe6-8be2-460f-89ba-ef2e1c2e405b"
-        justRun {
-            userCryptoServiceMock.saveOrUpdateAll(
+        justRun { userCryptoServiceMock.saveOrUpdateAll(
                 listOf(
-                    UserCrypto(
-                        id = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                        coingeckoCryptoId = "bitcoin",
-                        quantity = BigDecimal("1.865321283"),
-                        platformId = "d5f63c4d-98e7-4d26-b380-e7d0f5c423e9"
-                    ),
-                    UserCrypto(
-                        id = "60560fe6-8be2-460f-89ba-ef2e1c2e405b",
-                        coingeckoCryptoId = "bitcoin",
-                        quantity = BigDecimal("0.5095"),
-                        platformId = "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
-                    )
+                        UserCrypto(
+                                "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                                "bitcoin",
+                                BigDecimal("1.865321283"),
+                                "d5f63c4d-98e7-4d26-b380-e7d0f5c423e9"
+                        )
                 )
-            )
-        }
+        ) }
 
         val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)
 
-        assertThat(transferCryptoResponse)
-            .usingRecursiveComparison()
-            .isEqualTo(
-                TransferCryptoResponse(
-                    fromPlatform = FromPlatform(
-                        userCryptoId = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                        networkFee = "0.0005",
-                        quantityToTransfer = "0.51",
-                        totalToSubtract = "0.51",
-                        quantityToSendReceive = "0.5095",
-                        remainingCryptoQuantity = "1.865321283",
-                        sendFullQuantity = false
-                    ),
-                    toPlatform = ToPlatform(
-                        platformId = "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b",
-                        newQuantity = "0.5095"
-                    )
+        verify(exactly = 1) { userCryptoServiceMock.saveOrUpdateAll(
+                listOf(
+                        UserCrypto(
+                                "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                                "bitcoin",
+                                BigDecimal("1.865321283"),
+                                "d5f63c4d-98e7-4d26-b380-e7d0f5c423e9"
+                        )
                 )
-            )
+        ) }
+        assertThat(transferCryptoResponse)
+                .usingRecursiveComparison()
+                .isEqualTo(
+                        TransferCryptoResponse(
+                                FromPlatform(
+                                        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                                        "0.51",
+                                        "0.51",
+                                        "0.51",
+                                        "0",
+                                        "1.865321283",
+                                        false
+                                ),
+                                ToPlatform("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b", "0")
+                        )
+                )
     }
 
     /*
@@ -292,7 +350,7 @@ class TransferCryptoServiceTest {
 
     @Test
     fun `should transfer from platform without remaining to platform with existing crypto and full quantity enabled`() {
-        val transferCryptoRequest = getTransferCryptoRequest(quantityToTransfer = BigDecimal("1.105234142"))
+        val transferCryptoRequest = getTransferCryptoRequest(quantityToTransfer = BigDecimal("1.105734142"))
         val userCryptoToTransfer = getUserCryptoToTransfer(quantity = BigDecimal("1.105734142"))
         val toPlatformUserCrypto = getToPlatformUserCrypto(quantity = BigDecimal("0.2512"))
         val toPlatformResponse = getToPlatformResponse()
@@ -316,7 +374,7 @@ class TransferCryptoServiceTest {
                     UserCrypto(
                         id = "a6b9f1e8-c1d5-4a8b-bf52-836e6a2e4c3d",
                         coingeckoCryptoId = "bitcoin",
-                        quantity = BigDecimal("1.355934142"),
+                        quantity = BigDecimal("1.356434142"),
                         platformId = "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
                     )
                 )
@@ -332,18 +390,70 @@ class TransferCryptoServiceTest {
                     fromPlatform = FromPlatform(
                         userCryptoId = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                         networkFee = "0.0005",
-                        quantityToTransfer = "1.105234142",
+                        quantityToTransfer = "1.105734142",
                         totalToSubtract = "1.105734142",
-                        quantityToSendReceive = "1.104734142",
+                        quantityToSendReceive = "1.105234142",
                         remainingCryptoQuantity = "0",
                         sendFullQuantity = true
                     ),
                     toPlatform = ToPlatform(
                         platformId = "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b",
-                        newQuantity = "1.355934142"
+                        newQuantity = "1.356434142"
                     )
                 )
             )
+    }
+
+    @Test
+    fun `should transfer from platform without remaining to platform without existing crypto and full quantity enabled`() {
+        val transferCryptoRequest = getTransferCryptoRequest(quantityToTransfer = BigDecimal("1.105734142"))
+        val userCryptoToTransfer = getUserCryptoToTransfer(quantity = BigDecimal("1.105734142"))
+        val toPlatformResponse = getToPlatformResponse()
+        val fromPlatformResponse = getFromPlatformResponse()
+
+        every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
+        every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+        every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
+        every {
+            userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
+                    "bitcoin",
+                    "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
+            )
+        } returns Optional.empty()
+        justRun {
+            userCryptoServiceMock.saveOrUpdateAll(
+                    listOf(
+                            UserCrypto(
+                                    id = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                                    coingeckoCryptoId = "bitcoin",
+                                    quantity = BigDecimal("1.105234142"),
+                                    platformId = "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
+                            )
+                    )
+            )
+        }
+
+        val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)
+
+        assertThat(transferCryptoResponse)
+                .usingRecursiveComparison()
+                .isEqualTo(
+                        TransferCryptoResponse(
+                                fromPlatform = FromPlatform(
+                                        userCryptoId = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                                        networkFee = "0.0005",
+                                        quantityToTransfer = "1.105734142",
+                                        totalToSubtract = "1.105734142",
+                                        quantityToSendReceive = "1.105234142",
+                                        remainingCryptoQuantity = "0",
+                                        sendFullQuantity = true
+                                ),
+                                toPlatform = ToPlatform(
+                                        platformId = "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b",
+                                        newQuantity = "1.105234142"
+                                )
+                        )
+                )
     }
 
     @Test
@@ -406,58 +516,6 @@ class TransferCryptoServiceTest {
     }
 
     @Test
-    fun `should transfer from platform without remaining to platform without existing crypto and full quantity enabled`() {
-        val transferCryptoRequest = getTransferCryptoRequest(quantityToTransfer = BigDecimal("1.105234142"))
-        val userCryptoToTransfer = getUserCryptoToTransfer(quantity = BigDecimal("1.105734142"))
-        val toPlatformResponse = getToPlatformResponse()
-        val fromPlatformResponse = getFromPlatformResponse()
-
-        every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-        every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
-        every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
-        every {
-            userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
-                "bitcoin",
-                "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
-            )
-        } returns Optional.empty()
-        justRun {
-            userCryptoServiceMock.saveOrUpdateAll(
-                listOf(
-                    UserCrypto(
-                        id = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                        coingeckoCryptoId = "bitcoin",
-                        quantity = BigDecimal("1.104734142"),
-                        platformId = "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
-                    )
-                )
-            )
-        }
-
-        val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)
-
-        assertThat(transferCryptoResponse)
-            .usingRecursiveComparison()
-            .isEqualTo(
-                TransferCryptoResponse(
-                    fromPlatform = FromPlatform(
-                        userCryptoId = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                        networkFee = "0.0005",
-                        quantityToTransfer = "1.105234142",
-                        totalToSubtract = "1.105734142",
-                        quantityToSendReceive = "1.104734142",
-                        remainingCryptoQuantity = "0",
-                        sendFullQuantity = true
-                    ),
-                    toPlatform = ToPlatform(
-                        platformId = "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b",
-                        newQuantity = "1.104734142"
-                    )
-                )
-            )
-    }
-
-    @Test
     fun `should transfer from platform without remaing to platform without existing crypto and full quantity disabled`() {
         val transferCryptoRequest = getTransferCryptoRequest(
             quantityToTransfer = BigDecimal("2.375321283"),
@@ -510,6 +568,50 @@ class TransferCryptoServiceTest {
                     )
                 )
             )
+    }
+
+    @Test
+    fun `should transfer from platform without remaining to platform without existing crypto and full quantity disabled and delete one crypto`() {
+        val transferCryptoRequest = getTransferCryptoRequest(
+                quantityToTransfer = BigDecimal("2.375321283"),
+                networkFee = BigDecimal("2.375321283"),
+                sendFullQuantity = false
+        )
+        val userCryptoToTransfer = getUserCryptoToTransfer()
+        val toPlatformResponse = getToPlatformResponse()
+        val fromPlatformResponse = getFromPlatformResponse()
+
+        every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
+        every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+        every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
+        every {
+            userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
+                    "bitcoin",
+                    "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
+            )
+        } returns Optional.empty()
+        justRun { userCryptoServiceMock.deleteUserCrypto("f47ac10b-58cc-4372-a567-0e02b2c3d479") }
+
+        val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)
+
+        verify(exactly = 0) { userCryptoServiceMock.saveOrUpdateAll(any()) }
+        verify(exactly = 1) { userCryptoServiceMock.deleteUserCrypto("f47ac10b-58cc-4372-a567-0e02b2c3d479") }
+        assertThat(transferCryptoResponse)
+                .usingRecursiveComparison()
+                .isEqualTo(
+                        TransferCryptoResponse(
+                                FromPlatform(
+                                        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                                        "2.375321283",
+                                        "2.375321283",
+                                        "2.375321283",
+                                        "0",
+                                        "0",
+                                        false
+                                ),
+                                ToPlatform("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b", "0")
+                        )
+                )
     }
 
     /*
@@ -578,9 +680,9 @@ class TransferCryptoServiceTest {
     }
 
     @Test
-    fun `should throw InsufficientBalanceException if networkFee is higher than quantityToTransfer`() {
+    fun `should throw InsufficientBalanceException if networkFee is higher than availableQuantity`() {
         val transferCryptoRequest = getTransferCryptoRequest(
-            quantityToTransfer = BigDecimal("1"),
+            quantityToTransfer = BigDecimal("1.001"),
             networkFee = BigDecimal("5")
         )
         val userCryptoToTransfer = getUserCryptoToTransfer(
