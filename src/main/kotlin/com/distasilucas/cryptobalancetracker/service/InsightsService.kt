@@ -28,9 +28,9 @@ private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
 
 @Service
 class InsightsService(
-    private val platformService: PlatformService,
-    private val userCryptoService: UserCryptoService,
-    private val cryptoService: CryptoService
+        private val platformService: PlatformService,
+        private val userCryptoService: UserCryptoService,
+        private val cryptoService: CryptoService
 ) {
 
     private val logger = KotlinLogging.logger { }
@@ -70,25 +70,25 @@ class InsightsService(
         val cryptosInsights = cryptos.map { crypto ->
             val quantity = userCryptosQuantity[crypto.id]
             val cryptoTotalBalances = getCryptoTotalBalances(crypto, quantity!!)
+            val userCrypto = userCryptos.first { crypto.id == it.coingeckoCryptoId }
 
-            val cryptoInsight = CryptoInsights(
-                cryptoName = crypto.name,
-                cryptoId = crypto.id,
-                quantity = quantity.toPlainString(),
-                balances = cryptoTotalBalances,
-                percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance)
+            CryptoInsights(
+                    id = userCrypto.id,
+                    cryptoName = crypto.name,
+                    cryptoId = crypto.id,
+                    quantity = quantity.toPlainString(),
+                    balances = cryptoTotalBalances,
+                    percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance)
             )
-
-            cryptoInsight
         }.sortedByDescending { it.percentage }
 
-        return Optional.of(
-            PlatformInsightsResponse(
+        val platformInsightsResponse = PlatformInsightsResponse(
                 platformName = platformResponse.name,
                 balances = totalBalances,
                 cryptos = cryptosInsights
-            )
         )
+
+        return Optional.of(platformInsightsResponse)
     }
 
     fun retrieveCryptoInsights(coingeckoCryptoId: String): Optional<CryptoInsightResponse> {
@@ -113,21 +113,21 @@ class InsightsService(
             val cryptoTotalBalances = getCryptoTotalBalances(crypto, quantity!!)
 
             val platformInsight = PlatformInsight(
-                quantity = quantity.toPlainString(),
-                balances = cryptoTotalBalances,
-                percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),
-                platformName = platform.name
+                    quantity = quantity.toPlainString(),
+                    balances = cryptoTotalBalances,
+                    percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),
+                    platformName = platform.name
             )
 
             platformInsight
         }.sortedByDescending { it.percentage }
 
         return Optional.of(
-            CryptoInsightResponse(
-                cryptoName = crypto.name,
-                balances = totalBalances,
-                platforms = platformInsights
-            )
+                CryptoInsightResponse(
+                        cryptoName = crypto.name,
+                        balances = totalBalances,
+                        platforms = platformInsights
+                )
         )
     }
 
@@ -161,23 +161,23 @@ class InsightsService(
             }
 
             val platformInsight = PlatformsInsights(
-                platformName = platformName,
-                balances = BalancesResponse(
-                    totalUSDBalance = totalUSDBalance.toPlainString(),
-                    totalBTCBalance = totalBTCBalance.toPlainString(),
-                    totalEURBalance = totalEURBalance.toPlainString()
-                ),
-                percentage = calculatePercentage(totalBalances.totalUSDBalance, totalUSDBalance.toPlainString())
+                    platformName = platformName,
+                    balances = BalancesResponse(
+                            totalUSDBalance = totalUSDBalance.toPlainString(),
+                            totalBTCBalance = totalBTCBalance.toPlainString(),
+                            totalEURBalance = totalEURBalance.toPlainString()
+                    ),
+                    percentage = calculatePercentage(totalBalances.totalUSDBalance, totalUSDBalance.toPlainString())
             )
 
             platformInsight
         }.sortedByDescending { it.percentage }
 
         return Optional.of(
-            PlatformsBalancesInsightsResponse(
-                balances = totalBalances,
-                platforms = platformsInsights
-            )
+                PlatformsBalancesInsightsResponse(
+                        balances = totalBalances,
+                        platforms = platformsInsights
+                )
         )
     }
 
@@ -200,20 +200,20 @@ class InsightsService(
             val cryptoBalances = getCryptoTotalBalances(crypto, quantity)
 
             CryptoInsights(
-                cryptoName = crypto.name,
-                cryptoId = coingeckoCryptoId,
-                quantity = quantity.toPlainString(),
-                balances = cryptoBalances,
-                percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoBalances.totalUSDBalance)
+                    cryptoName = crypto.name,
+                    cryptoId = coingeckoCryptoId,
+                    quantity = quantity.toPlainString(),
+                    balances = cryptoBalances,
+                    percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoBalances.totalUSDBalance)
             )
         }.sortedByDescending { it.percentage }
 
         return Optional.of(
-            CryptosBalancesInsightsResponse(
-                balances = totalBalances,
-                cryptos = if (cryptosInsights.size > 12)
-                    getCryptoInsightsWithOthers(totalBalances, cryptosInsights) else cryptosInsights
-            )
+                CryptosBalancesInsightsResponse(
+                        balances = totalBalances,
+                        cryptos = if (cryptosInsights.size > 12)
+                            getCryptoInsightsWithOthers(totalBalances, cryptosInsights) else cryptosInsights
+                )
         )
     }
 
@@ -241,26 +241,26 @@ class InsightsService(
             val balances = getCryptoTotalBalances(crypto, it.quantity)
 
             UserCryptosInsights(
-                cryptoInfo = CryptoInfo(
-                    id = it.id,
-                    cryptoName = crypto.name,
-                    coingeckoCryptoId = crypto.id,
-                    symbol = crypto.ticker,
-                    image = crypto.image
-                ),
-                quantity = it.quantity.toPlainString(),
-                percentage = calculatePercentage(totalBalances.totalUSDBalance, balances.totalUSDBalance),
-                balances = balances,
-                marketData = MarketData(
-                    circulatingSupply = crypto.circulatingSupply.toPlainString(),
-                    maxSupply = crypto.maxSupply.toPlainString(),
-                    currentPrice = CurrentPrice(
-                        usd = crypto.lastKnownPrice.toPlainString(),
-                        eur = crypto.lastKnownPriceInEUR.toPlainString(),
-                        btc = crypto.lastKnownPriceInBTC.toPlainString()
-                    )
-                ),
-                platforms = listOf(platform.name)
+                    cryptoInfo = CryptoInfo(
+                            id = it.id,
+                            cryptoName = crypto.name,
+                            coingeckoCryptoId = crypto.id,
+                            symbol = crypto.ticker,
+                            image = crypto.image
+                    ),
+                    quantity = it.quantity.toPlainString(),
+                    percentage = calculatePercentage(totalBalances.totalUSDBalance, balances.totalUSDBalance),
+                    balances = balances,
+                    marketData = MarketData(
+                            circulatingSupply = crypto.circulatingSupply.toPlainString(),
+                            maxSupply = crypto.maxSupply.toPlainString(),
+                            currentPrice = CurrentPrice(
+                                    usd = crypto.lastKnownPrice.toPlainString(),
+                                    eur = crypto.lastKnownPriceInEUR.toPlainString(),
+                                    btc = crypto.lastKnownPriceInBTC.toPlainString()
+                            )
+                    ),
+                    platforms = listOf(platform.name)
             )
         }.sortedByDescending { it.percentage }
 
@@ -275,12 +275,12 @@ class InsightsService(
         val cryptosInsights = userCryptosInsights.subList(startIndex, endIndex)
 
         return Optional.of(
-            PageUserCryptosInsightsResponse(
-                page = page,
-                totalPages = totalPages,
-                balances = totalBalances,
-                cryptos = cryptosInsights
-            )
+                PageUserCryptosInsightsResponse(
+                        page = page,
+                        totalPages = totalPages,
+                        balances = totalBalances,
+                        cryptos = cryptosInsights
+                )
         )
     }
 
@@ -314,25 +314,25 @@ class InsightsService(
             val cryptoTotalBalances = getCryptoTotalBalances(crypto, cryptoTotalQuantity)
 
             UserCryptosInsights(
-                cryptoInfo = CryptoInfo(
-                    cryptoName = crypto.name,
-                    coingeckoCryptoId = crypto.id,
-                    symbol = crypto.ticker,
-                    image = crypto.image
-                ),
-                quantity = cryptoTotalQuantity.toPlainString(),
-                percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),
-                balances = cryptoTotalBalances,
-                marketData = MarketData(
-                    circulatingSupply = crypto.circulatingSupply.toPlainString(),
-                    maxSupply = crypto.maxSupply.toPlainString(),
-                    currentPrice = CurrentPrice(
-                        usd = crypto.lastKnownPrice.toPlainString(),
-                        eur = crypto.lastKnownPriceInEUR.toPlainString(),
-                        btc = crypto.lastKnownPriceInBTC.toPlainString()
-                    )
-                ),
-                platforms = cryptoPlatforms
+                    cryptoInfo = CryptoInfo(
+                            cryptoName = crypto.name,
+                            coingeckoCryptoId = crypto.id,
+                            symbol = crypto.ticker,
+                            image = crypto.image
+                    ),
+                    quantity = cryptoTotalQuantity.toPlainString(),
+                    percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),
+                    balances = cryptoTotalBalances,
+                    marketData = MarketData(
+                            circulatingSupply = crypto.circulatingSupply.toPlainString(),
+                            maxSupply = crypto.maxSupply.toPlainString(),
+                            currentPrice = CurrentPrice(
+                                    usd = crypto.lastKnownPrice.toPlainString(),
+                                    eur = crypto.lastKnownPriceInEUR.toPlainString(),
+                                    btc = crypto.lastKnownPriceInBTC.toPlainString()
+                            )
+                    ),
+                    platforms = cryptoPlatforms
             )
         }.sortedByDescending { it.percentage }
 
@@ -347,12 +347,12 @@ class InsightsService(
         val cryptosInsights = userCryptosInsights.subList(startIndex, endIndex)
 
         return Optional.of(
-            PageUserCryptosInsightsResponse(
-                page = page,
-                totalPages = totalPages,
-                balances = totalBalances,
-                cryptos = cryptosInsights
-            )
+                PageUserCryptosInsightsResponse(
+                        page = page,
+                        totalPages = totalPages,
+                        balances = totalBalances,
+                        cryptos = cryptosInsights
+                )
         )
     }
 
@@ -373,24 +373,24 @@ class InsightsService(
         }
 
         return BalancesResponse(
-            totalUSDBalance = totalUSDBalance.toPlainString(),
-            totalBTCBalance = totalBTCBalance.setScale(12, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
-            totalEURBalance = totalEURBalance.toPlainString()
+                totalUSDBalance = totalUSDBalance.toPlainString(),
+                totalBTCBalance = totalBTCBalance.setScale(12, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
+                totalEURBalance = totalEURBalance.toPlainString()
         )
     }
 
     private fun getCryptoTotalBalances(crypto: Crypto, quantity: BigDecimal): BalancesResponse {
         return BalancesResponse(
-            totalUSDBalance = crypto.lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString(),
-            totalBTCBalance = crypto.lastKnownPriceInBTC.multiply(quantity).setScale(12, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
-            totalEURBalance = crypto.lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString()
+                totalUSDBalance = crypto.lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString(),
+                totalBTCBalance = crypto.lastKnownPriceInBTC.multiply(quantity).setScale(12, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
+                totalEURBalance = crypto.lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString()
         )
     }
 
     private fun calculatePercentage(totalUSDBalance: String, cryptoBalance: String) = BigDecimal(cryptoBalance)
-        .multiply(BigDecimal("100"))
-        .divide(BigDecimal(totalUSDBalance), 2, RoundingMode.HALF_UP)
-        .toFloat()
+            .multiply(BigDecimal("100"))
+            .divide(BigDecimal(totalUSDBalance), 2, RoundingMode.HALF_UP)
+            .toFloat()
 
     private fun getUserCryptoQuantity(userCryptos: List<UserCrypto>): Map<String, BigDecimal> {
         val userCryptoQuantity = HashMap<String, BigDecimal>()
@@ -408,8 +408,8 @@ class InsightsService(
     }
 
     private fun getPlatformsUserCryptos(
-        userCryptos: List<UserCrypto>,
-        platforms: List<Platform>
+            userCryptos: List<UserCrypto>,
+            platforms: List<Platform>
     ): Map<String, List<UserCrypto>> {
         val platformsUserCryptos = HashMap<String, List<UserCrypto>>()
 
@@ -428,8 +428,8 @@ class InsightsService(
     }
 
     private fun getCryptoInsightsWithOthers(
-        totalBalances: BalancesResponse,
-        cryptosInsights: List<CryptoInsights>
+            totalBalances: BalancesResponse,
+            cryptosInsights: List<CryptoInsights>
     ): List<CryptoInsights> {
         var cryptosInsightsWithOthers: List<CryptoInsights> = ArrayList()
         val topCryptos = cryptosInsights.subList(0, 12)
@@ -446,13 +446,13 @@ class InsightsService(
         val othersTotalPercentage = calculatePercentage(totalBalances.totalUSDBalance, totalUSDBalance.toPlainString())
 
         val othersCryptoInsights = CryptoInsights(
-            cryptoName = "Others",
-            balances = BalancesResponse(
-                totalUSDBalance = totalUSDBalance.toPlainString(),
-                totalBTCBalance = totalBTCBalance.toPlainString(),
-                totalEURBalance = totalEURBalance.toPlainString()
-            ),
-            percentage = othersTotalPercentage
+                cryptoName = "Others",
+                balances = BalancesResponse(
+                        totalUSDBalance = totalUSDBalance.toPlainString(),
+                        totalBTCBalance = totalBTCBalance.toPlainString(),
+                        totalEURBalance = totalEURBalance.toPlainString()
+                ),
+                percentage = othersTotalPercentage
         )
 
         cryptosInsightsWithOthers = cryptosInsightsWithOthers.plus(topCryptos).plus(othersCryptoInsights)
@@ -461,8 +461,8 @@ class InsightsService(
     }
 
     private fun getUserCryptosQuantityPlatforms(
-        userCryptos: List<UserCrypto>,
-        platforms: List<Platform>
+            userCryptos: List<UserCrypto>,
+            platforms: List<Platform>
     ): Map<String, Pair<BigDecimal, List<String>>> {
         val map = HashMap<String, Pair<BigDecimal, List<String>>>()
 

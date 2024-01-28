@@ -365,6 +365,7 @@ class InsightsControllerMvcTest(
             .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalUSDBalance", Matchers.`is`("4500.00")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalBTCBalance", Matchers.`is`("0.15")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalEURBalance", Matchers.`is`("4050.00")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].id", Matchers.`is`("1f832f95-62e3-4d1b-a1e6-982d8c22f2bb")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].cryptoName", Matchers.`is`("Bitcoin")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].cryptoId", Matchers.`is`("bitcoin")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].quantity", Matchers.`is`("0.15")))
@@ -455,6 +456,7 @@ class InsightsControllerMvcTest(
         ),
         cryptos = listOf(
             CryptoInsights(
+                id = "1f832f95-62e3-4d1b-a1e6-982d8c22f2bb",
                 cryptoName = "Bitcoin",
                 cryptoId = "bitcoin",
                 quantity = "0.25",
@@ -517,6 +519,7 @@ class InsightsControllerMvcTest(
         ),
         cryptos = listOf(
             CryptoInsights(
+                id = "1f832f95-62e3-4d1b-a1e6-982d8c22f2bb",
                 cryptoName = "Bitcoin",
                 cryptoId = "bitcoin",
                 quantity = "0.15",
