@@ -79,7 +79,7 @@ data class TransferCryptoRequest(
         )
     }
 
-    fun calculateTotalToSubtract(remainingCryptoQuantity: BigDecimal): BigDecimal {
+    private fun calculateTotalToSubtract(remainingCryptoQuantity: BigDecimal): BigDecimal {
         return if (sendFullQuantity == true) {
             if (remainingCryptoQuantity > BigDecimal.ZERO) networkFee!!.add(quantityToTransfer) else quantityToTransfer!!
         } else {
