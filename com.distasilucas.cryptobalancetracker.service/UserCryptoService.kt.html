@@ -71,10 +71,10 @@ import java.util.Optional
 <span class="fc" id="L71">            platformId = userCryptoRequest.platformId</span>
         )
 
-<span class="fc" id="L74">        userCryptoRepository.save(userCrypto)</span>
-<span class="fc" id="L75">        cacheService.invalidateUserCryptosCaches()</span>
+<span class="fc" id="L74">        cryptoService.saveCryptoIfNotExists(coingeckoCrypto.id)</span>
+<span class="fc" id="L75">        userCryptoRepository.save(userCrypto)</span>
 <span class="fc" id="L76">        logger.info { &quot;Saved user crypto $userCrypto&quot; }</span>
-<span class="fc" id="L77">        cryptoService.saveCryptoIfNotExists(coingeckoCrypto.id)</span>
+<span class="fc" id="L77">        cacheService.invalidateUserCryptosCaches()</span>
 
 <span class="fc" id="L79">        return userCrypto.toUserCryptoResponse(</span>
 <span class="fc" id="L80">            cryptoName = coingeckoCrypto.name,</span>

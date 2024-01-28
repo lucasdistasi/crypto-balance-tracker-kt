@@ -79,7 +79,7 @@ import java.math.BigDecimal
         )
     }
 
-    fun calculateTotalToSubtract(remainingCryptoQuantity: BigDecimal): BigDecimal {
+    private fun calculateTotalToSubtract(remainingCryptoQuantity: BigDecimal): BigDecimal {
 <span class="fc bfc" id="L83" title="All 2 branches covered.">        return if (sendFullQuantity == true) {</span>
 <span class="fc bfc" id="L84" title="All 2 branches covered.">            if (remainingCryptoQuantity &gt; BigDecimal.ZERO) networkFee!!.add(quantityToTransfer) else quantityToTransfer!!</span>
         } else {
