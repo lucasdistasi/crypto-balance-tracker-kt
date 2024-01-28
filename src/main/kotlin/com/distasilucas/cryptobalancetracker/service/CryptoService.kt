@@ -37,20 +37,7 @@ class CryptoService(
             return cryptoOptional.get()
         }
 
-        val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo(coingeckoCryptoId)
-
-        val cryptoToSave = Crypto(
-            id = coingeckoCryptoId,
-            name = coingeckoCryptoInfo.name,
-            ticker = coingeckoCryptoInfo.symbol,
-            image = coingeckoCryptoInfo.image.large,
-            lastKnownPrice = coingeckoCryptoInfo.marketData.currentPrice.usd,
-            lastKnownPriceInEUR = coingeckoCryptoInfo.marketData.currentPrice.eur,
-            lastKnownPriceInBTC = coingeckoCryptoInfo.marketData.currentPrice.btc,
-            circulatingSupply = coingeckoCryptoInfo.marketData.circulatingSupply,
-            maxSupply = coingeckoCryptoInfo.marketData.maxSupply ?: BigDecimal.ZERO,
-            lastUpdatedAt = LocalDateTime.now(clock)
-        )
+        val cryptoToSave = getCrypto(coingeckoCryptoId)
 
         logger.info { "Saved crypto $cryptoToSave because it didn't exist" }
 
@@ -68,26 +55,10 @@ class CryptoService(
         val cryptoOptional = cryptoRepository.findById(coingeckoCryptoId)
 
         if (cryptoOptional.isEmpty) {
-            val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo(coingeckoCryptoId)
-
-            with(coingeckoCryptoInfo) {
-                val crypto = Crypto(
-                    id = coingeckoCryptoId,
-                    name = name,
-                    ticker = symbol,
-                    image = image.large,
-                    lastKnownPrice = marketData.currentPrice.usd,
-                    lastKnownPriceInEUR = marketData.currentPrice.eur,
-                    lastKnownPriceInBTC = marketData.currentPrice.btc,
-                    circulatingSupply = marketData.circulatingSupply,
-                    maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,
-                    lastUpdatedAt = LocalDateTime.now(clock)
-                )
-
-                cryptoRepository.save(crypto)
-                cacheService.invalidateCryptosCache()
-                logger.info { "Saved crypto $crypto" }
-            }
+            val crypto = getCrypto(coingeckoCryptoId)
+            cryptoRepository.save(crypto)
+            cacheService.invalidateCryptosCache()
+            logger.info { "Saved crypto $crypto" }
         }
     }
 
@@ -119,6 +90,25 @@ class CryptoService(
         logger.info { "Retrieving cryptos with ids $ids" }
 
         return cryptoRepository.findAllByIdIn(ids)
+    }
+
+    private fun getCrypto(coingeckoCryptoId: String): Crypto {
+        val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo(coingeckoCryptoId)
+
+        return with(coingeckoCryptoInfo) {
+            Crypto(
+                    id = coingeckoCryptoId,
+                    name = name,
+                    ticker = symbol,
+                    image = image.large,
+                    lastKnownPrice = marketData.currentPrice.usd,
+                    lastKnownPriceInEUR = marketData.currentPrice.eur,
+                    lastKnownPriceInBTC = marketData.currentPrice.btc,
+                    circulatingSupply = marketData.circulatingSupply,
+                    maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,
+                    lastUpdatedAt = LocalDateTime.now(clock)
+            )
+        }
     }
 }
 

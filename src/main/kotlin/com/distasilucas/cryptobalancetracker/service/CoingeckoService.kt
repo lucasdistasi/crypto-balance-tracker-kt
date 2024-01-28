@@ -26,12 +26,16 @@ const val COINS_URI = "$COIN_URI/list"
 
 @Service
 class CoingeckoService(
-        @Value("\${coingecko.api-key}")
-        private val coingeckoApiKey: String,
+        @Value("\${coingecko.api-key.pro}")
+        private val proCoingeckoApiKey: String,
+        @Value("\${coingecko.api-key.demo}")
+        private val demoCoingeckoApiKey: String,
         private val coingeckoRestClient: RestClient
 ) {
 
     private val logger = KotlinLogging.logger { }
+    private val DEMO_API_KEY_QUERY_PARAM = "x_cg_demo_api_key"
+    private val PRO_API_KEY_QUERY_PARAM = "x_cg_pro_api_key"
 
     @Cacheable(cacheNames = [COINGECKO_CRYPTOS_CACHE])
     @Retryable(retryFor = [RestClientException::class], backoff = Backoff(delay = 1500))
@@ -60,34 +64,38 @@ class CoingeckoService(
     private fun getCryptosURI(): Function<UriBuilder, URI> {
         val proCoingeckoURI = Function { uriBuilder: UriBuilder ->
             uriBuilder.path(COINS_URI)
-                    .queryParam("x_cg_pro_api_key", coingeckoApiKey)
+                    .queryParam(PRO_API_KEY_QUERY_PARAM, proCoingeckoApiKey)
                     .build()
         }
 
-        val freeCoingeckoURI = Function { uriBuilder: UriBuilder -> uriBuilder.path(COINS_URI).build() }
+        val freeCoingeckoURI = Function { uriBuilder: UriBuilder -> uriBuilder.path(COINS_URI)
+                    .queryParam(DEMO_API_KEY_QUERY_PARAM, demoCoingeckoApiKey)
+                    .build()
+        }
 
-        return if (StringUtils.isNotBlank(coingeckoApiKey)) proCoingeckoURI else freeCoingeckoURI
+        return if (StringUtils.isNotBlank(proCoingeckoApiKey)) proCoingeckoURI else freeCoingeckoURI
     }
 
     private fun getCoingeckoCryptoInfoURI(url: String): Function<UriBuilder, URI> {
-        val commonParams: MultiValueMap<String, String> = HttpHeaders()
-        commonParams.add("tickers", "false")
-        commonParams.add("community_data", "false")
-        commonParams.add("developer_data", "false")
+        val params: MultiValueMap<String, String> = HttpHeaders()
+        params.add("tickers", "false")
+        params.add("community_data", "false")
+        params.add("developer_data", "false")
+        params.add(DEMO_API_KEY_QUERY_PARAM, demoCoingeckoApiKey)
 
         val proCoingeckoUri = Function { uriBuilder: UriBuilder ->
             uriBuilder.path(url)
-                    .queryParam("x_cg_pro_api_key", coingeckoApiKey)
-                    .queryParams(commonParams)
+                    .queryParam(PRO_API_KEY_QUERY_PARAM, proCoingeckoApiKey)
+                    .queryParams(params)
                     .build()
         }
 
         val freeCoingeckoUri = Function { uriBuilder: UriBuilder ->
             uriBuilder.path(url)
-                    .queryParams(commonParams)
+                    .queryParams(params)
                     .build()
         }
 
-        return if (StringUtils.isNotBlank(coingeckoApiKey)) proCoingeckoUri else freeCoingeckoUri
+        return if (StringUtils.isNotBlank(proCoingeckoApiKey)) proCoingeckoUri else freeCoingeckoUri
     }
 }

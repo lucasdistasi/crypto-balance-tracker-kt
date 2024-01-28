@@ -71,10 +71,10 @@ class UserCryptoService(
             platformId = userCryptoRequest.platformId
         )
 
-        userCryptoRepository.save(userCrypto)
-        cacheService.invalidateUserCryptosCaches()
-        logger.info { "Saved user crypto $userCrypto" }
         cryptoService.saveCryptoIfNotExists(coingeckoCrypto.id)
+        userCryptoRepository.save(userCrypto)
+        logger.info { "Saved user crypto $userCrypto" }
+        cacheService.invalidateUserCryptosCaches()
 
         return userCrypto.toUserCryptoResponse(
             cryptoName = coingeckoCrypto.name,

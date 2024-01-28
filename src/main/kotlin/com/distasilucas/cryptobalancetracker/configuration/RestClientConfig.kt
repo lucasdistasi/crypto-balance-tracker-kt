@@ -10,19 +10,19 @@ import java.time.Duration
 
 @Configuration
 class RestClientConfig(
-        @Value("\${coingecko.api-key}")
-        private val coingeckoApiKey: String,
+        @Value("\${coingecko.api-key.pro}")
+        private val proCoingeckoApiKey: String,
 
-        @Value("\${coingecko.pro.url}")
+        @Value("\${coingecko.url.pro}")
         private val coingeckoProUrl: String,
 
-        @Value("\${coingecko.url}")
+        @Value("\${coingecko.url.free}")
         private val coingeckoUrl: String
 ) {
 
     @Bean
     fun coingeckoRestClient(): RestClient {
-        val baseUrl = if (StringUtils.isNotBlank(coingeckoApiKey)) coingeckoProUrl else coingeckoUrl
+        val baseUrl = if (StringUtils.isNotBlank(proCoingeckoApiKey)) coingeckoProUrl else coingeckoUrl
 
         return RestClient.builder()
                 .baseUrl(baseUrl)
