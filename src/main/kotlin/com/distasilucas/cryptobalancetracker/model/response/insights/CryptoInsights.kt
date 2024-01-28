@@ -5,17 +5,28 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include
 
 @JsonInclude(Include.NON_NULL)
 data class CryptoInsights(
-    val cryptoName: String,
-    val cryptoId: String?,
-    val quantity: String?,
-    val balances: BalancesResponse,
-    val percentage: Float
+        val id: String?,
+        val cryptoName: String,
+        val cryptoId: String?,
+        val quantity: String?,
+        val balances: BalancesResponse,
+        val percentage: Float
 ) {
     constructor(cryptoName: String, balances: BalancesResponse, percentage: Float) : this(
-        cryptoName,
-        null,
-        null,
-        balances,
-        percentage
+            null,
+            cryptoName,
+            null,
+            null,
+            balances,
+            percentage
+    )
+
+    constructor(cryptoName: String, cryptoId: String, quantity: String, balances: BalancesResponse, percentage: Float) : this(
+            null,
+            cryptoName,
+            cryptoId,
+            quantity,
+            balances,
+            percentage
     )
 }

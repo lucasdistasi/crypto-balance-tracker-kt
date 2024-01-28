@@ -104,6 +104,7 @@ class InsightsServiceTest {
                         ),
                         cryptos = listOf(
                             CryptoInsights(
+                                id = "123e4567-e89b-12d3-a456-426614174000",
                                 cryptoName = "Bitcoin",
                                 cryptoId = "bitcoin",
                                 quantity = "0.25",
@@ -169,6 +170,7 @@ class InsightsServiceTest {
                         ),
                         cryptos = listOf(
                             CryptoInsights(
+                                id = "123e4567-e89b-12d3-a456-426614174000",
                                 cryptoName = "Bitcoin",
                                 cryptoId = "bitcoin",
                                 quantity = "0.25",
@@ -180,6 +182,7 @@ class InsightsServiceTest {
                                 percentage = 94.64f
                             ),
                             CryptoInsights(
+                                id = polkadotUserCrypto.id,
                                 cryptoName = "Polkadot",
                                 cryptoId = "polkadot",
                                 quantity = "100",
