@@ -98,7 +98,7 @@ class CryptoService(
         return with(coingeckoCryptoInfo) {
             Crypto(
                     id = coingeckoCryptoId,
-                    name = name,
+                    name,
                     ticker = symbol,
                     image = image.large,
                     lastKnownPrice = marketData.currentPrice.usd,
@@ -106,6 +106,11 @@ class CryptoService(
                     lastKnownPriceInBTC = marketData.currentPrice.btc,
                     circulatingSupply = marketData.circulatingSupply,
                     maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,
+                    marketCapRank,
+                    marketCap = marketData.marketCap.usd,
+                    changePercentageIn24h = marketData.roundChangePercentageIn24h(),
+                    changePercentageIn7d = marketData.roundChangePercentageIn7d(),
+                    changePercentageIn30d = marketData.roundChangePercentageIn30d(),
                     lastUpdatedAt = LocalDateTime.now(clock)
             )
         }

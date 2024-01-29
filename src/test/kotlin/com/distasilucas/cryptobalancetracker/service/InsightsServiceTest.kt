@@ -3,12 +3,7 @@ package com.distasilucas.cryptobalancetracker.service
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
-import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
-import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
-import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
-import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
+import com.distasilucas.cryptobalancetracker.model.response.insights.*
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -142,6 +137,11 @@ class InsightsServiceTest {
             lastKnownPriceInBTC = BigDecimal("0.00016554"),
             lastKnownPriceInEUR = BigDecimal("3.97"),
             maxSupply = BigDecimal.ZERO,
+            marketCapRank = 13,
+            marketCap = BigDecimal("8946471948"),
+            changePercentageIn24h = BigDecimal("-2.75"),
+            changePercentageIn7d = BigDecimal("10.25"),
+            changePercentageIn30d = BigDecimal("-5.15"),
             lastUpdatedAt = localDateTime
         )
 
@@ -761,6 +761,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.15",
                                     totalEURBalance = "4050.00"
                                 ),
+                                marketCapRank = 1,
                                 marketData = MarketData(
                                     circulatingSupply = "19000000",
                                     maxSupply = "21000000",
@@ -768,6 +769,12 @@ class InsightsServiceTest {
                                         usd = "30000",
                                         eur = "27000",
                                         btc = "1"
+                                    ),
+                                    marketCap = "813208997089",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("10.00"),
+                                            changePercentageIn7d = BigDecimal("-5.00"),
+                                            changePercentageIn30d = BigDecimal("0.00")
                                     )
                                 ),
                                 platforms = listOf("BINANCE")
@@ -787,6 +794,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.007352875",
                                     totalEURBalance = "176.75"
                                 ),
+                                marketCapRank = 19,
                                 marketData = MarketData(
                                     circulatingSupply = "73638701",
                                     maxSupply = "84000000",
@@ -794,6 +802,12 @@ class InsightsServiceTest {
                                         usd = "60.59",
                                         eur = "56.56",
                                         btc = "0.00235292"
+                                    ),
+                                    marketCap = "5259205267",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("6.00"),
+                                            changePercentageIn7d = BigDecimal("-2.00"),
+                                            changePercentageIn30d = BigDecimal("12.00")
                                     )
                                 ),
                                 platforms = listOf("COINBASE")
@@ -870,6 +884,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.15",
                                     totalEURBalance = "4050.00"
                                 ),
+                                marketCapRank = 1,
                                 marketData = MarketData(
                                     circulatingSupply = "19000000",
                                     maxSupply = "21000000",
@@ -877,6 +892,12 @@ class InsightsServiceTest {
                                         usd = "30000",
                                         eur = "27000",
                                         btc = "1"
+                                    ),
+                                    marketCap = "813208997089",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("10.00"),
+                                            changePercentageIn7d = BigDecimal("-5.00"),
+                                            changePercentageIn30d = BigDecimal("0.00")
                                     )
                                 ),
                                 platforms = listOf("BINANCE")
@@ -895,6 +916,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.08616648432",
                                     totalEURBalance = "2070.86"
                                 ),
+                                marketCapRank = 2,
                                 marketData = MarketData(
                                     circulatingSupply = "120220572",
                                     maxSupply = "0",
@@ -902,6 +924,12 @@ class InsightsServiceTest {
                                         usd = "1617.44",
                                         eur = "1509.37",
                                         btc = "0.06280356"
+                                    ),
+                                    marketCap = "298219864117",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("10.00"),
+                                            changePercentageIn7d = BigDecimal("-5.00"),
+                                            changePercentageIn30d = BigDecimal("2.00")
                                     )
                                 ),
                                 platforms = listOf("BINANCE", "COINBASE")
@@ -920,6 +948,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.00776",
                                     totalEURBalance = "186.62"
                                 ),
+                                marketCapRank = 3,
                                 marketData = MarketData(
                                     circulatingSupply = "83016246102",
                                     maxSupply = "0",
@@ -927,6 +956,12 @@ class InsightsServiceTest {
                                         usd = "0.999618",
                                         eur = "0.933095",
                                         btc = "0.0000388"
+                                    ),
+                                    marketCap = "95085861049",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("0.00"),
+                                            changePercentageIn7d = BigDecimal("0.00"),
+                                            changePercentageIn30d = BigDecimal("0.00")
                                     )
                                 ),
                                 platforms = listOf("BINANCE")
@@ -1010,6 +1045,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.15",
                                     totalEURBalance = "4050.00"
                                 ),
+                                marketCapRank = 1,
                                 marketData = MarketData(
                                     circulatingSupply = "19000000",
                                     maxSupply = "21000000",
@@ -1017,6 +1053,12 @@ class InsightsServiceTest {
                                         usd = "30000",
                                         eur = "27000",
                                         btc = "1"
+                                    ),
+                                    marketCap = "813208997089",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("10.00"),
+                                            changePercentageIn7d = BigDecimal("-5.00"),
+                                            changePercentageIn30d = BigDecimal("0.00")
                                     )
                                 ),
                                 platforms = listOf("BINANCE")
@@ -1035,6 +1077,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.08616648432",
                                     totalEURBalance = "2070.86"
                                 ),
+                                marketCapRank = 2,
                                 marketData = MarketData(
                                     circulatingSupply = "120220572",
                                     maxSupply = "0",
@@ -1042,6 +1085,12 @@ class InsightsServiceTest {
                                         usd = "1617.44",
                                         eur = "1509.37",
                                         btc = "0.06280356"
+                                    ),
+                                    marketCap = "298219864117",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("10.00"),
+                                            changePercentageIn7d = BigDecimal("-5.00"),
+                                            changePercentageIn30d = BigDecimal("2.00")
                                     )
                                 ),
                                 platforms = listOf("BINANCE", "COINBASE")
@@ -1060,6 +1109,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.008879",
                                     totalEURBalance = "216.75"
                                 ),
+                                marketCapRank = 10,
                                 marketData = MarketData(
                                     circulatingSupply = "353804673",
                                     maxSupply = "720000000",
@@ -1067,6 +1117,12 @@ class InsightsServiceTest {
                                         usd = "9.3",
                                         eur = "8.67",
                                         btc = "0.00035516"
+                                    ),
+                                    marketCap = "11953262327",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("4.00"),
+                                            changePercentageIn7d = BigDecimal("1.00"),
+                                            changePercentageIn30d = BigDecimal("8.00")
                                     )
                                 ),
                                 platforms = listOf("BINANCE")
@@ -1085,6 +1141,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.00811016",
                                     totalEURBalance = "197.80"
                                 ),
+                                marketCapRank = 4,
                                 marketData = MarketData(
                                     circulatingSupply = "153856150",
                                     maxSupply = "200000000",
@@ -1092,6 +1149,12 @@ class InsightsServiceTest {
                                         usd = "211.79",
                                         eur = "197.8",
                                         btc = "0.00811016"
+                                    ),
+                                    marketCap = "48318686968",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("6.00"),
+                                            changePercentageIn7d = BigDecimal("-2.00"),
+                                            changePercentageIn30d = BigDecimal("12.00")
                                     )
                                 ),
                                 platforms = listOf("BINANCE")
@@ -1110,6 +1173,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.0080031",
                                     totalEURBalance = "195.30"
                                 ),
+                                marketCapRank = 16,
                                 marketData = MarketData(
                                     circulatingSupply = "538099971",
                                     maxSupply = "1000000000",
@@ -1117,6 +1181,12 @@ class InsightsServiceTest {
                                         usd = "5.99",
                                         eur = "5.58",
                                         btc = "0.00022866"
+                                    ),
+                                    marketCap = "9021587267",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("4.00"),
+                                            changePercentageIn7d = BigDecimal("-1.00"),
+                                            changePercentageIn30d = BigDecimal("8.00")
                                     )
                                 ),
                                 platforms = listOf("BINANCE")
@@ -1135,6 +1205,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.00776",
                                     totalEURBalance = "186.62"
                                 ),
+                                marketCapRank = 3,
                                 marketData = MarketData(
                                     circulatingSupply = "83016246102",
                                     maxSupply = "0",
@@ -1142,6 +1213,12 @@ class InsightsServiceTest {
                                         usd = "0.999618",
                                         eur = "0.933095",
                                         btc = "0.0000388"
+                                    ),
+                                    marketCap = "95085861049",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("0.00"),
+                                            changePercentageIn7d = BigDecimal("0.00"),
+                                            changePercentageIn30d = BigDecimal("0.00")
                                     )
                                 ),
                                 platforms = listOf("BINANCE")
@@ -1160,6 +1237,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.007352875",
                                     totalEURBalance = "176.75"
                                 ),
+                                marketCapRank = 19,
                                 marketData = MarketData(
                                     circulatingSupply = "73638701",
                                     maxSupply = "84000000",
@@ -1167,6 +1245,12 @@ class InsightsServiceTest {
                                         usd = "60.59",
                                         eur = "56.56",
                                         btc = "0.00235292"
+                                    ),
+                                    marketCap = "5259205267",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("6.00"),
+                                            changePercentageIn7d = BigDecimal("-2.00"),
+                                            changePercentageIn30d = BigDecimal("12.00")
                                     )
                                 ),
                                 platforms = listOf("COINBASE")
@@ -1185,6 +1269,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.0068809",
                                     totalEURBalance = "168.20"
                                 ),
+                                marketCapRank = 5,
                                 marketData = MarketData(
                                     circulatingSupply = "410905807",
                                     maxSupply = "0",
@@ -1192,6 +1277,12 @@ class InsightsServiceTest {
                                         usd = "18.04",
                                         eur = "16.82",
                                         btc = "0.00068809"
+                                    ),
+                                    marketCap = "40090766907",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("4.00"),
+                                            changePercentageIn7d = BigDecimal("1.00"),
+                                            changePercentageIn30d = BigDecimal("-2.00")
                                     )
                                 ),
                                 platforms = listOf("BINANCE")
@@ -1210,6 +1301,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.0061208",
                                     totalEURBalance = "149.20"
                                 ),
+                                marketCapRank = 13,
                                 marketData = MarketData(
                                     circulatingSupply = "1274258350",
                                     maxSupply = "0",
@@ -1217,6 +1309,12 @@ class InsightsServiceTest {
                                         usd = "4.01",
                                         eur = "3.73",
                                         btc = "0.00015302"
+                                    ),
+                                    marketCap = "8993575127",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("4.00"),
+                                            changePercentageIn7d = BigDecimal("-1.00"),
+                                            changePercentageIn30d = BigDecimal("2.00")
                                     )
                                 ),
                                 platforms = listOf("COINBASE")
@@ -1235,6 +1333,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.0048591",
                                     totalEURBalance = "118.80"
                                 ),
+                                marketCapRank = 22,
                                 marketData = MarketData(
                                     circulatingSupply = "753766667",
                                     maxSupply = "1000000000",
@@ -1242,6 +1341,12 @@ class InsightsServiceTest {
                                         usd = "4.25",
                                         eur = "3.96",
                                         btc = "0.00016197"
+                                    ),
+                                    marketCap = "4772322900",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("2.00"),
+                                            changePercentageIn7d = BigDecimal("-1.00"),
+                                            changePercentageIn30d = BigDecimal("3.00")
                                     )
                                 ),
                                 platforms = listOf("COINBASE")
@@ -1323,6 +1428,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.001947",
                                     totalEURBalance = "47.54"
                                 ),
+                                marketCapRank = 16,
                                 marketData = MarketData(
                                     circulatingSupply = "9319469069",
                                     maxSupply = "10000000000",
@@ -1330,6 +1436,12 @@ class InsightsServiceTest {
                                         usd = "0.509995",
                                         eur = "0.475407",
                                         btc = "0.00001947"
+                                    ),
+                                    marketCap = "7001911961",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("14.00"),
+                                            changePercentageIn7d = BigDecimal("-10.00"),
+                                            changePercentageIn30d = BigDecimal("2.00")
                                     )
                                 ),
                                 platforms = listOf("COINBASE")
@@ -1348,6 +1460,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.001425",
                                     totalEURBalance = "34.80"
                                 ),
+                                marketCapRank = 9,
                                 marketData = MarketData(
                                     circulatingSupply = "35045020830",
                                     maxSupply = "45000000000",
@@ -1355,6 +1468,12 @@ class InsightsServiceTest {
                                         usd = "0.248915",
                                         eur = "0.231985",
                                         btc = "0.0000095"
+                                    ),
+                                    marketCap = "29348197308",
+                                    priceChange = PriceChange(
+                                            changePercentageIn24h = BigDecimal("7.00"),
+                                            changePercentageIn7d = BigDecimal("1.00"),
+                                            changePercentageIn30d = BigDecimal("-2.00")
                                     )
                                 ),
                                 platforms = listOf("BINANCE")
@@ -1373,6 +1492,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.001175",
                                     totalEURBalance = "28.66"
                                 ),
+                                marketCapRank = 11,
                                 marketData = MarketData(
                                     circulatingSupply = "140978466383",
                                     maxSupply = "0",
@@ -1380,6 +1500,12 @@ class InsightsServiceTest {
                                         usd = "0.061481",
                                         eur = "0.057319",
                                         btc = "0.00000235"
+                                    ),
+                                    marketCap = "11195832359",
+                                    priceChange = PriceChange(
+                                        changePercentageIn24h = BigDecimal("-4.00"),
+                                        changePercentageIn7d = BigDecimal("-1.00"),
+                                        changePercentageIn30d = BigDecimal("-8.00")
                                     )
                                 ),
                                 platforms = listOf("COINBASE")
@@ -1398,6 +1524,7 @@ class InsightsServiceTest {
                                     totalBTCBalance = "0.0009165",
                                     totalEURBalance = "22.33"
                                 ),
+                                marketCapRank = 6,
                                 marketData = MarketData(
                                     circulatingSupply = "53083046512",
                                     maxSupply = "100000000000",
@@ -1405,6 +1532,12 @@ class InsightsServiceTest {
                                         usd = "0.478363",
                                         eur = "0.446699",
                                         btc = "0.00001833"
+                                    ),
+                                    marketCap = "29348197308",
+                                    priceChange = PriceChange(
+                                        changePercentageIn24h = BigDecimal("2.00"),
+                                        changePercentageIn7d = BigDecimal("3.00"),
+                                        changePercentageIn30d = BigDecimal("-5.00")
                                     )
                                 ),
                                 platforms = listOf("COINBASE")
@@ -1567,6 +1700,11 @@ class InsightsServiceTest {
                 lastKnownPrice = BigDecimal("0.999618"),
                 lastKnownPriceInBTC = BigDecimal("0.0000388"),
                 lastKnownPriceInEUR = BigDecimal("0.933095"),
+                marketCapRank = 3,
+                marketCap = BigDecimal("95085861049"),
+                changePercentageIn24h = BigDecimal("0.00"),
+                changePercentageIn7d = BigDecimal("0.00"),
+                changePercentageIn30d = BigDecimal("0.00"),
                 maxSupply = BigDecimal.ZERO,
                 lastUpdatedAt = localDateTime
             ),
@@ -1580,6 +1718,11 @@ class InsightsServiceTest {
                 lastKnownPriceInBTC = BigDecimal("0.06280356"),
                 lastKnownPriceInEUR = BigDecimal("1509.37"),
                 maxSupply = BigDecimal.ZERO,
+                marketCapRank = 2,
+                marketCap = BigDecimal("298219864117"),
+                changePercentageIn24h = BigDecimal("10.00"),
+                changePercentageIn7d = BigDecimal("-5.00"),
+                changePercentageIn30d = BigDecimal("2.00"),
                 lastUpdatedAt = localDateTime
             ),
             Crypto(
@@ -1592,6 +1735,11 @@ class InsightsServiceTest {
                 lastKnownPriceInBTC = BigDecimal("0.00235292"),
                 lastKnownPriceInEUR = BigDecimal("56.56"),
                 maxSupply = BigDecimal("84000000"),
+                marketCapRank = 19,
+                marketCap = BigDecimal("5259205267"),
+                changePercentageIn24h = BigDecimal("6.00"),
+                changePercentageIn7d = BigDecimal("-2.00"),
+                changePercentageIn30d = BigDecimal("12.00"),
                 lastUpdatedAt = localDateTime
             ),
             Crypto(
@@ -1604,6 +1752,11 @@ class InsightsServiceTest {
                 lastKnownPriceInBTC = BigDecimal("0.00811016"),
                 lastKnownPriceInEUR = BigDecimal("197.8"),
                 maxSupply = BigDecimal("200000000"),
+                marketCapRank = 4,
+                marketCap = BigDecimal("48318686968"),
+                changePercentageIn24h = BigDecimal("6.00"),
+                changePercentageIn7d = BigDecimal("-2.00"),
+                changePercentageIn30d = BigDecimal("12.00"),
                 lastUpdatedAt = localDateTime
             ),
             Crypto(
@@ -1616,6 +1769,11 @@ class InsightsServiceTest {
                 lastKnownPriceInBTC = BigDecimal("0.00001833"),
                 lastKnownPriceInEUR = BigDecimal("0.446699"),
                 maxSupply = BigDecimal("100000000000"),
+                marketCapRank = 6,
+                marketCap = BigDecimal("29348197308"),
+                changePercentageIn24h = BigDecimal("2.00"),
+                changePercentageIn7d = BigDecimal("3.00"),
+                changePercentageIn30d = BigDecimal("-5.00"),
                 lastUpdatedAt = localDateTime
             ),
             Crypto(
@@ -1628,6 +1786,11 @@ class InsightsServiceTest {
                 lastKnownPriceInBTC = BigDecimal("0.0000095"),
                 lastKnownPriceInEUR = BigDecimal("0.231985"),
                 maxSupply = BigDecimal("45000000000"),
+                marketCapRank = 9,
+                marketCap = BigDecimal("29348197308"),
+                changePercentageIn24h = BigDecimal("7.00"),
+                changePercentageIn7d = BigDecimal("1.00"),
+                changePercentageIn30d = BigDecimal("-2.00"),
                 lastUpdatedAt = localDateTime
             ),
             Crypto(
@@ -1640,6 +1803,11 @@ class InsightsServiceTest {
                 lastKnownPriceInBTC = BigDecimal("0.00015302"),
                 lastKnownPriceInEUR = BigDecimal("3.73"),
                 maxSupply = BigDecimal.ZERO,
+                marketCapRank = 13,
+                marketCap = BigDecimal("8993575127"),
+                changePercentageIn24h = BigDecimal("4.00"),
+                changePercentageIn7d = BigDecimal("-1.00"),
+                changePercentageIn30d = BigDecimal("2.00"),
                 lastUpdatedAt = localDateTime
             ),
             Crypto(
@@ -1652,6 +1820,11 @@ class InsightsServiceTest {
                 lastKnownPriceInBTC = BigDecimal("0.00068809"),
                 lastKnownPriceInEUR = BigDecimal("16.82"),
                 maxSupply = BigDecimal.ZERO,
+                marketCapRank = 5,
+                marketCap = BigDecimal("40090766907"),
+                changePercentageIn24h = BigDecimal("4.00"),
+                changePercentageIn7d = BigDecimal("1.00"),
+                changePercentageIn30d = BigDecimal("-2.00"),
                 lastUpdatedAt = localDateTime
             ),
             Crypto(
@@ -1664,6 +1837,11 @@ class InsightsServiceTest {
                 lastKnownPriceInBTC = BigDecimal("0.00001947"),
                 lastKnownPriceInEUR = BigDecimal("0.475407"),
                 maxSupply = BigDecimal("10000000000"),
+                marketCapRank = 16,
+                marketCap = BigDecimal("7001911961"),
+                changePercentageIn24h = BigDecimal("14.00"),
+                changePercentageIn7d = BigDecimal("-10.00"),
+                changePercentageIn30d = BigDecimal("2.00"),
                 lastUpdatedAt = localDateTime
             ),
             Crypto(
@@ -1676,6 +1854,11 @@ class InsightsServiceTest {
                 lastKnownPriceInBTC = BigDecimal("0.00022866"),
                 lastKnownPriceInEUR = BigDecimal("5.58"),
                 maxSupply = BigDecimal("1000000000"),
+                marketCapRank = 16,
+                marketCap = BigDecimal("9021587267"),
+                changePercentageIn24h = BigDecimal("4.00"),
+                changePercentageIn7d = BigDecimal("-1.00"),
+                changePercentageIn30d = BigDecimal("8.00"),
                 lastUpdatedAt = localDateTime
             ),
             Crypto(
@@ -1688,6 +1871,11 @@ class InsightsServiceTest {
                 lastKnownPriceInBTC = BigDecimal("0.00000235"),
                 lastKnownPriceInEUR = BigDecimal("0.057319"),
                 maxSupply = BigDecimal.ZERO,
+                marketCapRank = 11,
+                marketCap = BigDecimal("11195832359"),
+                changePercentageIn24h = BigDecimal("-4.00"),
+                changePercentageIn7d = BigDecimal("-1.00"),
+                changePercentageIn30d = BigDecimal("-8.00"),
                 lastUpdatedAt = localDateTime
             ),
             Crypto(
@@ -1700,6 +1888,11 @@ class InsightsServiceTest {
                 lastKnownPriceInBTC = BigDecimal("0.00035516"),
                 lastKnownPriceInEUR = BigDecimal("8.67"),
                 maxSupply = BigDecimal("720000000"),
+                marketCapRank = 10,
+                marketCap = BigDecimal("11953262327"),
+                changePercentageIn24h = BigDecimal("4.00"),
+                changePercentageIn7d = BigDecimal("1.00"),
+                changePercentageIn30d = BigDecimal("8.00"),
                 lastUpdatedAt = localDateTime
             ),
             Crypto(
@@ -1712,6 +1905,11 @@ class InsightsServiceTest {
                 lastKnownPriceInBTC = BigDecimal("0.00016197"),
                 lastKnownPriceInEUR = BigDecimal("3.96"),
                 maxSupply = BigDecimal("1000000000"),
+                marketCapRank = 22,
+                marketCap = BigDecimal("4772322900"),
+                changePercentageIn24h = BigDecimal("2.00"),
+                changePercentageIn7d = BigDecimal("-1.00"),
+                changePercentageIn30d = BigDecimal("3.00"),
                 lastUpdatedAt = localDateTime
             )
         )

@@ -3,12 +3,7 @@ package com.distasilucas.cryptobalancetracker.service
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
-import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
-import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
-import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
-import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
+import com.distasilucas.cryptobalancetracker.model.response.insights.*
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -55,22 +50,22 @@ class InsightsService(
     fun retrievePlatformInsights(platformId: String): Optional<PlatformInsightsResponse> {
         logger.info { "Retrieving insights for platform with id $platformId" }
 
-        val userCryptos = userCryptoService.findAllByPlatformId(platformId)
+        val userCryptosInPlatform = userCryptoService.findAllByPlatformId(platformId)
 
-        if (userCryptos.isEmpty()) {
+        if (userCryptosInPlatform.isEmpty()) {
             return Optional.empty()
         }
 
         val platformResponse = platformService.retrievePlatformById(platformId)
-        val cryptosIds = userCryptos.map { it.coingeckoCryptoId }
+        val cryptosIds = userCryptosInPlatform.map { it.coingeckoCryptoId }
         val cryptos = cryptoService.findAllByIds(cryptosIds)
-        val userCryptosQuantity = getUserCryptoQuantity(userCryptos)
+        val userCryptosQuantity = getUserCryptoQuantity(userCryptosInPlatform)
         val totalBalances = getTotalBalances(cryptos, userCryptosQuantity)
 
-        val cryptosInsights = cryptos.map { crypto ->
-            val quantity = userCryptosQuantity[crypto.id]
+        val cryptosInsights = userCryptosInPlatform.map { userCrypto ->
+            val crypto = cryptos.first { userCrypto.coingeckoCryptoId == it.id }
+            val quantity = userCryptosQuantity[userCrypto.coingeckoCryptoId]
             val cryptoTotalBalances = getCryptoTotalBalances(crypto, quantity!!)
-            val userCrypto = userCryptos.first { crypto.id == it.coingeckoCryptoId }
 
             CryptoInsights(
                     id = userCrypto.id,
@@ -251,6 +246,7 @@ class InsightsService(
                     quantity = it.quantity.toPlainString(),
                     percentage = calculatePercentage(totalBalances.totalUSDBalance, balances.totalUSDBalance),
                     balances = balances,
+                    marketCapRank = crypto.marketCapRank,
                     marketData = MarketData(
                             circulatingSupply = crypto.circulatingSupply.toPlainString(),
                             maxSupply = crypto.maxSupply.toPlainString(),
@@ -258,6 +254,12 @@ class InsightsService(
                                     usd = crypto.lastKnownPrice.toPlainString(),
                                     eur = crypto.lastKnownPriceInEUR.toPlainString(),
                                     btc = crypto.lastKnownPriceInBTC.toPlainString()
+                            ),
+                            marketCap = crypto.marketCap.toPlainString(),
+                            priceChange = PriceChange(
+                                    crypto.changePercentageIn24h,
+                                    crypto.changePercentageIn7d,
+                                    crypto.changePercentageIn30d
                             )
                     ),
                     platforms = listOf(platform.name)
@@ -323,6 +325,7 @@ class InsightsService(
                     quantity = cryptoTotalQuantity.toPlainString(),
                     percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),
                     balances = cryptoTotalBalances,
+                    marketCapRank = crypto.marketCapRank,
                     marketData = MarketData(
                             circulatingSupply = crypto.circulatingSupply.toPlainString(),
                             maxSupply = crypto.maxSupply.toPlainString(),
@@ -330,6 +333,12 @@ class InsightsService(
                                     usd = crypto.lastKnownPrice.toPlainString(),
                                     eur = crypto.lastKnownPriceInEUR.toPlainString(),
                                     btc = crypto.lastKnownPriceInBTC.toPlainString()
+                            ),
+                            marketCap = crypto.marketCap.toPlainString(),
+                            priceChange = PriceChange(
+                                    crypto.changePercentageIn24h,
+                                    crypto.changePercentageIn7d,
+                                    crypto.changePercentageIn30d
                             )
                     ),
                     platforms = cryptoPlatforms

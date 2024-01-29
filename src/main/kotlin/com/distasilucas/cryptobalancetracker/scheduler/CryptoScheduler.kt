@@ -34,18 +34,25 @@ class CryptoScheduler(
                 try {
                     val crypto = coingeckoService.retrieveCryptoInfo(it.id)
 
-                    Crypto(
-                        id = crypto.id,
-                        name = crypto.name,
-                        ticker = crypto.symbol,
-                        image = crypto.image.large,
-                        lastKnownPrice = crypto.marketData.currentPrice.usd,
-                        lastKnownPriceInEUR = crypto.marketData.currentPrice.eur,
-                        lastKnownPriceInBTC = crypto.marketData.currentPrice.btc,
-                        circulatingSupply = crypto.marketData.circulatingSupply,
-                        maxSupply = crypto.marketData.maxSupply ?: BigDecimal.ZERO,
-                        lastUpdatedAt = LocalDateTime.now(clock)
-                    )
+                    with(crypto) {
+                        Crypto(
+                                id = id,
+                                name = name,
+                                ticker = symbol,
+                                image = image.large,
+                                lastKnownPrice = marketData.currentPrice.usd,
+                                lastKnownPriceInEUR = marketData.currentPrice.eur,
+                                lastKnownPriceInBTC = marketData.currentPrice.btc,
+                                circulatingSupply = marketData.circulatingSupply,
+                                maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,
+                                marketCapRank = marketCapRank,
+                                marketCap = marketData.marketCap.usd,
+                                changePercentageIn24h = marketData.roundChangePercentageIn24h(),
+                                changePercentageIn7d = marketData.roundChangePercentageIn7d(),
+                                changePercentageIn30d = marketData.roundChangePercentageIn30d(),
+                                lastUpdatedAt = LocalDateTime.now(clock)
+                        )
+                    }
                 } catch (exception: RestClientResponseException) {
                     if (exception.statusCode == HttpStatus.TOO_MANY_REQUESTS) {
                         throw TooManyRequestsException()

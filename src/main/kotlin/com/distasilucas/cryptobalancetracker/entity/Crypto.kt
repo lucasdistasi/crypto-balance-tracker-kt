@@ -30,6 +30,21 @@ data class Crypto(
     @Field("max_supply")
     val maxSupply: BigDecimal,
 
+    @Field("market_cap_rank")
+    val marketCapRank: Int,
+
+    @Field("market_cap")
+    val marketCap: BigDecimal,
+
+    @Field("change_percentage_in_24h")
+    val changePercentageIn24h: BigDecimal,
+
+    @Field("change_percentage_in_7d")
+    val changePercentageIn7d: BigDecimal,
+
+    @Field("change_percentage_in_30d")
+    val changePercentageIn30d: BigDecimal,
+
     @Field("last_updated_at")
     val lastUpdatedAt: LocalDateTime
 ): Serializable

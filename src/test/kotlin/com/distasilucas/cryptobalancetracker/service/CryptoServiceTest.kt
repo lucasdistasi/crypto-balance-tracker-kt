@@ -68,6 +68,11 @@ class CryptoServiceTest {
                     lastKnownPriceInBTC = BigDecimal("1"),
                     circulatingSupply = BigDecimal("19000000"),
                     maxSupply = BigDecimal("21000000"),
+                    marketCapRank = 1,
+                    marketCap = BigDecimal("813208997089"),
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("0.00"),
                     lastUpdatedAt = localDateTime
                 )
             )
@@ -105,6 +110,11 @@ class CryptoServiceTest {
                     lastKnownPriceInBTC = BigDecimal("1"),
                     lastKnownPriceInEUR = BigDecimal("27000"),
                     maxSupply = BigDecimal("21000000"),
+                    marketCapRank = 1,
+                    marketCap = BigDecimal("813208997089"),
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("0.00"),
                     lastUpdatedAt = localDateTime
                 )
             )
@@ -145,6 +155,11 @@ class CryptoServiceTest {
                     lastKnownPriceInBTC = BigDecimal("1"),
                     lastKnownPriceInEUR = BigDecimal("27000"),
                     maxSupply = BigDecimal.ZERO,
+                    marketCapRank = 1,
+                    marketCap = BigDecimal("813208997089"),
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("0.00"),
                     lastUpdatedAt = localDateTime
                 )
             )
@@ -221,6 +236,11 @@ class CryptoServiceTest {
                     lastKnownPriceInBTC = BigDecimal("1"),
                     circulatingSupply = BigDecimal("19000000"),
                     maxSupply = BigDecimal("21000000"),
+                    marketCapRank = 1,
+                    marketCap = BigDecimal("813208997089"),
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("0.00"),
                     lastUpdatedAt = localDateTime
                 )
             )
@@ -258,6 +278,11 @@ class CryptoServiceTest {
                     lastKnownPriceInBTC = BigDecimal("1"),
                     circulatingSupply = BigDecimal("19000000"),
                     maxSupply = BigDecimal.ZERO,
+                    marketCapRank = 1,
+                    marketCap = BigDecimal("813208997089"),
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("0.00"),
                     lastUpdatedAt = localDateTime
                 )
             )
@@ -337,6 +362,11 @@ class CryptoServiceTest {
                         lastKnownPriceInBTC = BigDecimal("1"),
                         lastKnownPriceInEUR = BigDecimal("27000"),
                         maxSupply = BigDecimal("21000000"),
+                        marketCapRank = 1,
+                        marketCap = BigDecimal("813208997089"),
+                        changePercentageIn24h = BigDecimal("10.00"),
+                        changePercentageIn7d = BigDecimal("-5.00"),
+                        changePercentageIn30d = BigDecimal("0.00"),
                         lastUpdatedAt = localDateTime
                     )
                 )
@@ -380,6 +410,11 @@ class CryptoServiceTest {
                     lastKnownPriceInBTC = BigDecimal("1"),
                     lastKnownPriceInEUR = BigDecimal("27000"),
                     maxSupply = BigDecimal("21000000"),
+                    marketCapRank = 1,
+                    marketCap = BigDecimal("813208997089"),
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("0.00"),
                     lastUpdatedAt = localDateTime
                 )
             ))
