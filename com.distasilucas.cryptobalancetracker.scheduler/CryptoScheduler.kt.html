@@ -34,44 +34,51 @@ import java.time.LocalDateTime
 <span class="fc" id="L34">                try {</span>
 <span class="fc" id="L35">                    val crypto = coingeckoService.retrieveCryptoInfo(it.id)</span>
 
-<span class="fc" id="L37">                    Crypto(</span>
-<span class="fc" id="L38">                        id = crypto.id,</span>
-<span class="fc" id="L39">                        name = crypto.name,</span>
-<span class="fc" id="L40">                        ticker = crypto.symbol,</span>
-<span class="fc" id="L41">                        image = crypto.image.large,</span>
-<span class="fc" id="L42">                        lastKnownPrice = crypto.marketData.currentPrice.usd,</span>
-<span class="fc" id="L43">                        lastKnownPriceInEUR = crypto.marketData.currentPrice.eur,</span>
-<span class="fc" id="L44">                        lastKnownPriceInBTC = crypto.marketData.currentPrice.btc,</span>
-<span class="fc" id="L45">                        circulatingSupply = crypto.marketData.circulatingSupply,</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">                        maxSupply = crypto.marketData.maxSupply ?: BigDecimal.ZERO,</span>
-<span class="fc" id="L47">                        lastUpdatedAt = LocalDateTime.now(clock)</span>
-                    )
-<span class="fc" id="L49">                } catch (exception: RestClientResponseException) {</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">                    if (exception.statusCode == HttpStatus.TOO_MANY_REQUESTS) {</span>
-<span class="fc" id="L51">                        throw TooManyRequestsException()</span>
-                    } else {
-<span class="fc" id="L53">                        logger.warn { &quot;A WebClientResponseException occurred while retrieving info for ${it.id}. Exception: $exception&quot; }</span>
-<span class="fc" id="L54">                        it</span>
+<span class="fc" id="L37">                    with(crypto) {</span>
+<span class="fc" id="L38">                        Crypto(</span>
+<span class="fc" id="L39">                                id = id,</span>
+<span class="fc" id="L40">                                name = name,</span>
+<span class="fc" id="L41">                                ticker = symbol,</span>
+<span class="fc" id="L42">                                image = image.large,</span>
+<span class="fc" id="L43">                                lastKnownPrice = marketData.currentPrice.usd,</span>
+<span class="fc" id="L44">                                lastKnownPriceInEUR = marketData.currentPrice.eur,</span>
+<span class="fc" id="L45">                                lastKnownPriceInBTC = marketData.currentPrice.btc,</span>
+<span class="fc" id="L46">                                circulatingSupply = marketData.circulatingSupply,</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">                                maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,</span>
+<span class="fc" id="L48">                                marketCapRank = marketCapRank,</span>
+<span class="fc" id="L49">                                marketCap = marketData.marketCap.usd,</span>
+<span class="fc" id="L50">                                changePercentageIn24h = marketData.roundChangePercentageIn24h(),</span>
+<span class="fc" id="L51">                                changePercentageIn7d = marketData.roundChangePercentageIn7d(),</span>
+<span class="fc" id="L52">                                changePercentageIn30d = marketData.roundChangePercentageIn30d(),</span>
+<span class="fc" id="L53">                                lastUpdatedAt = LocalDateTime.now(clock)</span>
+                        )
                     }
-<span class="fc" id="L56">                } catch (exception: Exception) {</span>
-<span class="fc" id="L57">                    logger.error { &quot;An exception occurred while retrieving info for ${it.id}, therefore crypto info might be outdated. Exception: $exception&quot; }</span>
-<span class="fc" id="L58">                    it</span>
+<span class="fc" id="L56">                } catch (exception: RestClientResponseException) {</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">                    if (exception.statusCode == HttpStatus.TOO_MANY_REQUESTS) {</span>
+<span class="fc" id="L58">                        throw TooManyRequestsException()</span>
+                    } else {
+<span class="fc" id="L60">                        logger.warn { &quot;A WebClientResponseException occurred while retrieving info for ${it.id}. Exception: $exception&quot; }</span>
+<span class="fc" id="L61">                        it</span>
+                    }
+<span class="fc" id="L63">                } catch (exception: Exception) {</span>
+<span class="fc" id="L64">                    logger.error { &quot;An exception occurred while retrieving info for ${it.id}, therefore crypto info might be outdated. Exception: $exception&quot; }</span>
+<span class="fc" id="L65">                    it</span>
                 }
             }
 
-<span class="fc bfc" id="L62" title="All 4 branches covered.">        if (cryptosToUpdate.isNotEmpty()) {</span>
-<span class="fc" id="L63">            logger.info { &quot;About to update ${cryptosToUpdate.size} crypto(s)&quot; }</span>
+<span class="fc bfc" id="L69" title="All 4 branches covered.">        if (cryptosToUpdate.isNotEmpty()) {</span>
+<span class="fc" id="L70">            logger.info { &quot;About to update ${cryptosToUpdate.size} crypto(s)&quot; }</span>
 
-<span class="fc" id="L65">            cryptoService.updateCryptos(cryptosToUpdate)</span>
+<span class="fc" id="L72">            cryptoService.updateCryptos(cryptosToUpdate)</span>
         } else {
-<span class="fc" id="L67">            logger.info { &quot;No cryptos to update&quot; }</span>
+<span class="fc" id="L74">            logger.info { &quot;No cryptos to update&quot; }</span>
         }
-<span class="fc" id="L69">    }</span>
+<span class="fc" id="L76">    }</span>
 
     private fun getCryptosToUpdate(): List&lt;Crypto&gt; {
-<span class="fc" id="L72">        return cryptoService.findOldestNCryptosByLastPriceUpdate(</span>
-<span class="fc" id="L73">            LocalDateTime.now(clock).minusMinutes(5),</span>
-<span class="fc" id="L74">            maxLimit</span>
+<span class="fc" id="L79">        return cryptoService.findOldestNCryptosByLastPriceUpdate(</span>
+<span class="fc" id="L80">            LocalDateTime.now(clock).minusMinutes(5),</span>
+<span class="fc" id="L81">            maxLimit</span>
         )
     }
 }

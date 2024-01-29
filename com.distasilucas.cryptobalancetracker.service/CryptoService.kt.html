@@ -98,7 +98,7 @@ import java.time.LocalDateTime
 <span class="fc" id="L98">        return with(coingeckoCryptoInfo) {</span>
 <span class="fc" id="L99">            Crypto(</span>
 <span class="fc" id="L100">                    id = coingeckoCryptoId,</span>
-<span class="fc" id="L101">                    name = name,</span>
+<span class="fc" id="L101">                    name,</span>
 <span class="fc" id="L102">                    ticker = symbol,</span>
 <span class="fc" id="L103">                    image = image.large,</span>
 <span class="fc" id="L104">                    lastKnownPrice = marketData.currentPrice.usd,</span>
@@ -106,11 +106,16 @@ import java.time.LocalDateTime
 <span class="fc" id="L106">                    lastKnownPriceInBTC = marketData.currentPrice.btc,</span>
 <span class="fc" id="L107">                    circulatingSupply = marketData.circulatingSupply,</span>
 <span class="fc bfc" id="L108" title="All 2 branches covered.">                    maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,</span>
-<span class="fc" id="L109">                    lastUpdatedAt = LocalDateTime.now(clock)</span>
+<span class="fc" id="L109">                    marketCapRank,</span>
+<span class="fc" id="L110">                    marketCap = marketData.marketCap.usd,</span>
+<span class="fc" id="L111">                    changePercentageIn24h = marketData.roundChangePercentageIn24h(),</span>
+<span class="fc" id="L112">                    changePercentageIn7d = marketData.roundChangePercentageIn7d(),</span>
+<span class="fc" id="L113">                    changePercentageIn30d = marketData.roundChangePercentageIn30d(),</span>
+<span class="fc" id="L114">                    lastUpdatedAt = LocalDateTime.now(clock)</span>
             )
         }
     }
 }
 
-<span class="fc" id="L115">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L120">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
