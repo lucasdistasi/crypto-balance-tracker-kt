@@ -1,11 +1,7 @@
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
-import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
-import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCryptoInfo
-import com.distasilucas.cryptobalancetracker.model.response.coingecko.CurrentPrice
-import com.distasilucas.cryptobalancetracker.model.response.coingecko.Image
-import com.distasilucas.cryptobalancetracker.model.response.coingecko.MarketData
+import com.distasilucas.cryptobalancetracker.model.response.coingecko.*
 import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
@@ -158,6 +154,11 @@ fun getCryptoEntity(
     lastKnownPriceInBTC: BigDecimal = BigDecimal("1"),
     circulatingSupply: BigDecimal = BigDecimal("19000000"),
     maxSupply: BigDecimal? = BigDecimal("21000000"),
+    marketCapRank: Int = 1,
+    marketCap: BigDecimal = BigDecimal("813208997089"),
+    changePercentageIn24h: BigDecimal = BigDecimal("10.00"),
+    changePercentageIn7d: BigDecimal = BigDecimal("-5.00"),
+    changePercentageIn30d: BigDecimal = BigDecimal("0.00"),
     lastUpdatedAt: LocalDateTime = LocalDateTime.now()
 ): Crypto {
     return Crypto(
@@ -170,6 +171,11 @@ fun getCryptoEntity(
         lastKnownPriceInBTC = lastKnownPriceInBTC,
         lastKnownPriceInEUR = lastKnownPriceInEUR,
         maxSupply = maxSupply ?: BigDecimal.ZERO,
+        marketCapRank = marketCapRank,
+        marketCap = marketCap,
+        changePercentageIn24h = changePercentageIn24h,
+        changePercentageIn7d = changePercentageIn7d,
+        changePercentageIn30d = changePercentageIn30d,
         lastUpdatedAt = lastUpdatedAt
     )
 }
@@ -247,13 +253,15 @@ fun getCoingeckoCryptoInfo(
     symbol: String = "btc",
     name: String = "Bitcoin",
     marketData: MarketData = getMarketData(),
-    image: Image = getImage()
+    image: Image = getImage(),
+    marketCapRank: Int = 1
 ): CoingeckoCryptoInfo {
     return CoingeckoCryptoInfo(
         id = id,
         symbol = symbol,
         name = name,
         image = image,
+        marketCapRank = marketCapRank,
         marketData = marketData
     )
 }
@@ -266,7 +274,11 @@ fun getMarketData(
     return MarketData(
         currentPrice = currentPrice,
         circulatingSupply = circulatingSupply,
-        maxSupply = maxSupply
+        maxSupply = maxSupply,
+        marketCap = MarketCap(BigDecimal("813208997089")),
+        BigDecimal("10.00"),
+        BigDecimal("-5.00"),
+        BigDecimal("0.00")
     )
 }
 

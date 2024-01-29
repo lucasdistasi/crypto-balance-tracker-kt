@@ -2,12 +2,7 @@ package com.distasilucas.cryptobalancetracker.controller
 
 import balances
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
-import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
-import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
-import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
-import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
+import com.distasilucas.cryptobalancetracker.model.response.insights.*
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -19,6 +14,7 @@ import com.distasilucas.cryptobalancetracker.service.InsightsService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.hamcrest.Matchers
+import org.hamcrest.core.Is.`is`
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
@@ -29,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import retrieveCryptoInsights
 import retrieveCryptosBalancesInsights
 import retrievePlatformInsights
@@ -36,6 +33,7 @@ import retrievePlatformsBalancesInsights
 import retrieveTotalBalancesInsights
 import retrieveUserCryptosInsights
 import retrieveUserCryptosPlatformsInsights
+import java.math.BigDecimal
 import java.util.Optional
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -54,9 +52,9 @@ class InsightsControllerMvcTest(
 
         mockMvc.retrieveTotalBalancesInsights()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.totalUSDBalance", Matchers.`is`("100")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.totalBTCBalance", Matchers.`is`("0.1")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.totalEURBalance", Matchers.`is`("70")))
+            .andExpect(jsonPath("$.totalUSDBalance", `is`("100")))
+            .andExpect(jsonPath("$.totalBTCBalance", `is`("0.1")))
+            .andExpect(jsonPath("$.totalEURBalance", `is`("70")))
     }
 
     @Test
@@ -72,73 +70,36 @@ class InsightsControllerMvcTest(
 
         mockMvc.retrieveUserCryptosInsights(page)
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.page", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hasNextPage", Matchers.`is`(false)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalUSDBalance", Matchers.`is`("4500.00")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalBTCBalance", Matchers.`is`("0.15")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalEURBalance", Matchers.`is`("4050.00")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].cryptoInfo.id",
-                    Matchers.`is`("676fb38a-556e-11ee-b56e-325096b39f47")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].cryptoInfo.cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].cryptoInfo.cryptoId",
-                    Matchers.`is`("bitcoin")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].cryptoInfo.symbol", Matchers.`is`("btc")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
+            .andExpect(jsonPath("$.page", `is`(1)))
+            .andExpect(jsonPath("$.totalPages", `is`(1)))
+            .andExpect(jsonPath("$.hasNextPage", `is`(false)))
+            .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("4500.00")))
+            .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
+            .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
+            .andExpect(jsonPath("$.cryptos[0].marketCapRank", `is`(1)))
+            .andExpect(jsonPath("$.cryptos[0].cryptoInfo.id", `is`("676fb38a-556e-11ee-b56e-325096b39f47")))
+            .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoName", `is`("Bitcoin")))
+            .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoId", `is`("bitcoin")))
+            .andExpect(jsonPath("$.cryptos[0].cryptoInfo.symbol", `is`("btc")))
+            .andExpect(jsonPath(
                     "$.cryptos[0].cryptoInfo.image",
-                    Matchers.`is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")
-                )
+                    `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"))
             )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].quantity", Matchers.`is`("0.15")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].percentage", Matchers.`is`(100.0)))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].balances.totalUSDBalance",
-                    Matchers.`is`("4500.00")
-                )
-            )
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].balances.totalBTCBalance",
-                    Matchers.`is`("0.15")
-                )
-            )
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].balances.totalEURBalance",
-                    Matchers.`is`("4050.00")
-                )
-            )
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].marketData.circulatingSupply",
-                    Matchers.`is`("19000000")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].marketData.maxSupply", Matchers.`is`("21000000")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].marketData.currentPrice.usd",
-                    Matchers.`is`("30000")
-                )
-            )
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].marketData.currentPrice.eur",
-                    Matchers.`is`("27000")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].marketData.currentPrice.btc", Matchers.`is`("1")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].platforms", Matchers.`is`(listOf("BINANCE"))))
+            .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.15")))
+            .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
+            .andExpect(jsonPath("$.cryptos[0].balances.totalUSDBalance", `is`("4500.00")))
+            .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.15")))
+            .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("4050.00")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.circulatingSupply", `is`("19000000")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.maxSupply", `is`("21000000")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.usd", `is`("30000")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.eur", `is`("27000")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.btc", `is`("1")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.marketCap", `is`("813208997089")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn24h", `is`(10.00)))
+            .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn7d", `is`(-5.00)))
+            .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn30d", `is`(0.00)))
+            .andExpect(jsonPath("$.cryptos[0].platforms", `is`(listOf("BINANCE"))))
     }
 
     @Test
@@ -147,16 +108,11 @@ class InsightsControllerMvcTest(
 
         mockMvc.retrieveUserCryptosInsights(page)
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$[0].detail",
-                    Matchers.`is`("Page must be greater than or equal to 0")
-                )
-            )
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$", Matchers.hasSize<Int>(1)))
+            .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+            .andExpect(jsonPath("$[0].status", `is`(400)))
+            .andExpect(jsonPath("$[0].detail", `is`("Page must be greater than or equal to 0")))
     }
 
     @Test
@@ -170,72 +126,34 @@ class InsightsControllerMvcTest(
 
         mockMvc.retrieveUserCryptosPlatformsInsights(page)
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.page", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages", Matchers.`is`(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hasNextPage", Matchers.`is`(false)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalUSDBalance", Matchers.`is`("4500.00")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalBTCBalance", Matchers.`is`("0.15")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalEURBalance", Matchers.`is`("4050.00")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].cryptoInfo.cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].cryptoInfo.cryptoId",
-                    Matchers.`is`("bitcoin")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].cryptoInfo.symbol", Matchers.`is`("btc")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
+            .andExpect(jsonPath("$.page", `is`(1)))
+            .andExpect(jsonPath("$.totalPages", `is`(1)))
+            .andExpect(jsonPath("$.hasNextPage", `is`(false)))
+            .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("4500.00")))
+            .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
+            .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
+            .andExpect(jsonPath("$.cryptos[0].marketCapRank", `is`(1)))
+            .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoName", `is`("Bitcoin")))
+            .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoId", `is`("bitcoin")))
+            .andExpect(jsonPath("$.cryptos[0].cryptoInfo.symbol", `is`("btc")))
+            .andExpect(jsonPath(
                     "$.cryptos[0].cryptoInfo.image",
-                    Matchers.`is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")
-                )
+                    `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"))
             )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].quantity", Matchers.`is`("0.15")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].percentage", Matchers.`is`(100.0)))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].balances.totalUSDBalance",
-                    Matchers.`is`("4500.00")
-                )
-            )
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].balances.totalBTCBalance",
-                    Matchers.`is`("0.15")
-                )
-            )
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].balances.totalEURBalance",
-                    Matchers.`is`("4050.00")
-                )
-            )
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].marketData.circulatingSupply",
-                    Matchers.`is`("19000000")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].marketData.maxSupply", Matchers.`is`("21000000")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].marketData.currentPrice.usd",
-                    Matchers.`is`("30000")
-                )
-            )
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].marketData.currentPrice.eur",
-                    Matchers.`is`("27000")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].marketData.currentPrice.btc", Matchers.`is`("1")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].platforms",
-                    Matchers.`is`(listOf("BINANCE", "COINBASE"))
-                )
-            )
+            .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.15")))
+            .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
+            .andExpect(jsonPath("$.cryptos[0].balances.totalUSDBalance", `is`("4500.00")))
+            .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.15")))
+            .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("4050.00")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.circulatingSupply", `is`("19000000")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.maxSupply", `is`("21000000")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.usd", `is`("30000")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.eur", `is`("27000")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.btc", `is`("1")))
+            .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn24h", `is`(10.00)))
+            .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn7d", `is`(-5.00)))
+            .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn30d", `is`(0.00)))
+            .andExpect(jsonPath("$.cryptos[0].platforms", `is`(listOf("BINANCE", "COINBASE"))))
     }
 
     @Test
@@ -244,16 +162,11 @@ class InsightsControllerMvcTest(
 
         mockMvc.retrieveUserCryptosPlatformsInsights(page)
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$[0].detail",
-                    Matchers.`is`("Page must be greater than or equal to 0")
-                )
-            )
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$", Matchers.hasSize<Int>(1)))
+            .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+            .andExpect(jsonPath("$[0].status", `is`(400)))
+            .andExpect(jsonPath("$[0].detail", `is`("Page must be greater than or equal to 0")))
     }
 
     @Test
@@ -266,26 +179,21 @@ class InsightsControllerMvcTest(
 
         mockMvc.retrieveCryptosBalancesInsights()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalUSDBalance", Matchers.`is`("7500.00")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalBTCBalance", Matchers.`is`("0.25")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalEURBalance", Matchers.`is`("6750.00")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].cryptoId", Matchers.`is`("bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].quantity", Matchers.`is`("0.25")))
+            .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("7500.00")))
+            .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.25")))
+            .andExpect(jsonPath("$.balances.totalEURBalance", `is`("6750.00")))
+            .andExpect(jsonPath("$.cryptos[0].cryptoName", `is`("Bitcoin")))
+            .andExpect(jsonPath("$.cryptos[0].cryptoId", `is`("bitcoin")))
+            .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.25")))
             .andExpect(
-                MockMvcResultMatchers.jsonPath(
+                jsonPath(
                     "$.cryptos[0].balances.totalUSDBalance",
-                    Matchers.`is`("7500.00")
+                    `is`("7500.00")
                 )
             )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].balances.totalBTCBalance", Matchers.`is`("0.25")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].balances.totalEURBalance",
-                    Matchers.`is`("6750.00")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].percentage", Matchers.`is`(100.0)))
+            .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.25")))
+            .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("6750.00")))
+            .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
 
     }
 
@@ -299,24 +207,14 @@ class InsightsControllerMvcTest(
 
         mockMvc.retrievePlatformsBalancesInsights()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalUSDBalance", Matchers.`is`("7500.00")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalBTCBalance", Matchers.`is`("0.25")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalEURBalance", Matchers.`is`("6750.00")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.platforms[0].platformName", Matchers.`is`("BINANCE")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.platforms[0].balances.totalUSDBalance",
-                    Matchers.`is`("7500.00")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.platforms[0].balances.totalBTCBalance", Matchers.`is`("0.25")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.platforms[0].balances.totalEURBalance",
-                    Matchers.`is`("6750.00")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.platforms[0].percentage", Matchers.`is`(100.0)))
+            .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("7500.00")))
+            .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.25")))
+            .andExpect(jsonPath("$.balances.totalEURBalance", `is`("6750.00")))
+            .andExpect(jsonPath("$.platforms[0].platformName", `is`("BINANCE")))
+            .andExpect(jsonPath("$.platforms[0].balances.totalUSDBalance", `is`("7500.00")))
+            .andExpect(jsonPath("$.platforms[0].balances.totalBTCBalance", `is`("0.25")))
+            .andExpect(jsonPath("$.platforms[0].balances.totalEURBalance", `is`("6750.00")))
+            .andExpect(jsonPath("$.platforms[0].percentage", `is`(100.0)))
     }
 
     @Test
@@ -329,26 +227,16 @@ class InsightsControllerMvcTest(
 
         mockMvc.retrieveCryptoInsights("bitcoin")
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalUSDBalance", Matchers.`is`("4500.00")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalBTCBalance", Matchers.`is`("0.15")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalEURBalance", Matchers.`is`("4050.00")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.platforms[0].quantity", Matchers.`is`("0.15")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.platforms[0].balances.totalUSDBalance",
-                    Matchers.`is`("4500.00")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.platforms[0].balances.totalBTCBalance", Matchers.`is`("0.15")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.platforms[0].balances.totalEURBalance",
-                    Matchers.`is`("4050.00")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.platforms[0].percentage", Matchers.`is`(100.0)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.platforms[0].platformName", Matchers.`is`("BINANCE")))
+            .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
+            .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("4500.00")))
+            .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
+            .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
+            .andExpect(jsonPath("$.platforms[0].quantity", `is`("0.15")))
+            .andExpect(jsonPath("$.platforms[0].balances.totalUSDBalance", `is`("4500.00")))
+            .andExpect(jsonPath("$.platforms[0].balances.totalBTCBalance", `is`("0.15")))
+            .andExpect(jsonPath("$.platforms[0].balances.totalEURBalance", `is`("4050.00")))
+            .andExpect(jsonPath("$.platforms[0].percentage", `is`(100.0)))
+            .andExpect(jsonPath("$.platforms[0].platformName", `is`("BINANCE")))
     }
 
     @Test
@@ -361,28 +249,18 @@ class InsightsControllerMvcTest(
 
         mockMvc.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.platformName", Matchers.`is`("BINANCE")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalUSDBalance", Matchers.`is`("4500.00")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalBTCBalance", Matchers.`is`("0.15")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.balances.totalEURBalance", Matchers.`is`("4050.00")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].id", Matchers.`is`("1f832f95-62e3-4d1b-a1e6-982d8c22f2bb")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].cryptoName", Matchers.`is`("Bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].cryptoId", Matchers.`is`("bitcoin")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].quantity", Matchers.`is`("0.15")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].balances.totalUSDBalance",
-                    Matchers.`is`("4500.00")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].balances.totalBTCBalance", Matchers.`is`("0.15")))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$.cryptos[0].balances.totalEURBalance",
-                    Matchers.`is`("4050.00")
-                )
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos[0].percentage", Matchers.`is`(100.0)))
+            .andExpect(jsonPath("$.platformName", `is`("BINANCE")))
+            .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("4500.00")))
+            .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
+            .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
+            .andExpect(jsonPath("$.cryptos[0].id", `is`("1f832f95-62e3-4d1b-a1e6-982d8c22f2bb")))
+            .andExpect(jsonPath("$.cryptos[0].cryptoName", `is`("Bitcoin")))
+            .andExpect(jsonPath("$.cryptos[0].cryptoId", `is`("bitcoin")))
+            .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.15")))
+            .andExpect(jsonPath("$.cryptos[0].balances.totalUSDBalance", `is`("4500.00")))
+            .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.15")))
+            .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("4050.00")))
+            .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
     }
 
     @ParameterizedTest
@@ -395,16 +273,11 @@ class InsightsControllerMvcTest(
     fun `should fail with status 400 with 1 message when retrieving platform insights with invalid id`(platformId: String) {
         mockMvc.retrievePlatformInsights(platformId)
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath(
-                    "$[0].detail",
-                    Matchers.`is`(PLATFORM_ID_UUID)
-                )
-            )
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$", Matchers.hasSize<Int>(1)))
+            .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+            .andExpect(jsonPath("$[0].status", `is`(400)))
+            .andExpect(jsonPath("$[0].detail", `is`(PLATFORM_ID_UUID)))
     }
 
     private fun pageUserCryptosInsightsResponse(
@@ -434,13 +307,20 @@ class InsightsControllerMvcTest(
                     totalBTCBalance = "0.15",
                     totalEURBalance = "4050.00"
                 ),
+                marketCapRank = 1,
                 marketData = MarketData(
                     circulatingSupply = "19000000",
                     maxSupply = "21000000",
+                    marketCap = "813208997089",
                     currentPrice = CurrentPrice(
                         usd = "30000",
                         eur = "27000",
                         btc = "1"
+                    ),
+                    priceChange = PriceChange(
+                        changePercentageIn24h = BigDecimal("10.00"),
+                        changePercentageIn7d = BigDecimal("-5.00"),
+                        changePercentageIn30d = BigDecimal("0.00")
                     )
                 ),
                 platforms = platforms

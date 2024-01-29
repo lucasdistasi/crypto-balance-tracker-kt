@@ -3,12 +3,16 @@ package com.distasilucas.cryptobalancetracker.model.response.coingecko
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.Serializable
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 data class CoingeckoCryptoInfo(
     val id: String,
     val symbol: String,
     val name: String,
     val image: Image,
+
+    @JsonProperty("market_cap_rank")
+    val marketCapRank: Int,
 
     @JsonProperty("market_data")
     val marketData: MarketData
@@ -26,11 +30,34 @@ data class MarketData(
     val circulatingSupply: BigDecimal,
 
     @JsonProperty("max_supply")
-    val maxSupply: BigDecimal?
-): Serializable
+    val maxSupply: BigDecimal?,
+
+    @JsonProperty("market_cap")
+    val marketCap: MarketCap,
+
+    @JsonProperty("price_change_percentage_24h")
+    var changePercentageIn24h: BigDecimal,
+
+    @JsonProperty("price_change_percentage_7d")
+    val changePercentageIn7d: BigDecimal,
+
+    @JsonProperty("price_change_percentage_30d")
+    val changePercentageIn30d: BigDecimal
+): Serializable {
+
+    fun roundChangePercentageIn24h() = changePercentageIn24h.setScale(2, RoundingMode.HALF_UP)
+
+    fun roundChangePercentageIn7d() = changePercentageIn7d.setScale(2, RoundingMode.HALF_UP)
+
+    fun roundChangePercentageIn30d() = changePercentageIn30d.setScale(2, RoundingMode.HALF_UP)
+}
 
 data class CurrentPrice(
     val usd: BigDecimal,
     val eur: BigDecimal,
     val btc: BigDecimal
+): Serializable
+
+data class MarketCap(
+    val usd: BigDecimal
 ): Serializable
