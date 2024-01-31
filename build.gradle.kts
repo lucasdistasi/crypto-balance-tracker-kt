@@ -1,11 +1,11 @@
 import com.adarshr.gradle.testlogger.theme.ThemeType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val ioMockkVersion = "1.13.8"
+val ioMockkVersion = "1.13.9"
 val springDocVersion = "2.3.0"
 val ioGithubOshaiVersion = "5.1.1"
 val ninjaSquadVersion = "4.0.2"
-val springRetryVersion = "2.0.4"
+val springRetryVersion = "2.0.5"
 val ehcacheVersion = "3.10.8"
 val javaxCacheVersion = "1.1.1"
 val aspectjweaverVersion = "1.9.20.1"
@@ -14,7 +14,7 @@ val jacocoVersion = "0.8.11"
 val jsonWebTokenVersion = "0.12.3"
 
 plugins {
-	id("org.springframework.boot") version "3.2.0"
+	id("org.springframework.boot") version "3.2.2"
 	id("io.spring.dependency-management") version "1.1.4"
 	id("com.adarshr.test-logger") version "4.0.0"
 	id("jacoco")
@@ -26,7 +26,7 @@ group = "com.distasilucas"
 version = "1.0.0-SNAPSHOT"
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -67,7 +67,7 @@ dependencies {
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs += "-Xjsr305=strict"
-		jvmTarget = "17"
+		jvmTarget = "21"
 	}
 }
 

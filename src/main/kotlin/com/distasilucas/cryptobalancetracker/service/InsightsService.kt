@@ -3,6 +3,9 @@ package com.distasilucas.cryptobalancetracker.service
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
+import com.distasilucas.cryptobalancetracker.model.SortBy
+import com.distasilucas.cryptobalancetracker.model.SortParams
+import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.*
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
@@ -212,7 +215,10 @@ class InsightsService(
         )
     }
 
-    fun retrieveUserCryptosInsights(page: Int): Optional<PageUserCryptosInsightsResponse> {
+    fun retrieveUserCryptosInsights(
+            page: Int,
+            sortParams: SortParams = SortParams(SortBy.PERCENTAGE, SortType.DESC)
+    ): Optional<PageUserCryptosInsightsResponse> {
         logger.info { "Retrieving user cryptos insights for page $page" }
 
         // Not the best because I'm paginating, but I need total balances to calculate individual percentages
@@ -264,7 +270,7 @@ class InsightsService(
                     ),
                     platforms = listOf(platform.name)
             )
-        }.sortedByDescending { it.percentage }
+        }.sortedWith(sortParams.cryptosInsightsResponseComparator())
 
         val startIndex = page * INT_ELEMENTS_PER_PAGE
 
@@ -286,7 +292,10 @@ class InsightsService(
         )
     }
 
-    fun retrieveUserCryptosPlatformsInsights(page: Int): Optional<PageUserCryptosInsightsResponse> {
+    fun retrieveUserCryptosPlatformsInsights(
+            page: Int,
+            sortParams: SortParams = SortParams(SortBy.PERCENTAGE, SortType.DESC)
+    ): Optional<PageUserCryptosInsightsResponse> {
         logger.info { "Retrieving user cryptos in platforms insights for page $page" }
 
         // If one of the user cryptos happens to be at the end, and another of the same (i.e: bitcoin), at the start
@@ -343,7 +352,7 @@ class InsightsService(
                     ),
                     platforms = cryptoPlatforms
             )
-        }.sortedByDescending { it.percentage }
+        }.sortedWith(sortParams.cryptosInsightsResponseComparator())
 
         val startIndex = page * INT_ELEMENTS_PER_PAGE
 

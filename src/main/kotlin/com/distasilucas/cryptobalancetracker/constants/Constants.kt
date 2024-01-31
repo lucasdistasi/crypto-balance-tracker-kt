@@ -49,6 +49,7 @@ const val SAME_FROM_TO_PLATFORM = "From platform and to platform cannot be the s
 const val TOKEN_EXPIRED = "Token is expired"
 const val USERNAME_NOT_FOUND = "Username not found"
 const val REQUEST_LIMIT_REACHED = "Request limit reached"
+const val INVALID_VALUE_FOR = "Invalid value %s for %s. Available values: %s"
 
 // Regex validations
 const val PLATFORM_NAME_REGEX = "^[a-zA-Z](?:(?!\\s{2,})[a-zA-Z\\s]){0,22}[a-zA-Z]$"

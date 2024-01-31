@@ -3,6 +3,9 @@ package com.distasilucas.cryptobalancetracker.service
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
+import com.distasilucas.cryptobalancetracker.model.SortBy
+import com.distasilucas.cryptobalancetracker.model.SortParams
+import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.*
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
@@ -819,6 +822,882 @@ class InsightsServiceTest {
     }
 
     @Test
+    fun `should retrieve user cryptos insights sorted by market cap rank ascending`() {
+        val cryptos = listOf("bitcoin", "litecoin", "binancecoin")
+        val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
+        val cryptosEntities = cryptos().filter { cryptos.contains(it.id) }
+        val binancePlatform = Platform(
+                id = "163b1731-7a24-4e23-ac90-dc95ad8cb9e8",
+                name = "BINANCE"
+        )
+        val coinbasePlatform = Platform(
+                id = "a76b400e-8ffc-42d6-bf47-db866eb20153",
+                name = "COINBASE"
+        )
+
+        every { cryptoServiceMock.findAllByIds(setOf("binancecoin", "litecoin", "bitcoin")) } returns cryptosEntities
+        every {
+            platformServiceMock.findAllByIds(
+                    setOf(
+                            "a76b400e-8ffc-42d6-bf47-db866eb20153",
+                            "163b1731-7a24-4e23-ac90-dc95ad8cb9e8"
+                    )
+            )
+        } returns listOf(binancePlatform, coinbasePlatform)
+        every { userCryptoServiceMock.findAll() } returns userCryptos
+
+        val userCryptosInsights = insightsService.retrieveUserCryptosInsights(0, SortParams(SortBy.MARKET_CAP_RANK, SortType.ASC))
+
+        assertThat(userCryptosInsights)
+                .usingRecursiveComparison()
+                .isEqualTo(
+                        Optional.of(
+                                PageUserCryptosInsightsResponse(
+                                        page = 1,
+                                        totalPages = 1,
+                                        hasNextPage = false,
+                                        balances = BalancesResponse(
+                                                totalUSDBalance = "4901.13",
+                                                totalBTCBalance = "0.165463035",
+                                                totalEURBalance = "4424.55"
+                                        ),
+                                        cryptos = listOf(
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb38a-556e-11ee-b56e-325096b39f47",
+                                                                cryptoName = "Bitcoin",
+                                                                coingeckoCryptoId = "bitcoin",
+                                                                symbol = "btc",
+                                                                image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+                                                        ),
+                                                        quantity = "0.15",
+                                                        percentage = 91.82f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "4500.00",
+                                                                totalBTCBalance = "0.15",
+                                                                totalEURBalance = "4050.00"
+                                                        ),
+                                                        marketCapRank = 1,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "19000000",
+                                                                maxSupply = "21000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "30000",
+                                                                        eur = "27000",
+                                                                        btc = "1"
+                                                                ),
+                                                                marketCap = "813208997089",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("10.00"),
+                                                                        changePercentageIn7d = BigDecimal("-5.00"),
+                                                                        changePercentageIn30d = BigDecimal("0.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("BINANCE")
+                                                ),
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb768-556e-11ee-8b42-325096b39f47",
+                                                                cryptoName = "BNB",
+                                                                coingeckoCryptoId = "binancecoin",
+                                                                symbol = "bnb",
+                                                                image = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850"
+                                                        ),
+                                                        quantity = "1",
+                                                        percentage = 4.32f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "211.79",
+                                                                totalBTCBalance = "0.00811016",
+                                                                totalEURBalance = "197.80"
+                                                        ),
+                                                        marketCapRank = 4,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "153856150",
+                                                                maxSupply = "200000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "211.79",
+                                                                        eur = "197.80",
+                                                                        btc = "0.00811016"
+                                                                ),
+                                                                marketCap = "48318686968",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("6.00"),
+                                                                        changePercentageIn7d = BigDecimal("-2.00"),
+                                                                        changePercentageIn30d = BigDecimal("12.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("BINANCE")
+                                                ),
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb70e-556e-11ee-8c2c-325096b39f47",
+                                                                cryptoName = "Litecoin",
+                                                                coingeckoCryptoId = "litecoin",
+                                                                symbol = "ltc",
+                                                                image = "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1547033580"
+                                                        ),
+                                                        quantity = "3.125",
+                                                        percentage = 3.86f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "189.34",
+                                                                totalBTCBalance = "0.007352875",
+                                                                totalEURBalance = "176.75"
+                                                        ),
+                                                        marketCapRank = 19,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "73638701",
+                                                                maxSupply = "84000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "60.59",
+                                                                        eur = "56.56",
+                                                                        btc = "0.00235292"
+                                                                ),
+                                                                marketCap = "5259205267",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("6.00"),
+                                                                        changePercentageIn7d = BigDecimal("-2.00"),
+                                                                        changePercentageIn30d = BigDecimal("12.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("COINBASE")
+                                                )
+                                        )
+                                )
+                        )
+                )
+    }
+
+    @Test
+    fun `should retrieve user cryptos insights sorted by current price descending`() {
+        val cryptos = listOf("bitcoin", "litecoin", "binancecoin")
+        val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
+        val cryptosEntities = cryptos().filter { cryptos.contains(it.id) }
+        val binancePlatform = Platform(
+                id = "163b1731-7a24-4e23-ac90-dc95ad8cb9e8",
+                name = "BINANCE"
+        )
+        val coinbasePlatform = Platform(
+                id = "a76b400e-8ffc-42d6-bf47-db866eb20153",
+                name = "COINBASE"
+        )
+
+        every { cryptoServiceMock.findAllByIds(setOf("binancecoin", "litecoin", "bitcoin")) } returns cryptosEntities
+        every {
+            platformServiceMock.findAllByIds(
+                    setOf(
+                            "a76b400e-8ffc-42d6-bf47-db866eb20153",
+                            "163b1731-7a24-4e23-ac90-dc95ad8cb9e8"
+                    )
+            )
+        } returns listOf(binancePlatform, coinbasePlatform)
+        every { userCryptoServiceMock.findAll() } returns userCryptos
+
+        val userCryptosInsights = insightsService.retrieveUserCryptosInsights(0, SortParams(SortBy.CURRENT_PRICE, SortType.DESC))
+
+        assertThat(userCryptosInsights)
+                .usingRecursiveComparison()
+                .isEqualTo(
+                        Optional.of(
+                                PageUserCryptosInsightsResponse(
+                                        page = 1,
+                                        totalPages = 1,
+                                        hasNextPage = false,
+                                        balances = BalancesResponse(
+                                                totalUSDBalance = "4901.13",
+                                                totalBTCBalance = "0.165463035",
+                                                totalEURBalance = "4424.55"
+                                        ),
+                                        cryptos = listOf(
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb38a-556e-11ee-b56e-325096b39f47",
+                                                                cryptoName = "Bitcoin",
+                                                                coingeckoCryptoId = "bitcoin",
+                                                                symbol = "btc",
+                                                                image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+                                                        ),
+                                                        quantity = "0.15",
+                                                        percentage = 91.82f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "4500.00",
+                                                                totalBTCBalance = "0.15",
+                                                                totalEURBalance = "4050.00"
+                                                        ),
+                                                        marketCapRank = 1,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "19000000",
+                                                                maxSupply = "21000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "30000",
+                                                                        eur = "27000",
+                                                                        btc = "1"
+                                                                ),
+                                                                marketCap = "813208997089",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("10.00"),
+                                                                        changePercentageIn7d = BigDecimal("-5.00"),
+                                                                        changePercentageIn30d = BigDecimal("0.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("BINANCE")
+                                                ),
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb768-556e-11ee-8b42-325096b39f47",
+                                                                cryptoName = "BNB",
+                                                                coingeckoCryptoId = "binancecoin",
+                                                                symbol = "bnb",
+                                                                image = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850"
+                                                        ),
+                                                        quantity = "1",
+                                                        percentage = 4.32f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "211.79",
+                                                                totalBTCBalance = "0.00811016",
+                                                                totalEURBalance = "197.80"
+                                                        ),
+                                                        marketCapRank = 4,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "153856150",
+                                                                maxSupply = "200000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "211.79",
+                                                                        eur = "197.80",
+                                                                        btc = "0.00811016"
+                                                                ),
+                                                                marketCap = "48318686968",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("6.00"),
+                                                                        changePercentageIn7d = BigDecimal("-2.00"),
+                                                                        changePercentageIn30d = BigDecimal("12.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("BINANCE")
+                                                ),
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb70e-556e-11ee-8c2c-325096b39f47",
+                                                                cryptoName = "Litecoin",
+                                                                coingeckoCryptoId = "litecoin",
+                                                                symbol = "ltc",
+                                                                image = "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1547033580"
+                                                        ),
+                                                        quantity = "3.125",
+                                                        percentage = 3.86f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "189.34",
+                                                                totalBTCBalance = "0.007352875",
+                                                                totalEURBalance = "176.75"
+                                                        ),
+                                                        marketCapRank = 19,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "73638701",
+                                                                maxSupply = "84000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "60.59",
+                                                                        eur = "56.56",
+                                                                        btc = "0.00235292"
+                                                                ),
+                                                                marketCap = "5259205267",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("6.00"),
+                                                                        changePercentageIn7d = BigDecimal("-2.00"),
+                                                                        changePercentageIn30d = BigDecimal("12.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("COINBASE")
+                                                )
+                                        )
+                                )
+                        )
+                )
+    }
+
+    @Test
+    fun `should retrieve user cryptos insights sorted by max supply descending`() {
+        val cryptos = listOf("bitcoin", "litecoin", "binancecoin")
+        val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
+        val cryptosEntities = cryptos().filter { cryptos.contains(it.id) }
+        val binancePlatform = Platform(
+                id = "163b1731-7a24-4e23-ac90-dc95ad8cb9e8",
+                name = "BINANCE"
+        )
+        val coinbasePlatform = Platform(
+                id = "a76b400e-8ffc-42d6-bf47-db866eb20153",
+                name = "COINBASE"
+        )
+
+        every { cryptoServiceMock.findAllByIds(setOf("binancecoin", "litecoin", "bitcoin")) } returns cryptosEntities
+        every {
+            platformServiceMock.findAllByIds(
+                    setOf(
+                            "a76b400e-8ffc-42d6-bf47-db866eb20153",
+                            "163b1731-7a24-4e23-ac90-dc95ad8cb9e8"
+                    )
+            )
+        } returns listOf(binancePlatform, coinbasePlatform)
+        every { userCryptoServiceMock.findAll() } returns userCryptos
+
+        val userCryptosInsights = insightsService.retrieveUserCryptosInsights(0, SortParams(SortBy.MAX_SUPPLY, SortType.DESC))
+
+        assertThat(userCryptosInsights)
+                .usingRecursiveComparison()
+                .isEqualTo(
+                        Optional.of(
+                                PageUserCryptosInsightsResponse(
+                                        page = 1,
+                                        totalPages = 1,
+                                        hasNextPage = false,
+                                        balances = BalancesResponse(
+                                                totalUSDBalance = "4901.13",
+                                                totalBTCBalance = "0.165463035",
+                                                totalEURBalance = "4424.55"
+                                        ),
+                                        cryptos = listOf(
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb768-556e-11ee-8b42-325096b39f47",
+                                                                cryptoName = "BNB",
+                                                                coingeckoCryptoId = "binancecoin",
+                                                                symbol = "bnb",
+                                                                image = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850"
+                                                        ),
+                                                        quantity = "1",
+                                                        percentage = 4.32f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "211.79",
+                                                                totalBTCBalance = "0.00811016",
+                                                                totalEURBalance = "197.80"
+                                                        ),
+                                                        marketCapRank = 4,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "153856150",
+                                                                maxSupply = "200000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "211.79",
+                                                                        eur = "197.80",
+                                                                        btc = "0.00811016"
+                                                                ),
+                                                                marketCap = "48318686968",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("6.00"),
+                                                                        changePercentageIn7d = BigDecimal("-2.00"),
+                                                                        changePercentageIn30d = BigDecimal("12.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("BINANCE")
+                                                ),
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb70e-556e-11ee-8c2c-325096b39f47",
+                                                                cryptoName = "Litecoin",
+                                                                coingeckoCryptoId = "litecoin",
+                                                                symbol = "ltc",
+                                                                image = "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1547033580"
+                                                        ),
+                                                        quantity = "3.125",
+                                                        percentage = 3.86f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "189.34",
+                                                                totalBTCBalance = "0.007352875",
+                                                                totalEURBalance = "176.75"
+                                                        ),
+                                                        marketCapRank = 19,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "73638701",
+                                                                maxSupply = "84000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "60.59",
+                                                                        eur = "56.56",
+                                                                        btc = "0.00235292"
+                                                                ),
+                                                                marketCap = "5259205267",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("6.00"),
+                                                                        changePercentageIn7d = BigDecimal("-2.00"),
+                                                                        changePercentageIn30d = BigDecimal("12.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("COINBASE")
+                                                ),
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb38a-556e-11ee-b56e-325096b39f47",
+                                                                cryptoName = "Bitcoin",
+                                                                coingeckoCryptoId = "bitcoin",
+                                                                symbol = "btc",
+                                                                image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+                                                        ),
+                                                        quantity = "0.15",
+                                                        percentage = 91.82f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "4500.00",
+                                                                totalBTCBalance = "0.15",
+                                                                totalEURBalance = "4050.00"
+                                                        ),
+                                                        marketCapRank = 1,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "19000000",
+                                                                maxSupply = "21000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "30000",
+                                                                        eur = "27000",
+                                                                        btc = "1"
+                                                                ),
+                                                                marketCap = "813208997089",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("10.00"),
+                                                                        changePercentageIn7d = BigDecimal("-5.00"),
+                                                                        changePercentageIn30d = BigDecimal("0.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("BINANCE")
+                                                )
+                                        )
+                                )
+                        )
+                )
+    }
+
+    @Test
+    fun `should retrieve user cryptos insights sorted by 24h change descending`() {
+        val cryptos = listOf("bitcoin", "litecoin", "binancecoin")
+        val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
+        val cryptosEntities = cryptos().filter { cryptos.contains(it.id) }
+        val binancePlatform = Platform(
+                id = "163b1731-7a24-4e23-ac90-dc95ad8cb9e8",
+                name = "BINANCE"
+        )
+        val coinbasePlatform = Platform(
+                id = "a76b400e-8ffc-42d6-bf47-db866eb20153",
+                name = "COINBASE"
+        )
+
+        every { cryptoServiceMock.findAllByIds(setOf("binancecoin", "litecoin", "bitcoin")) } returns cryptosEntities
+        every {
+            platformServiceMock.findAllByIds(
+                    setOf(
+                            "a76b400e-8ffc-42d6-bf47-db866eb20153",
+                            "163b1731-7a24-4e23-ac90-dc95ad8cb9e8"
+                    )
+            )
+        } returns listOf(binancePlatform, coinbasePlatform)
+        every { userCryptoServiceMock.findAll() } returns userCryptos
+
+        val userCryptosInsights = insightsService.retrieveUserCryptosInsights(0, SortParams(SortBy.CHANGE_PRICE_IN_24H, SortType.DESC))
+
+        assertThat(userCryptosInsights)
+                .usingRecursiveComparison()
+                .isEqualTo(
+                        Optional.of(
+                                PageUserCryptosInsightsResponse(
+                                        page = 1,
+                                        totalPages = 1,
+                                        hasNextPage = false,
+                                        balances = BalancesResponse(
+                                                totalUSDBalance = "4901.13",
+                                                totalBTCBalance = "0.165463035",
+                                                totalEURBalance = "4424.55"
+                                        ),
+                                        cryptos = listOf(
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb38a-556e-11ee-b56e-325096b39f47",
+                                                                cryptoName = "Bitcoin",
+                                                                coingeckoCryptoId = "bitcoin",
+                                                                symbol = "btc",
+                                                                image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+                                                        ),
+                                                        quantity = "0.15",
+                                                        percentage = 91.82f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "4500.00",
+                                                                totalBTCBalance = "0.15",
+                                                                totalEURBalance = "4050.00"
+                                                        ),
+                                                        marketCapRank = 1,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "19000000",
+                                                                maxSupply = "21000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "30000",
+                                                                        eur = "27000",
+                                                                        btc = "1"
+                                                                ),
+                                                                marketCap = "813208997089",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("10.00"),
+                                                                        changePercentageIn7d = BigDecimal("-5.00"),
+                                                                        changePercentageIn30d = BigDecimal("0.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("BINANCE")
+                                                ),
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb70e-556e-11ee-8c2c-325096b39f47",
+                                                                cryptoName = "Litecoin",
+                                                                coingeckoCryptoId = "litecoin",
+                                                                symbol = "ltc",
+                                                                image = "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1547033580"
+                                                        ),
+                                                        quantity = "3.125",
+                                                        percentage = 3.86f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "189.34",
+                                                                totalBTCBalance = "0.007352875",
+                                                                totalEURBalance = "176.75"
+                                                        ),
+                                                        marketCapRank = 19,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "73638701",
+                                                                maxSupply = "84000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "60.59",
+                                                                        eur = "56.56",
+                                                                        btc = "0.00235292"
+                                                                ),
+                                                                marketCap = "5259205267",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("6.00"),
+                                                                        changePercentageIn7d = BigDecimal("-2.00"),
+                                                                        changePercentageIn30d = BigDecimal("12.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("COINBASE")
+                                                ),
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb768-556e-11ee-8b42-325096b39f47",
+                                                                cryptoName = "BNB",
+                                                                coingeckoCryptoId = "binancecoin",
+                                                                symbol = "bnb",
+                                                                image = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850"
+                                                        ),
+                                                        quantity = "1",
+                                                        percentage = 4.32f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "211.79",
+                                                                totalBTCBalance = "0.00811016",
+                                                                totalEURBalance = "197.80"
+                                                        ),
+                                                        marketCapRank = 4,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "153856150",
+                                                                maxSupply = "200000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "211.79",
+                                                                        eur = "197.80",
+                                                                        btc = "0.00811016"
+                                                                ),
+                                                                marketCap = "48318686968",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("6.00"),
+                                                                        changePercentageIn7d = BigDecimal("-2.00"),
+                                                                        changePercentageIn30d = BigDecimal("12.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("BINANCE")
+                                                )
+                                        )
+                                )
+                        )
+                )
+    }
+
+    @Test
+    fun `should retrieve user cryptos insights sorted by 7D change ascending`() {
+        val cryptos = listOf("bitcoin", "litecoin", "binancecoin")
+        val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
+        val cryptosEntities = cryptos().filter { cryptos.contains(it.id) }
+        val binancePlatform = Platform(
+                id = "163b1731-7a24-4e23-ac90-dc95ad8cb9e8",
+                name = "BINANCE"
+        )
+        val coinbasePlatform = Platform(
+                id = "a76b400e-8ffc-42d6-bf47-db866eb20153",
+                name = "COINBASE"
+        )
+
+        every { cryptoServiceMock.findAllByIds(setOf("binancecoin", "litecoin", "bitcoin")) } returns cryptosEntities
+        every {
+            platformServiceMock.findAllByIds(
+                    setOf(
+                            "a76b400e-8ffc-42d6-bf47-db866eb20153",
+                            "163b1731-7a24-4e23-ac90-dc95ad8cb9e8"
+                    )
+            )
+        } returns listOf(binancePlatform, coinbasePlatform)
+        every { userCryptoServiceMock.findAll() } returns userCryptos
+
+        val userCryptosInsights = insightsService.retrieveUserCryptosInsights(0, SortParams(SortBy.CHANGE_PRICE_IN_7D, SortType.ASC))
+
+        assertThat(userCryptosInsights)
+                .usingRecursiveComparison()
+                .isEqualTo(
+                        Optional.of(
+                                PageUserCryptosInsightsResponse(
+                                        page = 1,
+                                        totalPages = 1,
+                                        hasNextPage = false,
+                                        balances = BalancesResponse(
+                                                totalUSDBalance = "4901.13",
+                                                totalBTCBalance = "0.165463035",
+                                                totalEURBalance = "4424.55"
+                                        ),
+                                        cryptos = listOf(
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb38a-556e-11ee-b56e-325096b39f47",
+                                                                cryptoName = "Bitcoin",
+                                                                coingeckoCryptoId = "bitcoin",
+                                                                symbol = "btc",
+                                                                image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+                                                        ),
+                                                        quantity = "0.15",
+                                                        percentage = 91.82f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "4500.00",
+                                                                totalBTCBalance = "0.15",
+                                                                totalEURBalance = "4050.00"
+                                                        ),
+                                                        marketCapRank = 1,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "19000000",
+                                                                maxSupply = "21000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "30000",
+                                                                        eur = "27000",
+                                                                        btc = "1"
+                                                                ),
+                                                                marketCap = "813208997089",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("10.00"),
+                                                                        changePercentageIn7d = BigDecimal("-5.00"),
+                                                                        changePercentageIn30d = BigDecimal("0.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("BINANCE")
+                                                ),
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb70e-556e-11ee-8c2c-325096b39f47",
+                                                                cryptoName = "Litecoin",
+                                                                coingeckoCryptoId = "litecoin",
+                                                                symbol = "ltc",
+                                                                image = "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1547033580"
+                                                        ),
+                                                        quantity = "3.125",
+                                                        percentage = 3.86f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "189.34",
+                                                                totalBTCBalance = "0.007352875",
+                                                                totalEURBalance = "176.75"
+                                                        ),
+                                                        marketCapRank = 19,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "73638701",
+                                                                maxSupply = "84000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "60.59",
+                                                                        eur = "56.56",
+                                                                        btc = "0.00235292"
+                                                                ),
+                                                                marketCap = "5259205267",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("6.00"),
+                                                                        changePercentageIn7d = BigDecimal("-2.00"),
+                                                                        changePercentageIn30d = BigDecimal("12.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("COINBASE")
+                                                ),
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb768-556e-11ee-8b42-325096b39f47",
+                                                                cryptoName = "BNB",
+                                                                coingeckoCryptoId = "binancecoin",
+                                                                symbol = "bnb",
+                                                                image = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850"
+                                                        ),
+                                                        quantity = "1",
+                                                        percentage = 4.32f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "211.79",
+                                                                totalBTCBalance = "0.00811016",
+                                                                totalEURBalance = "197.80"
+                                                        ),
+                                                        marketCapRank = 4,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "153856150",
+                                                                maxSupply = "200000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "211.79",
+                                                                        eur = "197.80",
+                                                                        btc = "0.00811016"
+                                                                ),
+                                                                marketCap = "48318686968",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("6.00"),
+                                                                        changePercentageIn7d = BigDecimal("-2.00"),
+                                                                        changePercentageIn30d = BigDecimal("12.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("BINANCE")
+                                                )
+                                        )
+                                )
+                        )
+                )
+    }
+
+    @Test
+    fun `should retrieve user cryptos insights sorted by 30D change descending`() {
+        val cryptos = listOf("bitcoin", "litecoin", "binancecoin")
+        val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
+        val cryptosEntities = cryptos().filter { cryptos.contains(it.id) }
+        val binancePlatform = Platform(
+                id = "163b1731-7a24-4e23-ac90-dc95ad8cb9e8",
+                name = "BINANCE"
+        )
+        val coinbasePlatform = Platform(
+                id = "a76b400e-8ffc-42d6-bf47-db866eb20153",
+                name = "COINBASE"
+        )
+
+        every { cryptoServiceMock.findAllByIds(setOf("binancecoin", "litecoin", "bitcoin")) } returns cryptosEntities
+        every {
+            platformServiceMock.findAllByIds(
+                    setOf(
+                            "a76b400e-8ffc-42d6-bf47-db866eb20153",
+                            "163b1731-7a24-4e23-ac90-dc95ad8cb9e8"
+                    )
+            )
+        } returns listOf(binancePlatform, coinbasePlatform)
+        every { userCryptoServiceMock.findAll() } returns userCryptos
+
+        val userCryptosInsights = insightsService.retrieveUserCryptosInsights(0, SortParams(SortBy.CHANGE_PRICE_IN_30D, SortType.DESC))
+
+        assertThat(userCryptosInsights)
+                .usingRecursiveComparison()
+                .isEqualTo(
+                        Optional.of(
+                                PageUserCryptosInsightsResponse(
+                                        page = 1,
+                                        totalPages = 1,
+                                        hasNextPage = false,
+                                        balances = BalancesResponse(
+                                                totalUSDBalance = "4901.13",
+                                                totalBTCBalance = "0.165463035",
+                                                totalEURBalance = "4424.55"
+                                        ),
+                                        cryptos = listOf(
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb70e-556e-11ee-8c2c-325096b39f47",
+                                                                cryptoName = "Litecoin",
+                                                                coingeckoCryptoId = "litecoin",
+                                                                symbol = "ltc",
+                                                                image = "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1547033580"
+                                                        ),
+                                                        quantity = "3.125",
+                                                        percentage = 3.86f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "189.34",
+                                                                totalBTCBalance = "0.007352875",
+                                                                totalEURBalance = "176.75"
+                                                        ),
+                                                        marketCapRank = 19,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "73638701",
+                                                                maxSupply = "84000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "60.59",
+                                                                        eur = "56.56",
+                                                                        btc = "0.00235292"
+                                                                ),
+                                                                marketCap = "5259205267",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("6.00"),
+                                                                        changePercentageIn7d = BigDecimal("-2.00"),
+                                                                        changePercentageIn30d = BigDecimal("12.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("COINBASE")
+                                                ),
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb768-556e-11ee-8b42-325096b39f47",
+                                                                cryptoName = "BNB",
+                                                                coingeckoCryptoId = "binancecoin",
+                                                                symbol = "bnb",
+                                                                image = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850"
+                                                        ),
+                                                        quantity = "1",
+                                                        percentage = 4.32f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "211.79",
+                                                                totalBTCBalance = "0.00811016",
+                                                                totalEURBalance = "197.80"
+                                                        ),
+                                                        marketCapRank = 4,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "153856150",
+                                                                maxSupply = "200000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "211.79",
+                                                                        eur = "197.80",
+                                                                        btc = "0.00811016"
+                                                                ),
+                                                                marketCap = "48318686968",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("6.00"),
+                                                                        changePercentageIn7d = BigDecimal("-2.00"),
+                                                                        changePercentageIn30d = BigDecimal("12.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("BINANCE")
+                                                ),
+                                                UserCryptosInsights(
+                                                        cryptoInfo = CryptoInfo(
+                                                                id = "676fb38a-556e-11ee-b56e-325096b39f47",
+                                                                cryptoName = "Bitcoin",
+                                                                coingeckoCryptoId = "bitcoin",
+                                                                symbol = "btc",
+                                                                image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+                                                        ),
+                                                        quantity = "0.15",
+                                                        percentage = 91.82f,
+                                                        balances = BalancesResponse(
+                                                                totalUSDBalance = "4500.00",
+                                                                totalBTCBalance = "0.15",
+                                                                totalEURBalance = "4050.00"
+                                                        ),
+                                                        marketCapRank = 1,
+                                                        marketData = MarketData(
+                                                                circulatingSupply = "19000000",
+                                                                maxSupply = "21000000",
+                                                                currentPrice = CurrentPrice(
+                                                                        usd = "30000",
+                                                                        eur = "27000",
+                                                                        btc = "1"
+                                                                ),
+                                                                marketCap = "813208997089",
+                                                                priceChange = PriceChange(
+                                                                        changePercentageIn24h = BigDecimal("10.00"),
+                                                                        changePercentageIn7d = BigDecimal("-5.00"),
+                                                                        changePercentageIn30d = BigDecimal("0.00")
+                                                                )
+                                                        ),
+                                                        platforms = listOf("BINANCE")
+                                                )
+                                        )
+                                )
+                        )
+                )
+    }
+
+    @Test
     fun `should retrieve empty if no user cryptos are found for retrieveUserCryptosInsights`() {
         every { userCryptoServiceMock.findAll() } returns emptyList()
 
@@ -1147,7 +2026,7 @@ class InsightsServiceTest {
                                     maxSupply = "200000000",
                                     currentPrice = CurrentPrice(
                                         usd = "211.79",
-                                        eur = "197.8",
+                                        eur = "197.80",
                                         btc = "0.00811016"
                                     ),
                                     marketCap = "48318686968",
@@ -1750,7 +2629,7 @@ class InsightsServiceTest {
                 circulatingSupply = BigDecimal("153856150"),
                 lastKnownPrice = BigDecimal("211.79"),
                 lastKnownPriceInBTC = BigDecimal("0.00811016"),
-                lastKnownPriceInEUR = BigDecimal("197.8"),
+                lastKnownPriceInEUR = BigDecimal("197.80"),
                 maxSupply = BigDecimal("200000000"),
                 marketCapRank = 4,
                 marketCap = BigDecimal("48318686968"),

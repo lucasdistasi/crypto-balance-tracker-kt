@@ -1,17 +1,12 @@
 package com.distasilucas.cryptobalancetracker.controller
 
+import com.distasilucas.cryptobalancetracker.constants.INVALID_VALUE_FOR
 import com.distasilucas.cryptobalancetracker.constants.UNKNOWN_ERROR
 import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.exception.TooManyRequestsException
-import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
-import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
-import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
-import com.distasilucas.cryptobalancetracker.service.DuplicatedPlatformException
-import com.distasilucas.cryptobalancetracker.service.GoalNotFoundException
-import com.distasilucas.cryptobalancetracker.service.InsufficientBalanceException
-import com.distasilucas.cryptobalancetracker.service.PlatformNotFoundException
-import com.distasilucas.cryptobalancetracker.service.UserCryptoNotFoundException
-import com.distasilucas.cryptobalancetracker.service.UsernameNotFoundException
+import com.distasilucas.cryptobalancetracker.model.SortBy
+import com.distasilucas.cryptobalancetracker.model.SortType
+import com.distasilucas.cryptobalancetracker.service.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
@@ -25,6 +20,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.ServletWebRequest
 import org.springframework.web.context.request.WebRequest
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import java.net.URI
 
 @RestControllerAdvice
@@ -234,7 +230,6 @@ class ExceptionController {
         val detail = exception.body.detail ?: exception.message
         val problemDetail = BAD_REQUEST_STATUS.withDetailsAndURI(detail, URI.create(request.requestURL.toString()))
 
-
         return ResponseEntity.status(BAD_REQUEST_STATUS).body(listOf(problemDetail))
     }
 
@@ -250,6 +245,22 @@ class ExceptionController {
         val problemDetail = HttpStatus.FORBIDDEN.withDetailsAndURI(detail, URI.create(request.requestURL.toString()))
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail)
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+    fun handleMethodArgumentTypeMismatchException(
+            exception: MethodArgumentTypeMismatchException,
+            webRequest: WebRequest
+    ): ResponseEntity<List<ProblemDetail>> {
+        logger.info { "A MethodArgumentTypeMismatchException occurred $exception" }
+
+        val request = (webRequest as ServletWebRequest).request
+        val name = exception.name
+        val availableValues = getAvailableValues(name)
+        val message = INVALID_VALUE_FOR.format(exception.value, name, availableValues)
+        val problemDetail = BAD_REQUEST_STATUS.withDetailsAndURI(message, URI.create(request.requestURL.toString()))
+
+        return ResponseEntity.status(BAD_REQUEST_STATUS).body(listOf(problemDetail))
     }
 
     @ExceptionHandler(ApiException::class)
@@ -287,5 +298,13 @@ class ExceptionController {
         problemDetail.type = type
 
         return problemDetail
+    }
+
+    private fun getAvailableValues(enumParamName: String): String {
+        return when (enumParamName) {
+            "sortBy" -> SortBy.entries.toTypedArray().contentToString()
+            "sortType" -> SortType.entries.toTypedArray().contentToString()
+            else -> ""
+        }
     }
 }

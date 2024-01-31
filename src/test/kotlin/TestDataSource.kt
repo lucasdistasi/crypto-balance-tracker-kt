@@ -276,9 +276,9 @@ fun getMarketData(
         circulatingSupply = circulatingSupply,
         maxSupply = maxSupply,
         marketCap = MarketCap(BigDecimal("813208997089")),
-        BigDecimal("10.00"),
-        BigDecimal("-5.00"),
-        BigDecimal("0.00")
+        changePercentageIn24h = BigDecimal("10.00"),
+        changePercentageIn7d = BigDecimal("-5.00"),
+        changePercentageIn30d = BigDecimal("0.00")
     )
 }
 
