@@ -36,7 +36,7 @@ import java.math.RoundingMode
 <span class="fc" id="L36">    val marketCap: MarketCap,</span>
 
 <span class="fc" id="L38">    @JsonProperty(&quot;price_change_percentage_24h&quot;)</span>
-<span class="nc" id="L39">    var changePercentageIn24h: BigDecimal,</span>
+<span class="nc" id="L39">    val changePercentageIn24h: BigDecimal,</span>
 
 <span class="fc" id="L41">    @JsonProperty(&quot;price_change_percentage_7d&quot;)</span>
 <span class="nc" id="L42">    val changePercentageIn7d: BigDecimal,</span>
@@ -45,11 +45,11 @@ import java.math.RoundingMode
 <span class="nc" id="L45">    val changePercentageIn30d: BigDecimal</span>
 ): Serializable {
 
-<span class="fc" id="L48">    fun roundChangePercentageIn24h() = changePercentageIn24h.setScale(2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L48">    fun roundChangePercentageIn24h(): BigDecimal = changePercentageIn24h.setScale(2, RoundingMode.HALF_UP)</span>
 
-<span class="fc" id="L50">    fun roundChangePercentageIn7d() = changePercentageIn7d.setScale(2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L50">    fun roundChangePercentageIn7d(): BigDecimal = changePercentageIn7d.setScale(2, RoundingMode.HALF_UP)</span>
 
-<span class="fc" id="L52">    fun roundChangePercentageIn30d() = changePercentageIn30d.setScale(2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L52">    fun roundChangePercentageIn30d(): BigDecimal = changePercentageIn30d.setScale(2, RoundingMode.HALF_UP)</span>
 }
 
 <span class="fc" id="L55">data class CurrentPrice(</span>
