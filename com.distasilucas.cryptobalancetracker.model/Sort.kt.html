@@ -24,13 +24,13 @@ enum class SortType {
 <span class="fc" id="L24">    DESC</span>
 }
 
-<span class="fc" id="L27">data class SortParams(</span>
-<span class="pc" id="L28">    val sortBy: SortBy,</span>
-<span class="pc" id="L29">    val sortType: SortType</span>
+<span class="pc" id="L27">data class SortParams(</span>
+<span class="pc" id="L28">    val sortBy: SortBy = SortBy.PERCENTAGE,</span>
+<span class="pc" id="L29">    val sortType: SortType = SortType.DESC</span>
 ) {
 
     fun cryptosInsightsResponseComparator(): Comparator&lt;UserCryptosInsights&gt; {
 <span class="fc" id="L33">        return sortBy.getUserCryptosInsightsComparator(sortType)</span>
     }
-}
+<span class="nc" id="L35">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

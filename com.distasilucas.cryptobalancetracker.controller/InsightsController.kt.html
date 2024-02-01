@@ -44,11 +44,11 @@ import java.util.Optional
         @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
         page: Int,
         @RequestParam(required = false)
-        sortBy: SortBy?,
+        sortBy: SortBy,
         @RequestParam(required = false)
-        sortType: SortType?
+        sortType: SortType
     ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt; {
-<span class="fc" id="L51">        val sortParams = SortParams(sortBy!!, sortType!!)</span>
+<span class="fc" id="L51">        val sortParams = SortParams(sortBy, sortType)</span>
 <span class="fc" id="L52">        val serCryptosInsights = insightsService.retrieveUserCryptosInsights(page, sortParams)</span>
 
 <span class="fc" id="L54">        return okOrNoContent(serCryptosInsights)</span>
@@ -60,11 +60,11 @@ import java.util.Optional
         @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
         page: Int,
         @RequestParam(required = false)
-        sortBy: SortBy?,
+        sortBy: SortBy,
         @RequestParam(required = false)
-        sortType: SortType?
+        sortType: SortType
     ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt; {
-<span class="fc" id="L67">        val sortParams = SortParams(sortBy!!, sortType!!)</span>
+<span class="fc" id="L67">        val sortParams = SortParams(sortBy, sortType)</span>
 <span class="fc" id="L68">        val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(page, sortParams)</span>
 
 <span class="fc" id="L70">        return okOrNoContent(userCryptosPlatformsInsights)</span>

@@ -131,8 +131,8 @@ interface InsightsControllerAPI {
 <span class="fc" id="L131">    fun retrieveUserCryptosInsights(</span>
         @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
         page: Int,
-<span class="fc" id="L134">        sortBy: SortBy? = SortBy.PERCENTAGE,</span>
-<span class="fc" id="L135">        sortType: SortType? = SortType.DESC</span>
+<span class="fc" id="L134">        sortBy: SortBy = SortBy.PERCENTAGE,</span>
+<span class="fc" id="L135">        sortType: SortType = SortType.DESC</span>
     ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt;
 
     @Operation(summary = &quot;Retrieves information of each INDIVIDUAL user crypto, like the total balance, information about the crypto, in which platforms it's stored&quot;)
@@ -194,8 +194,8 @@ interface InsightsControllerAPI {
 <span class="fc" id="L194">    fun retrieveUserCryptosPlatformsInsights(</span>
         @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
         page: Int,
-<span class="fc" id="L197">        sortBy: SortBy? = SortBy.PERCENTAGE,</span>
-<span class="fc" id="L198">        sortType: SortType? = SortType.DESC</span>
+<span class="fc" id="L197">        sortBy: SortBy = SortBy.PERCENTAGE,</span>
+<span class="fc" id="L198">        sortType: SortType = SortType.DESC</span>
     ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt;
 
     @Operation(summary = &quot;Retrieve insights balances for all user cryptos&quot;)
