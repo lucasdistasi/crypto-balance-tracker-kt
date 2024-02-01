@@ -2,6 +2,9 @@ package com.distasilucas.cryptobalancetracker.controller
 
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.controller.swagger.InsightsControllerAPI
+import com.distasilucas.cryptobalancetracker.model.SortBy
+import com.distasilucas.cryptobalancetracker.model.SortParams
+import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
@@ -39,9 +42,14 @@ class InsightsController(private val insightsService: InsightsService) : Insight
     override fun retrieveUserCryptosInsights(
         @RequestParam
         @Min(value = 0, message = "Page must be greater than or equal to 0")
-        page: Int
+        page: Int,
+        @RequestParam(required = false)
+        sortBy: SortBy,
+        @RequestParam(required = false)
+        sortType: SortType
     ): ResponseEntity<PageUserCryptosInsightsResponse> {
-        val serCryptosInsights = insightsService.retrieveUserCryptosInsights(page)
+        val sortParams = SortParams(sortBy, sortType)
+        val serCryptosInsights = insightsService.retrieveUserCryptosInsights(page, sortParams)
 
         return okOrNoContent(serCryptosInsights)
     }
@@ -50,9 +58,14 @@ class InsightsController(private val insightsService: InsightsService) : Insight
     override fun retrieveUserCryptosPlatformsInsights(
         @RequestParam
         @Min(value = 0, message = "Page must be greater than or equal to 0")
-        page: Int
+        page: Int,
+        @RequestParam(required = false)
+        sortBy: SortBy,
+        @RequestParam(required = false)
+        sortType: SortType
     ): ResponseEntity<PageUserCryptosInsightsResponse> {
-        val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(page)
+        val sortParams = SortParams(sortBy, sortType)
+        val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(page, sortParams)
 
         return okOrNoContent(userCryptosPlatformsInsights)
     }

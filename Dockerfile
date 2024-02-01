@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17.0.6_10-jdk
+FROM eclipse-temurin:21.0.2_13-jdk
 RUN mkdir "/home/crypto-balance-tracker"
 WORKDIR .
 COPY /build/libs/crypto-balance-tracker.jar .

@@ -1,28 +1,14 @@
 package com.distasilucas.cryptobalancetracker.controller
 
-import com.distasilucas.cryptobalancetracker.constants.COINGECKO_CRYPTO_NOT_FOUND
-import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_CRYPTO_PLATFORM
-import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_GOAL
-import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_PLATFORM
-import com.distasilucas.cryptobalancetracker.constants.GOAL_ID_NOT_FOUND
-import com.distasilucas.cryptobalancetracker.constants.NOT_ENOUGH_BALANCE
-import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_FOUND
-import com.distasilucas.cryptobalancetracker.constants.REQUEST_LIMIT_REACHED
-import com.distasilucas.cryptobalancetracker.constants.UNKNOWN_ERROR
-import com.distasilucas.cryptobalancetracker.constants.USERNAME_NOT_FOUND
-import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.constants.*
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.exception.TooManyRequestsException
-import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
-import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
-import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
-import com.distasilucas.cryptobalancetracker.service.DuplicatedPlatformException
-import com.distasilucas.cryptobalancetracker.service.GoalNotFoundException
-import com.distasilucas.cryptobalancetracker.service.InsufficientBalanceException
-import com.distasilucas.cryptobalancetracker.service.PlatformNotFoundException
-import com.distasilucas.cryptobalancetracker.service.UserCryptoNotFoundException
-import com.distasilucas.cryptobalancetracker.service.UsernameNotFoundException
+import com.distasilucas.cryptobalancetracker.model.SortBy
+import com.distasilucas.cryptobalancetracker.model.SortType
+import com.distasilucas.cryptobalancetracker.service.*
+import io.mockk.every
+import io.mockk.mockk
 import jakarta.validation.ConstraintViolation
 import jakarta.validation.ConstraintViolationException
 import org.assertj.core.api.Assertions.assertThat
@@ -41,6 +27,7 @@ import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.context.request.ServletWebRequest
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import java.net.URI
 
 class ExceptionControllerTest {
@@ -297,6 +284,60 @@ class ExceptionControllerTest {
 
         assertThat(responseEntity)
             .isEqualTo(ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail))
+    }
+
+    @Test
+    fun `should handle MethodArgumentTypeMismatchException`() {
+        val exceptionMock = mockk<MethodArgumentTypeMismatchException>()
+        val detail = INVALID_VALUE_FOR.format("idontknow", "idontknow", "")
+
+        every { exceptionMock.name } returns "idontknow"
+        every { exceptionMock.value } returns "idontknow"
+
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = detail
+
+        val responseEntity = exceptionController.handleMethodArgumentTypeMismatchException(exceptionMock, servletRequest)
+
+        assertThat(responseEntity)
+                .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
+    }
+
+    @Test
+    fun `should handle MethodArgumentTypeMismatchException for SortBy`() {
+        val exceptionMock = mockk<MethodArgumentTypeMismatchException>()
+        val detail = INVALID_VALUE_FOR.format("idontknow", "sortBy", SortBy.entries.toTypedArray().contentToString())
+
+        every { exceptionMock.name } returns "sortBy"
+        every { exceptionMock.value } returns "idontknow"
+
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = detail
+
+        val responseEntity = exceptionController.handleMethodArgumentTypeMismatchException(exceptionMock, servletRequest)
+
+        assertThat(responseEntity)
+                .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
+    }
+
+    @Test
+    fun `should handle MethodArgumentTypeMismatchException for SortType`() {
+        val exceptionMock = mockk<MethodArgumentTypeMismatchException>()
+        val detail = INVALID_VALUE_FOR.format("idontknow", "sortType", SortType.entries.toTypedArray().contentToString())
+
+        every { exceptionMock.name } returns "sortType"
+        every { exceptionMock.value } returns "idontknow"
+
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+        problemDetail.detail = detail
+
+        val responseEntity = exceptionController.handleMethodArgumentTypeMismatchException(exceptionMock, servletRequest)
+
+        assertThat(responseEntity)
+                .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
     }
 
     @Test
