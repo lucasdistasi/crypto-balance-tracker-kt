@@ -41,7 +41,7 @@ Do your own research before investing money you are not willing to loss.
 
 - Java 17
 - Kotlin 1.8.22
-- Spring 6 & Spring Boot 3
+- Spring 6 & Spring Boot 3.2.2
     - Spring WebFlux
     - Hibernate
     - OpenAPI
@@ -63,6 +63,7 @@ Do your own research before investing money you are not willing to loss.
 
 Before starting, you must know that this application can be used with security, so by enabling security, 
 all endpoints will require a JWT token. This is not yet implemented in the front-end application.
+Also, a Coingecko api key is required, you can get one by creating a demo account [here](https://www.coingecko.com/en/api/pricing)
 
 That being said, below you can find the instructions to run the application.
 
@@ -75,24 +76,25 @@ That being said, below you can find the instructions to run the application.
     - [crypto-balance-tracker-ui](https://github.com/lucasdistasi/crypto-balance-tracker-ui)
     - [cbt-mongo-seed](https://github.com/lucasdistasi/cbt-mongo.seed) (not needed if security is disabled)
     - [crypto-balance-tracker-login](https://github.com/lucasdistasi/crypto-balance-tracker-login) (not needed if security is disabled)
-3. If you want to secure the app, set the _security.enabled_ property in application.yml from this project to true.
+3. DEMO_COINGECKO_API_KEY. API Key from Coingecko. If you have a PRO account fill PRO_COINGECKO_API_KEY and leave this one empty.
+4. If you want to secure the app, set the _security.enabled_ property in application.yml from this project to true.
    Default value is false.
-4. Set up environment variables in _.env_ file.
+5. Set up environment variables in _.env_ file.
    1. MONGODB_DATABASE. The name of the database.
    2. JWT_SIGNING_KEY. The signing key. Leave empty if security is disabled.
    3. COINGECKO_API_KEY. API Key from PRO Account. If you don't have one, leave it empty.
-5. Set your desired values in [cbt-mongo-seed](https://github.com/lucasdistasi/cbt-mongo.seed)  **(remember this is not needed if security is disabled)**.
-6. Run `./gradlew bootJar` on the root of this project to create the executable jar that's going to be used by Docker to
+6. Set your desired values in [cbt-mongo-seed](https://github.com/lucasdistasi/cbt-mongo.seed)  **(remember this is not needed if security is disabled)**.
+7. Run `./gradlew bootJar` on the root of this project to create the executable jar that's going to be used by Docker to
    build the image.
-7. Create docker images (`docker build`) for the projects. Bear in mind that the docker image must match the project name.
+8. Create docker images (`docker build`) for the projects. Bear in mind that the docker image must match the project name.
    - [crypto-balance-tracker-kt](https://github.com/lucasdistasi/crypto-balance-tracker-kt)
    - [crypto-balance-tracker-ui](https://github.com/lucasdistasi/crypto-balance-tracker-ui)
    - [cbt-mongo-seed](https://github.com/lucasdistasi/cbt-mongo.seed) (not needed if security is disabled)
    - [crypto-balance-tracker-login](https://github.com/lucasdistasi/crypto-balance-tracker-login) (not needed if security is disabled)
-8. On this project folder run `docker ompose up` if you don't want to use it with security
+9. On this project folder run `docker ompose up` if you don't want to use it with security
    or `docker-compose -f docker-compose-security.yml up` if you want to use it with security.
-9. Open the URL `http://localhost:5173` on your favourite web browser.
-10. Boila!
+10. Open the URL `http://localhost:5173` on your favourite web browser.
+11. Boila!
 
 ## Contributing :coffee:
 
@@ -133,6 +135,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 ## Insights
 
 ### Retrieve total balances
+
 `/api/v1/insights/balances`
 
 ```json
@@ -144,6 +147,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 ```
 
 ### Retrieve insights for the given platformId
+
 `/api/v1/insights/platforms/{platformId}`
 
 ```json
@@ -156,6 +160,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
   },
   "cryptos": [
     {
+      "id": "3f64cb0b-844a-4f7e-b19d-7a158ecd7f05",
       "cryptoName": "Bitcoin",
       "cryptoId": "bitcoin",
       "quantity": "0.112371283",
@@ -167,6 +172,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
       "percentage": 92.73
     },
     {
+      "id": "412e2361-a650-468b-b21e-b26053be6dcf", 
       "cryptoName": "Ethereum",
       "cryptoId": "ethereum",
       "quantity": "0.12349",
@@ -178,6 +184,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
       "percentage": 5.8
     },
     {
+      "id": "42241c9c-eda8-45c1-a603-7ad815ffed7b",
       "cryptoName": "XRP",
       "cryptoId": "ripple",
       "quantity": "100",
@@ -193,6 +200,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 ```
 
 ### Retrieve balances insights for all platforms
+
 `/api/v1/insights/platforms/balances`
 
 ```json
@@ -261,305 +269,8 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 }
 ```
 
-### Retrieve user cryptos insights by page
-`/api/v1/insights/cryptos?page={page}`
-
-```json
-{
-  "page": 1,
-  "totalPages": 2,
-  "hasNextPage": true,
-  "balances": {
-    "totalUSDBalance": "6088.78",
-    "totalEURBalance": "5699.70",
-    "totalBTCBalance": "0.165316546142"
-  },
-  "cryptos": [
-    {
-      "cryptoInfo": {
-        "id": "597ee816-416e-4b78-b9ce-ed16313a6e8a",
-        "cryptoName": "Bitcoin",
-        "cryptoId": "bitcoin",
-        "symbol": "btc",
-        "image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1696501400"
-      },
-      "quantity": "0.112371283",
-      "percentage": 67.96,
-      "balances": {
-        "totalUSDBalance": "4138.07",
-        "totalEURBalance": "3873.66",
-        "totalBTCBalance": "0.112371283"
-      },
-      "marketData": {
-        "circulatingSupply": "19538343.0",
-        "maxSupply": "21000000.0",
-        "currentPrice": {
-          "usd": "36825",
-          "eur": "34472",
-          "btc": "1.0"
-        }
-      },
-      "platforms": [
-        "BINANCE"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "0d40df86-5d39-42af-8762-cdf90d2753ad",
-        "cryptoName": "Ethereum",
-        "cryptoId": "ethereum",
-        "symbol": "eth",
-        "image": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628"
-      },
-      "quantity": "0.2581273123",
-      "percentage": 8.88,
-      "balances": {
-        "totalUSDBalance": "540.59",
-        "totalEURBalance": "506.05",
-        "totalBTCBalance": "0.014672630143"
-      },
-      "marketData": {
-        "circulatingSupply": "120263563.630836",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "2094.27",
-          "eur": "1960.45",
-          "btc": "0.05684261"
-        }
-      },
-      "platforms": [
-        "COINBASE"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "e7fac4a2-9424-4635-a716-d3fc1b673ad9",
-        "cryptoName": "Ethereum",
-        "cryptoId": "ethereum",
-        "symbol": "eth",
-        "image": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628"
-      },
-      "quantity": "0.12349",
-      "percentage": 4.25,
-      "balances": {
-        "totalUSDBalance": "258.62",
-        "totalEURBalance": "242.10",
-        "totalBTCBalance": "0.007019493909"
-      },
-      "marketData": {
-        "circulatingSupply": "120263563.630836",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "2094.27",
-          "eur": "1960.45",
-          "btc": "0.05684261"
-        }
-      },
-      "platforms": [
-        "BINANCE"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "2e206c40-4453-4a51-9146-926100c1e7cd",
-        "cryptoName": "Tether",
-        "cryptoId": "tether",
-        "symbol": "usdt",
-        "image": "https://assets.coingecko.com/coins/images/325/large/Tether.png?1696501661"
-      },
-      "quantity": "200",
-      "percentage": 3.28,
-      "balances": {
-        "totalUSDBalance": "199.88",
-        "totalEURBalance": "187.10",
-        "totalBTCBalance": "0.005424"
-      },
-      "marketData": {
-        "circulatingSupply": "86517250035.3132",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "0.999419",
-          "eur": "0.935491",
-          "btc": "0.00002712"
-        }
-      },
-      "platforms": [
-        "OKX"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "5bf2dd37-bcc6-4d15-8468-fcdada3d838a",
-        "cryptoName": "BNB",
-        "cryptoId": "binancecoin",
-        "symbol": "bnb",
-        "image": "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1696501970"
-      },
-      "quantity": "0.75",
-      "percentage": 3.11,
-      "balances": {
-        "totalUSDBalance": "189.50",
-        "totalEURBalance": "177.40",
-        "totalBTCBalance": "0.0051435"
-      },
-      "marketData": {
-        "circulatingSupply": "153856150.0",
-        "maxSupply": "200000000.0",
-        "currentPrice": {
-          "usd": "252.67",
-          "eur": "236.53",
-          "btc": "0.006858"
-        }
-      },
-      "platforms": [
-        "BYBIT"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "772ad3f1-0256-4dfc-bff7-82bd655206fb",
-        "cryptoName": "Tether",
-        "cryptoId": "tether",
-        "symbol": "usdt",
-        "image": "https://assets.coingecko.com/coins/images/325/large/Tether.png?1696501661"
-      },
-      "quantity": "185",
-      "percentage": 3.04,
-      "balances": {
-        "totalUSDBalance": "184.89",
-        "totalEURBalance": "173.07",
-        "totalBTCBalance": "0.0050172"
-      },
-      "marketData": {
-        "circulatingSupply": "86517250035.3132",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "0.999419",
-          "eur": "0.935491",
-          "btc": "0.00002712"
-        }
-      },
-      "platforms": [
-        "KRAKEN"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "19b6efa6-31d9-4d63-82c8-c252a7c33bba",
-        "cryptoName": "Solana",
-        "cryptoId": "solana",
-        "symbol": "sol",
-        "image": "https://assets.coingecko.com/coins/images/4128/large/solana.png?1696504756"
-      },
-      "quantity": "2",
-      "percentage": 1.61,
-      "balances": {
-        "totalUSDBalance": "98.10",
-        "totalEURBalance": "91.84",
-        "totalBTCBalance": "0.00266284"
-      },
-      "marketData": {
-        "circulatingSupply": "421017098.503324",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "49.05",
-          "eur": "45.92",
-          "btc": "0.00133142"
-        }
-      },
-      "platforms": [
-        "KRAKEN"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "62977251-9571-4069-aaed-5ab4ea5c4d4f",
-        "cryptoName": "Litecoin",
-        "cryptoId": "litecoin",
-        "symbol": "ltc",
-        "image": "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1696501400"
-      },
-      "quantity": "1.123891239",
-      "percentage": 1.35,
-      "balances": {
-        "totalUSDBalance": "82.26",
-        "totalEURBalance": "77.01",
-        "totalBTCBalance": "0.002231811983"
-      },
-      "marketData": {
-        "circulatingSupply": "73857601.9834713",
-        "maxSupply": "84000000.0",
-        "currentPrice": {
-          "usd": "73.19",
-          "eur": "68.52",
-          "btc": "0.00198579"
-        }
-      },
-      "platforms": [
-        "COINBASE"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "14c60428-8761-4859-a8fb-485505f3dbd0",
-        "cryptoName": "Polkadot",
-        "cryptoId": "polkadot",
-        "symbol": "dot",
-        "image": "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1696512008"
-      },
-      "quantity": "15",
-      "percentage": 1.27,
-      "balances": {
-        "totalUSDBalance": "77.25",
-        "totalEURBalance": "72.30",
-        "totalBTCBalance": "0.0020943"
-      },
-      "marketData": {
-        "circulatingSupply": "1294982120.91743",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "5.15",
-          "eur": "4.82",
-          "btc": "0.00013962"
-        }
-      },
-      "platforms": [
-        "TREZOR"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "a7297b23-68b5-46aa-b91c-ff6d022be59e",
-        "cryptoName": "Dogecoin",
-        "cryptoId": "dogecoin",
-        "symbol": "doge",
-        "image": "https://assets.coingecko.com/coins/images/5/large/dogecoin.png?1696501409"
-      },
-      "quantity": "1000.21381",
-      "percentage": 1.22,
-      "balances": {
-        "totalUSDBalance": "74.32",
-        "totalEURBalance": "69.57",
-        "totalBTCBalance": "0.002020431896"
-      },
-      "marketData": {
-        "circulatingSupply": "141771566383.705",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "0.0743",
-          "eur": "0.069553",
-          "btc": "0.00000202"
-        }
-      },
-      "platforms": [
-        "COINBASE"
-      ]
-    }
-  ]
-}
-```
-
 ### Retrieve user crypto insights for the given coingeckoCryptoId
+
 `/api/v1/insights/cryptos/{coingeckoCryptoId}`
 
 ```json
@@ -595,8 +306,378 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 }
 ```
 
+### Retrieve user cryptos insights by page
+
+`/api/v1/insights/cryptos?page={page}&sortBy={sortBy}&sortType={sortType}`
+
+```json
+{
+  "page": 1,
+  "totalPages": 2,
+  "hasNextPage": true,
+  "balances": {
+    "totalUSDBalance": "6088.78",
+    "totalEURBalance": "5699.70",
+    "totalBTCBalance": "0.165316546142"
+  },
+  "cryptos": [
+    {
+      "cryptoInfo": {
+        "id": "597ee816-416e-4b78-b9ce-ed16313a6e8a",
+        "cryptoName": "Bitcoin",
+        "cryptoId": "bitcoin",
+        "symbol": "btc",
+        "image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1696501400"
+      },
+      "quantity": "0.112371283",
+      "percentage": 67.96,
+      "balances": {
+        "totalUSDBalance": "4138.07",
+        "totalEURBalance": "3873.66",
+        "totalBTCBalance": "0.112371283"
+      },
+      "marketCapRank": 1,
+      "marketData": {
+        "circulatingSupply": "19538343.0",
+        "maxSupply": "21000000.0",
+        "currentPrice": {
+          "usd": "36825",
+          "eur": "34472",
+          "btc": "1.0"
+        },
+        "marketCap": "819249388691",
+        "priceChange": {
+           "changePercentageIn24h": 1.04,
+           "changePercentageIn7d": 0.53,
+           "changePercentageIn30d": -2.99
+        }
+      },
+      "platforms": [
+        "BINANCE"
+      ]
+    },
+    {
+      "cryptoInfo": {
+        "id": "0d40df86-5d39-42af-8762-cdf90d2753ad",
+        "cryptoName": "Ethereum",
+        "cryptoId": "ethereum",
+        "symbol": "eth",
+        "image": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628"
+      },
+      "quantity": "0.2581273123",
+      "percentage": 8.88,
+      "balances": {
+        "totalUSDBalance": "540.59",
+        "totalEURBalance": "506.05",
+        "totalBTCBalance": "0.014672630143"
+      },
+      "marketCapRank": 2,
+      "marketData": {
+        "circulatingSupply": "120263563.630836",
+        "maxSupply": "0",
+        "currentPrice": {
+          "usd": "2094.27",
+          "eur": "1960.45",
+          "btc": "0.05684261"
+        },
+        "marketCap": "272316630944",
+        "priceChange": {
+           "changePercentageIn24h": 0.55,
+           "changePercentageIn7d": -8.24,
+           "changePercentageIn30d": -5.64
+        }
+      },
+      "platforms": [
+        "COINBASE"
+      ]
+    },
+    {
+      "cryptoInfo": {
+        "id": "e7fac4a2-9424-4635-a716-d3fc1b673ad9",
+        "cryptoName": "Ethereum",
+        "cryptoId": "ethereum",
+        "symbol": "eth",
+        "image": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628"
+      },
+      "quantity": "0.12349",
+      "percentage": 4.25,
+      "balances": {
+        "totalUSDBalance": "258.62",
+        "totalEURBalance": "242.10",
+        "totalBTCBalance": "0.007019493909"
+      },
+      "marketCapRank": 2,
+      "marketData": {
+        "circulatingSupply": "120263563.630836",
+        "maxSupply": "0",
+        "currentPrice": {
+          "usd": "2094.27",
+          "eur": "1960.45",
+          "btc": "0.05684261"
+        },
+        "marketCap": "272316630944",
+        "priceChange": {
+           "changePercentageIn24h": 0.55,
+           "changePercentageIn7d": -8.24,
+           "changePercentageIn30d": -5.64
+        }
+      },
+      "platforms": [
+        "BINANCE"
+      ]
+    },
+    {
+      "cryptoInfo": {
+        "id": "2e206c40-4453-4a51-9146-926100c1e7cd",
+        "cryptoName": "Tether",
+        "cryptoId": "tether",
+        "symbol": "usdt",
+        "image": "https://assets.coingecko.com/coins/images/325/large/Tether.png?1696501661"
+      },
+      "quantity": "200",
+      "percentage": 3.28,
+      "balances": {
+        "totalUSDBalance": "199.88",
+        "totalEURBalance": "187.10",
+        "totalBTCBalance": "0.005424"
+      },
+      "marketCapRank": 3,
+      "marketData": {
+        "circulatingSupply": "86517250035.3132",
+        "maxSupply": "0",
+        "currentPrice": {
+          "usd": "0.999419",
+          "eur": "0.935491",
+          "btc": "0.00002712"
+        },
+        "marketCap": "96022661565",
+        "priceChange": {
+           "changePercentageIn24h": 0.01,
+           "changePercentageIn7d": 0.01,
+           "changePercentageIn30d": 0.00
+        }
+      },
+      "platforms": [
+        "OKX"
+      ]
+    },
+    {
+      "cryptoInfo": {
+        "id": "5bf2dd37-bcc6-4d15-8468-fcdada3d838a",
+        "cryptoName": "BNB",
+        "cryptoId": "binancecoin",
+        "symbol": "bnb",
+        "image": "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1696501970"
+      },
+      "quantity": "0.75",
+      "percentage": 3.11,
+      "balances": {
+        "totalUSDBalance": "189.50",
+        "totalEURBalance": "177.40",
+        "totalBTCBalance": "0.0051435"
+      },
+      "marketCapRank": 4,
+      "marketData": {
+        "circulatingSupply": "153856150.0",
+        "maxSupply": "200000000.0",
+        "currentPrice": {
+          "usd": "252.67",
+          "eur": "236.53",
+          "btc": "0.006858"
+        },
+        "marketCap": "46704503158",
+        "priceChange": {
+           "changePercentageIn24h": 0.95,
+           "changePercentageIn7d": -3.65,
+           "changePercentageIn30d": -9.73
+        }
+      },
+      "platforms": [
+        "BYBIT"
+      ]
+    },
+    {
+      "cryptoInfo": {
+        "id": "772ad3f1-0256-4dfc-bff7-82bd655206fb",
+        "cryptoName": "Tether",
+        "cryptoId": "tether",
+        "symbol": "usdt",
+        "image": "https://assets.coingecko.com/coins/images/325/large/Tether.png?1696501661"
+      },
+      "quantity": "185",
+      "percentage": 3.04,
+      "balances": {
+        "totalUSDBalance": "184.89",
+        "totalEURBalance": "173.07",
+        "totalBTCBalance": "0.0050172"
+      },
+      "marketCapRank": 3,
+      "marketData": {
+        "circulatingSupply": "86517250035.3132",
+        "maxSupply": "0",
+        "currentPrice": {
+          "usd": "0.999419",
+          "eur": "0.935491",
+          "btc": "0.00002712"
+        },
+        "marketCap": "96022661565",
+        "priceChange": {
+           "changePercentageIn24h": 0.01,
+           "changePercentageIn7d": 0.01,
+           "changePercentageIn30d": 0.00
+        }
+      },
+      "platforms": [
+        "KRAKEN"
+      ]
+    },
+    {
+      "cryptoInfo": {
+        "id": "19b6efa6-31d9-4d63-82c8-c252a7c33bba",
+        "cryptoName": "Solana",
+        "cryptoId": "solana",
+        "symbol": "sol",
+        "image": "https://assets.coingecko.com/coins/images/4128/large/solana.png?1696504756"
+      },
+      "quantity": "2",
+      "percentage": 1.61,
+      "balances": {
+        "totalUSDBalance": "98.10",
+        "totalEURBalance": "91.84",
+        "totalBTCBalance": "0.00266284"
+      },
+      "marketCapRank": 5,
+      "marketData": {
+        "circulatingSupply": "421017098.503324",
+        "maxSupply": "0",
+        "currentPrice": {
+          "usd": "49.05",
+          "eur": "45.92",
+          "btc": "0.00133142"
+        },
+        "marketCap": "39892642944",
+        "priceChange": {
+           "changePercentageIn24h": 1.26,
+           "changePercentageIn7d": 0.17,
+           "changePercentageIn30d": -9.40
+        }
+      },
+      "platforms": [
+        "KRAKEN"
+      ]
+    },
+    {
+      "cryptoInfo": {
+        "id": "62977251-9571-4069-aaed-5ab4ea5c4d4f",
+        "cryptoName": "Litecoin",
+        "cryptoId": "litecoin",
+        "symbol": "ltc",
+        "image": "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1696501400"
+      },
+      "quantity": "1.123891239",
+      "percentage": 1.35,
+      "balances": {
+        "totalUSDBalance": "82.26",
+        "totalEURBalance": "77.01",
+        "totalBTCBalance": "0.002231811983"
+      },
+      "marketCapRank": 21,
+      "marketData": {
+        "circulatingSupply": "73857601.9834713",
+        "maxSupply": "84000000.0",
+        "currentPrice": {
+          "usd": "73.19",
+          "eur": "68.52",
+          "btc": "0.00198579"
+        },
+        "marketCap": "4973877592",
+        "priceChange": {
+           "changePercentageIn24h": 0.59,
+           "changePercentageIn7d": -5.55,
+           "changePercentageIn30d": -6.22
+        }
+      },
+      "platforms": [
+        "COINBASE"
+      ]
+    },
+    {
+      "cryptoInfo": {
+        "id": "14c60428-8761-4859-a8fb-485505f3dbd0",
+        "cryptoName": "Polkadot",
+        "cryptoId": "polkadot",
+        "symbol": "dot",
+        "image": "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1696512008"
+      },
+      "quantity": "15",
+      "percentage": 1.27,
+      "balances": {
+        "totalUSDBalance": "77.25",
+        "totalEURBalance": "72.30",
+        "totalBTCBalance": "0.0020943"
+      },
+      "marketCapRank": 13,
+      "marketData": {
+        "circulatingSupply": "1294982120.91743",
+        "maxSupply": "0",
+        "currentPrice": {
+          "usd": "5.15",
+          "eur": "4.82",
+          "btc": "0.00013962"
+        },
+        "marketCap": "8816873309",
+        "priceChange": {
+           "changePercentageIn24h": 1.43,
+           "changePercentageIn7d": -2.87,
+           "changePercentageIn30d": -21.80
+        }
+      },
+      "platforms": [
+        "TREZOR"
+      ]
+    },
+    {
+      "cryptoInfo": {
+        "id": "a7297b23-68b5-46aa-b91c-ff6d022be59e",
+        "cryptoName": "Dogecoin",
+        "cryptoId": "dogecoin",
+        "symbol": "doge",
+        "image": "https://assets.coingecko.com/coins/images/5/large/dogecoin.png?1696501409"
+      },
+      "quantity": "1000.21381",
+      "percentage": 1.22,
+      "balances": {
+        "totalUSDBalance": "74.32",
+        "totalEURBalance": "69.57",
+        "totalBTCBalance": "0.002020431896"
+      },
+      "marketCapRank": 11,
+      "marketData": {
+        "circulatingSupply": "141771566383.705",
+        "maxSupply": "0",
+        "currentPrice": {
+          "usd": "0.0743",
+          "eur": "0.069553",
+          "btc": "0.00000202"
+        },
+        "marketCap": "11390548620",
+        "priceChange": {
+           "changePercentageIn24h": 0.62,
+           "changePercentageIn7d": 0.57,
+           "changePercentageIn30d": -13.80
+        }
+      },
+      "platforms": [
+        "COINBASE"
+      ]
+    }
+  ]
+}
+```
+
 ### Retrieve user cryptos insights in all platforms by page
-`/api/v1/insights/cryptos/platforms?page={page}`
+
+`/api/v1/insights/cryptos/platforms?page={page}&sortBy={sortBy}&sortType={sortType}`
 
 ```json
 {
@@ -623,6 +704,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
         "totalEURBalance": "3873.66",
         "totalBTCBalance": "0.112371283"
       },
+      "marketCapRank": 1,
       "marketData": {
         "circulatingSupply": "19538343.0",
         "maxSupply": "21000000.0",
@@ -630,6 +712,12 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
           "usd": "36825",
           "eur": "34472",
           "btc": "1.0"
+        },
+        "marketCap": "819249388691",
+        "priceChange": {
+           "changePercentageIn24h": 1.04,
+           "changePercentageIn7d": 0.53,
+           "changePercentageIn30d": -2.99
         }
       },
       "platforms": [
@@ -650,6 +738,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
         "totalEURBalance": "748.14",
         "totalBTCBalance": "0.021692124052"
       },
+      "marketCapRank": 2,
       "marketData": {
         "circulatingSupply": "120263563.630836",
         "maxSupply": "0",
@@ -657,6 +746,12 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
           "usd": "2094.27",
           "eur": "1960.45",
           "btc": "0.05684261"
+        },
+        "marketCap": "272316630944",
+        "priceChange": {
+           "changePercentageIn24h": 0.55,
+           "changePercentageIn7d": -8.24,
+           "changePercentageIn30d": -5.64
         }
       },
       "platforms": [
@@ -678,6 +773,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
         "totalEURBalance": "360.16",
         "totalBTCBalance": "0.0104412"
       },
+      "marketCapRank": 3,
       "marketData": {
         "circulatingSupply": "86517250035.3132",
         "maxSupply": "0",
@@ -685,6 +781,12 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
           "usd": "0.999419",
           "eur": "0.935491",
           "btc": "0.00002712"
+        },
+        "marketCap": "96022661565",
+        "priceChange": {
+           "changePercentageIn24h": 0.01,
+           "changePercentageIn7d": 0.01,
+           "changePercentageIn30d": 0.00
         }
       },
       "platforms": [
@@ -706,6 +808,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
         "totalEURBalance": "177.40",
         "totalBTCBalance": "0.0051435"
       },
+      "marketCapRank": 4,
       "marketData": {
         "circulatingSupply": "153856150.0",
         "maxSupply": "200000000.0",
@@ -713,6 +816,12 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
           "usd": "252.67",
           "eur": "236.53",
           "btc": "0.006858"
+        },
+        "marketCap": "46704503158",
+        "priceChange": {
+           "changePercentageIn24h": 0.95,
+           "changePercentageIn7d": -3.65,
+           "changePercentageIn30d": -9.73
         }
       },
       "platforms": [
@@ -733,6 +842,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
         "totalEURBalance": "91.84",
         "totalBTCBalance": "0.00266284"
       },
+      "marketCapRank": 5,
       "marketData": {
         "circulatingSupply": "421017098.503324",
         "maxSupply": "0",
@@ -740,6 +850,12 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
           "usd": "49.05",
           "eur": "45.92",
           "btc": "0.00133142"
+        },
+        "marketCap": "39892642944",
+        "priceChange": {
+           "changePercentageIn24h": 1.26,
+           "changePercentageIn7d": 0.17,
+           "changePercentageIn30d": -9.40
         }
       },
       "platforms": [
@@ -760,6 +876,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
         "totalEURBalance": "77.01",
         "totalBTCBalance": "0.002231811983"
       },
+      "marketCapRank": 21,
       "marketData": {
         "circulatingSupply": "73857601.9834713",
         "maxSupply": "84000000.0",
@@ -767,6 +884,12 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
           "usd": "73.19",
           "eur": "68.52",
           "btc": "0.00198579"
+        },
+        "marketCap": "4973877592",
+        "priceChange": {
+           "changePercentageIn24h": 0.59,
+           "changePercentageIn7d": -5.55,
+           "changePercentageIn30d": -6.22
         }
       },
       "platforms": [
@@ -787,6 +910,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
         "totalEURBalance": "72.30",
         "totalBTCBalance": "0.0020943"
       },
+      "marketCapRank": 13,
       "marketData": {
         "circulatingSupply": "1294982120.91743",
         "maxSupply": "0",
@@ -794,6 +918,12 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
           "usd": "5.15",
           "eur": "4.82",
           "btc": "0.00013962"
+        },
+        "marketCap": "8816873309",
+        "priceChange": {
+           "changePercentageIn24h": 1.43,
+           "changePercentageIn7d": -2.87,
+           "changePercentageIn30d": -21.80
         }
       },
       "platforms": [
@@ -814,6 +944,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
         "totalEURBalance": "69.57",
         "totalBTCBalance": "0.002020431896"
       },
+      "marketCapRank": 11,
       "marketData": {
         "circulatingSupply": "141771566383.705",
         "maxSupply": "0",
@@ -821,6 +952,12 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
           "usd": "0.0743",
           "eur": "0.069553",
           "btc": "0.00000202"
+        },
+        "marketCap": "11390548620",
+        "priceChange": {
+           "changePercentageIn24h": 0.62,
+           "changePercentageIn7d": 0.57,
+           "changePercentageIn30d": -13.80
         }
       },
       "platforms": [
@@ -841,6 +978,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
         "totalEURBalance": "64.60",
         "totalBTCBalance": "0.0018731"
       },
+      "marketCapRank": 91,
       "marketData": {
         "circulatingSupply": "70530000.0",
         "maxSupply": "0",
@@ -848,6 +986,12 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
           "usd": "13.8",
           "eur": "12.92",
           "btc": "0.00037462"
+        },
+        "marketCap": "773235131",
+        "priceChange": {
+           "changePercentageIn24h": 1.66,
+           "changePercentageIn7d": -4.16,
+           "changePercentageIn30d": -20.91
         }
       },
       "platforms": [
@@ -868,6 +1012,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
         "totalEURBalance": "61.56",
         "totalBTCBalance": "0.001785"
       },
+      "marketCapRank": 6,
       "marketData": {
         "circulatingSupply": "53652766196.0",
         "maxSupply": "100000000000.0",
@@ -875,6 +1020,12 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
           "usd": "0.657608",
           "eur": "0.615587",
           "btc": "0.00001785"
+        },
+        "marketCap": "28823399406",
+        "priceChange": {
+           "changePercentageIn24h": 2.02,
+           "changePercentageIn7d": -3.52,
+           "changePercentageIn30d": -16.65
         }
       },
       "platforms": [
@@ -886,6 +1037,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 ```
 
 ### Retrieve user cryptos insights
+
 `/api/v1/insights/cryptos/balances`
 
 ```json
@@ -1044,6 +1196,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 ## User Cryptos
 
 ### Retrieve user cryptos by page
+
 `/api/v1/cryptos?page={page}`
 
 ```json
@@ -1117,6 +1270,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 ```
 
 ### Retrieve user crypto by userCryptoId
+
 `/api/v1/cryptos/{userCryptoId}`
 
 ```json
@@ -1131,6 +1285,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 ## Goals
 
 ### Retrieve goals by page
+
 `/api/v1/goals?page={page}`
 
 ```json
@@ -1171,6 +1326,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 ```
 
 ### Retrieve goal by goalId
+
 `/api/v1/goals/{goalId}`
 
 ```json
@@ -1188,6 +1344,7 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 ## Platforms
 
 ### Retrieve all platforms
+
 `/api/v1/platforms`
 
 ```json
@@ -1220,12 +1377,13 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 ```
 
 ### Retrieve platform by platformId
+
 `/api/v1/platforms/{platformId}`
 
 ```json
 {
-  "id": "db13cdbc-f33e-4ca3-acd0-7357bb99e0e2",
-  "name": "BINANCE"
+   "id": "db13cdbc-f33e-4ca3-acd0-7357bb99e0e2",
+   "name": "BINANCE"
 }
 ```
 
