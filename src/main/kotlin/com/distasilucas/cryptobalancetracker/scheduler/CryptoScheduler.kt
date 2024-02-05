@@ -25,7 +25,7 @@ class CryptoScheduler(
 
     private val logger = KotlinLogging.logger { }
 
-    @Scheduled(cron = "0 */3 * ? * *")
+    @Scheduled(cron = "\${update-crypto-info-cron}")
     fun updateCryptosInformation() {
         logger.info { "Running cron to update cryptos information..." }
 
