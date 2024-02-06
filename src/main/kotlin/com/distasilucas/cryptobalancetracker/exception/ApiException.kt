@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatusCode
 
 class ApiException(
     val httpStatusCode: HttpStatusCode,
-    message: String
+    override val message: String
 ) : RuntimeException(message) {
 
     constructor() : this(UNKNOWN_ERROR)
