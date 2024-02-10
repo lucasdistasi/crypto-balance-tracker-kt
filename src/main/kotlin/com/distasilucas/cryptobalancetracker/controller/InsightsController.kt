@@ -30,79 +30,79 @@ import java.util.Optional
 @CrossOrigin(origins = ["\${allowed-origins}"])
 class InsightsController(private val insightsService: InsightsService) : InsightsControllerAPI {
 
-    @GetMapping("/balances")
-    override fun retrieveTotalBalancesInsights(): ResponseEntity<BalancesResponse> {
-        val totalBalances = insightsService.retrieveTotalBalancesInsights()
-        val response = if (totalBalances.isEmpty) BalancesResponse("0", "0", "0") else totalBalances.get()
+  @GetMapping("/balances")
+  override fun retrieveTotalBalancesInsights(): ResponseEntity<BalancesResponse> {
+    val totalBalances = insightsService.retrieveTotalBalancesInsights()
+    val response = if (totalBalances.isEmpty) BalancesResponse("0", "0", "0") else totalBalances.get()
 
-        return ResponseEntity.ok(response)
-    }
+    return ResponseEntity.ok(response)
+  }
 
-    @GetMapping("/cryptos")
-    override fun retrieveUserCryptosInsights(
-        @RequestParam
-        @Min(value = 0, message = "Page must be greater than or equal to 0")
-        page: Int,
-        @RequestParam(required = false)
-        sortBy: SortBy,
-        @RequestParam(required = false)
-        sortType: SortType
-    ): ResponseEntity<PageUserCryptosInsightsResponse> {
-        val sortParams = SortParams(sortBy, sortType)
-        val serCryptosInsights = insightsService.retrieveUserCryptosInsights(page, sortParams)
+  @GetMapping("/cryptos")
+  override fun retrieveUserCryptosInsights(
+    @RequestParam
+    @Min(value = 0, message = "Page must be greater than or equal to 0")
+    page: Int,
+    @RequestParam(required = false)
+    sortBy: SortBy,
+    @RequestParam(required = false)
+    sortType: SortType
+  ): ResponseEntity<PageUserCryptosInsightsResponse> {
+    val sortParams = SortParams(sortBy, sortType)
+    val serCryptosInsights = insightsService.retrieveUserCryptosInsights(page, sortParams)
 
-        return okOrNoContent(serCryptosInsights)
-    }
+    return okOrNoContent(serCryptosInsights)
+  }
 
-    @GetMapping("/cryptos/platforms")
-    override fun retrieveUserCryptosPlatformsInsights(
-        @RequestParam
-        @Min(value = 0, message = "Page must be greater than or equal to 0")
-        page: Int,
-        @RequestParam(required = false)
-        sortBy: SortBy,
-        @RequestParam(required = false)
-        sortType: SortType
-    ): ResponseEntity<PageUserCryptosInsightsResponse> {
-        val sortParams = SortParams(sortBy, sortType)
-        val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(page, sortParams)
+  @GetMapping("/cryptos/platforms")
+  override fun retrieveUserCryptosPlatformsInsights(
+    @RequestParam
+    @Min(value = 0, message = "Page must be greater than or equal to 0")
+    page: Int,
+    @RequestParam(required = false)
+    sortBy: SortBy,
+    @RequestParam(required = false)
+    sortType: SortType
+  ): ResponseEntity<PageUserCryptosInsightsResponse> {
+    val sortParams = SortParams(sortBy, sortType)
+    val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(page, sortParams)
 
-        return okOrNoContent(userCryptosPlatformsInsights)
-    }
+    return okOrNoContent(userCryptosPlatformsInsights)
+  }
 
-    @GetMapping("/cryptos/balances")
-    override fun retrieveCryptosBalancesInsights(): ResponseEntity<CryptosBalancesInsightsResponse> {
-        val cryptosBalancesInsights = insightsService.retrieveCryptosBalancesInsights()
+  @GetMapping("/cryptos/balances")
+  override fun retrieveCryptosBalancesInsights(): ResponseEntity<CryptosBalancesInsightsResponse> {
+    val cryptosBalancesInsights = insightsService.retrieveCryptosBalancesInsights()
 
-        return okOrNoContent(cryptosBalancesInsights)
-    }
+    return okOrNoContent(cryptosBalancesInsights)
+  }
 
-    @GetMapping("/platforms/balances")
-    override fun retrievePlatformsBalancesInsights(): ResponseEntity<PlatformsBalancesInsightsResponse> {
-        val platformsBalancesInsights = insightsService.retrievePlatformsBalancesInsights()
+  @GetMapping("/platforms/balances")
+  override fun retrievePlatformsBalancesInsights(): ResponseEntity<PlatformsBalancesInsightsResponse> {
+    val platformsBalancesInsights = insightsService.retrievePlatformsBalancesInsights()
 
-        return okOrNoContent(platformsBalancesInsights)
-    }
+    return okOrNoContent(platformsBalancesInsights)
+  }
 
-    @GetMapping("/cryptos/{coingeckoCryptoId}")
-    override fun retrieveCryptoInsights(@PathVariable coingeckoCryptoId: String): ResponseEntity<CryptoInsightResponse> {
-        val cryptoInsights = insightsService.retrieveCryptoInsights(coingeckoCryptoId)
+  @GetMapping("/cryptos/{coingeckoCryptoId}")
+  override fun retrieveCryptoInsights(@PathVariable coingeckoCryptoId: String): ResponseEntity<CryptoInsightResponse> {
+    val cryptoInsights = insightsService.retrieveCryptoInsights(coingeckoCryptoId)
 
-        return okOrNoContent(cryptoInsights)
-    }
+    return okOrNoContent(cryptoInsights)
+  }
 
-    @GetMapping("/platforms/{platformId}")
-    override fun retrievePlatformInsights(
-        @PathVariable
-        @UUID(message = PLATFORM_ID_UUID)
-        platformId: String
-    ): ResponseEntity<PlatformInsightsResponse> {
-        val platformsInsights = insightsService.retrievePlatformInsights(platformId)
+  @GetMapping("/platforms/{platformId}")
+  override fun retrievePlatformInsights(
+    @PathVariable
+    @UUID(message = PLATFORM_ID_UUID)
+    platformId: String
+  ): ResponseEntity<PlatformInsightsResponse> {
+    val platformsInsights = insightsService.retrievePlatformInsights(platformId)
 
-        return okOrNoContent(platformsInsights)
-    }
+    return okOrNoContent(platformsInsights)
+  }
 
-    private fun <T> okOrNoContent(body: Optional<T>): ResponseEntity<T> {
-        return if (body.isEmpty) ResponseEntity.noContent().build() else ResponseEntity.ok(body.get())
-    }
+  private fun <T> okOrNoContent(body: Optional<T>): ResponseEntity<T> {
+    return if (body.isEmpty) ResponseEntity.noContent().build() else ResponseEntity.ok(body.get())
+  }
 }

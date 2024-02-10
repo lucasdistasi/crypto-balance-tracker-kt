@@ -9,32 +9,32 @@ import java.util.UUID
 
 @Document("Goals")
 data class Goal(
-    @Id
-    val id: String = UUID.randomUUID().toString(),
+  @Id
+  val id: String = UUID.randomUUID().toString(),
 
-    @Field("crypto_id")
-    val coingeckoCryptoId: String,
+  @Field("crypto_id")
+  val coingeckoCryptoId: String,
 
-    @Field("goal_quantity")
-    val goalQuantity: BigDecimal
+  @Field("goal_quantity")
+  val goalQuantity: BigDecimal
 ) {
 
-    fun toGoalResponse(
-        id: String,
-        cryptoName: String,
-        actualQuantity: BigDecimal,
-        progress: Float,
-        remainingQuantity: BigDecimal,
-        moneyNeeded: BigDecimal
-    ): GoalResponse {
-        return GoalResponse(
-            id = id,
-            cryptoName = cryptoName,
-            actualQuantity = actualQuantity.toPlainString(),
-            progress = progress,
-            remainingQuantity = remainingQuantity.toPlainString(),
-            goalQuantity = goalQuantity.toPlainString(),
-            moneyNeeded = moneyNeeded.toPlainString()
-        )
-    }
+  fun toGoalResponse(
+    id: String,
+    cryptoName: String,
+    actualQuantity: BigDecimal,
+    progress: Float,
+    remainingQuantity: BigDecimal,
+    moneyNeeded: BigDecimal
+  ): GoalResponse {
+    return GoalResponse(
+      id = id,
+      cryptoName = cryptoName,
+      actualQuantity = actualQuantity.toPlainString(),
+      progress = progress,
+      remainingQuantity = remainingQuantity.toPlainString(),
+      goalQuantity = goalQuantity.toPlainString(),
+      moneyNeeded = moneyNeeded.toPlainString()
+    )
+  }
 }

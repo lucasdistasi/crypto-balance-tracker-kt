@@ -10,33 +10,33 @@ import java.time.Duration
 
 @Configuration
 class RestClientConfig(
-        @Value("\${coingecko.api-key.pro}")
-        private val proCoingeckoApiKey: String,
+  @Value("\${coingecko.api-key.pro}")
+  private val proCoingeckoApiKey: String,
 
-        @Value("\${coingecko.url.pro}")
-        private val coingeckoProUrl: String,
+  @Value("\${coingecko.url.pro}")
+  private val coingeckoProUrl: String,
 
-        @Value("\${coingecko.url.free}")
-        private val coingeckoUrl: String
+  @Value("\${coingecko.url.free}")
+  private val coingeckoUrl: String
 ) {
 
-    @Bean
-    fun coingeckoRestClient(): RestClient {
-        val baseUrl = if (StringUtils.isNotBlank(proCoingeckoApiKey)) coingeckoProUrl else coingeckoUrl
+  @Bean
+  fun coingeckoRestClient(): RestClient {
+    val baseUrl = if (StringUtils.isNotBlank(proCoingeckoApiKey)) coingeckoProUrl else coingeckoUrl
 
-        return RestClient.builder()
-                .baseUrl(baseUrl)
-                .requestFactory(getSimpleClientHttpRequestFactory())
-                .build()
-    }
+    return RestClient.builder()
+      .baseUrl(baseUrl)
+      .requestFactory(getSimpleClientHttpRequestFactory())
+      .build()
+  }
 
-    private fun getSimpleClientHttpRequestFactory(): SimpleClientHttpRequestFactory {
-        val simpleClientHttpRequestFactory = SimpleClientHttpRequestFactory()
-        simpleClientHttpRequestFactory.setConnectTimeout(Duration.ofSeconds(5))
-        simpleClientHttpRequestFactory.setReadTimeout(Duration.ofSeconds(10))
-        simpleClientHttpRequestFactory.setChunkSize(36 * 1024)
+  private fun getSimpleClientHttpRequestFactory(): SimpleClientHttpRequestFactory {
+    val simpleClientHttpRequestFactory = SimpleClientHttpRequestFactory()
+    simpleClientHttpRequestFactory.setConnectTimeout(Duration.ofSeconds(5))
+    simpleClientHttpRequestFactory.setReadTimeout(Duration.ofSeconds(10))
+    simpleClientHttpRequestFactory.setChunkSize(36 * 1024)
 
-        return simpleClientHttpRequestFactory
-    }
+    return simpleClientHttpRequestFactory
+  }
 
 }

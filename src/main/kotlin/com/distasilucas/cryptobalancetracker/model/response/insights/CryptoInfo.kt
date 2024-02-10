@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class CryptoInfo(
-    val id: String? = null,
-    val cryptoName: String,
+  val id: String? = null,
+  val cryptoName: String,
 
-    @JsonProperty("cryptoId")
-    val coingeckoCryptoId: String,
-    val symbol: String,
-    val image: String
+  @JsonProperty("cryptoId")
+  val coingeckoCryptoId: String,
+  val symbol: String,
+  val image: String
 )

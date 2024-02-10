@@ -4,6 +4,6 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesRes
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
 
 data class CryptosBalancesInsightsResponse(
-    val balances: BalancesResponse,
-    val cryptos: List<CryptoInsights>
+  val balances: BalancesResponse,
+  val cryptos: List<CryptoInsights>
 )

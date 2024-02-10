@@ -7,14 +7,14 @@ import java.time.LocalDateTime
 
 interface CryptoRepository : MongoRepository<Crypto, String> {
 
-    @Aggregation(
-        pipeline = [
-            "{ \$match: { 'last_updated_at': { \$lte: ?0 } } }",
-            "{ \$sort: { 'last_updated_at': 1 } }",
-            "{ \$limit: ?1 }"
-        ]
-    )
-    fun findOldestNCryptosByLastPriceUpdate(dateFilter: LocalDateTime, limit: Int): List<Crypto>
+  @Aggregation(
+    pipeline = [
+      "{ \$match: { 'last_updated_at': { \$lte: ?0 } } }",
+      "{ \$sort: { 'last_updated_at': 1 } }",
+      "{ \$limit: ?1 }"
+    ]
+  )
+  fun findOldestNCryptosByLastPriceUpdate(dateFilter: LocalDateTime, limit: Int): List<Crypto>
 
-    fun findAllByIdIn(ids: Collection<String>): List<Crypto>
+  fun findAllByIdIn(ids: Collection<String>): List<Crypto>
 }

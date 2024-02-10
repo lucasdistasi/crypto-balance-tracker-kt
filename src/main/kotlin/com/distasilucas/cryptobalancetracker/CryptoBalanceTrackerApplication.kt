@@ -15,5 +15,5 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 class CryptoBalanceTrackerApplication
 
 fun main(args: Array<String>) {
-	runApplication<CryptoBalanceTrackerApplication>(*args)
+  runApplication<CryptoBalanceTrackerApplication>(*args)
 }

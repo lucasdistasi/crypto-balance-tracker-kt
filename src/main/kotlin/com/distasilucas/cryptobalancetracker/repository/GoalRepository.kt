@@ -6,5 +6,5 @@ import java.util.Optional
 
 interface GoalRepository : MongoRepository<Goal, String> {
 
-    fun findByCoingeckoCryptoId(cryptoId: String): Optional<Goal>
+  fun findByCoingeckoCryptoId(cryptoId: String): Optional<Goal>
 }

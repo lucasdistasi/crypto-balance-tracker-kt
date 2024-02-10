@@ -14,92 +14,92 @@ import java.util.UUID
 
 class PlatformControllerTest {
 
-    private val platformServiceMock = mockk<PlatformService>()
-    private val platformController = PlatformController(platformServiceMock)
+  private val platformServiceMock = mockk<PlatformService>()
+  private val platformController = PlatformController(platformServiceMock)
 
-    @Test
-    fun `should retrieve number of entities with status 200`() {
-        every { platformServiceMock.countPlatforms() } returns 5
+  @Test
+  fun `should retrieve number of entities with status 200`() {
+    every { platformServiceMock.countPlatforms() } returns 5
 
-        val responseEntity = platformController.countPlatforms()
+    val responseEntity = platformController.countPlatforms()
 
-        assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.ok(5L))
-    }
+    assertThat(responseEntity)
+      .isEqualTo(ResponseEntity.ok(5L))
+  }
 
-    @Test
-    fun `should retrieve platform with status 200`() {
-        val id = UUID.randomUUID().toString()
-        val platformResponse = PlatformResponse(id, "BINANCE")
+  @Test
+  fun `should retrieve platform with status 200`() {
+    val id = UUID.randomUUID().toString()
+    val platformResponse = PlatformResponse(id, "BINANCE")
 
-        every { platformServiceMock.retrievePlatformById(id) } returns platformResponse
+    every { platformServiceMock.retrievePlatformById(id) } returns platformResponse
 
-        val responseEntity = platformController.retrievePlatform(id)
+    val responseEntity = platformController.retrievePlatform(id)
 
-        assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.ok(platformResponse))
-    }
+    assertThat(responseEntity)
+      .isEqualTo(ResponseEntity.ok(platformResponse))
+  }
 
-    @Test
-    fun `should retrieve all platforms with status 200`() {
-        val platformResponse = PlatformResponse(UUID.randomUUID().toString(), "BINANCE")
+  @Test
+  fun `should retrieve all platforms with status 200`() {
+    val platformResponse = PlatformResponse(UUID.randomUUID().toString(), "BINANCE")
 
-        every { platformServiceMock.retrieveAllPlatforms() } returns listOf(platformResponse)
+    every { platformServiceMock.retrieveAllPlatforms() } returns listOf(platformResponse)
 
-        val responseEntity = platformController.retrieveAllPlatforms()
+    val responseEntity = platformController.retrieveAllPlatforms()
 
-        assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.ok(listOf(platformResponse)))
-    }
+    assertThat(responseEntity)
+      .isEqualTo(ResponseEntity.ok(listOf(platformResponse)))
+  }
 
-    @Test
-    fun `should retrieve empty platforms with status 204`() {
-        every { platformServiceMock.retrieveAllPlatforms() } returns emptyList()
+  @Test
+  fun `should retrieve empty platforms with status 204`() {
+    every { platformServiceMock.retrieveAllPlatforms() } returns emptyList()
 
-        val responseEntity = platformController.retrieveAllPlatforms()
+    val responseEntity = platformController.retrieveAllPlatforms()
 
-        assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.noContent().build<List<PlatformResponse>>())
-    }
+    assertThat(responseEntity)
+      .isEqualTo(ResponseEntity.noContent().build<List<PlatformResponse>>())
+  }
 
-    @Test
-    fun `should save platform with status 200`() {
-        val platformRequest = PlatformRequest("BINANCE")
-        val platformEntity = platformRequest.toEntity()
-        val platformResponse = platformEntity.toPlatformResponse()
+  @Test
+  fun `should save platform with status 200`() {
+    val platformRequest = PlatformRequest("BINANCE")
+    val platformEntity = platformRequest.toEntity()
+    val platformResponse = platformEntity.toPlatformResponse()
 
-        every { platformServiceMock.savePlatform(platformRequest) } returns platformResponse
+    every { platformServiceMock.savePlatform(platformRequest) } returns platformResponse
 
-        val responseEntity = platformController.savePlatform(platformRequest)
+    val responseEntity = platformController.savePlatform(platformRequest)
 
-        assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.ok(platformResponse))
-    }
+    assertThat(responseEntity)
+      .isEqualTo(ResponseEntity.ok(platformResponse))
+  }
 
-    @Test
-    fun `should update platform with status 200`() {
-        val id = UUID.randomUUID().toString()
-        val platformRequest = PlatformRequest("OKX")
-        val platformEntity = platformRequest.toEntity()
-        val platformResponse = platformEntity.toPlatformResponse()
+  @Test
+  fun `should update platform with status 200`() {
+    val id = UUID.randomUUID().toString()
+    val platformRequest = PlatformRequest("OKX")
+    val platformEntity = platformRequest.toEntity()
+    val platformResponse = platformEntity.toPlatformResponse()
 
-        every { platformServiceMock.updatePlatform(id, platformRequest) } returns platformResponse
+    every { platformServiceMock.updatePlatform(id, platformRequest) } returns platformResponse
 
-        val responseEntity = platformController.updatePlatform(id, platformRequest)
+    val responseEntity = platformController.updatePlatform(id, platformRequest)
 
-        assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.ok(platformResponse))
-    }
+    assertThat(responseEntity)
+      .isEqualTo(ResponseEntity.ok(platformResponse))
+  }
 
-    @Test
-    fun `should delete platform with status 200`() {
-        val id = UUID.randomUUID().toString()
+  @Test
+  fun `should delete platform with status 200`() {
+    val id = UUID.randomUUID().toString()
 
-        every { platformServiceMock.deletePlatform(id) } just runs
+    every { platformServiceMock.deletePlatform(id) } just runs
 
-        val responseEntity = platformController.deletePlatform(id)
+    val responseEntity = platformController.deletePlatform(id)
 
-        assertThat(responseEntity)
-            .isEqualTo(ResponseEntity.ok().build<ResponseEntity<Unit>>())
-    }
+    assertThat(responseEntity)
+      .isEqualTo(ResponseEntity.ok().build<ResponseEntity<Unit>>())
+  }
 }

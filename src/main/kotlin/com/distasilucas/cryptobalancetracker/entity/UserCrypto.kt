@@ -10,25 +10,25 @@ import java.util.UUID
 
 @Document("UserCryptos")
 data class UserCrypto(
-    @Id
-    val id: String = UUID.randomUUID().toString(),
+  @Id
+  val id: String = UUID.randomUUID().toString(),
 
-    @Field("crypto_id")
-    val coingeckoCryptoId: String,
+  @Field("crypto_id")
+  val coingeckoCryptoId: String,
 
-    val quantity: BigDecimal,
+  val quantity: BigDecimal,
 
-    @Field("platform_id")
-    val platformId: String
+  @Field("platform_id")
+  val platformId: String
 
-): Serializable {
+) : Serializable {
 
-    fun toUserCryptoResponse(cryptoName: String, platformName: String): UserCryptoResponse {
-        return UserCryptoResponse(
-            id = id,
-            quantity = quantity.toPlainString(),
-            cryptoName = cryptoName,
-            platform = platformName
-        )
-    }
+  fun toUserCryptoResponse(cryptoName: String, platformName: String): UserCryptoResponse {
+    return UserCryptoResponse(
+      id = id,
+      quantity = quantity.toPlainString(),
+      cryptoName = cryptoName,
+      platform = platformName
+    )
+  }
 }

@@ -6,58 +6,58 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 data class CoingeckoCryptoInfo(
-    val id: String,
-    val symbol: String,
-    val name: String,
-    val image: Image,
+  val id: String,
+  val symbol: String,
+  val name: String,
+  val image: Image,
 
-    @JsonProperty("market_cap_rank")
-    val marketCapRank: Int,
+  @JsonProperty("market_cap_rank")
+  val marketCapRank: Int,
 
-    @JsonProperty("market_data")
-    val marketData: MarketData
-): Serializable
+  @JsonProperty("market_data")
+  val marketData: MarketData
+) : Serializable
 
 data class Image(
-    val large: String
-): Serializable
+  val large: String
+) : Serializable
 
 data class MarketData(
-    @JsonProperty("current_price")
-    val currentPrice: CurrentPrice,
+  @JsonProperty("current_price")
+  val currentPrice: CurrentPrice,
 
-    @JsonProperty("circulating_supply")
-    val circulatingSupply: BigDecimal,
+  @JsonProperty("circulating_supply")
+  val circulatingSupply: BigDecimal,
 
-    @JsonProperty("max_supply")
-    val maxSupply: BigDecimal?,
+  @JsonProperty("max_supply")
+  val maxSupply: BigDecimal?,
 
-    @JsonProperty("market_cap")
-    val marketCap: MarketCap,
+  @JsonProperty("market_cap")
+  val marketCap: MarketCap,
 
-    @JsonProperty("price_change_percentage_24h")
-    val changePercentageIn24h: BigDecimal,
+  @JsonProperty("price_change_percentage_24h")
+  val changePercentageIn24h: BigDecimal,
 
-    @JsonProperty("price_change_percentage_7d")
-    val changePercentageIn7d: BigDecimal,
+  @JsonProperty("price_change_percentage_7d")
+  val changePercentageIn7d: BigDecimal,
 
-    @JsonProperty("price_change_percentage_30d")
-    val changePercentageIn30d: BigDecimal
-): Serializable {
+  @JsonProperty("price_change_percentage_30d")
+  val changePercentageIn30d: BigDecimal
+) : Serializable {
 
-    fun roundChangePercentageIn24h(): BigDecimal = changePercentageIn24h.setScale(2, RoundingMode.HALF_UP)
+  fun roundChangePercentageIn24h(): BigDecimal = changePercentageIn24h.setScale(2, RoundingMode.HALF_UP)
 
-    fun roundChangePercentageIn7d(): BigDecimal = changePercentageIn7d.setScale(2, RoundingMode.HALF_UP)
+  fun roundChangePercentageIn7d(): BigDecimal = changePercentageIn7d.setScale(2, RoundingMode.HALF_UP)
 
-    fun roundChangePercentageIn30d(): BigDecimal = changePercentageIn30d.setScale(2, RoundingMode.HALF_UP)
+  fun roundChangePercentageIn30d(): BigDecimal = changePercentageIn30d.setScale(2, RoundingMode.HALF_UP)
 }
 
 data class CurrentPrice(
-    val usd: BigDecimal,
-    val eur: BigDecimal,
-    val btc: BigDecimal
-): Serializable
+  val usd: BigDecimal,
+  val eur: BigDecimal,
+  val btc: BigDecimal
+) : Serializable
 
 data class MarketCap(
-    val usd: BigDecimal
-): Serializable
+  val usd: BigDecimal
+) : Serializable
