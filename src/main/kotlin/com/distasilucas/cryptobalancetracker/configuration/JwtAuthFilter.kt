@@ -18,48 +18,48 @@ import org.springframework.web.filter.OncePerRequestFilter
 @EnableWebSecurity
 @ConditionalOnProperty(prefix = "security", name = ["enabled"], havingValue = "true")
 class JwtAuthFilter(
-    private val jwtService: JwtService,
-    private val userDetailsService: UserDetailsService
-): OncePerRequestFilter() {
+  private val jwtService: JwtService,
+  private val userDetailsService: UserDetailsService
+) : OncePerRequestFilter() {
 
-    override fun doFilterInternal(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        filterChain: FilterChain
-    ) {
-        val authHeader = request.getHeader("Authorization")
-        val headerType = if (StringUtils.isBlank(authHeader)) "" else authHeader.split(" ")[0]
+  override fun doFilterInternal(
+    request: HttpServletRequest,
+    response: HttpServletResponse,
+    filterChain: FilterChain
+  ) {
+    val authHeader = request.getHeader("Authorization")
+    val headerType = if (StringUtils.isBlank(authHeader)) "" else authHeader.split(" ")[0]
 
-        if (StringUtils.isBlank(authHeader) || isNotBearerToken(headerType)) {
-            filterChain.doFilter(request, response)
-            return
-        }
-
-        val jwtToken = authHeader.split(" ")[1]
-        val userName: String = jwtService.extractUsername(jwtToken)
-
-        if (StringUtils.isNotBlank(userName) && isNotAlreadyAuthenticated()) {
-            val userDetails = userDetailsService.loadUserByUsername(userName)
-
-            if (jwtService.isTokenValid(jwtToken, userDetails)) {
-                val authenticationToken = UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.authorities
-                )
-
-                val webAuthenticationDetails = WebAuthenticationDetailsSource().buildDetails(request)
-                authenticationToken.details = webAuthenticationDetails
-
-                val securityContext = SecurityContextHolder.getContext()
-                securityContext.authentication = authenticationToken
-            }
-        }
-
-        filterChain.doFilter(request, response)
+    if (StringUtils.isBlank(authHeader) || isNotBearerToken(headerType)) {
+      filterChain.doFilter(request, response)
+      return
     }
 
-    private fun isNotBearerToken(authHeader: String) = authHeader != "Bearer"
+    val jwtToken = authHeader.split(" ")[1]
+    val userName: String = jwtService.extractUsername(jwtToken)
 
-    private fun isNotAlreadyAuthenticated() = null == SecurityContextHolder.getContext().authentication
+    if (StringUtils.isNotBlank(userName) && isNotAlreadyAuthenticated()) {
+      val userDetails = userDetailsService.loadUserByUsername(userName)
+
+      if (jwtService.isTokenValid(jwtToken, userDetails)) {
+        val authenticationToken = UsernamePasswordAuthenticationToken(
+          userDetails,
+          null,
+          userDetails.authorities
+        )
+
+        val webAuthenticationDetails = WebAuthenticationDetailsSource().buildDetails(request)
+        authenticationToken.details = webAuthenticationDetails
+
+        val securityContext = SecurityContextHolder.getContext()
+        securityContext.authentication = authenticationToken
+      }
+    }
+
+    filterChain.doFilter(request, response)
+  }
+
+  private fun isNotBearerToken(authHeader: String) = authHeader != "Bearer"
+
+  private fun isNotAlreadyAuthenticated() = null == SecurityContextHolder.getContext().authentication
 }

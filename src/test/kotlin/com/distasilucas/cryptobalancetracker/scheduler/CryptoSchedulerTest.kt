@@ -27,143 +27,143 @@ private const val MINUTES = 5L
 
 class CryptoSchedulerTest {
 
-    private val clockMock = mockk<Clock>()
-    private val cryptoServiceMock = mockk<CryptoService>()
-    private val coingeckoServiceMock = mockk<CoingeckoService>()
+  private val clockMock = mockk<Clock>()
+  private val cryptoServiceMock = mockk<CryptoService>()
+  private val coingeckoServiceMock = mockk<CoingeckoService>()
 
-    private val cryptoScheduler = CryptoScheduler(LIMIT, clockMock, cryptoServiceMock, coingeckoServiceMock)
+  private val cryptoScheduler = CryptoScheduler(LIMIT, clockMock, cryptoServiceMock, coingeckoServiceMock)
 
-    @Test
-    fun `should update top 9 cryptos information from the last 5 minutes`() {
-        val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
-        val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
-        val cryptos = getCryptoEntity()
-        val coingeckoCryptoInfo = getCoingeckoCryptoInfo()
+  @Test
+  fun `should update top 9 cryptos information from the last 5 minutes`() {
+    val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
+    val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
+    val cryptos = getCryptoEntity()
+    val coingeckoCryptoInfo = getCoingeckoCryptoInfo()
 
-        every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
-        every { clockMock.zone } returns zonedDateTime.zone
-        every {
-            cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(localDateTime.minusMinutes(MINUTES), LIMIT)
-        } returns listOf(cryptos)
-        every { coingeckoServiceMock.retrieveCryptoInfo("bitcoin") } returns coingeckoCryptoInfo
-        justRun { cryptoServiceMock.updateCryptos(listOf(getCryptoEntity(lastUpdatedAt = localDateTime))) }
+    every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns zonedDateTime.zone
+    every {
+      cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(localDateTime.minusMinutes(MINUTES), LIMIT)
+    } returns listOf(cryptos)
+    every { coingeckoServiceMock.retrieveCryptoInfo("bitcoin") } returns coingeckoCryptoInfo
+    justRun { cryptoServiceMock.updateCryptos(listOf(getCryptoEntity(lastUpdatedAt = localDateTime))) }
 
-        cryptoScheduler.updateCryptosInformation()
-    }
+    cryptoScheduler.updateCryptosInformation()
+  }
 
-    @Test
-    fun `should update top 9 cryptos information from the last 5 minutes with ZERO as max supply`() {
-        val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
-        val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
-        val cryptos = getCryptoEntity(maxSupply = null)
-        val marketData = getMarketData(maxSupply = null)
-        val coingeckoCryptoInfo = getCoingeckoCryptoInfo(marketData = marketData)
+  @Test
+  fun `should update top 9 cryptos information from the last 5 minutes with ZERO as max supply`() {
+    val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
+    val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
+    val cryptos = getCryptoEntity(maxSupply = null)
+    val marketData = getMarketData(maxSupply = null)
+    val coingeckoCryptoInfo = getCoingeckoCryptoInfo(marketData = marketData)
 
-        every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
-        every { clockMock.zone } returns zonedDateTime.zone
-        every {
-            cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(localDateTime.minusMinutes(MINUTES), LIMIT)
-        } returns listOf(cryptos)
-        every { coingeckoServiceMock.retrieveCryptoInfo("bitcoin") } returns coingeckoCryptoInfo
-        justRun {
-            cryptoServiceMock.updateCryptos(
-                listOf(
-                    getCryptoEntity(
-                        maxSupply = null,
-                        lastUpdatedAt = localDateTime
-                    )
-                )
-            )
-        }
-
-        cryptoScheduler.updateCryptosInformation()
-    }
-
-    @Test
-    fun `should not update if there are no cryptos to update`() {
-        val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
-        val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
-
-        every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
-        every { clockMock.zone } returns zonedDateTime.zone
-        every {
-            cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(localDateTime.minusMinutes(MINUTES), LIMIT)
-        } returns emptyList()
-
-        cryptoScheduler.updateCryptosInformation()
-
-        verify(exactly = 0) { cryptoServiceMock.updateCryptos(any()) }
-    }
-
-    @Test
-    fun `should throw TooManyRequestsException when reaching Coingecko limit`() {
-        val cryptos = getCryptoEntity()
-        val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
-        val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
-        val queryLocalDateTime = LocalDateTime.of(2023, 5, 3, 18, 50, 0)
-
-        every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
-        every { clockMock.zone } returns zonedDateTime.zone
-        every { cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(queryLocalDateTime, LIMIT) } returns listOf(cryptos)
-        every {
-            coingeckoServiceMock.retrieveCryptoInfo("bitcoin")
-        } throws RestClientResponseException(
-                "message",
-            HttpStatus.TOO_MANY_REQUESTS,
-            "statusText",
-            null,
-            null,
-            null
+    every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns zonedDateTime.zone
+    every {
+      cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(localDateTime.minusMinutes(MINUTES), LIMIT)
+    } returns listOf(cryptos)
+    every { coingeckoServiceMock.retrieveCryptoInfo("bitcoin") } returns coingeckoCryptoInfo
+    justRun {
+      cryptoServiceMock.updateCryptos(
+        listOf(
+          getCryptoEntity(
+            maxSupply = null,
+            lastUpdatedAt = localDateTime
+          )
         )
-
-        val exception = assertThrows<TooManyRequestsException> { cryptoScheduler.updateCryptosInformation() }
-
-        assertThat(exception.message).isEqualTo(REQUEST_LIMIT_REACHED)
-        verify(exactly = 0) { cryptoServiceMock.updateCryptos(any()) }
+      )
     }
 
-    @Test
-    fun `should save same crypto when RestClientResponseException occurs with status != 429`() {
-        val cryptos = getCryptoEntity()
-        val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
-        val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
-        val queryLocalDateTime = LocalDateTime.of(2023, 5, 3, 18, 50, 0)
+    cryptoScheduler.updateCryptosInformation()
+  }
 
-        every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
-        every { clockMock.zone } returns zonedDateTime.zone
-        every { cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(queryLocalDateTime, LIMIT) } returns listOf(cryptos)
-        every {
-            coingeckoServiceMock.retrieveCryptoInfo("bitcoin")
-        } throws RestClientResponseException(
-                "message",
-            HttpStatus.I_AM_A_TEAPOT,
-            "statusText",
-            null,
-            null,
-            null
-        )
-        justRun { cryptoServiceMock.updateCryptos(listOf(cryptos)) }
+  @Test
+  fun `should not update if there are no cryptos to update`() {
+    val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
+    val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
 
-        cryptoScheduler.updateCryptosInformation()
+    every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns zonedDateTime.zone
+    every {
+      cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(localDateTime.minusMinutes(MINUTES), LIMIT)
+    } returns emptyList()
 
-        verify(exactly = 1) { cryptoServiceMock.updateCryptos(listOf(cryptos)) }
-    }
+    cryptoScheduler.updateCryptosInformation()
 
-    @Test
-    fun `should save same crypto if exception occurs when retrieving crypto info`() {
-        val cryptos = getCryptoEntity()
-        val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
-        val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
-        val queryLocalDateTime = LocalDateTime.of(2023, 5, 3, 18, 50, 0)
+    verify(exactly = 0) { cryptoServiceMock.updateCryptos(any()) }
+  }
 
-        every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
-        every { clockMock.zone } returns zonedDateTime.zone
-        every { cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(queryLocalDateTime, LIMIT) } returns listOf(cryptos)
-        every { coingeckoServiceMock.retrieveCryptoInfo("bitcoin") } throws Exception("some exception")
-        justRun { cryptoServiceMock.updateCryptos(listOf(cryptos)) }
+  @Test
+  fun `should throw TooManyRequestsException when reaching Coingecko limit`() {
+    val cryptos = getCryptoEntity()
+    val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
+    val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
+    val queryLocalDateTime = LocalDateTime.of(2023, 5, 3, 18, 50, 0)
 
-        cryptoScheduler.updateCryptosInformation()
+    every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns zonedDateTime.zone
+    every { cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(queryLocalDateTime, LIMIT) } returns listOf(cryptos)
+    every {
+      coingeckoServiceMock.retrieveCryptoInfo("bitcoin")
+    } throws RestClientResponseException(
+      "message",
+      HttpStatus.TOO_MANY_REQUESTS,
+      "statusText",
+      null,
+      null,
+      null
+    )
 
-        verify(exactly = 1) { cryptoServiceMock.updateCryptos(listOf(cryptos)) }
-    }
+    val exception = assertThrows<TooManyRequestsException> { cryptoScheduler.updateCryptosInformation() }
+
+    assertThat(exception.message).isEqualTo(REQUEST_LIMIT_REACHED)
+    verify(exactly = 0) { cryptoServiceMock.updateCryptos(any()) }
+  }
+
+  @Test
+  fun `should save same crypto when RestClientResponseException occurs with status != 429`() {
+    val cryptos = getCryptoEntity()
+    val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
+    val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
+    val queryLocalDateTime = LocalDateTime.of(2023, 5, 3, 18, 50, 0)
+
+    every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns zonedDateTime.zone
+    every { cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(queryLocalDateTime, LIMIT) } returns listOf(cryptos)
+    every {
+      coingeckoServiceMock.retrieveCryptoInfo("bitcoin")
+    } throws RestClientResponseException(
+      "message",
+      HttpStatus.I_AM_A_TEAPOT,
+      "statusText",
+      null,
+      null,
+      null
+    )
+    justRun { cryptoServiceMock.updateCryptos(listOf(cryptos)) }
+
+    cryptoScheduler.updateCryptosInformation()
+
+    verify(exactly = 1) { cryptoServiceMock.updateCryptos(listOf(cryptos)) }
+  }
+
+  @Test
+  fun `should save same crypto if exception occurs when retrieving crypto info`() {
+    val cryptos = getCryptoEntity()
+    val localDateTime = LocalDateTime.of(2023, 5, 3, 18, 55, 0)
+    val zonedDateTime = ZonedDateTime.of(2023, 5, 3, 19, 0, 0, 0, ZoneId.of("UTC"))
+    val queryLocalDateTime = LocalDateTime.of(2023, 5, 3, 18, 50, 0)
+
+    every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns zonedDateTime.zone
+    every { cryptoServiceMock.findOldestNCryptosByLastPriceUpdate(queryLocalDateTime, LIMIT) } returns listOf(cryptos)
+    every { coingeckoServiceMock.retrieveCryptoInfo("bitcoin") } throws Exception("some exception")
+    justRun { cryptoServiceMock.updateCryptos(listOf(cryptos)) }
+
+    cryptoScheduler.updateCryptosInformation()
+
+    verify(exactly = 1) { cryptoServiceMock.updateCryptos(listOf(cryptos)) }
+  }
 }

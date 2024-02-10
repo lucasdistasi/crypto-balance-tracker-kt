@@ -32,61 +32,61 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/cryptos")
 @CrossOrigin(origins = ["\${allowed-origins}"])
 class UserCryptoController(
-    private val userCryptoService: UserCryptoService,
-    private val transferCryptoService: TransferCryptoService
+  private val userCryptoService: UserCryptoService,
+  private val transferCryptoService: TransferCryptoService
 ) : UserCryptoControllerAPI {
 
-    @GetMapping("/{userCryptoId}")
-    override fun retrieveUserCrypto(
-        @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
-    ): ResponseEntity<UserCryptoResponse> {
-        val userCrypto = userCryptoService.retrieveUserCryptoById(userCryptoId)
+  @GetMapping("/{userCryptoId}")
+  override fun retrieveUserCrypto(
+    @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
+  ): ResponseEntity<UserCryptoResponse> {
+    val userCrypto = userCryptoService.retrieveUserCryptoById(userCryptoId)
 
-        return ResponseEntity.ok(userCrypto)
-    }
+    return ResponseEntity.ok(userCrypto)
+  }
 
-    @GetMapping
-    override fun retrieveUserCryptosForPage(
-        @RequestParam @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int
-    ): ResponseEntity<PageUserCryptoResponse> {
-        val userCryptosPage = userCryptoService.retrieveUserCryptosByPage(page)
+  @GetMapping
+  override fun retrieveUserCryptosForPage(
+    @RequestParam @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int
+  ): ResponseEntity<PageUserCryptoResponse> {
+    val userCryptosPage = userCryptoService.retrieveUserCryptosByPage(page)
 
-        return if (userCryptosPage.cryptos.isEmpty()) ResponseEntity.status(HttpStatus.NO_CONTENT)
-            .build() else ResponseEntity.ok(userCryptosPage)
-    }
+    return if (userCryptosPage.cryptos.isEmpty()) ResponseEntity.status(HttpStatus.NO_CONTENT)
+      .build() else ResponseEntity.ok(userCryptosPage)
+  }
 
-    @PostMapping
-    override fun saveUserCrypto(@Valid @RequestBody userCryptoRequest: UserCryptoRequest): ResponseEntity<UserCryptoResponse> {
-        val userCrypto = userCryptoService.saveUserCrypto(userCryptoRequest)
+  @PostMapping
+  override fun saveUserCrypto(@Valid @RequestBody userCryptoRequest: UserCryptoRequest): ResponseEntity<UserCryptoResponse> {
+    val userCrypto = userCryptoService.saveUserCrypto(userCryptoRequest)
 
-        return ResponseEntity.ok(userCrypto)
-    }
+    return ResponseEntity.ok(userCrypto)
+  }
 
-    @PutMapping("/{userCryptoId}")
-    override fun updateUserCrypto(
-        @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String,
-        @Valid @RequestBody userCryptoRequest: UserCryptoRequest
-    ): ResponseEntity<UserCryptoResponse> {
-        val updatedUserCrypto = userCryptoService.updateUserCrypto(userCryptoId, userCryptoRequest)
+  @PutMapping("/{userCryptoId}")
+  override fun updateUserCrypto(
+    @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String,
+    @Valid @RequestBody userCryptoRequest: UserCryptoRequest
+  ): ResponseEntity<UserCryptoResponse> {
+    val updatedUserCrypto = userCryptoService.updateUserCrypto(userCryptoId, userCryptoRequest)
 
-        return ResponseEntity.ok(updatedUserCrypto)
-    }
+    return ResponseEntity.ok(updatedUserCrypto)
+  }
 
-    @DeleteMapping("/{userCryptoId}")
-    override fun deleteUserCrypto(
-        @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
-    ): ResponseEntity<Unit> {
-        userCryptoService.deleteUserCrypto(userCryptoId)
+  @DeleteMapping("/{userCryptoId}")
+  override fun deleteUserCrypto(
+    @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
+  ): ResponseEntity<Unit> {
+    userCryptoService.deleteUserCrypto(userCryptoId)
 
-        return ResponseEntity.ok().build()
-    }
+    return ResponseEntity.ok().build()
+  }
 
-    @PostMapping("/transfer")
-    override fun transferUserCrypto(
-        @Valid @RequestBody transferCryptoRequest: TransferCryptoRequest
-    ): ResponseEntity<TransferCryptoResponse> {
-        val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)
+  @PostMapping("/transfer")
+  override fun transferUserCrypto(
+    @Valid @RequestBody transferCryptoRequest: TransferCryptoRequest
+  ): ResponseEntity<TransferCryptoResponse> {
+    val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)
 
-        return ResponseEntity.ok(transferCryptoResponse)
-    }
+    return ResponseEntity.ok(transferCryptoResponse)
+  }
 }

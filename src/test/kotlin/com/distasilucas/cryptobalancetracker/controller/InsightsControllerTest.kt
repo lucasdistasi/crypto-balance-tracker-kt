@@ -17,227 +17,227 @@ import java.util.Optional
 
 class InsightsControllerTest {
 
-    private val insightsServiceMock = mockk<InsightsService>()
+  private val insightsServiceMock = mockk<InsightsService>()
 
-    private val insightsController = InsightsController(insightsServiceMock)
+  private val insightsController = InsightsController(insightsServiceMock)
 
-    @Test
-    fun `should retrieve total balances with status 200`() {
-        val balances = balances()
+  @Test
+  fun `should retrieve total balances with status 200`() {
+    val balances = balances()
 
-        every {
-            insightsServiceMock.retrieveTotalBalancesInsights()
-        } returns Optional.of(balances)
+    every {
+      insightsServiceMock.retrieveTotalBalancesInsights()
+    } returns Optional.of(balances)
 
-        val totalBalancesInsights = insightsController.retrieveTotalBalancesInsights()
+    val totalBalancesInsights = insightsController.retrieveTotalBalancesInsights()
 
-        assertThat(totalBalancesInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.ok(balances))
-    }
+    assertThat(totalBalancesInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.ok(balances))
+  }
 
-    @Test
-    fun `should retrieve zero for total balances when empty cryptos with status 200`() {
-        every {
-            insightsServiceMock.retrieveTotalBalancesInsights()
-        } returns Optional.empty()
+  @Test
+  fun `should retrieve zero for total balances when empty cryptos with status 200`() {
+    every {
+      insightsServiceMock.retrieveTotalBalancesInsights()
+    } returns Optional.empty()
 
-        val totalBalancesInsights = insightsController.retrieveTotalBalancesInsights()
+    val totalBalancesInsights = insightsController.retrieveTotalBalancesInsights()
 
-        assertThat(totalBalancesInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.ok(BalancesResponse("0", "0", "0")))
-    }
+    assertThat(totalBalancesInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.ok(BalancesResponse("0", "0", "0")))
+  }
 
-    @Test
-    fun `should retrieve cryptos insights with status 200`() {
-        val pageUserCryptosInsightsResponse = PageUserCryptosInsightsResponse(
-            page = 1,
-            totalPages = 1,
-            balances = balances(),
-            cryptos = emptyList()
-        )
+  @Test
+  fun `should retrieve cryptos insights with status 200`() {
+    val pageUserCryptosInsightsResponse = PageUserCryptosInsightsResponse(
+      page = 1,
+      totalPages = 1,
+      balances = balances(),
+      cryptos = emptyList()
+    )
 
-        every {
-            insightsServiceMock.retrieveUserCryptosInsights(0)
-        } returns Optional.of(pageUserCryptosInsightsResponse)
+    every {
+      insightsServiceMock.retrieveUserCryptosInsights(0)
+    } returns Optional.of(pageUserCryptosInsightsResponse)
 
-        val userCryptosInsights = insightsController.retrieveUserCryptosInsights(0)
+    val userCryptosInsights = insightsController.retrieveUserCryptosInsights(0)
 
-        assertThat(userCryptosInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.ok(pageUserCryptosInsightsResponse))
-    }
+    assertThat(userCryptosInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.ok(pageUserCryptosInsightsResponse))
+  }
 
-    @Test
-    fun `should retrieve empty for cryptos insights with status 204`() {
-        every {
-            insightsServiceMock.retrieveUserCryptosInsights(0)
-        } returns Optional.empty()
+  @Test
+  fun `should retrieve empty for cryptos insights with status 204`() {
+    every {
+      insightsServiceMock.retrieveUserCryptosInsights(0)
+    } returns Optional.empty()
 
-        val userCryptosInsights = insightsController.retrieveUserCryptosInsights(0)
+    val userCryptosInsights = insightsController.retrieveUserCryptosInsights(0)
 
-        assertThat(userCryptosInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.noContent().build<PageUserCryptosInsightsResponse>())
-    }
+    assertThat(userCryptosInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.noContent().build<PageUserCryptosInsightsResponse>())
+  }
 
-    @Test
-    fun `should retrieve cryptos platforms insights with status 200`() {
-        val pageUserCryptosInsightsResponse = PageUserCryptosInsightsResponse(
-            page = 0,
-            totalPages = 1,
-            balances = balances(),
-            cryptos = emptyList()
-        )
+  @Test
+  fun `should retrieve cryptos platforms insights with status 200`() {
+    val pageUserCryptosInsightsResponse = PageUserCryptosInsightsResponse(
+      page = 0,
+      totalPages = 1,
+      balances = balances(),
+      cryptos = emptyList()
+    )
 
-        every {
-            insightsServiceMock.retrieveUserCryptosPlatformsInsights(0)
-        } returns Optional.of(pageUserCryptosInsightsResponse)
+    every {
+      insightsServiceMock.retrieveUserCryptosPlatformsInsights(0)
+    } returns Optional.of(pageUserCryptosInsightsResponse)
 
-        val cryptosPlatformsInsights = insightsController.retrieveUserCryptosPlatformsInsights(0)
+    val cryptosPlatformsInsights = insightsController.retrieveUserCryptosPlatformsInsights(0)
 
-        assertThat(cryptosPlatformsInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.ok(pageUserCryptosInsightsResponse))
-    }
+    assertThat(cryptosPlatformsInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.ok(pageUserCryptosInsightsResponse))
+  }
 
-    @Test
-    fun `should retrieve empty for cryptos platforms insights with status 204`() {
-        every {
-            insightsServiceMock.retrieveUserCryptosPlatformsInsights(0)
-        } returns Optional.empty()
+  @Test
+  fun `should retrieve empty for cryptos platforms insights with status 204`() {
+    every {
+      insightsServiceMock.retrieveUserCryptosPlatformsInsights(0)
+    } returns Optional.empty()
 
-        val cryptosPlatformsInsights = insightsController.retrieveUserCryptosPlatformsInsights(0)
+    val cryptosPlatformsInsights = insightsController.retrieveUserCryptosPlatformsInsights(0)
 
-        assertThat(cryptosPlatformsInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.noContent().build<PageUserCryptosInsightsResponse>())
-    }
+    assertThat(cryptosPlatformsInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.noContent().build<PageUserCryptosInsightsResponse>())
+  }
 
-    @Test
-    fun `should retrieve cryptos balances insights with status 200`() {
-        val cryptosBalancesInsightsResponse = CryptosBalancesInsightsResponse(
-            balances = balances(),
-            cryptos = emptyList()
-        )
+  @Test
+  fun `should retrieve cryptos balances insights with status 200`() {
+    val cryptosBalancesInsightsResponse = CryptosBalancesInsightsResponse(
+      balances = balances(),
+      cryptos = emptyList()
+    )
 
-        every {
-            insightsServiceMock.retrieveCryptosBalancesInsights()
-        } returns Optional.of(cryptosBalancesInsightsResponse)
+    every {
+      insightsServiceMock.retrieveCryptosBalancesInsights()
+    } returns Optional.of(cryptosBalancesInsightsResponse)
 
-        val cryptosBalancesInsights = insightsController.retrieveCryptosBalancesInsights()
+    val cryptosBalancesInsights = insightsController.retrieveCryptosBalancesInsights()
 
-        assertThat(cryptosBalancesInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.ok(cryptosBalancesInsightsResponse))
-    }
+    assertThat(cryptosBalancesInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.ok(cryptosBalancesInsightsResponse))
+  }
 
-    @Test
-    fun `should retrieve empty for cryptos balances insights with status 204`() {
-        every {
-            insightsServiceMock.retrieveCryptosBalancesInsights()
-        } returns Optional.empty()
+  @Test
+  fun `should retrieve empty for cryptos balances insights with status 204`() {
+    every {
+      insightsServiceMock.retrieveCryptosBalancesInsights()
+    } returns Optional.empty()
 
-        val cryptosBalancesInsights = insightsController.retrieveCryptosBalancesInsights()
+    val cryptosBalancesInsights = insightsController.retrieveCryptosBalancesInsights()
 
-        assertThat(cryptosBalancesInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.noContent().build<CryptosBalancesInsightsResponse>())
-    }
+    assertThat(cryptosBalancesInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.noContent().build<CryptosBalancesInsightsResponse>())
+  }
 
-    @Test
-    fun `should retrieve platforms balances insights with status 200`() {
-        val platformsBalancesInsightsResponse = PlatformsBalancesInsightsResponse(
-            balances = balances(),
-            platforms = emptyList()
-        )
+  @Test
+  fun `should retrieve platforms balances insights with status 200`() {
+    val platformsBalancesInsightsResponse = PlatformsBalancesInsightsResponse(
+      balances = balances(),
+      platforms = emptyList()
+    )
 
-        every {
-            insightsServiceMock.retrievePlatformsBalancesInsights()
-        } returns Optional.of(platformsBalancesInsightsResponse)
+    every {
+      insightsServiceMock.retrievePlatformsBalancesInsights()
+    } returns Optional.of(platformsBalancesInsightsResponse)
 
-        val platformsBalancesInsights = insightsController.retrievePlatformsBalancesInsights()
+    val platformsBalancesInsights = insightsController.retrievePlatformsBalancesInsights()
 
-        assertThat(platformsBalancesInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.ok(platformsBalancesInsightsResponse))
-    }
+    assertThat(platformsBalancesInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.ok(platformsBalancesInsightsResponse))
+  }
 
-    @Test
-    fun `should retrieve empty for platforms balances insights with status 204`() {
-        every {
-            insightsServiceMock.retrievePlatformsBalancesInsights()
-        } returns Optional.empty()
+  @Test
+  fun `should retrieve empty for platforms balances insights with status 204`() {
+    every {
+      insightsServiceMock.retrievePlatformsBalancesInsights()
+    } returns Optional.empty()
 
-        val platformsBalancesInsights = insightsController.retrievePlatformsBalancesInsights()
+    val platformsBalancesInsights = insightsController.retrievePlatformsBalancesInsights()
 
-        assertThat(platformsBalancesInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.noContent().build<PlatformsBalancesInsightsResponse>())
-    }
+    assertThat(platformsBalancesInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.noContent().build<PlatformsBalancesInsightsResponse>())
+  }
 
-    @Test
-    fun `should retrieve crypto insights with status 200`() {
-        val cryptoInsightResponse = CryptoInsightResponse(
-            balances = balances(),
-            cryptoName = "Bitcoin",
-            platforms = emptyList()
-        )
+  @Test
+  fun `should retrieve crypto insights with status 200`() {
+    val cryptoInsightResponse = CryptoInsightResponse(
+      balances = balances(),
+      cryptoName = "Bitcoin",
+      platforms = emptyList()
+    )
 
-        every {
-            insightsServiceMock.retrieveCryptoInsights("bitcoin")
-        } returns Optional.of(cryptoInsightResponse)
+    every {
+      insightsServiceMock.retrieveCryptoInsights("bitcoin")
+    } returns Optional.of(cryptoInsightResponse)
 
-        val cryptoInsights = insightsController.retrieveCryptoInsights("bitcoin")
+    val cryptoInsights = insightsController.retrieveCryptoInsights("bitcoin")
 
-        assertThat(cryptoInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.ok(cryptoInsightResponse))
-    }
+    assertThat(cryptoInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.ok(cryptoInsightResponse))
+  }
 
-    @Test
-    fun `should retrieve empty for crypto insights with status 204`() {
-        every {
-            insightsServiceMock.retrieveCryptoInsights("bitcoin")
-        } returns Optional.empty()
+  @Test
+  fun `should retrieve empty for crypto insights with status 204`() {
+    every {
+      insightsServiceMock.retrieveCryptoInsights("bitcoin")
+    } returns Optional.empty()
 
-        val cryptoInsights = insightsController.retrieveCryptoInsights("bitcoin")
+    val cryptoInsights = insightsController.retrieveCryptoInsights("bitcoin")
 
-        assertThat(cryptoInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.noContent().build<CryptoInsightResponse>())
-    }
+    assertThat(cryptoInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.noContent().build<CryptoInsightResponse>())
+  }
 
-    @Test
-    fun `should retrieve platform insights with status 200`() {
-        val platformInsightsResponse = PlatformInsightsResponse(
-            platformName = "BINANCE",
-            balances = balances(),
-            cryptos = emptyList()
-        )
+  @Test
+  fun `should retrieve platform insights with status 200`() {
+    val platformInsightsResponse = PlatformInsightsResponse(
+      platformName = "BINANCE",
+      balances = balances(),
+      cryptos = emptyList()
+    )
 
-        every {
-            insightsServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
-        } returns Optional.of(platformInsightsResponse)
+    every {
+      insightsServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
+    } returns Optional.of(platformInsightsResponse)
 
-        val platformInsights = insightsController.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
+    val platformInsights = insightsController.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
-        assertThat(platformInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.ok(platformInsightsResponse))
-    }
+    assertThat(platformInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.ok(platformInsightsResponse))
+  }
 
-    @Test
-    fun `should retrieve empty for platform insights with status 204`() {
-        every {
-            insightsServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
-        } returns Optional.empty()
+  @Test
+  fun `should retrieve empty for platform insights with status 204`() {
+    every {
+      insightsServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
+    } returns Optional.empty()
 
-        val platformInsights = insightsController.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
+    val platformInsights = insightsController.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
-        assertThat(platformInsights)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity.noContent().build<PlatformInsightsResponse>())
-    }
+    assertThat(platformInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.noContent().build<PlatformInsightsResponse>())
+  }
 }

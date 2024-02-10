@@ -18,38 +18,38 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @ConditionalOnProperty(prefix = "security", name = ["enabled"], havingValue = "false")
 class NoSecurityConfiguration {
 
-    @Bean
-    fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
-        return httpSecurity.csrf { it.disable() }
-            .authorizeHttpRequests { authorizeHttpRequests -> authorizeHttpRequests.anyRequest().permitAll() }
-            .build()
-    }
+  @Bean
+  fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
+    return httpSecurity.csrf { it.disable() }
+      .authorizeHttpRequests { authorizeHttpRequests -> authorizeHttpRequests.anyRequest().permitAll() }
+      .build()
+  }
 }
 
 @Configuration
 @ConditionalOnProperty(prefix = "security", name = ["enabled"], havingValue = "true")
 class SecurityConfiguration(
-    private val jwtAuthFilter: JwtAuthFilter,
-    private val provider: AuthenticationProvider
+  private val jwtAuthFilter: JwtAuthFilter,
+  private val provider: AuthenticationProvider
 ) {
 
-    @Bean
-    fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
-        return httpSecurity.csrf { it.disable() }
-            .authorizeHttpRequests { authorizeHttpRequests ->
-                authorizeHttpRequests.requestMatchers(
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/actuator/**"
-                )
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated()
-            }
-            .exceptionHandling { it.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) }
-            .sessionManagement { sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authenticationProvider(provider)
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .build()
-    }
+  @Bean
+  fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
+    return httpSecurity.csrf { it.disable() }
+      .authorizeHttpRequests { authorizeHttpRequests ->
+        authorizeHttpRequests.requestMatchers(
+          "/swagger-ui/**",
+          "/v3/api-docs/**",
+          "/actuator/**"
+        )
+          .permitAll()
+          .anyRequest()
+          .authenticated()
+      }
+      .exceptionHandling { it.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) }
+      .sessionManagement { sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+      .authenticationProvider(provider)
+      .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
+      .build()
+  }
 }

@@ -8,32 +8,32 @@ import org.junit.jupiter.params.provider.ValueSource
 
 class PlatformNameValidatorTest {
 
-    private val platformNameValidator = PlatformNameValidator()
+  private val platformNameValidator = PlatformNameValidator()
 
-    @ParameterizedTest
-    @ValueSource(strings = [
-            "binance", "OKX", "Kraken", "Safepal", "Coinbase", "Trezor One", "Trezor T", "Ledger Nano X",
-            "LOOOOOOOOOOOOOOOONG NAME"])
-    fun `should return true when validating platform`(platformName: String) {
-        val isValid = platformNameValidator.isValid(platformName, null)
+  @ParameterizedTest
+  @ValueSource(strings = [
+    "binance", "OKX", "Kraken", "Safepal", "Coinbase", "Trezor One", "Trezor T", "Ledger Nano X",
+    "LOOOOOOOOOOOOOOOONG NAME"])
+  fun `should return true when validating platform`(platformName: String) {
+    val isValid = platformNameValidator.isValid(platformName, null)
 
-        assertTrue(isValid)
-    }
+    assertTrue(isValid)
+  }
 
-    @ParameterizedTest
-    @ValueSource(strings = [
-            "INVALID-PLATFORM", "INVALID_PLATFORM", "LOOOOOOONGINVALIDPLATFORM", "", "1NV4L1D",
-            " invalid", "inv  alid", "invalid "])
-    fun `should return false when validating platform`(platformName: String) {
-        val isValid = platformNameValidator.isValid(platformName, null)
+  @ParameterizedTest
+  @ValueSource(strings = [
+    "INVALID-PLATFORM", "INVALID_PLATFORM", "LOOOOOOONGINVALIDPLATFORM", "", "1NV4L1D",
+    " invalid", "inv  alid", "invalid "])
+  fun `should return false when validating platform`(platformName: String) {
+    val isValid = platformNameValidator.isValid(platformName, null)
 
-        assertFalse(isValid)
-    }
+    assertFalse(isValid)
+  }
 
-    @Test
-    fun `should return false when validating null platform`() {
-        val isValid = platformNameValidator.isValid(null, null)
+  @Test
+  fun `should return false when validating null platform`() {
+    val isValid = platformNameValidator.isValid(null, null)
 
-        assertFalse(isValid)
-    }
+    assertFalse(isValid)
+  }
 }

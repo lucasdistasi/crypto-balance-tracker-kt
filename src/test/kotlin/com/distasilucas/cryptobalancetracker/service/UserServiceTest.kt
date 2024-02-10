@@ -14,42 +14,42 @@ import java.util.Optional
 
 class UserServiceTest {
 
-    private val userRepositoryMock = mockk<UserRepository>()
+  private val userRepositoryMock = mockk<UserRepository>()
 
-    private val userService = UserService(userRepositoryMock)
+  private val userService = UserService(userRepositoryMock)
 
-    @Test
-    fun `should retrieve user`() {
-        val userEntity = User(
-            username = "username",
-            password = "password",
-            role = Role.ROLE_ADMIN,
-            createdAt = LocalDateTime.now()
+  @Test
+  fun `should retrieve user`() {
+    val userEntity = User(
+      username = "username",
+      password = "password",
+      role = Role.ROLE_ADMIN,
+      createdAt = LocalDateTime.now()
+    )
+
+    every { userRepositoryMock.findByUsername("username") } returns Optional.of(userEntity)
+
+    val user = userService.findByUsername("username")
+
+    assertThat(user)
+      .usingRecursiveComparison()
+      .ignoringFields("id", "createdAt")
+      .isEqualTo(
+        User(
+          username = "username",
+          password = "password",
+          role = Role.ROLE_ADMIN,
+          createdAt = LocalDateTime.now()
         )
+      )
+  }
 
-        every { userRepositoryMock.findByUsername("username") } returns Optional.of(userEntity)
+  @Test
+  fun `should throw UsernameNotFoundException if user does not exists`() {
+    every { userRepositoryMock.findByUsername("username") } returns Optional.empty()
 
-        val user = userService.findByUsername("username")
+    val exception = assertThrows<UsernameNotFoundException> { userService.findByUsername("username") }
 
-        assertThat(user)
-            .usingRecursiveComparison()
-            .ignoringFields("id", "createdAt")
-            .isEqualTo(
-                User(
-                    username = "username",
-                    password = "password",
-                    role = Role.ROLE_ADMIN,
-                    createdAt = LocalDateTime.now()
-                )
-            )
-    }
-
-    @Test
-    fun `should throw UsernameNotFoundException if user does not exists`() {
-        every { userRepositoryMock.findByUsername("username") } returns Optional.empty()
-
-        val exception = assertThrows<UsernameNotFoundException> { userService.findByUsername("username") }
-
-        assertThat(exception.message).isEqualTo(USERNAME_NOT_FOUND)
-    }
+    assertThat(exception.message).isEqualTo(USERNAME_NOT_FOUND)
+  }
 }

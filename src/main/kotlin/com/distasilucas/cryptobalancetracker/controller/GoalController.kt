@@ -29,44 +29,44 @@ import org.springframework.web.bind.annotation.RestController
 @CrossOrigin(origins = ["\${allowed-origins}"])
 class GoalController(private val goalService: GoalService) : GoalControllerAPI {
 
-    @GetMapping("/{goalId}")
-    override fun retrieveGoal(@PathVariable @UUID(message = INVALID_GOAL_UUID) goalId: String): ResponseEntity<GoalResponse> {
-        val goal = goalService.retrieveGoalById(goalId)
+  @GetMapping("/{goalId}")
+  override fun retrieveGoal(@PathVariable @UUID(message = INVALID_GOAL_UUID) goalId: String): ResponseEntity<GoalResponse> {
+    val goal = goalService.retrieveGoalById(goalId)
 
-        return ResponseEntity.ok(goal)
-    }
+    return ResponseEntity.ok(goal)
+  }
 
-    @GetMapping
-    override fun retrieveGoalsForPage(
-        @RequestParam @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int
-    ): ResponseEntity<PageGoalResponse> {
-        val pageGoalResponse = goalService.retrieveGoalsForPage(page)
+  @GetMapping
+  override fun retrieveGoalsForPage(
+    @RequestParam @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int
+  ): ResponseEntity<PageGoalResponse> {
+    val pageGoalResponse = goalService.retrieveGoalsForPage(page)
 
-        return if (pageGoalResponse.goals.isEmpty())
-            ResponseEntity.noContent().build() else ResponseEntity.ok(pageGoalResponse)
-    }
+    return if (pageGoalResponse.goals.isEmpty())
+      ResponseEntity.noContent().build() else ResponseEntity.ok(pageGoalResponse)
+  }
 
-    @PostMapping
-    override fun saveGoal(@RequestBody @Valid goalRequest: GoalRequest): ResponseEntity<GoalResponse> {
-        val goal = goalService.saveGoal(goalRequest)
+  @PostMapping
+  override fun saveGoal(@RequestBody @Valid goalRequest: GoalRequest): ResponseEntity<GoalResponse> {
+    val goal = goalService.saveGoal(goalRequest)
 
-        return ResponseEntity.ok(goal)
-    }
+    return ResponseEntity.ok(goal)
+  }
 
-    @PutMapping("/{goalId}")
-    override fun updateGoal(
-        @PathVariable @UUID(message = INVALID_GOAL_UUID) goalId: String,
-        @Valid @RequestBody goalRequest: GoalRequest
-    ): ResponseEntity<GoalResponse> {
-        val goal = goalService.updateGoal(goalId, goalRequest)
+  @PutMapping("/{goalId}")
+  override fun updateGoal(
+    @PathVariable @UUID(message = INVALID_GOAL_UUID) goalId: String,
+    @Valid @RequestBody goalRequest: GoalRequest
+  ): ResponseEntity<GoalResponse> {
+    val goal = goalService.updateGoal(goalId, goalRequest)
 
-        return ResponseEntity.ok(goal)
-    }
+    return ResponseEntity.ok(goal)
+  }
 
-    @DeleteMapping("/{goalId}")
-    override fun deleteGoal(@PathVariable @UUID(message = INVALID_GOAL_UUID) goalId: String): ResponseEntity<Unit> {
-        goalService.deleteGoal(goalId)
+  @DeleteMapping("/{goalId}")
+  override fun deleteGoal(@PathVariable @UUID(message = INVALID_GOAL_UUID) goalId: String): ResponseEntity<Unit> {
+    goalService.deleteGoal(goalId)
 
-        return ResponseEntity.ok().build()
-    }
+    return ResponseEntity.ok().build()
+  }
 }

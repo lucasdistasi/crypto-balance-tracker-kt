@@ -8,14 +8,14 @@ import java.io.Serializable
 
 @Document("Platforms")
 data class Platform(
-    @Id
-    val id: String,
+  @Id
+  val id: String,
 
-    @Field
-    val name: String
-): Serializable {
+  @Field
+  val name: String
+) : Serializable {
 
-    fun toPlatformResponse(): PlatformResponse {
-        return PlatformResponse(id, name)
-    }
+  fun toPlatformResponse(): PlatformResponse {
+    return PlatformResponse(id, name)
+  }
 }
