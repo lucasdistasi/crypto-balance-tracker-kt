@@ -3,22 +3,27 @@
 import java.math.BigDecimal
 
 <span class="fc" id="L5">data class MarketData(</span>
-<span class="fc" id="L6">    val circulatingSupply: String,</span>
-<span class="fc" id="L7">    val maxSupply: String,</span>
-<span class="fc" id="L8">    val currentPrice: CurrentPrice,</span>
-<span class="fc" id="L9">    val marketCap: String,</span>
-<span class="fc" id="L10">    val priceChange: PriceChange</span>
+<span class="fc" id="L6">  val circulatingSupply: CirculatingSupply,</span>
+<span class="fc" id="L7">  val maxSupply: String,</span>
+<span class="fc" id="L8">  val currentPrice: CurrentPrice,</span>
+<span class="fc" id="L9">  val marketCap: String,</span>
+<span class="fc" id="L10">  val priceChange: PriceChange</span>
 )
 
 <span class="fc" id="L13">data class CurrentPrice(</span>
-<span class="fc" id="L14">    val usd: String,</span>
-<span class="fc" id="L15">    val eur: String,</span>
-<span class="fc" id="L16">    val btc: String</span>
+<span class="fc" id="L14">  val usd: String,</span>
+<span class="fc" id="L15">  val eur: String,</span>
+<span class="fc" id="L16">  val btc: String</span>
 )
 
 <span class="fc" id="L19">data class PriceChange(</span>
-<span class="fc" id="L20">    val changePercentageIn24h: BigDecimal,</span>
-<span class="fc" id="L21">    val changePercentageIn7d: BigDecimal,</span>
-<span class="fc" id="L22">    val changePercentageIn30d: BigDecimal</span>
+<span class="fc" id="L20">  val changePercentageIn24h: BigDecimal,</span>
+<span class="fc" id="L21">  val changePercentageIn7d: BigDecimal,</span>
+<span class="fc" id="L22">  val changePercentageIn30d: BigDecimal</span>
 )
+
+<span class="fc" id="L25">data class CirculatingSupply(</span>
+<span class="fc" id="L26">  val totalCirculatingSupply: String,</span>
+<span class="fc" id="L27">  val percentage: Float = 0F</span>
+<span class="fc" id="L28">)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

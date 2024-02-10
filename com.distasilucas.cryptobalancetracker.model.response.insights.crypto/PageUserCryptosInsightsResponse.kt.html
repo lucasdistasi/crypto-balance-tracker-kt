@@ -4,20 +4,20 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesRes
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
 
 <span class="fc" id="L6">data class PageUserCryptosInsightsResponse(</span>
-<span class="fc" id="L7">    val page: Int,</span>
-<span class="fc" id="L8">    val totalPages: Int,</span>
-<span class="fc" id="L9">    val hasNextPage: Boolean,</span>
-<span class="fc" id="L10">    val balances: BalancesResponse,</span>
-<span class="fc" id="L11">    val cryptos: List&lt;UserCryptosInsights&gt;</span>
+<span class="fc" id="L7">  val page: Int,</span>
+<span class="fc" id="L8">  val totalPages: Int,</span>
+<span class="fc" id="L9">  val hasNextPage: Boolean,</span>
+<span class="fc" id="L10">  val balances: BalancesResponse,</span>
+<span class="fc" id="L11">  val cryptos: List&lt;UserCryptosInsights&gt;</span>
 ) {
 
-<span class="fc" id="L14">    constructor(page: Int, totalPages: Int, balances: BalancesResponse, cryptos: List&lt;UserCryptosInsights&gt;) : this(</span>
-<span class="fc" id="L15">        page = page + 1,</span>
-<span class="fc" id="L16">        totalPages = totalPages,</span>
-<span class="fc bfc" id="L17" title="All 2 branches covered.">        hasNextPage = totalPages - 1 &gt; page,</span>
-<span class="fc" id="L18">        balances = balances,</span>
-<span class="fc" id="L19">        cryptos = cryptos</span>
-<span class="fc" id="L20">    )</span>
+<span class="fc" id="L14">  constructor(page: Int, totalPages: Int, balances: BalancesResponse, cryptos: List&lt;UserCryptosInsights&gt;) : this(</span>
+<span class="fc" id="L15">    page = page + 1,</span>
+<span class="fc" id="L16">    totalPages = totalPages,</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">    hasNextPage = totalPages - 1 &gt; page,</span>
+<span class="fc" id="L18">    balances = balances,</span>
+<span class="fc" id="L19">    cryptos = cryptos</span>
+<span class="fc" id="L20">  )</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

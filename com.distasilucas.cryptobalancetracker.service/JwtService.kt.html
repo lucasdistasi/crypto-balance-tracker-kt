@@ -20,52 +20,52 @@ import javax.crypto.SecretKey
 <span class="nc" id="L20">@Service</span>
 @ConditionalOnProperty(prefix = &quot;security&quot;, name = [&quot;enabled&quot;], havingValue = &quot;true&quot;)
 <span class="nc" id="L22">class JwtService(</span>
-<span class="nc" id="L23">    @Value(&quot;\${jwt.signing-key}&quot;)</span>
-    private val jwtSigningKey: String
+<span class="nc" id="L23">  @Value(&quot;\${jwt.signing-key}&quot;)</span>
+  private val jwtSigningKey: String
 ) {
 
-<span class="nc" id="L27">    private val logger = KotlinLogging.logger { }</span>
+<span class="nc" id="L27">  private val logger = KotlinLogging.logger { }</span>
 
-    fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
-<span class="nc" id="L30">        logger.info { &quot;Validating JWT token for ${userDetails.username}&quot; }</span>
+  fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
+<span class="nc" id="L30">    logger.info { &quot;Validating JWT token for ${userDetails.username}&quot; }</span>
 
-<span class="nc bnc" id="L32" title="All 4 branches missed.">        return isTokenNonExpired(token) &amp;&amp; extractUsername(token) == userDetails.username</span>
+<span class="nc bnc" id="L32" title="All 4 branches missed.">    return isTokenNonExpired(token) &amp;&amp; extractUsername(token) == userDetails.username</span>
+  }
+
+  fun extractUsername(token: String): String {
+<span class="nc" id="L36">    return extractClaim&lt;String&gt;(token, Claims::getSubject)</span>
+  }
+
+  private fun isTokenNonExpired(token: String): Boolean {
+<span class="nc" id="L40">    val date = extractClaim&lt;Date&gt;(token, Claims::getExpiration)</span>
+<span class="nc" id="L41">    return date.after(Date())</span>
+  }
+
+  private fun &lt;T&gt; extractClaim(token: String, claims: Function&lt;Claims, T&gt;): T {
+<span class="nc" id="L45">    val claim: Claims = extractClaims(token)</span>
+<span class="nc" id="L46">    return claims.apply(claim)</span>
+  }
+
+  private fun extractClaims(token: String): Claims {
+<span class="nc" id="L50">    return try {</span>
+<span class="nc" id="L51">      Jwts.parser()</span>
+<span class="nc" id="L52">        .verifyWith(getSigningKey())</span>
+<span class="nc" id="L53">        .build()</span>
+<span class="nc" id="L54">        .parseSignedClaims(token)</span>
+<span class="nc" id="L55">        .payload</span>
+<span class="nc" id="L56">    } catch (ex: ExpiredJwtException) {</span>
+<span class="nc" id="L57">      throw ApiException(HttpStatus.BAD_REQUEST, TOKEN_EXPIRED)</span>
+<span class="nc" id="L58">    } catch (ex: Exception) {</span>
+<span class="nc" id="L59">      logger.warn { &quot;Exception when parsing JWT Token. ${ex.message}&quot; }</span>
+<span class="nc" id="L60">      throw ApiException()</span>
     }
+  }
 
-    fun extractUsername(token: String): String {
-<span class="nc" id="L36">        return extractClaim&lt;String&gt;(token, Claims::getSubject)</span>
-    }
+  private fun getSigningKey(): SecretKey {
+<span class="nc" id="L65">    val decoders: ByteArray = Decoders.BASE64.decode(jwtSigningKey)</span>
 
-    private fun isTokenNonExpired(token: String): Boolean {
-<span class="nc" id="L40">        val date = extractClaim&lt;Date&gt;(token, Claims::getExpiration)</span>
-<span class="nc" id="L41">        return date.after(Date())</span>
-    }
-
-    private fun &lt;T&gt; extractClaim(token: String, claims: Function&lt;Claims, T&gt;): T {
-<span class="nc" id="L45">        val claim: Claims = extractClaims(token)</span>
-<span class="nc" id="L46">        return claims.apply(claim)</span>
-    }
-
-    private fun extractClaims(token: String): Claims {
-<span class="nc" id="L50">        return try {</span>
-<span class="nc" id="L51">            Jwts.parser()</span>
-<span class="nc" id="L52">                .verifyWith(getSigningKey())</span>
-<span class="nc" id="L53">                .build()</span>
-<span class="nc" id="L54">                .parseSignedClaims(token)</span>
-<span class="nc" id="L55">                .payload</span>
-<span class="nc" id="L56">        } catch (ex: ExpiredJwtException) {</span>
-<span class="nc" id="L57">            throw ApiException(HttpStatus.BAD_REQUEST, TOKEN_EXPIRED)</span>
-<span class="nc" id="L58">        } catch (ex: Exception) {</span>
-<span class="nc" id="L59">            logger.warn { &quot;Exception when parsing JWT Token. ${ex.message}&quot; }</span>
-<span class="nc" id="L60">            throw ApiException()</span>
-        }
-    }
-
-    private fun getSigningKey(): SecretKey {
-<span class="nc" id="L65">        val decoders: ByteArray = Decoders.BASE64.decode(jwtSigningKey)</span>
-
-<span class="nc" id="L67">        return Keys.hmacShaKeyFor(decoders)</span>
-    }
+<span class="nc" id="L67">    return Keys.hmacShaKeyFor(decoders)</span>
+  }
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

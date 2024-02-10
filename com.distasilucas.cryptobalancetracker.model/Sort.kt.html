@@ -4,33 +4,33 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptos
 import java.math.BigDecimal
 
 <span class="fc" id="L6">enum class SortBy(</span>
-<span class="fc" id="L7">    private val userCryptosInsightsComparator: Comparator&lt;UserCryptosInsights&gt;</span>
+<span class="fc" id="L7">  private val userCryptosInsightsComparator: Comparator&lt;UserCryptosInsights&gt;</span>
 ) {
-<span class="fc" id="L9">    PERCENTAGE(Comparator.comparing { it.percentage }),</span>
-<span class="fc" id="L10">    MARKET_CAP_RANK(Comparator.comparing { it.marketCapRank }),</span>
-<span class="fc" id="L11">    CURRENT_PRICE(Comparator.comparing { BigDecimal(it.marketData.currentPrice.usd) }),</span>
-<span class="fc" id="L12">    MAX_SUPPLY(Comparator.comparing { BigDecimal(it.marketData.maxSupply) }),</span>
-<span class="fc" id="L13">    CHANGE_PRICE_IN_24H(Comparator.comparing { it.marketData.priceChange.changePercentageIn24h }),</span>
-<span class="fc" id="L14">    CHANGE_PRICE_IN_7D(Comparator.comparing { it.marketData.priceChange.changePercentageIn7d }),</span>
-<span class="fc" id="L15">    CHANGE_PRICE_IN_30D(Comparator.comparing { it.marketData.priceChange.changePercentageIn30d });</span>
+<span class="fc" id="L9">  PERCENTAGE(Comparator.comparing { it.percentage }),</span>
+<span class="fc" id="L10">  MARKET_CAP_RANK(Comparator.comparing { it.marketCapRank }),</span>
+<span class="fc" id="L11">  CURRENT_PRICE(Comparator.comparing { BigDecimal(it.marketData.currentPrice.usd) }),</span>
+<span class="fc" id="L12">  MAX_SUPPLY(Comparator.comparing { BigDecimal(it.marketData.maxSupply) }),</span>
+<span class="fc" id="L13">  CHANGE_PRICE_IN_24H(Comparator.comparing { it.marketData.priceChange.changePercentageIn24h }),</span>
+<span class="fc" id="L14">  CHANGE_PRICE_IN_7D(Comparator.comparing { it.marketData.priceChange.changePercentageIn7d }),</span>
+<span class="fc" id="L15">  CHANGE_PRICE_IN_30D(Comparator.comparing { it.marketData.priceChange.changePercentageIn30d });</span>
 
-    fun getUserCryptosInsightsComparator(sortType: SortType): Comparator&lt;UserCryptosInsights&gt; {
-<span class="fc bfc" id="L18" title="All 2 branches covered.">        return if (sortType == SortType.ASC) userCryptosInsightsComparator else userCryptosInsightsComparator.reversed()</span>
-    }
+  fun getUserCryptosInsightsComparator(sortType: SortType): Comparator&lt;UserCryptosInsights&gt; {
+<span class="fc bfc" id="L18" title="All 2 branches covered.">    return if (sortType == SortType.ASC) userCryptosInsightsComparator else userCryptosInsightsComparator.reversed()</span>
+  }
 }
 
 enum class SortType {
-<span class="fc" id="L23">    ASC,</span>
-<span class="fc" id="L24">    DESC</span>
+<span class="fc" id="L23">  ASC,</span>
+<span class="fc" id="L24">  DESC</span>
 }
 
 <span class="pc" id="L27">data class SortParams(</span>
-<span class="pc" id="L28">    val sortBy: SortBy = SortBy.PERCENTAGE,</span>
-<span class="pc" id="L29">    val sortType: SortType = SortType.DESC</span>
+<span class="pc" id="L28">  val sortBy: SortBy = SortBy.PERCENTAGE,</span>
+<span class="pc" id="L29">  val sortType: SortType = SortType.DESC</span>
 ) {
 
-    fun cryptosInsightsResponseComparator(): Comparator&lt;UserCryptosInsights&gt; {
-<span class="fc" id="L33">        return sortBy.getUserCryptosInsightsComparator(sortType)</span>
-    }
+  fun cryptosInsightsResponseComparator(): Comparator&lt;UserCryptosInsights&gt; {
+<span class="fc" id="L33">    return sortBy.getUserCryptosInsightsComparator(sortType)</span>
+  }
 <span class="nc" id="L35">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

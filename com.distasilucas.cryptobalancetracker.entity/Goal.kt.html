@@ -9,33 +9,33 @@ import java.util.UUID
 
 <span class="fc" id="L10">@Document(&quot;Goals&quot;)</span>
 <span class="fc" id="L11">data class Goal(</span>
-<span class="fc" id="L12">    @Id</span>
-<span class="fc" id="L13">    val id: String = UUID.randomUUID().toString(),</span>
+<span class="fc" id="L12">  @Id</span>
+<span class="fc" id="L13">  val id: String = UUID.randomUUID().toString(),</span>
 
-<span class="fc" id="L15">    @Field(&quot;crypto_id&quot;)</span>
-<span class="fc" id="L16">    val coingeckoCryptoId: String,</span>
+<span class="fc" id="L15">  @Field(&quot;crypto_id&quot;)</span>
+<span class="fc" id="L16">  val coingeckoCryptoId: String,</span>
 
-<span class="fc" id="L18">    @Field(&quot;goal_quantity&quot;)</span>
-<span class="fc" id="L19">    val goalQuantity: BigDecimal</span>
+<span class="fc" id="L18">  @Field(&quot;goal_quantity&quot;)</span>
+<span class="fc" id="L19">  val goalQuantity: BigDecimal</span>
 ) {
 
-    fun toGoalResponse(
-        id: String,
-        cryptoName: String,
-        actualQuantity: BigDecimal,
-        progress: Float,
-        remainingQuantity: BigDecimal,
-        moneyNeeded: BigDecimal
-    ): GoalResponse {
-<span class="fc" id="L30">        return GoalResponse(</span>
-<span class="fc" id="L31">            id = id,</span>
-<span class="fc" id="L32">            cryptoName = cryptoName,</span>
-<span class="fc" id="L33">            actualQuantity = actualQuantity.toPlainString(),</span>
-<span class="fc" id="L34">            progress = progress,</span>
-<span class="fc" id="L35">            remainingQuantity = remainingQuantity.toPlainString(),</span>
-<span class="fc" id="L36">            goalQuantity = goalQuantity.toPlainString(),</span>
-<span class="fc" id="L37">            moneyNeeded = moneyNeeded.toPlainString()</span>
-        )
-    }
+  fun toGoalResponse(
+    id: String,
+    cryptoName: String,
+    actualQuantity: BigDecimal,
+    progress: Float,
+    remainingQuantity: BigDecimal,
+    moneyNeeded: BigDecimal
+  ): GoalResponse {
+<span class="fc" id="L30">    return GoalResponse(</span>
+<span class="fc" id="L31">      id = id,</span>
+<span class="fc" id="L32">      cryptoName = cryptoName,</span>
+<span class="fc" id="L33">      actualQuantity = actualQuantity.toPlainString(),</span>
+<span class="fc" id="L34">      progress = progress,</span>
+<span class="fc" id="L35">      remainingQuantity = remainingQuantity.toPlainString(),</span>
+<span class="fc" id="L36">      goalQuantity = goalQuantity.toPlainString(),</span>
+<span class="fc" id="L37">      moneyNeeded = moneyNeeded.toPlainString()</span>
+    )
+  }
 <span class="fc" id="L40">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

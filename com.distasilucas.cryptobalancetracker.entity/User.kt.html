@@ -11,29 +11,29 @@ import java.util.UUID
 
 <span class="fc" id="L12">@Document(&quot;Users&quot;)</span>
 <span class="fc" id="L13">data class User(</span>
-<span class="fc" id="L14">    @Id</span>
-<span class="fc" id="L15">    private val id: String = UUID.randomUUID().toString(),</span>
-<span class="fc" id="L16">    private val username: String,</span>
-<span class="fc" id="L17">    private val password: String,</span>
-<span class="fc" id="L18">    private val role: Role,</span>
+<span class="fc" id="L14">  @Id</span>
+<span class="fc" id="L15">  private val id: String = UUID.randomUUID().toString(),</span>
+<span class="fc" id="L16">  private val username: String,</span>
+<span class="fc" id="L17">  private val password: String,</span>
+<span class="fc" id="L18">  private val role: Role,</span>
 
-<span class="fc" id="L20">    @Field(&quot;created_at&quot;)</span>
-    private val createdAt: LocalDateTime
+<span class="fc" id="L20">  @Field(&quot;created_at&quot;)</span>
+  private val createdAt: LocalDateTime
 
-): UserDetails {
-<span class="nc" id="L24">    override fun getAuthorities() = listOf(SimpleGrantedAuthority(role.name))</span>
+) : UserDetails {
+<span class="nc" id="L24">  override fun getAuthorities() = listOf(SimpleGrantedAuthority(role.name))</span>
 
-<span class="fc" id="L26">    override fun getPassword() = password</span>
+<span class="fc" id="L26">  override fun getPassword() = password</span>
 
-<span class="fc" id="L28">    override fun getUsername() = username</span>
+<span class="fc" id="L28">  override fun getUsername() = username</span>
 
-<span class="nc" id="L30">    override fun isAccountNonExpired() = true</span>
+<span class="nc" id="L30">  override fun isAccountNonExpired() = true</span>
 
-<span class="nc" id="L32">    override fun isAccountNonLocked() = true</span>
+<span class="nc" id="L32">  override fun isAccountNonLocked() = true</span>
 
-<span class="nc" id="L34">    override fun isCredentialsNonExpired() = true</span>
+<span class="nc" id="L34">  override fun isCredentialsNonExpired() = true</span>
 
-<span class="nc" id="L36">    override fun isEnabled() = true</span>
+<span class="nc" id="L36">  override fun isEnabled() = true</span>
 
 <span class="fc" id="L38">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

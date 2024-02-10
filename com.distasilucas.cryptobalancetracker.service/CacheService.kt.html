@@ -14,28 +14,28 @@ import org.springframework.stereotype.Service
 <span class="fc" id="L14">@Service</span>
 <span class="fc" id="L15">class CacheService(private val cacheManager: CacheManager) {</span>
 
-<span class="fc" id="L17">    private val logger = KotlinLogging.logger { }</span>
+<span class="fc" id="L17">  private val logger = KotlinLogging.logger { }</span>
 
-    fun invalidateUserCryptosCaches() {
-<span class="fc" id="L20">        logger.info { &quot;Invalidating user cryptos cache&quot; }</span>
+  fun invalidateUserCryptosCaches() {
+<span class="fc" id="L20">    logger.info { &quot;Invalidating user cryptos cache&quot; }</span>
 
-<span class="fc" id="L22">        cacheManager.getCache(USER_CRYPTOS_CACHE)!!.invalidate()</span>
-<span class="fc" id="L23">        cacheManager.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE)!!.invalidate()</span>
-<span class="fc" id="L24">        cacheManager.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE)!!.invalidate()</span>
-<span class="fc" id="L25">    }</span>
+<span class="fc" id="L22">    cacheManager.getCache(USER_CRYPTOS_CACHE)!!.invalidate()</span>
+<span class="fc" id="L23">    cacheManager.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE)!!.invalidate()</span>
+<span class="fc" id="L24">    cacheManager.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE)!!.invalidate()</span>
+<span class="fc" id="L25">  }</span>
 
-    fun invalidatePlatformsCaches() {
-<span class="fc" id="L28">        logger.info { &quot;Invalidating platforms cache&quot; }</span>
+  fun invalidatePlatformsCaches() {
+<span class="fc" id="L28">    logger.info { &quot;Invalidating platforms cache&quot; }</span>
 
-<span class="fc" id="L30">        cacheManager.getCache(PLATFORMS_PLATFORMS_IDS_CACHE)!!.invalidate()</span>
-<span class="fc" id="L31">        cacheManager.getCache(ALL_PLATFORMS_CACHE)!!.invalidate()</span>
-<span class="fc" id="L32">        cacheManager.getCache(PLATFORM_PLATFORM_ID_CACHE)!!.invalidate()</span>
-<span class="fc" id="L33">    }</span>
+<span class="fc" id="L30">    cacheManager.getCache(PLATFORMS_PLATFORMS_IDS_CACHE)!!.invalidate()</span>
+<span class="fc" id="L31">    cacheManager.getCache(ALL_PLATFORMS_CACHE)!!.invalidate()</span>
+<span class="fc" id="L32">    cacheManager.getCache(PLATFORM_PLATFORM_ID_CACHE)!!.invalidate()</span>
+<span class="fc" id="L33">  }</span>
 
-    fun invalidateCryptosCache() {
-<span class="fc" id="L36">        logger.info { &quot;Invalidating cryptos cache&quot; }</span>
+  fun invalidateCryptosCache() {
+<span class="fc" id="L36">    logger.info { &quot;Invalidating cryptos cache&quot; }</span>
 
-<span class="fc" id="L38">        cacheManager.getCache(CRYPTOS_CRYPTOS_IDS_CACHE)!!.invalidate()</span>
-<span class="fc" id="L39">    }</span>
+<span class="fc" id="L38">    cacheManager.getCache(CRYPTOS_CRYPTOS_IDS_CACHE)!!.invalidate()</span>
+<span class="fc" id="L39">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

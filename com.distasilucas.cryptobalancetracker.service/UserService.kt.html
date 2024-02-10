@@ -5,20 +5,19 @@ import com.distasilucas.cryptobalancetracker.entity.User
 import com.distasilucas.cryptobalancetracker.repository.UserRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
-import java.lang.RuntimeException
 
-<span class="fc" id="L10">@Service</span>
-<span class="fc" id="L11">class UserService(private val userRepository: UserRepository) {</span>
+<span class="fc" id="L9">@Service</span>
+<span class="fc" id="L10">class UserService(private val userRepository: UserRepository) {</span>
 
-<span class="fc" id="L13">    private val logger = KotlinLogging.logger { }</span>
+<span class="fc" id="L12">  private val logger = KotlinLogging.logger { }</span>
 
-    fun findByUsername(username: String): User {
-<span class="fc" id="L16">        logger.info { &quot;Searching for username $username&quot; }</span>
+  fun findByUsername(username: String): User {
+<span class="fc" id="L15">    logger.info { &quot;Searching for username $username&quot; }</span>
 
-<span class="fc" id="L18">        return userRepository.findByUsername(username)</span>
-<span class="fc" id="L19">            .orElseThrow { UsernameNotFoundException() }</span>
-    }
+<span class="fc" id="L17">    return userRepository.findByUsername(username)</span>
+<span class="fc" id="L18">      .orElseThrow { UsernameNotFoundException() }</span>
+  }
 }
 
-<span class="fc" id="L23">class UsernameNotFoundException : RuntimeException(USERNAME_NOT_FOUND)</span>
+<span class="fc" id="L22">class UsernameNotFoundException : RuntimeException(USERNAME_NOT_FOUND)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

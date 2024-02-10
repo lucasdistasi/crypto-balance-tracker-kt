@@ -13,29 +13,29 @@ import jakarta.validation.constraints.Size
 import java.math.BigDecimal
 
 <span class="fc" id="L15">data class GoalRequest(</span>
-<span class="fc" id="L16">    @field: NotBlank(message = CRYPTO_NAME_NOT_BLANK)</span>
-    @field: Size(min = 1, max = 64, message = CRYPTO_NAME_SIZE)
-    @field: ValidCryptoName
-<span class="fc" id="L19">    val cryptoName: String?,</span>
+<span class="fc" id="L16">  @field: NotBlank(message = CRYPTO_NAME_NOT_BLANK)</span>
+  @field: Size(min = 1, max = 64, message = CRYPTO_NAME_SIZE)
+  @field: ValidCryptoName
+<span class="fc" id="L19">  val cryptoName: String?,</span>
 
-<span class="fc" id="L21">    @field: NotNull(message = &quot;Goal quantity can not be null&quot;)</span>
-    @field: Digits(
-        integer = 16,
-        fraction = 12,
-        message = &quot;Goal quantity must have up to {integer} digits in the integer part and up to {fraction} digits in the decimal part&quot;
-    )
-    @field: DecimalMax(
-        value = &quot;9999999999999999.999999999999&quot;,
-        message = &quot;Goal quantity must be less than or equal to 9999999999999999.999999999999&quot;
-    )
-    @field: Positive(message = &quot;Goal quantity must be greater than 0&quot;)
-<span class="fc" id="L32">    val goalQuantity: BigDecimal?,</span>
+<span class="fc" id="L21">  @field: NotNull(message = &quot;Goal quantity can not be null&quot;)</span>
+  @field: Digits(
+    integer = 16,
+    fraction = 12,
+    message = &quot;Goal quantity must have up to {integer} digits in the integer part and up to {fraction} digits in the decimal part&quot;
+  )
+  @field: DecimalMax(
+    value = &quot;9999999999999999.999999999999&quot;,
+    message = &quot;Goal quantity must be less than or equal to 9999999999999999.999999999999&quot;
+  )
+  @field: Positive(message = &quot;Goal quantity must be greater than 0&quot;)
+<span class="fc" id="L32">  val goalQuantity: BigDecimal?,</span>
 ) {
 
-<span class="fc" id="L35">    fun toEntity(cryptoId: String) = Goal(</span>
-<span class="fc" id="L36">        coingeckoCryptoId = cryptoId,</span>
-<span class="fc" id="L37">        goalQuantity = goalQuantity!!</span>
-<span class="fc" id="L38">    )</span>
+<span class="fc" id="L35">  fun toEntity(cryptoId: String) = Goal(</span>
+<span class="fc" id="L36">    coingeckoCryptoId = cryptoId,</span>
+<span class="fc" id="L37">    goalQuantity = goalQuantity!!</span>
+<span class="fc" id="L38">  )</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

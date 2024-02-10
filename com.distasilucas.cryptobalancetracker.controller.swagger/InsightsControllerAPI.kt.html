@@ -24,413 +24,413 @@ import org.springframework.http.ResponseEntity
 @Tag(name = &quot;Insights Controller&quot;, description = &quot;API endpoints for retrieving insights&quot;)
 interface InsightsControllerAPI {
 
-    @Operation(summary = &quot;Retrieve total balances in USD, BTC and EUR&quot;)
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = &quot;200&quot;,
-                description = &quot;Total Balances&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = BalancesResponse::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;401&quot;,
-                description = &quot;Unauthorized&quot;,
-                content = [Content(
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;403&quot;,
-                description = &quot;Forbidden. Not yet implemented&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = ProblemDetail::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;500&quot;,
-                description = &quot;Internal Server Error&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = ProblemDetail::class
-                        )
-                    )
-                )]
+  @Operation(summary = &quot;Retrieve total balances in USD, BTC and EUR&quot;)
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = &quot;200&quot;,
+        description = &quot;Total Balances&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = BalancesResponse::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;401&quot;,
+        description = &quot;Unauthorized&quot;,
+        content = [Content(
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;403&quot;,
+        description = &quot;Forbidden. Not yet implemented&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = ProblemDetail::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;500&quot;,
+        description = &quot;Internal Server Error&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          array = ArraySchema(
+            schema = Schema(
+              implementation = ProblemDetail::class
             )
-        ]
-    )
-    fun retrieveTotalBalancesInsights(): ResponseEntity&lt;BalancesResponse&gt;
+          )
+        )]
+      )
+    ]
+  )
+  fun retrieveTotalBalancesInsights(): ResponseEntity&lt;BalancesResponse&gt;
 
-    @Operation(summary = &quot;Retrieves information of each user crypto, like it's balance, information about the crypto, where it's stored&quot;)
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = &quot;200&quot;,
-                description = &quot;Cryptos Information&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = PageUserCryptosInsightsResponse::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;204&quot;,
-                description = &quot;No user cryptos saved&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;401&quot;,
-                description = &quot;Unauthorized&quot;,
-                content = [Content(
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;403&quot;,
-                description = &quot;Forbidden. Not yet implemented&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = ProblemDetail::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;500&quot;,
-                description = &quot;Internal Server Error&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = ProblemDetail::class
-                        )
-                    )
-                )]
+  @Operation(summary = &quot;Retrieves information of each user crypto, like it's balance, information about the crypto, where it's stored&quot;)
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = &quot;200&quot;,
+        description = &quot;Cryptos Information&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = PageUserCryptosInsightsResponse::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;204&quot;,
+        description = &quot;No user cryptos saved&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;401&quot;,
+        description = &quot;Unauthorized&quot;,
+        content = [Content(
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;403&quot;,
+        description = &quot;Forbidden. Not yet implemented&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = ProblemDetail::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;500&quot;,
+        description = &quot;Internal Server Error&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          array = ArraySchema(
+            schema = Schema(
+              implementation = ProblemDetail::class
             )
-        ]
-    )
-<span class="fc" id="L131">    fun retrieveUserCryptosInsights(</span>
-        @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
-        page: Int,
-<span class="fc" id="L134">        sortBy: SortBy = SortBy.PERCENTAGE,</span>
-<span class="fc" id="L135">        sortType: SortType = SortType.DESC</span>
-    ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt;
+          )
+        )]
+      )
+    ]
+  )
+<span class="fc" id="L131">  fun retrieveUserCryptosInsights(</span>
+    @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
+    page: Int,
+<span class="fc" id="L134">    sortBy: SortBy = SortBy.PERCENTAGE,</span>
+<span class="fc" id="L135">    sortType: SortType = SortType.DESC</span>
+  ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt;
 
-    @Operation(summary = &quot;Retrieves information of each INDIVIDUAL user crypto, like the total balance, information about the crypto, in which platforms it's stored&quot;)
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = &quot;200&quot;,
-                description = &quot;Cryptos Information&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = PageUserCryptosInsightsResponse::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;204&quot;,
-                description = &quot;No user cryptos saved&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;401&quot;,
-                description = &quot;Unauthorized&quot;,
-                content = [Content(
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;403&quot;,
-                description = &quot;Forbidden. Not yet implemented&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = ProblemDetail::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;500&quot;,
-                description = &quot;Internal Server Error&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = ProblemDetail::class
-                        )
-                    )
-                )]
+  @Operation(summary = &quot;Retrieves information of each INDIVIDUAL user crypto, like the total balance, information about the crypto, in which platforms it's stored&quot;)
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = &quot;200&quot;,
+        description = &quot;Cryptos Information&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = PageUserCryptosInsightsResponse::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;204&quot;,
+        description = &quot;No user cryptos saved&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;401&quot;,
+        description = &quot;Unauthorized&quot;,
+        content = [Content(
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;403&quot;,
+        description = &quot;Forbidden. Not yet implemented&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = ProblemDetail::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;500&quot;,
+        description = &quot;Internal Server Error&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          array = ArraySchema(
+            schema = Schema(
+              implementation = ProblemDetail::class
             )
-        ]
-    )
-<span class="fc" id="L194">    fun retrieveUserCryptosPlatformsInsights(</span>
-        @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
-        page: Int,
-<span class="fc" id="L197">        sortBy: SortBy = SortBy.PERCENTAGE,</span>
-<span class="fc" id="L198">        sortType: SortType = SortType.DESC</span>
-    ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt;
+          )
+        )]
+      )
+    ]
+  )
+<span class="fc" id="L194">  fun retrieveUserCryptosPlatformsInsights(</span>
+    @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
+    page: Int,
+<span class="fc" id="L197">    sortBy: SortBy = SortBy.PERCENTAGE,</span>
+<span class="fc" id="L198">    sortType: SortType = SortType.DESC</span>
+  ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt;
 
-    @Operation(summary = &quot;Retrieve insights balances for all user cryptos&quot;)
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = &quot;200&quot;,
-                description = &quot;User cryptos balances insights&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = CryptosBalancesInsightsResponse::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;204&quot;,
-                description = &quot;No user cryptos saved&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;401&quot;,
-                description = &quot;Unauthorized&quot;,
-                content = [Content(
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;403&quot;,
-                description = &quot;Forbidden. Not yet implemented&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = ProblemDetail::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;500&quot;,
-                description = &quot;Internal Server Error&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = ProblemDetail::class
-                        )
-                    )
-                )]
+  @Operation(summary = &quot;Retrieve insights balances for all user cryptos&quot;)
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = &quot;200&quot;,
+        description = &quot;User cryptos balances insights&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = CryptosBalancesInsightsResponse::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;204&quot;,
+        description = &quot;No user cryptos saved&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;401&quot;,
+        description = &quot;Unauthorized&quot;,
+        content = [Content(
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;403&quot;,
+        description = &quot;Forbidden. Not yet implemented&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = ProblemDetail::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;500&quot;,
+        description = &quot;Internal Server Error&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          array = ArraySchema(
+            schema = Schema(
+              implementation = ProblemDetail::class
             )
-        ]
-    )
-    fun retrieveCryptosBalancesInsights(): ResponseEntity&lt;CryptosBalancesInsightsResponse&gt;
+          )
+        )]
+      )
+    ]
+  )
+  fun retrieveCryptosBalancesInsights(): ResponseEntity&lt;CryptosBalancesInsightsResponse&gt;
 
-    @Operation(summary = &quot;Retrieve insights balances for all platforms&quot;)
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = &quot;200&quot;,
-                description = &quot;Platforms balances insights&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = PlatformsBalancesInsightsResponse::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;204&quot;,
-                description = &quot;No user cryptos saved&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;401&quot;,
-                description = &quot;Unauthorized&quot;,
-                content = [Content(
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;403&quot;,
-                description = &quot;Forbidden. Not yet implemented&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = ProblemDetail::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;500&quot;,
-                description = &quot;Internal Server Error&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = ProblemDetail::class
-                        )
-                    )
-                )]
+  @Operation(summary = &quot;Retrieve insights balances for all platforms&quot;)
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = &quot;200&quot;,
+        description = &quot;Platforms balances insights&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = PlatformsBalancesInsightsResponse::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;204&quot;,
+        description = &quot;No user cryptos saved&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;401&quot;,
+        description = &quot;Unauthorized&quot;,
+        content = [Content(
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;403&quot;,
+        description = &quot;Forbidden. Not yet implemented&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = ProblemDetail::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;500&quot;,
+        description = &quot;Internal Server Error&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          array = ArraySchema(
+            schema = Schema(
+              implementation = ProblemDetail::class
             )
-        ]
-    )
-    fun retrievePlatformsBalancesInsights(): ResponseEntity&lt;PlatformsBalancesInsightsResponse&gt;
+          )
+        )]
+      )
+    ]
+  )
+  fun retrievePlatformsBalancesInsights(): ResponseEntity&lt;PlatformsBalancesInsightsResponse&gt;
 
-    @Operation(summary = &quot;Retrieve user cryptos insights for the given coingecko crypto id&quot;)
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = &quot;200&quot;,
-                description = &quot;User cryptos insights&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = CryptoInsightResponse::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;204&quot;,
-                description = &quot;No user cryptos saved&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;401&quot;,
-                description = &quot;Unauthorized&quot;,
-                content = [Content(
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;403&quot;,
-                description = &quot;Forbidden. Not yet implemented&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = ProblemDetail::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;500&quot;,
-                description = &quot;Internal Server Error&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = ProblemDetail::class
-                        )
-                    )
-                )]
+  @Operation(summary = &quot;Retrieve user cryptos insights for the given coingecko crypto id&quot;)
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = &quot;200&quot;,
+        description = &quot;User cryptos insights&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = CryptoInsightResponse::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;204&quot;,
+        description = &quot;No user cryptos saved&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;401&quot;,
+        description = &quot;Unauthorized&quot;,
+        content = [Content(
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;403&quot;,
+        description = &quot;Forbidden. Not yet implemented&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = ProblemDetail::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;500&quot;,
+        description = &quot;Internal Server Error&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          array = ArraySchema(
+            schema = Schema(
+              implementation = ProblemDetail::class
             )
-        ]
-    )
-    fun retrieveCryptoInsights(coingeckoCryptoId: String): ResponseEntity&lt;CryptoInsightResponse&gt;
+          )
+        )]
+      )
+    ]
+  )
+  fun retrieveCryptoInsights(coingeckoCryptoId: String): ResponseEntity&lt;CryptoInsightResponse&gt;
 
-    @Operation(summary = &quot;Retrieve insights for the given platform&quot;)
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = &quot;200&quot;,
-                description = &quot;Platform insights&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = PlatformInsightsResponse::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;204&quot;,
-                description = &quot;No user cryptos saved&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;401&quot;,
-                description = &quot;Unauthorized&quot;,
-                content = [Content(
-                    schema = Schema(
-                        implementation = Void::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;403&quot;,
-                description = &quot;Forbidden. Not yet implemented&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    schema = Schema(
-                        implementation = ProblemDetail::class
-                    )
-                )]
-            ),
-            ApiResponse(
-                responseCode = &quot;500&quot;,
-                description = &quot;Internal Server Error&quot;,
-                content = [Content(
-                    mediaType = &quot;application/json&quot;,
-                    array = ArraySchema(
-                        schema = Schema(
-                            implementation = ProblemDetail::class
-                        )
-                    )
-                )]
+  @Operation(summary = &quot;Retrieve insights for the given platform&quot;)
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = &quot;200&quot;,
+        description = &quot;Platform insights&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = PlatformInsightsResponse::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;204&quot;,
+        description = &quot;No user cryptos saved&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;401&quot;,
+        description = &quot;Unauthorized&quot;,
+        content = [Content(
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;403&quot;,
+        description = &quot;Forbidden. Not yet implemented&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = ProblemDetail::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;500&quot;,
+        description = &quot;Internal Server Error&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          array = ArraySchema(
+            schema = Schema(
+              implementation = ProblemDetail::class
             )
-        ]
-    )
-    fun retrievePlatformInsights(
-        @UUID(message = PLATFORM_ID_UUID)
-        platformId: String
-    ): ResponseEntity&lt;PlatformInsightsResponse&gt;
+          )
+        )]
+      )
+    ]
+  )
+  fun retrievePlatformInsights(
+    @UUID(message = PLATFORM_ID_UUID)
+    platformId: String
+  ): ResponseEntity&lt;PlatformInsightsResponse&gt;
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -5,29 +5,29 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include
 
 <span class="fc" id="L6">@JsonInclude(Include.NON_NULL)</span>
 <span class="fc" id="L7">data class CryptoInsights(</span>
-<span class="fc" id="L8">        val id: String?,</span>
-<span class="fc" id="L9">        val cryptoName: String,</span>
-<span class="fc" id="L10">        val cryptoId: String?,</span>
-<span class="fc" id="L11">        val quantity: String?,</span>
-<span class="fc" id="L12">        val balances: BalancesResponse,</span>
-<span class="fc" id="L13">        val percentage: Float</span>
+<span class="fc" id="L8">  val id: String?,</span>
+<span class="fc" id="L9">  val cryptoName: String,</span>
+<span class="fc" id="L10">  val cryptoId: String?,</span>
+<span class="fc" id="L11">  val quantity: String?,</span>
+<span class="fc" id="L12">  val balances: BalancesResponse,</span>
+<span class="fc" id="L13">  val percentage: Float</span>
 ) {
-<span class="fc" id="L15">    constructor(cryptoName: String, balances: BalancesResponse, percentage: Float) : this(</span>
-<span class="fc" id="L16">            null,</span>
-<span class="fc" id="L17">            cryptoName,</span>
-<span class="fc" id="L18">            null,</span>
-<span class="fc" id="L19">            null,</span>
-<span class="fc" id="L20">            balances,</span>
-<span class="fc" id="L21">            percentage</span>
-<span class="fc" id="L22">    )</span>
+<span class="fc" id="L15">  constructor(cryptoName: String, balances: BalancesResponse, percentage: Float) : this(</span>
+<span class="fc" id="L16">    null,</span>
+<span class="fc" id="L17">    cryptoName,</span>
+<span class="fc" id="L18">    null,</span>
+<span class="fc" id="L19">    null,</span>
+<span class="fc" id="L20">    balances,</span>
+<span class="fc" id="L21">    percentage</span>
+<span class="fc" id="L22">  )</span>
 
-<span class="fc" id="L24">    constructor(cryptoName: String, cryptoId: String, quantity: String, balances: BalancesResponse, percentage: Float) : this(</span>
-<span class="fc" id="L25">            null,</span>
-<span class="fc" id="L26">            cryptoName,</span>
-<span class="fc" id="L27">            cryptoId,</span>
-<span class="fc" id="L28">            quantity,</span>
-<span class="fc" id="L29">            balances,</span>
-<span class="fc" id="L30">            percentage</span>
-<span class="fc" id="L31">    )</span>
+<span class="fc" id="L24">  constructor(cryptoName: String, cryptoId: String, quantity: String, balances: BalancesResponse, percentage: Float) : this(</span>
+<span class="fc" id="L25">    null,</span>
+<span class="fc" id="L26">    cryptoName,</span>
+<span class="fc" id="L27">    cryptoId,</span>
+<span class="fc" id="L28">    quantity,</span>
+<span class="fc" id="L29">    balances,</span>
+<span class="fc" id="L30">    percentage</span>
+<span class="fc" id="L31">  )</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

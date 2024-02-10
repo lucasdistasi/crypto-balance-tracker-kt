@@ -32,62 +32,62 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(&quot;/api/v1/cryptos&quot;)
 @CrossOrigin(origins = [&quot;\${allowed-origins}&quot;])
 <span class="fc" id="L34">class UserCryptoController(</span>
-<span class="fc" id="L35">    private val userCryptoService: UserCryptoService,</span>
-<span class="fc" id="L36">    private val transferCryptoService: TransferCryptoService</span>
+<span class="fc" id="L35">  private val userCryptoService: UserCryptoService,</span>
+<span class="fc" id="L36">  private val transferCryptoService: TransferCryptoService</span>
 ) : UserCryptoControllerAPI {
 
-    @GetMapping(&quot;/{userCryptoId}&quot;)
-    override fun retrieveUserCrypto(
-        @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
-    ): ResponseEntity&lt;UserCryptoResponse&gt; {
-<span class="fc" id="L43">        val userCrypto = userCryptoService.retrieveUserCryptoById(userCryptoId)</span>
+  @GetMapping(&quot;/{userCryptoId}&quot;)
+  override fun retrieveUserCrypto(
+    @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
+  ): ResponseEntity&lt;UserCryptoResponse&gt; {
+<span class="fc" id="L43">    val userCrypto = userCryptoService.retrieveUserCryptoById(userCryptoId)</span>
 
-<span class="fc" id="L45">        return ResponseEntity.ok(userCrypto)</span>
-    }
+<span class="fc" id="L45">    return ResponseEntity.ok(userCrypto)</span>
+  }
 
-    @GetMapping
-    override fun retrieveUserCryptosForPage(
-        @RequestParam @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int
-    ): ResponseEntity&lt;PageUserCryptoResponse&gt; {
-<span class="fc" id="L52">        val userCryptosPage = userCryptoService.retrieveUserCryptosByPage(page)</span>
+  @GetMapping
+  override fun retrieveUserCryptosForPage(
+    @RequestParam @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int
+  ): ResponseEntity&lt;PageUserCryptoResponse&gt; {
+<span class="fc" id="L52">    val userCryptosPage = userCryptoService.retrieveUserCryptosByPage(page)</span>
 
-<span class="fc bfc" id="L54" title="All 2 branches covered.">        return if (userCryptosPage.cryptos.isEmpty()) ResponseEntity.status(HttpStatus.NO_CONTENT)</span>
-<span class="fc" id="L55">            .build() else ResponseEntity.ok(userCryptosPage)</span>
-    }
+<span class="fc bfc" id="L54" title="All 2 branches covered.">    return if (userCryptosPage.cryptos.isEmpty()) ResponseEntity.status(HttpStatus.NO_CONTENT)</span>
+<span class="fc" id="L55">      .build() else ResponseEntity.ok(userCryptosPage)</span>
+  }
 
-    @PostMapping
-    override fun saveUserCrypto(@Valid @RequestBody userCryptoRequest: UserCryptoRequest): ResponseEntity&lt;UserCryptoResponse&gt; {
-<span class="fc" id="L60">        val userCrypto = userCryptoService.saveUserCrypto(userCryptoRequest)</span>
+  @PostMapping
+  override fun saveUserCrypto(@Valid @RequestBody userCryptoRequest: UserCryptoRequest): ResponseEntity&lt;UserCryptoResponse&gt; {
+<span class="fc" id="L60">    val userCrypto = userCryptoService.saveUserCrypto(userCryptoRequest)</span>
 
-<span class="fc" id="L62">        return ResponseEntity.ok(userCrypto)</span>
-    }
+<span class="fc" id="L62">    return ResponseEntity.ok(userCrypto)</span>
+  }
 
-    @PutMapping(&quot;/{userCryptoId}&quot;)
-    override fun updateUserCrypto(
-        @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String,
-        @Valid @RequestBody userCryptoRequest: UserCryptoRequest
-    ): ResponseEntity&lt;UserCryptoResponse&gt; {
-<span class="fc" id="L70">        val updatedUserCrypto = userCryptoService.updateUserCrypto(userCryptoId, userCryptoRequest)</span>
+  @PutMapping(&quot;/{userCryptoId}&quot;)
+  override fun updateUserCrypto(
+    @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String,
+    @Valid @RequestBody userCryptoRequest: UserCryptoRequest
+  ): ResponseEntity&lt;UserCryptoResponse&gt; {
+<span class="fc" id="L70">    val updatedUserCrypto = userCryptoService.updateUserCrypto(userCryptoId, userCryptoRequest)</span>
 
-<span class="fc" id="L72">        return ResponseEntity.ok(updatedUserCrypto)</span>
-    }
+<span class="fc" id="L72">    return ResponseEntity.ok(updatedUserCrypto)</span>
+  }
 
-    @DeleteMapping(&quot;/{userCryptoId}&quot;)
-    override fun deleteUserCrypto(
-        @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
-    ): ResponseEntity&lt;Unit&gt; {
-<span class="fc" id="L79">        userCryptoService.deleteUserCrypto(userCryptoId)</span>
+  @DeleteMapping(&quot;/{userCryptoId}&quot;)
+  override fun deleteUserCrypto(
+    @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
+  ): ResponseEntity&lt;Unit&gt; {
+<span class="fc" id="L79">    userCryptoService.deleteUserCrypto(userCryptoId)</span>
 
-<span class="fc" id="L81">        return ResponseEntity.ok().build()</span>
-    }
+<span class="fc" id="L81">    return ResponseEntity.ok().build()</span>
+  }
 
-    @PostMapping(&quot;/transfer&quot;)
-    override fun transferUserCrypto(
-        @Valid @RequestBody transferCryptoRequest: TransferCryptoRequest
-    ): ResponseEntity&lt;TransferCryptoResponse&gt; {
-<span class="fc" id="L88">        val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)</span>
+  @PostMapping(&quot;/transfer&quot;)
+  override fun transferUserCrypto(
+    @Valid @RequestBody transferCryptoRequest: TransferCryptoRequest
+  ): ResponseEntity&lt;TransferCryptoResponse&gt; {
+<span class="fc" id="L88">    val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)</span>
 
-<span class="fc" id="L90">        return ResponseEntity.ok(transferCryptoResponse)</span>
-    }
+<span class="fc" id="L90">    return ResponseEntity.ok(transferCryptoResponse)</span>
+  }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

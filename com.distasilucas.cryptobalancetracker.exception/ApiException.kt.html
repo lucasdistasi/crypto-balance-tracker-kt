@@ -5,13 +5,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 
 <span class="fc" id="L7">class ApiException(</span>
-<span class="fc" id="L8">    val httpStatusCode: HttpStatusCode,</span>
-<span class="fc" id="L9">    override val message: String</span>
+<span class="fc" id="L8">  val httpStatusCode: HttpStatusCode,</span>
+<span class="fc" id="L9">  override val message: String</span>
 <span class="fc" id="L10">) : RuntimeException(message) {</span>
 
-<span class="fc" id="L12">    constructor() : this(UNKNOWN_ERROR)</span>
+<span class="fc" id="L12">  constructor() : this(UNKNOWN_ERROR)</span>
 
-<span class="fc" id="L14">    constructor(message: String) : this(HttpStatus.INTERNAL_SERVER_ERROR, message)</span>
+<span class="fc" id="L14">  constructor(message: String) : this(HttpStatus.INTERNAL_SERVER_ERROR, message)</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
