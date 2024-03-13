@@ -44,11 +44,11 @@ import java.time.LocalDateTime
 <span class="fc" id="L44">    return cryptoRepository.save(cryptoToSave)</span>
   }
 
-  fun retrieveCoingeckoCryptoInfoByName(cryptoName: String): CoingeckoCrypto {
-<span class="fc" id="L48">    logger.info { &quot;Retrieving info for coingecko crypto $cryptoName&quot; }</span>
+  fun retrieveCoingeckoCryptoInfoByNameOrId(cryptoNameOrId: String): CoingeckoCrypto {
+<span class="fc" id="L48">    logger.info { &quot;Retrieving info for coingecko crypto $cryptoNameOrId&quot; }</span>
 
-<span class="fc bfc" id="L50" title="All 6 branches covered.">    return coingeckoService.retrieveAllCryptos().find { it.name.equals(cryptoName, true) }</span>
-<span class="fc" id="L51">      ?: throw CoingeckoCryptoNotFoundException(COINGECKO_CRYPTO_NOT_FOUND.format(cryptoName))</span>
+<span class="fc bfc" id="L50" title="All 10 branches covered.">    return coingeckoService.retrieveAllCryptos().find { it.name.equals(cryptoNameOrId, true) || it.id.equals(cryptoNameOrId, true) }</span>
+<span class="fc" id="L51">      ?: throw CoingeckoCryptoNotFoundException(COINGECKO_CRYPTO_NOT_FOUND.format(cryptoNameOrId))</span>
   }
 
   fun saveCryptoIfNotExists(coingeckoCryptoId: String) {

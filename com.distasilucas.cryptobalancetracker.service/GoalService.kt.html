@@ -47,7 +47,7 @@ import java.math.RoundingMode
   }
 
   fun saveGoal(goalRequest: GoalRequest): GoalResponse {
-<span class="fc" id="L50">    val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(goalRequest.cryptoName!!)</span>
+<span class="fc" id="L50">    val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(goalRequest.cryptoName!!)</span>
 
 <span class="fc" id="L52">    val existingGoal = goalRepository.findByCoingeckoCryptoId(coingeckoCrypto.id)</span>
 
