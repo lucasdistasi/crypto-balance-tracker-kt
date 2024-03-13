@@ -12,7 +12,7 @@ class CryptoNameValidatorTest {
 
   @ParameterizedTest
   @ValueSource(strings = [
-    "bitcoin", "BITCOIN", "b1tc0in", "x", "7FbA3d9E1C6gH2jL5M0nR8kPqY4sT1vU3W6xZ9cE2aB4dF7hJ0mN5pQ8rK2tV3yx"
+    "bitcoin", "BITCOIN", "b1tc0in", "x", "yearn.finance", "\$wen", "-some-crypto-", "#test"
   ])
   fun `should return true when validating crypto name`(cryptoName: String) {
     val isValid = cryptoNameValidator.isValid(cryptoName, null)
@@ -22,8 +22,7 @@ class CryptoNameValidatorTest {
 
   @ParameterizedTest
   @ValueSource(strings = [
-    "", " ", " bitcoin", "bitcoin ", "bit  coin", "$", "x ", " x",
-    "bit.coin", "7FbA3d9E1C6gH2jL5M0nR8kPqY4sT1vU3W6xZ9cE2aB4dF7hJ0mN5pQ8rK2tV3yxz"
+    "", " ", " bitcoin", "bitcoin ", "bit  coin", "x ", " x", "ether ", " ether"
   ])
   fun `should return false when validating crypto name`(cryptoName: String) {
     val isValid = cryptoNameValidator.isValid(cryptoName, null)

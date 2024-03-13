@@ -53,7 +53,7 @@ class UserCryptoService(
   }
 
   fun saveUserCrypto(userCryptoRequest: UserCryptoRequest): UserCryptoResponse {
-    val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(userCryptoRequest.cryptoName!!)
+    val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(userCryptoRequest.cryptoName!!)
     val platform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)
 
     val existingUserCrypto =
@@ -85,7 +85,7 @@ class UserCryptoService(
   fun updateUserCrypto(userCryptoId: String, userCryptoRequest: UserCryptoRequest): UserCryptoResponse {
     val userCrypto = findByUserCryptoId(userCryptoId)
     val requestPlatform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)
-    val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByName(userCryptoRequest.cryptoName!!)
+    val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(userCryptoRequest.cryptoName!!)
 
     if (didChangePlatform(requestPlatform.id, userCrypto.platformId)) {
       val existingUserCrypto =

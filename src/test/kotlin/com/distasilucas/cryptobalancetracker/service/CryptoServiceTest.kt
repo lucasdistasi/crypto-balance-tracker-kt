@@ -175,7 +175,7 @@ class CryptoServiceTest {
 
     every { coingeckoServiceMock.retrieveAllCryptos() } returns listOf(coingeckoCrypto)
 
-    val crypto = cryptoService.retrieveCoingeckoCryptoInfoByName("bitcoin")
+    val crypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin")
 
     assertThat(crypto)
       .usingRecursiveComparison()
@@ -184,6 +184,36 @@ class CryptoServiceTest {
           id = "bitcoin",
           symbol = "btc",
           name = "Bitcoin"
+        )
+      )
+  }
+
+  @Test
+  fun `should retrieve coingecko crypto by id`() {
+    val coingeckoCryptos = listOf(
+      CoingeckoCrypto(
+        id = "wen-2",
+        symbol = "wen",
+        name = "wen"
+      ),
+      CoingeckoCrypto(
+        id = "wen",
+        symbol = "wen",
+        name = "wen"
+      )
+    )
+
+    every { coingeckoServiceMock.retrieveAllCryptos() } returns coingeckoCryptos
+
+    val crypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId("wen-2")
+
+    assertThat(crypto)
+      .usingRecursiveComparison()
+      .isEqualTo(
+        CoingeckoCrypto(
+          id = "wen-2",
+          symbol = "wen",
+          name = "wen"
         )
       )
   }
@@ -199,7 +229,7 @@ class CryptoServiceTest {
     every { coingeckoServiceMock.retrieveAllCryptos() } returns listOf(coingeckoCrypto)
 
     val exception = assertThrows<CoingeckoCryptoNotFoundException> {
-      cryptoService.retrieveCoingeckoCryptoInfoByName("dogecoin")
+      cryptoService.retrieveCoingeckoCryptoInfoByNameOrId("dogecoin")
     }
 
     assertThat(exception.message).isEqualTo(COINGECKO_CRYPTO_NOT_FOUND.format("dogecoin"))

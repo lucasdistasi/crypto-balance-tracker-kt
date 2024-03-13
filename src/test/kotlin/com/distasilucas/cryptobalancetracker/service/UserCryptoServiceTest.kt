@@ -172,7 +172,7 @@ class UserCryptoServiceTest {
     val platformResponse = getPlatformResponse()
 
     val slot = slot<UserCrypto>()
-    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
+    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
     } returns platformResponse
@@ -212,7 +212,7 @@ class UserCryptoServiceTest {
       id = "123e4567-e89b-12d3-a456-426614174312"
     )
 
-    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
+    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
     } returns platformResponse
@@ -250,7 +250,7 @@ class UserCryptoServiceTest {
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
     } returns platformResponse
-    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
+    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
     every {
       userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
         "bitcoin",
@@ -301,7 +301,7 @@ class UserCryptoServiceTest {
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174333")
     } returns platformResponse
-    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
+    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
     every {
       userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
         "bitcoin",
@@ -368,7 +368,7 @@ class UserCryptoServiceTest {
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174333")
     } returns platformResponse
-    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
+    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
     every {
       userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
         "bitcoin",
