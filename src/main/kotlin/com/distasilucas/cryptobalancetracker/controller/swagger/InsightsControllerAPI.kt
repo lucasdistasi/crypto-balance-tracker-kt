@@ -1,9 +1,11 @@
 package com.distasilucas.cryptobalancetracker.controller.swagger
 
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
+import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -70,7 +72,55 @@ interface InsightsControllerAPI {
       )
     ]
   )
-  fun retrieveTotalBalancesInsights(): ResponseEntity<BalancesResponse>
+  fun retrieveTotalBalances(): ResponseEntity<BalancesResponse>
+
+  @Operation(summary = "Retrieve day balances for the provided date range")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Days balances",
+        content = [Content(
+          mediaType = "application/json",
+          schema = Schema(
+            implementation = DatesBalanceResponse::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized",
+        content = [Content(
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden. Not yet implemented",
+        content = [Content(
+          mediaType = "application/json",
+          schema = Schema(
+            implementation = ProblemDetail::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = "500",
+        description = "Internal Server Error",
+        content = [Content(
+          mediaType = "application/json",
+          array = ArraySchema(
+            schema = Schema(
+              implementation = ProblemDetail::class
+            )
+          )
+        )]
+      )
+    ]
+  )
+  fun retrieveDatesBalances(dateRange: DateRange): ResponseEntity<DatesBalanceResponse>
 
   @Operation(summary = "Retrieves information of each user crypto, like it's balance, information about the crypto, where it's stored")
   @ApiResponses(

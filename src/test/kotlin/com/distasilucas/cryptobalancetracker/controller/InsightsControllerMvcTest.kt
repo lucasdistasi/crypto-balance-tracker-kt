@@ -2,11 +2,14 @@ package com.distasilucas.cryptobalancetracker.controller
 
 import balances
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
+import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CirculatingSupply
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
@@ -35,6 +38,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import retrieveCryptoInsights
 import retrieveCryptosBalancesInsights
+import retrieveDatesBalances
 import retrievePlatformInsights
 import retrievePlatformsBalancesInsights
 import retrieveTotalBalancesInsights
@@ -55,13 +59,36 @@ class InsightsControllerMvcTest(
 
   @Test
   fun `should retrieve total balances with status 200`() {
-    every { insightsServiceMock.retrieveTotalBalancesInsights() } returns Optional.of(balances())
+    every { insightsServiceMock.retrieveTotalBalances() } returns Optional.of(balances())
 
     mockMvc.retrieveTotalBalancesInsights()
       .andExpect(MockMvcResultMatchers.status().isOk)
       .andExpect(jsonPath("$.totalUSDBalance", `is`("100")))
       .andExpect(jsonPath("$.totalBTCBalance", `is`("0.1")))
       .andExpect(jsonPath("$.totalEURBalance", `is`("70")))
+  }
+
+  @Test
+  fun `should retrieve dates balances with status 200`() {
+    val dateBalanceResponse = DatesBalanceResponse(
+      datesBalances = listOf(
+        DatesBalances("16 March 2024", "1000"),
+        DatesBalances("17 March 2024", "1500")
+      ),
+      change = 50F,
+      priceDifference = "500"
+    )
+
+    every { insightsServiceMock.retrieveDatesBalances(DateRange.LAST_DAY) } returns Optional.of(dateBalanceResponse)
+
+    mockMvc.retrieveDatesBalances(DateRange.LAST_DAY)
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andExpect(jsonPath("$.datesBalances[0].date", `is`("16 March 2024")))
+      .andExpect(jsonPath("$.datesBalances[0].balance", `is`("1000")))
+      .andExpect(jsonPath("$.datesBalances[1].date", `is`("17 March 2024")))
+      .andExpect(jsonPath("$.datesBalances[1].balance", `is`("1500")))
+      .andExpect(jsonPath("$.change", `is`(50.0)))
+      .andExpect(jsonPath("$.priceDifference", `is`("500")))
   }
 
   @Test

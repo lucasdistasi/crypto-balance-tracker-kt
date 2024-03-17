@@ -1,7 +1,10 @@
 package com.distasilucas.cryptobalancetracker.controller
 
 import balances
+import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -26,10 +29,10 @@ class InsightsControllerTest {
     val balances = balances()
 
     every {
-      insightsServiceMock.retrieveTotalBalancesInsights()
+      insightsServiceMock.retrieveTotalBalances()
     } returns Optional.of(balances)
 
-    val totalBalancesInsights = insightsController.retrieveTotalBalancesInsights()
+    val totalBalancesInsights = insightsController.retrieveTotalBalances()
 
     assertThat(totalBalancesInsights)
       .usingRecursiveComparison()
@@ -39,14 +42,45 @@ class InsightsControllerTest {
   @Test
   fun `should retrieve zero for total balances when empty cryptos with status 200`() {
     every {
-      insightsServiceMock.retrieveTotalBalancesInsights()
+      insightsServiceMock.retrieveTotalBalances()
     } returns Optional.empty()
 
-    val totalBalancesInsights = insightsController.retrieveTotalBalancesInsights()
+    val totalBalancesInsights = insightsController.retrieveTotalBalances()
 
     assertThat(totalBalancesInsights)
       .usingRecursiveComparison()
       .isEqualTo(ResponseEntity.ok(BalancesResponse("0", "0", "0")))
+  }
+
+  @Test
+  fun `should retrieve dates balances with status 200`() {
+    val dateBalanceResponse = DatesBalanceResponse(
+      datesBalances = listOf(
+        DatesBalances("16 March 2024", "1000"),
+        DatesBalances("17 March 2024", "1500")
+      ),
+      change = 50F,
+      priceDifference = "500"
+    )
+
+    every { insightsServiceMock.retrieveDatesBalances(DateRange.LAST_DAY) } returns Optional.of(dateBalanceResponse)
+
+    val datesBalances = insightsController.retrieveDatesBalances(DateRange.LAST_DAY)
+
+    assertThat(datesBalances)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.ok(dateBalanceResponse))
+  }
+
+  @Test
+  fun `should retrieve empty dates balances with status 204`() {
+    every { insightsServiceMock.retrieveDatesBalances(DateRange.LAST_DAY) } returns Optional.empty()
+
+    val datesBalances = insightsController.retrieveDatesBalances(DateRange.LAST_DAY)
+
+    assertThat(datesBalances)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.noContent().build<DatesBalanceResponse>())
   }
 
   @Test

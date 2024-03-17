@@ -1,8 +1,10 @@
 package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.entity.Crypto
+import com.distasilucas.cryptobalancetracker.entity.DateBalance
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
+import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortParams
 import com.distasilucas.cryptobalancetracker.model.SortType
@@ -11,6 +13,8 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.Circulating
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
@@ -21,11 +25,17 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.Plat
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsInsights
+import com.distasilucas.cryptobalancetracker.repository.DateBalanceRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.Optional
+import java.time.Clock
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.*
+import java.util.stream.LongStream
 import kotlin.math.ceil
 
 private const val ELEMENTS_PER_PAGE = 10.0
@@ -35,12 +45,14 @@ private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
 class InsightsService(
   private val platformService: PlatformService,
   private val userCryptoService: UserCryptoService,
-  private val cryptoService: CryptoService
+  private val cryptoService: CryptoService,
+  private val dateBalanceRepository: DateBalanceRepository,
+  private val clock: Clock
 ) {
 
   private val logger = KotlinLogging.logger { }
 
-  fun retrieveTotalBalancesInsights(): Optional<BalancesResponse> {
+  fun retrieveTotalBalances(): Optional<BalancesResponse> {
     logger.info { "Retrieving total balances" }
 
     val userCryptos = userCryptoService.findAll()
@@ -55,6 +67,41 @@ class InsightsService(
     val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)
 
     return Optional.of(totalBalances)
+  }
+
+  fun retrieveDatesBalances(dateRange: DateRange): Optional<DatesBalanceResponse> {
+    logger.info { "Retrieving balances for date range: $dateRange" }
+    val now = LocalDateTime.now(clock).toLocalDate().atTime(LocalTime.of(23, 59, 59, 0))
+
+    val dateBalances = when (dateRange) {
+      DateRange.LAST_DAY -> retrieveDatesBalances(now.minusDays(2), now)
+      DateRange.THREE_DAYS -> retrieveDatesBalances(now.minusDays(3), now)
+      DateRange.ONE_WEEK -> retrieveDatesBalances(now.minusWeeks(1), now)
+      DateRange.ONE_MONTH -> retrieveDatesBalances(2, 4, now.minusMonths(1), now)
+      DateRange.THREE_MONTHS -> retrieveDatesBalances(6, 5, now.minusMonths(3), now)
+      DateRange.SIX_MONTHS -> retrieveDatesBalances(10, 6, now.minusMonths(6), now)
+      DateRange.ONE_YEAR -> retrieveYearDatesBalances(now)
+    }
+
+    val datesBalances = dateBalances.map {
+      val formattedDate = it.date.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+      DatesBalances(formattedDate, it.balance)
+    }.toList()
+    logger.info { "Balances found: ${datesBalances.size}" }
+
+    if (datesBalances.isEmpty()) return Optional.empty()
+
+    val newestValue = BigDecimal(datesBalances.last().balance)
+    val oldestValue = BigDecimal(datesBalances.first().balance)
+    val change = newestValue
+      .subtract(oldestValue)
+      .divide(oldestValue, 4, RoundingMode.HALF_UP)
+      .multiply(BigDecimal("100"))
+      .setScale(2, RoundingMode.HALF_UP)
+      .toFloat()
+    val priceDifference = newestValue.subtract(oldestValue).toPlainString()
+
+    return Optional.of(DatesBalanceResponse(datesBalances, change, priceDifference))
   }
 
   fun retrievePlatformInsights(platformId: String): Optional<PlatformInsightsResponse> {
@@ -381,6 +428,61 @@ class InsightsService(
         cryptos = cryptosInsights
       )
     )
+  }
+
+  private fun retrieveDatesBalances(from: LocalDateTime, to: LocalDateTime): List<DateBalance> {
+    val toMax = to.toLocalDate().atTime(LocalTime.MAX)
+    logger.info { "Retrieving date balances from $from to $toMax" }
+
+    return dateBalanceRepository.findDateBalancesByDateBetween(from, toMax)
+  }
+
+  private fun retrieveDatesBalances(daysSubtraction: Long, minRequired: Int,
+                                    from: LocalDateTime, to: LocalDateTime): List<DateBalance> {
+    val dates = mutableListOf<LocalDateTime>()
+    var toDate = to
+
+    while (from.isBefore(toDate)) {
+      dates.add(toDate)
+      toDate = toDate.minusDays(daysSubtraction)
+    }
+
+    logger.info { "Searching balances for dates $dates" }
+
+    val datesBalances = dateBalanceRepository.findAllByDateIn(dates)
+    logger.info { "Found balances for dates ${datesBalances.map { it.date }}" }
+
+    return if (datesBalances.size >= minRequired) {
+      datesBalances
+    } else {
+      retrieveLastTwelveDaysBalances()
+    }
+  }
+
+  private fun retrieveYearDatesBalances(now: LocalDateTime): List<DateBalance> {
+    val dates = mutableListOf<LocalDateTime>()
+    dates.add(now)
+
+    LongStream.range(1, 12)
+      .forEach { dates.add(now.minusMonths(it)) }
+
+    logger.info { "Searching balances for dates $dates" }
+
+    val datesBalances = dateBalanceRepository.findAllByDateIn(dates)
+
+    return if (datesBalances.size > 3) {
+      datesBalances
+    } else {
+      retrieveLastTwelveDaysBalances()
+    }
+  }
+
+  fun retrieveLastTwelveDaysBalances(): List<DateBalance> {
+    val to = LocalDateTime.now(clock).toLocalDate().atTime(LocalTime.MAX)
+    val from = to.toLocalDate().minusDays(12).atTime(23, 59, 59, 0)
+    logger.info { "Not enough balances. Retrieving balances for the last twelve days from $from to $to" }
+
+    return dateBalanceRepository.findDateBalancesByDateBetween(from, to)
   }
 
   private fun getTotalBalances(cryptos: List<Crypto>, userCryptoQuantity: Map<String, BigDecimal>): BalancesResponse {

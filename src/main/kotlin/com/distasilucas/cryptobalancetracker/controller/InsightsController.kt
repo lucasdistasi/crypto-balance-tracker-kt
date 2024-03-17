@@ -2,10 +2,12 @@ package com.distasilucas.cryptobalancetracker.controller
 
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.controller.swagger.InsightsControllerAPI
+import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortParams
 import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -31,11 +33,18 @@ import java.util.Optional
 class InsightsController(private val insightsService: InsightsService) : InsightsControllerAPI {
 
   @GetMapping("/balances")
-  override fun retrieveTotalBalancesInsights(): ResponseEntity<BalancesResponse> {
-    val totalBalances = insightsService.retrieveTotalBalancesInsights()
+  override fun retrieveTotalBalances(): ResponseEntity<BalancesResponse> {
+    val totalBalances = insightsService.retrieveTotalBalances()
     val response = if (totalBalances.isEmpty) BalancesResponse("0", "0", "0") else totalBalances.get()
 
     return ResponseEntity.ok(response)
+  }
+
+  @GetMapping("/dates-balances")
+  override fun retrieveDatesBalances(@RequestParam dateRange: DateRange): ResponseEntity<DatesBalanceResponse> {
+    val dateBalances = insightsService.retrieveDatesBalances(dateRange)
+
+    return okOrNoContent(dateBalances)
   }
 
   @GetMapping("/cryptos")
