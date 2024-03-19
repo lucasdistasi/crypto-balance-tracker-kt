@@ -49,6 +49,8 @@ class CryptoSchedulerTest {
     justRun { cryptoServiceMock.updateCryptos(listOf(getCryptoEntity(lastUpdatedAt = localDateTime))) }
 
     cryptoScheduler.updateCryptosInformation()
+
+    verify(exactly = 1) { cryptoServiceMock.updateCryptos(listOf(getCryptoEntity(lastUpdatedAt = localDateTime))) }
   }
 
   @Test

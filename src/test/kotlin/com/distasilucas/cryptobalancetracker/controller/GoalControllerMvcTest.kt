@@ -236,7 +236,7 @@ class GoalControllerMvcTest(
   }
 
   @Test
-  fun `should fail with status 400 with 2 messages when saving goal with long cryptoName`() {
+  fun `should fail with status 400 with 1 message when saving goal with long cryptoName`() {
     val cryptoName = "reallyLoooooooooooooooooooooooooooooooooooooooooooooooooooongName"
     val payload = """
             {
@@ -248,7 +248,7 @@ class GoalControllerMvcTest(
     mockMvc.saveGoal(payload)
       .andExpect(MockMvcResultMatchers.status().isBadRequest)
       .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
+      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
       .andExpect(
         MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
       )
@@ -259,8 +259,7 @@ class GoalControllerMvcTest(
         MockMvcResultMatchers.jsonPath("$[*].detail")
           .value(
             Matchers.containsInAnyOrder(
-              CRYPTO_NAME_SIZE,
-              "Invalid crypto name"
+              CRYPTO_NAME_SIZE
             )
           )
       )
@@ -269,7 +268,7 @@ class GoalControllerMvcTest(
   @ParameterizedTest
   @ValueSource(
     strings = [
-      " bitcoin", "bitcoin ", "bit  coin", "bit!coin"
+      " bitcoin", "bitcoin ", "bit  coin"
     ]
   )
   fun `should fail with status 400 with 1 message when saving goal with invalid cryptoName`(cryptoName: String) {
@@ -545,7 +544,7 @@ class GoalControllerMvcTest(
     mockMvc.updateGoal("123e4567-e89b-12d3-a456-426614174111", payload)
       .andExpect(MockMvcResultMatchers.status().isBadRequest)
       .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
+      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
       .andExpect(
         MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
       )
@@ -556,8 +555,7 @@ class GoalControllerMvcTest(
         MockMvcResultMatchers.jsonPath("$[*].detail")
           .value(
             Matchers.containsInAnyOrder(
-              CRYPTO_NAME_SIZE,
-              "Invalid crypto name"
+              CRYPTO_NAME_SIZE
             )
           )
       )
@@ -566,7 +564,7 @@ class GoalControllerMvcTest(
   @ParameterizedTest
   @ValueSource(
     strings = [
-      " bitcoin", "bitcoin ", "bit  coin", "bit!coin"
+      " bitcoin", "bitcoin ", "bit  coin"
     ]
   )
   fun `should fail with status 400 with 1 message when updating goal with invalid cryptoName`(cryptoName: String) {

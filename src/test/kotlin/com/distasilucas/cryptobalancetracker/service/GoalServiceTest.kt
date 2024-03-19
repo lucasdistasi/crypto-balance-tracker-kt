@@ -226,7 +226,7 @@ class GoalServiceTest {
     val userCrypto = getUserCrypto()
 
     val slot = slot<Goal>()
-    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
+    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
     every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.empty()
     justRun { cryptoServiceMock.saveCryptoIfNotExists("bitcoin") }
     every { goalRepositoryMock.save(capture(slot)) } answers { slot.captured }
@@ -264,7 +264,7 @@ class GoalServiceTest {
     )
     val coingeckoCrypto = getCoingeckoCrypto()
 
-    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByName("bitcoin") } returns coingeckoCrypto
+    every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
     every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.of(existingGoal)
 
     val exception = assertThrows<DuplicatedGoalException> { goalService.saveGoal(goalRequest) }

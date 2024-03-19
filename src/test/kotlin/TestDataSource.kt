@@ -1,5 +1,6 @@
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
+import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCryptoInfo
@@ -116,6 +117,12 @@ fun MockMvc.transferUserCrypto(payload: String) = this.perform(
 
 fun MockMvc.retrieveTotalBalancesInsights() = this.perform(
   MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/balances")
+    .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.retrieveDatesBalances(dateRange: DateRange) = this.perform(
+  MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/dates-balances")
+    .param("dateRange", dateRange.name)
     .contentType(APPLICATION_JSON)
 )
 

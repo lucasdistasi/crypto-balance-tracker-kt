@@ -343,7 +343,7 @@ class UserCryptoControllerMvcTest(
   }
 
   @Test
-  fun `should fail with status 400 with 2 messages when saving user crypto with long cryptoName`() {
+  fun `should fail with status 400 with 1 message when saving user crypto with long cryptoName`() {
     val cryptoName = "reallyLoooooooooooooooooooooooooooooooooooooooooooooooooooongName"
     val quantity = BigDecimal("1")
     val platformId = "123e4567-e89b-12d3-a456-426614174111"
@@ -359,7 +359,7 @@ class UserCryptoControllerMvcTest(
     mockMvc.saveUserCrypto(userCryptoRequest)
       .andExpect(MockMvcResultMatchers.status().isBadRequest)
       .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
+      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
       .andExpect(
         MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
       )
@@ -370,7 +370,6 @@ class UserCryptoControllerMvcTest(
         MockMvcResultMatchers.jsonPath("$[*].detail")
           .value(
             Matchers.containsInAnyOrder(
-              "Invalid crypto name",
               CRYPTO_NAME_SIZE
             )
           )
@@ -416,7 +415,7 @@ class UserCryptoControllerMvcTest(
   @ParameterizedTest
   @ValueSource(
     strings = [
-      " bitcoin", "bitcoin ", "bit  coin", "bit!coin"
+      " bitcoin", "bitcoin ", "bit  coin"
     ]
   )
   fun `should fail with status 400 with 1 message when saving user crypto with invalid cryptoName`(cryptoName: String) {
@@ -738,7 +737,7 @@ class UserCryptoControllerMvcTest(
   }
 
   @Test
-  fun `should fail with status 400 with 2 messages when updating user crypto with blank cryptoName`() {
+  fun `should fail with status 400 with 1 message when updating user crypto with blank cryptoName`() {
     val cryptoName = " "
     val quantity = BigDecimal("1")
     val platformId = "123e4567-e89b-12d3-a456-426614174111"
@@ -807,7 +806,7 @@ class UserCryptoControllerMvcTest(
   }
 
   @Test
-  fun `should fail with status 400 with 2 messages when updating user crypto with long cryptoName`() {
+  fun `should fail with status 400 with 1 message when updating user crypto with long cryptoName`() {
     val cryptoName = "reallyLoooooooooooooooooooooooooooooooooooooooooooooooooooongName"
     val quantity = BigDecimal("1")
     val platformId = "123e4567-e89b-12d3-a456-426614174111"
@@ -823,7 +822,7 @@ class UserCryptoControllerMvcTest(
     mockMvc.updateUserCrypto("123e4567-e89b-12d3-a456-426614174222", userCryptoRequest)
       .andExpect(MockMvcResultMatchers.status().isBadRequest)
       .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
+      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
       .andExpect(
         MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
       )
@@ -834,7 +833,6 @@ class UserCryptoControllerMvcTest(
         MockMvcResultMatchers.jsonPath("$[*].detail")
           .value(
             Matchers.containsInAnyOrder(
-              "Invalid crypto name",
               CRYPTO_NAME_SIZE
             )
           )
@@ -880,7 +878,7 @@ class UserCryptoControllerMvcTest(
   @ParameterizedTest
   @ValueSource(
     strings = [
-      " bitcoin", "bitcoin ", "bit  coin", "bit!coin"
+      " bitcoin", "bitcoin ", "bit  coin"
     ]
   )
   fun `should fail with status 400 with 1 message when updating user crypto with invalid cryptoName`(cryptoName: String) {

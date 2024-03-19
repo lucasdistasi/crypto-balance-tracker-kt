@@ -44,11 +44,11 @@ class CryptoService(
     return cryptoRepository.save(cryptoToSave)
   }
 
-  fun retrieveCoingeckoCryptoInfoByName(cryptoName: String): CoingeckoCrypto {
-    logger.info { "Retrieving info for coingecko crypto $cryptoName" }
+  fun retrieveCoingeckoCryptoInfoByNameOrId(cryptoNameOrId: String): CoingeckoCrypto {
+    logger.info { "Retrieving info for coingecko crypto $cryptoNameOrId" }
 
-    return coingeckoService.retrieveAllCryptos().find { it.name.equals(cryptoName, true) }
-      ?: throw CoingeckoCryptoNotFoundException(COINGECKO_CRYPTO_NOT_FOUND.format(cryptoName))
+    return coingeckoService.retrieveAllCryptos().find { it.name.equals(cryptoNameOrId, true) || it.id.equals(cryptoNameOrId, true) }
+      ?: throw CoingeckoCryptoNotFoundException(COINGECKO_CRYPTO_NOT_FOUND.format(cryptoNameOrId))
   }
 
   fun saveCryptoIfNotExists(coingeckoCryptoId: String) {
