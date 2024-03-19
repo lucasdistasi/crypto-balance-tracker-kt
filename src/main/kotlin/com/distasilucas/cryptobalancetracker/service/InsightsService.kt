@@ -27,6 +27,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.platform.Pl
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsInsights
 import com.distasilucas.cryptobalancetracker.repository.DateBalanceRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -43,6 +44,8 @@ private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
 
 @Service
 class InsightsService(
+  @Value("\${crypto.insights.max-single-items-count}")
+  private val maxSingleItemsCount: Int,
   private val platformService: PlatformService,
   private val userCryptoService: UserCryptoService,
   private val cryptoService: CryptoService,
@@ -263,7 +266,7 @@ class InsightsService(
     return Optional.of(
       CryptosBalancesInsightsResponse(
         balances = totalBalances,
-        cryptos = if (cryptosInsights.size > 12)
+        cryptos = if (cryptosInsights.size > maxSingleItemsCount)
           getCryptoInsightsWithOthers(totalBalances, cryptosInsights) else cryptosInsights
       )
     )
@@ -573,8 +576,8 @@ class InsightsService(
     cryptosInsights: List<CryptoInsights>
   ): List<CryptoInsights> {
     var cryptosInsightsWithOthers: List<CryptoInsights> = ArrayList()
-    val topCryptos = cryptosInsights.subList(0, 12)
-    val others = cryptosInsights.subList(12, cryptosInsights.size)
+    val topCryptos = cryptosInsights.subList(0, maxSingleItemsCount)
+    val others = cryptosInsights.subList(maxSingleItemsCount, cryptosInsights.size)
 
     var totalUSDBalance = BigDecimal.ZERO
     var totalBTCBalance = BigDecimal.ZERO

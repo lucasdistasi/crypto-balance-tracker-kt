@@ -18,7 +18,7 @@ class DateBalanceScheduler(
 
   private val logger = KotlinLogging.logger { }
 
-  @Scheduled(cron = "\${save-day-balance-cron}")
+  @Scheduled(cron = "\${day-balance.cron}")
   fun saveDateBalance() {
     logger.info { "Running cron to save daily balance" }
 

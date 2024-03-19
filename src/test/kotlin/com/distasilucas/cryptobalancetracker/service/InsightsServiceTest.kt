@@ -54,7 +54,7 @@ class InsightsServiceTest {
   private val dateBalanceRepositoryMock = mockk<DateBalanceRepository>()
   private val clockMock = mockk<Clock>()
 
-  private val insightsService = InsightsService(platformServiceMock, userCryptoServiceMock, cryptoServiceMock,
+  private val insightsService = InsightsService(12, platformServiceMock, userCryptoServiceMock, cryptoServiceMock,
     dateBalanceRepositoryMock, clockMock)
 
   @Test
