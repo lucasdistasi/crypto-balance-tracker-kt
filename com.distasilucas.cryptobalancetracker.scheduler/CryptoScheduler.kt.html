@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 
 <span class="fc" id="L17">@Component</span>
 <span class="fc" id="L18">class CryptoScheduler(</span>
-<span class="fc" id="L19">  @Value(&quot;\${max-limit-crypto}&quot;)</span>
+<span class="fc" id="L19">  @Value(&quot;\${crypto.scheduler.update.quantity}&quot;)</span>
   private val maxLimit: Int,
 <span class="fc" id="L21">  private val clock: Clock,</span>
 <span class="fc" id="L22">  private val cryptoService: CryptoService,</span>
@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 
 <span class="fc" id="L26">  private val logger = KotlinLogging.logger { }</span>
 
-  @Scheduled(cron = &quot;\${update-crypto-info-cron}&quot;)
+  @Scheduled(cron = &quot;\${crypto.scheduler.update.cron}&quot;)
   fun updateCryptosInformation() {
 <span class="fc" id="L30">    logger.info { &quot;Running cron to update cryptos information...&quot; }</span>
 

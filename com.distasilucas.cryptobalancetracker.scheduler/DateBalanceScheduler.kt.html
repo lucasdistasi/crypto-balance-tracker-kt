@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 
 <span class="fc" id="L19">  private val logger = KotlinLogging.logger { }</span>
 
-  @Scheduled(cron = &quot;\${save-day-balance-cron}&quot;)
+  @Scheduled(cron = &quot;\${day-balance.cron}&quot;)
   fun saveDateBalance() {
 <span class="fc" id="L23">    logger.info { &quot;Running cron to save daily balance&quot; }</span>
 
