@@ -42,9 +42,9 @@ import java.util.Optional
 
   @GetMapping(&quot;/dates-balances&quot;)
   override fun retrieveDatesBalances(@RequestParam dateRange: DateRange): ResponseEntity&lt;DatesBalanceResponse&gt; {
-<span class="nc" id="L45">    val dateBalances = insightsService.retrieveDatesBalances(dateRange)</span>
+<span class="fc" id="L45">    val dateBalances = insightsService.retrieveDatesBalances(dateRange)</span>
 
-<span class="nc" id="L47">    return okOrNoContent(dateBalances)</span>
+<span class="fc" id="L47">    return okOrNoContent(dateBalances)</span>
   }
 
   @GetMapping(&quot;/cryptos&quot;)

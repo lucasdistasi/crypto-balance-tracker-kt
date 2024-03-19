@@ -22,7 +22,6 @@ import jakarta.validation.constraints.Min
 import org.hibernate.validator.constraints.UUID
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestParam
 
 @Tag(name = &quot;Insights Controller&quot;, description = &quot;API endpoints for retrieving insights&quot;)
 interface InsightsControllerAPI {
@@ -75,7 +74,53 @@ interface InsightsControllerAPI {
   )
   fun retrieveTotalBalances(): ResponseEntity&lt;BalancesResponse&gt;
 
-  fun retrieveDatesBalances(@RequestParam dateRange: DateRange): ResponseEntity&lt;DatesBalanceResponse&gt;
+  @Operation(summary = &quot;Retrieve day balances for the provided date range&quot;)
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = &quot;200&quot;,
+        description = &quot;Days balances&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = DatesBalanceResponse::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;401&quot;,
+        description = &quot;Unauthorized&quot;,
+        content = [Content(
+          schema = Schema(
+            implementation = Void::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;403&quot;,
+        description = &quot;Forbidden. Not yet implemented&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = ProblemDetail::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;500&quot;,
+        description = &quot;Internal Server Error&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          array = ArraySchema(
+            schema = Schema(
+              implementation = ProblemDetail::class
+            )
+          )
+        )]
+      )
+    ]
+  )
+  fun retrieveDatesBalances(dateRange: DateRange): ResponseEntity&lt;DatesBalanceResponse&gt;
 
   @Operation(summary = &quot;Retrieves information of each user crypto, like it's balance, information about the crypto, where it's stored&quot;)
   @ApiResponses(
@@ -133,11 +178,11 @@ interface InsightsControllerAPI {
       )
     ]
   )
-<span class="fc" id="L136">  fun retrieveUserCryptosInsights(</span>
+<span class="fc" id="L181">  fun retrieveUserCryptosInsights(</span>
     @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
     page: Int,
-<span class="fc" id="L139">    sortBy: SortBy = SortBy.PERCENTAGE,</span>
-<span class="fc" id="L140">    sortType: SortType = SortType.DESC</span>
+<span class="fc" id="L184">    sortBy: SortBy = SortBy.PERCENTAGE,</span>
+<span class="fc" id="L185">    sortType: SortType = SortType.DESC</span>
   ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt;
 
   @Operation(summary = &quot;Retrieves information of each INDIVIDUAL user crypto, like the total balance, information about the crypto, in which platforms it's stored&quot;)
@@ -196,11 +241,11 @@ interface InsightsControllerAPI {
       )
     ]
   )
-<span class="fc" id="L199">  fun retrieveUserCryptosPlatformsInsights(</span>
+<span class="fc" id="L244">  fun retrieveUserCryptosPlatformsInsights(</span>
     @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
     page: Int,
-<span class="fc" id="L202">    sortBy: SortBy = SortBy.PERCENTAGE,</span>
-<span class="fc" id="L203">    sortType: SortType = SortType.DESC</span>
+<span class="fc" id="L247">    sortBy: SortBy = SortBy.PERCENTAGE,</span>
+<span class="fc" id="L248">    sortType: SortType = SortType.DESC</span>
   ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt;
 
   @Operation(summary = &quot;Retrieve insights balances for all user cryptos&quot;)
