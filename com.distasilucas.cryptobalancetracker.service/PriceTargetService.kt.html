@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceTargetService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.service</a> &gt; <span class="el_source">PriceTargetService.kt</span></div><h1>PriceTargetService.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.service
+
+import com.distasilucas.cryptobalancetracker.entity.PriceTarget
+import com.distasilucas.cryptobalancetracker.model.SortType
+import com.distasilucas.cryptobalancetracker.model.request.pricetarget.PriceTargetRequest
+import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PagePriceTargetResponse
+import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PriceTargetResponse
+import com.distasilucas.cryptobalancetracker.repository.PriceTargetRepository
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.data.domain.PageRequest
+import org.springframework.stereotype.Service
+
+<span class="fc" id="L13">@Service</span>
+<span class="fc" id="L14">class PriceTargetService(</span>
+<span class="fc" id="L15">  private val priceTargetRepository: PriceTargetRepository,</span>
+<span class="fc" id="L16">  private val cryptoService: CryptoService</span>
+) {
+
+<span class="fc" id="L19">  private val logger = KotlinLogging.logger { }</span>
+
+  fun retrievePriceTarget(priceTargetId: String): PriceTargetResponse {
+<span class="fc" id="L22">    logger.info { &quot;Retrieving price target for id $priceTargetId&quot; }</span>
+
+<span class="fc" id="L24">    val priceTarget = findById(priceTargetId)</span>
+<span class="fc" id="L25">    val crypto = cryptoService.retrieveCryptoInfoById(priceTarget.coingeckoCryptoId)</span>
+<span class="fc" id="L26">    val changeNeeded = priceTarget.calculateChangeNeeded(crypto.lastKnownPrice)</span>
+
+<span class="fc" id="L28">    return priceTarget.toPriceTargetResponse(crypto.name, changeNeeded)</span>
+  }
+
+  fun retrievePriceTargetsByPage(pageNumber: Int, sortType: SortType): PagePriceTargetResponse {
+<span class="fc" id="L32">    logger.info { &quot;Retrieving price targets for page $pageNumber&quot; }</span>
+
+<span class="fc" id="L34">    val pageRequest = PageRequest.of(pageNumber, 10)</span>
+<span class="fc" id="L35">    val priceTargets = priceTargetRepository.findAll(pageRequest)</span>
+<span class="fc" id="L36">    val priceTargetsResponse = priceTargets.content.map {</span>
+<span class="fc" id="L37">      val crypto = cryptoService.retrieveCryptoInfoById(it.coingeckoCryptoId)</span>
+<span class="fc" id="L38">      it.toPriceTargetResponse(crypto.name, it.calculateChangeNeeded(crypto.lastKnownPrice))</span>
+    }
+<span class="fc bfc" id="L40" title="All 2 branches covered.">    val sortedPriceTargets = when (sortType) {</span>
+<span class="fc" id="L41">      SortType.ASC -&gt; priceTargetsResponse.sortedWith(compareBy { it.change })</span>
+<span class="fc" id="L42">      SortType.DESC -&gt; priceTargetsResponse.sortedWith(compareByDescending { it.change })</span>
+    }
+
+<span class="fc" id="L45">    return PagePriceTargetResponse(pageNumber, priceTargets.totalPages, sortedPriceTargets)</span>
+  }
+
+  fun savePriceTarget(priceTargetRequest: PriceTargetRequest): PriceTargetResponse {
+<span class="fc" id="L49">    logger.info { &quot;Saving price target $priceTargetRequest&quot; }</span>
+
+<span class="fc" id="L51">    val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(priceTargetRequest.cryptoNameOrId!!)</span>
+<span class="fc" id="L52">    val crypto = cryptoService.retrieveCryptoInfoById(coingeckoCrypto.id)</span>
+<span class="fc" id="L53">    val priceTarget = priceTargetRepository.save(priceTargetRequest.toEntity(crypto.id))</span>
+
+<span class="fc" id="L55">    return priceTarget.toPriceTargetResponse(crypto.name, priceTarget.calculateChangeNeeded(crypto.lastKnownPrice))</span>
+  }
+
+  fun updatePriceTarget(priceTargetId: String, priceTargetRequest: PriceTargetRequest): PriceTargetResponse {
+<span class="fc" id="L59">    logger.info { &quot;Updating price target for id $priceTargetId. New value: $priceTargetRequest&quot; }</span>
+
+<span class="fc" id="L61">    val priceTarget = findById(priceTargetId).copy(target = priceTargetRequest.priceTarget!!)</span>
+<span class="fc" id="L62">    val crypto = cryptoService.retrieveCryptoInfoById(priceTargetRequest.cryptoNameOrId!!)</span>
+<span class="fc" id="L63">    val changeNeeded = priceTarget.calculateChangeNeeded(crypto.lastKnownPrice)</span>
+<span class="fc" id="L64">    val newPriceTarget = priceTargetRepository.save(priceTarget)</span>
+
+<span class="fc" id="L66">    return newPriceTarget.toPriceTargetResponse(crypto.name, changeNeeded)</span>
+  }
+
+  fun deletePriceTarget(priceTargetId: String) {
+<span class="fc" id="L70">    logger.info { &quot;Deleting price target for id $priceTargetId&quot; }</span>
+
+<span class="fc" id="L72">    val priceTarget = findById(priceTargetId)</span>
+
+<span class="fc" id="L74">    priceTargetRepository.delete(priceTarget)</span>
+<span class="fc" id="L75">    cryptoService.deleteCryptoIfNotUsed(priceTarget.coingeckoCryptoId)</span>
+<span class="fc" id="L76">  }</span>
+
+  private fun findById(priceTargetId: String): PriceTarget {
+<span class="fc" id="L79">    return priceTargetRepository.findById(priceTargetId)</span>
+<span class="fc" id="L80">      .orElseThrow { PriceTargetNotFoundException(&quot;Price target with id $priceTargetId not found&quot;) }</span>
+  }
+}
+
+<span class="fc" id="L84">class PriceTargetNotFoundException(message: String) : RuntimeException(message)</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
