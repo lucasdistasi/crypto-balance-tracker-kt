@@ -22,6 +22,7 @@ private const val PLATFORMS_ENDPOINT = "$BASE_PATH/platforms"
 private const val USER_CRYPTOS_ENDPOINT = "$BASE_PATH/cryptos"
 private const val GOALS_ENDPOINT = "$BASE_PATH/goals"
 private const val INSIGHTS_ENDPOINT = "$BASE_PATH/insights"
+private const val PRICE_TARGET_ENDPOINT = "$BASE_PATH/price-targets"
 
 fun MockMvc.countPlatforms() = this.perform(
   MockMvcRequestBuilders.get("$PLATFORMS_ENDPOINT/count")
@@ -153,6 +154,33 @@ fun MockMvc.retrieveCryptoInsights(coingeckoCryptoId: String) = this.perform(
 
 fun MockMvc.retrievePlatformInsights(platformId: String) = this.perform(
   MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/platforms/$platformId")
+    .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.retrievePriceTarget(priceTargetId: String) = this.perform(
+  MockMvcRequestBuilders.get("$PRICE_TARGET_ENDPOINT/$priceTargetId")
+    .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.retrievePriceTargetsForPage(page: Int) = this.perform(
+  MockMvcRequestBuilders.get("$PRICE_TARGET_ENDPOINT?page=$page")
+    .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.savePriceTarget(payload: String) = this.perform(
+  MockMvcRequestBuilders.post(PRICE_TARGET_ENDPOINT)
+    .content(payload)
+    .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.updatePriceTarget(priceTargetId: String, payload: String) = this.perform(
+  MockMvcRequestBuilders.put("$PRICE_TARGET_ENDPOINT/$priceTargetId")
+    .content(payload)
+    .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.deletePriceTarget(priceTargetId: String) = this.perform(
+  MockMvcRequestBuilders.delete("$PRICE_TARGET_ENDPOINT/$priceTargetId")
     .contentType(APPLICATION_JSON)
 )
 

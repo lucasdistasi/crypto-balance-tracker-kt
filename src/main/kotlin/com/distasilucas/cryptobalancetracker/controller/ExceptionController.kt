@@ -4,15 +4,15 @@ import com.distasilucas.cryptobalancetracker.constants.INVALID_VALUE_FOR
 import com.distasilucas.cryptobalancetracker.constants.UNKNOWN_ERROR
 import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.exception.TooManyRequestsException
-import com.distasilucas.cryptobalancetracker.model.SortBy
-import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedPlatformException
+import com.distasilucas.cryptobalancetracker.service.DuplicatedPriceTargetException
 import com.distasilucas.cryptobalancetracker.service.GoalNotFoundException
 import com.distasilucas.cryptobalancetracker.service.InsufficientBalanceException
 import com.distasilucas.cryptobalancetracker.service.PlatformNotFoundException
+import com.distasilucas.cryptobalancetracker.service.PriceTargetNotFoundException
 import com.distasilucas.cryptobalancetracker.service.UserCryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.UsernameNotFoundException
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -92,6 +92,34 @@ class ExceptionController {
       NOT_FOUND_STATUS.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
 
     return ResponseEntity.status(NOT_FOUND_STATUS).body(listOf(problemDetail))
+  }
+
+  @ExceptionHandler(PriceTargetNotFoundException::class)
+  fun handlePriceTargetNotFoundException(
+    exception: PriceTargetNotFoundException,
+    webRequest: WebRequest
+  ): ResponseEntity<List<ProblemDetail>> {
+    logger.info { "A PriceTargetNotFoundException occurred $exception" }
+
+    val request = (webRequest as ServletWebRequest).request
+    val problemDetail =
+      NOT_FOUND_STATUS.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
+
+    return ResponseEntity.status(NOT_FOUND_STATUS).body(listOf(problemDetail))
+  }
+
+  @ExceptionHandler(DuplicatedPriceTargetException::class)
+  fun handleDuplicatedPriceTargetException(
+    exception: DuplicatedPriceTargetException,
+    webRequest: WebRequest
+  ): ResponseEntity<List<ProblemDetail>> {
+    logger.info { "A DuplicatedPriceTargetException occurred $exception" }
+
+    val request = (webRequest as ServletWebRequest).request
+    val problemDetail =
+      BAD_REQUEST_STATUS.withDetailsAndURI(exception.message!!, URI.create(request.requestURL.toString()))
+
+    return ResponseEntity.status(BAD_REQUEST_STATUS).body(listOf(problemDetail))
   }
 
   @ExceptionHandler(DuplicatedPlatformException::class)
@@ -264,8 +292,12 @@ class ExceptionController {
 
     val request = (webRequest as ServletWebRequest).request
     val name = exception.name
-    val availableValues = getAvailableValues(name)
-    val message = INVALID_VALUE_FOR.format(exception.value, name, availableValues)
+    val availableValues = exception.requiredType?.let { it.enumConstants.contentToString() }
+    val message = if (availableValues != null) {
+      INVALID_VALUE_FOR.format(exception.value, name, availableValues)
+    } else {
+      "Invalid value ${exception.value} for $name"
+    }
     val problemDetail = BAD_REQUEST_STATUS.withDetailsAndURI(message, URI.create(request.requestURL.toString()))
 
     return ResponseEntity.status(BAD_REQUEST_STATUS).body(listOf(problemDetail))
@@ -281,7 +313,7 @@ class ExceptionController {
     val request = (webRequest as ServletWebRequest).request
     val httpStatusCode = exception.httpStatusCode
 
-    val problemDetail = ProblemDetail.forStatusAndDetail(httpStatusCode, exception.message!!)
+    val problemDetail = ProblemDetail.forStatusAndDetail(httpStatusCode, exception.message)
     problemDetail.type = URI.create(request.requestURL.toString())
 
     return ResponseEntity.status(httpStatusCode).body(listOf(problemDetail))
@@ -306,13 +338,5 @@ class ExceptionController {
     problemDetail.type = type
 
     return problemDetail
-  }
-
-  private fun getAvailableValues(enumParamName: String): String {
-    return when (enumParamName) {
-      "sortBy" -> SortBy.entries.toTypedArray().contentToString()
-      "sortType" -> SortType.entries.toTypedArray().contentToString()
-      else -> ""
-    }
   }
 }
