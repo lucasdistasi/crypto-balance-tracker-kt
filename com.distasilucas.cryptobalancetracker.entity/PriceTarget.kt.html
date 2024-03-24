@@ -18,13 +18,15 @@ import java.util.UUID
 <span class="pc" id="L18">  val target: BigDecimal</span>
 ) {
 
-<span class="fc" id="L21">  fun toPriceTargetResponse(cryptoName: String, change: Float) = PriceTargetResponse(id, cryptoName, target.toPlainString(), change)</span>
+  fun toPriceTargetResponse(cryptoName: String, currentPrice: BigDecimal, change: Float) =
+<span class="fc" id="L22">    PriceTargetResponse(id, cryptoName, currentPrice.toPlainString(), target.toPlainString(), change)</span>
 
   fun calculateChangeNeeded(currentPrice: BigDecimal): Float {
-<span class="fc" id="L24">    return target.subtract(currentPrice)</span>
-<span class="fc" id="L25">      .divide(currentPrice, 2, RoundingMode.HALF_UP)</span>
-<span class="fc" id="L26">      .multiply(BigDecimal(&quot;100&quot;))</span>
-<span class="fc" id="L27">      .toFloat()</span>
+<span class="fc" id="L25">    return target.subtract(currentPrice)</span>
+<span class="fc" id="L26">      .divide(currentPrice, 3, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L27">      .multiply(BigDecimal(&quot;100&quot;))</span>
+<span class="fc" id="L28">      .setScale(2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L29">      .toFloat()</span>
   }
-<span class="fc" id="L29">}</span>
+<span class="fc" id="L31">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

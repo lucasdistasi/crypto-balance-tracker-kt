@@ -11,7 +11,6 @@ import com.distasilucas.cryptobalancetracker.service.PriceTargetService
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import org.hibernate.validator.constraints.UUID
-import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -26,41 +25,40 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
-<span class="fc" id="L29">@Validated</span>
+<span class="fc" id="L28">@Validated</span>
 @RestController
 @RequestMapping(&quot;/api/v1/price-targets&quot;)
 @CrossOrigin(origins = [&quot;\${allowed-origins}&quot;])
-<span class="fc" id="L33">class PriceTargetController(</span>
-<span class="fc" id="L34">  private val priceTargetService: PriceTargetService</span>
+<span class="fc" id="L32">class PriceTargetController(</span>
+<span class="fc" id="L33">  private val priceTargetService: PriceTargetService</span>
 ): PriceTargetControllerAPI {
 
   @GetMapping(&quot;/{priceTargetId}&quot;)
   override fun retrievePriceTarget(
     @PathVariable @UUID(message = INVALID_PRICE_TARGET_UUID) priceTargetId: String
   ): ResponseEntity&lt;PriceTargetResponse&gt; {
-<span class="fc" id="L41">    val priceTarget = priceTargetService.retrievePriceTarget(priceTargetId)</span>
+<span class="fc" id="L40">    val priceTarget = priceTargetService.retrievePriceTarget(priceTargetId)</span>
 
-<span class="fc" id="L43">    return ResponseEntity.ok(priceTarget)</span>
+<span class="fc" id="L42">    return ResponseEntity.ok(priceTarget)</span>
   }
 
   @GetMapping
   override fun retrievePriceTargetsByPage(
-    @RequestParam @Min(value = 0, message = INVALID_PAGE_NUMBER) pageNumber: Int,
-    @RequestParam sortType: SortType
+    @RequestParam @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int
   ): ResponseEntity&lt;PagePriceTargetResponse&gt; {
-<span class="fc" id="L51">    val priceTargets = priceTargetService.retrievePriceTargetsByPage(pageNumber, sortType)</span>
+<span class="fc" id="L49">    val priceTargets = priceTargetService.retrievePriceTargetsByPage(page)</span>
 
-<span class="fc bfc" id="L53" title="All 2 branches covered.">    return if (priceTargets.targets.isEmpty())</span>
-<span class="fc" id="L54">      ResponseEntity.noContent().build() else ResponseEntity.ok(priceTargets)</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">    return if (priceTargets.targets.isEmpty())</span>
+<span class="fc" id="L52">      ResponseEntity.noContent().build() else ResponseEntity.ok(priceTargets)</span>
   }
 
   @PostMapping
   override fun savePriceTarget(
     @RequestBody @Valid priceTargetRequest: PriceTargetRequest
   ): ResponseEntity&lt;PriceTargetResponse&gt; {
-<span class="fc" id="L61">    val priceTarget = priceTargetService.savePriceTarget(priceTargetRequest)</span>
+<span class="fc" id="L59">    val priceTarget = priceTargetService.savePriceTarget(priceTargetRequest)</span>
 
-<span class="fc" id="L63">    return ResponseEntity.status(HttpStatus.CREATED).body(priceTarget)</span>
+<span class="fc" id="L61">    return ResponseEntity.status(HttpStatus.CREATED).body(priceTarget)</span>
   }
 
   @PutMapping(&quot;/{priceTargetId}&quot;)
@@ -68,18 +66,18 @@ import org.springframework.web.bind.annotation.RestController
     @PathVariable @UUID(message = INVALID_PRICE_TARGET_UUID) priceTargetId: String,
     @Valid @RequestBody priceTargetRequest: PriceTargetRequest
   ): ResponseEntity&lt;PriceTargetResponse&gt; {
-<span class="fc" id="L71">    val priceTarget = priceTargetService.updatePriceTarget(priceTargetId, priceTargetRequest)</span>
+<span class="fc" id="L69">    val priceTarget = priceTargetService.updatePriceTarget(priceTargetId, priceTargetRequest)</span>
 
-<span class="fc" id="L73">    return ResponseEntity.ok(priceTarget)</span>
+<span class="fc" id="L71">    return ResponseEntity.ok(priceTarget)</span>
   }
 
   @DeleteMapping(&quot;/{priceTargetId}&quot;)
   override fun deletePriceTarget(
     @PathVariable @UUID(message = INVALID_PRICE_TARGET_UUID) priceTargetId: String
   ): ResponseEntity&lt;Unit&gt; {
-<span class="fc" id="L80">    priceTargetService.deletePriceTarget(priceTargetId)</span>
+<span class="fc" id="L78">    priceTargetService.deletePriceTarget(priceTargetId)</span>
 
-<span class="fc" id="L82">    return ResponseEntity.noContent().build()</span>
+<span class="fc" id="L80">    return ResponseEntity.noContent().build()</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
