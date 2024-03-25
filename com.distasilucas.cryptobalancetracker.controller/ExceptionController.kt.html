@@ -263,7 +263,7 @@ import java.net.URI
 <span class="fc" id="L263">    logger.info { &quot;A MissingServletRequestParameterException occurred $exception&quot; }</span>
 
 <span class="fc" id="L265">    val request = (webRequest as ServletWebRequest).request</span>
-<span class="pc bpc" id="L266" title="1 of 2 branches missed.">    val detail = exception.body.detail ?: exception.message</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">    val detail = exception.body.detail ?: exception.message</span>
 <span class="fc" id="L267">    val problemDetail = BAD_REQUEST_STATUS.withDetailsAndURI(detail, URI.create(request.requestURL.toString()))</span>
 
 <span class="fc" id="L269">    return ResponseEntity.status(BAD_REQUEST_STATUS).body(listOf(problemDetail))</span>
