@@ -65,6 +65,31 @@ class PriceTargetControllerTest {
   }
 
   @Test
+  fun `should retrieve price targets for page with next page with status 200`() {
+    val pagePriceTargetResponse = PagePriceTargetResponse(
+      0,
+      2,
+      listOf(
+        PriceTargetResponse(
+          "f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08",
+          "Bitcoin",
+          "60000",
+          "100000",
+          35.30F
+        )
+      )
+    )
+
+    every { priceTargetServiceMock.retrievePriceTargetsByPage(0) } returns pagePriceTargetResponse
+
+    val responseEntity = priceTargetController.retrievePriceTargetsByPage(0)
+
+    assertThat(responseEntity)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.ok(pagePriceTargetResponse))
+  }
+
+  @Test
   fun `should retrieve empty price targets for page with status 204`() {
     val pagePriceTargetResponse = PagePriceTargetResponse(0, 1, emptyList())
 
