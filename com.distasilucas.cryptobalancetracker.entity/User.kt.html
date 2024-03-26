@@ -21,19 +21,19 @@ import java.util.UUID
   private val createdAt: LocalDateTime
 
 ) : UserDetails {
-<span class="nc" id="L24">  override fun getAuthorities() = listOf(SimpleGrantedAuthority(role.name))</span>
+<span class="fc" id="L24">  override fun getAuthorities() = listOf(SimpleGrantedAuthority(role.name))</span>
 
 <span class="fc" id="L26">  override fun getPassword() = password</span>
 
 <span class="fc" id="L28">  override fun getUsername() = username</span>
 
-<span class="nc" id="L30">  override fun isAccountNonExpired() = true</span>
+<span class="fc" id="L30">  override fun isAccountNonExpired() = true</span>
 
-<span class="nc" id="L32">  override fun isAccountNonLocked() = true</span>
+<span class="fc" id="L32">  override fun isAccountNonLocked() = true</span>
 
-<span class="nc" id="L34">  override fun isCredentialsNonExpired() = true</span>
+<span class="fc" id="L34">  override fun isCredentialsNonExpired() = true</span>
 
-<span class="nc" id="L36">  override fun isEnabled() = true</span>
+<span class="fc" id="L36">  override fun isEnabled() = true</span>
 
 <span class="fc" id="L38">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
