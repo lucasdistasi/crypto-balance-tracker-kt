@@ -7,8 +7,12 @@ import com.distasilucas.cryptobalancetracker.repository.UserRepository
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertThrows
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.time.LocalDateTime
 import java.util.Optional
 
@@ -31,6 +35,15 @@ class UserServiceTest {
 
     val user = userService.findByUsername("username")
 
+    assertAll("user",
+      { assertEquals(listOf(SimpleGrantedAuthority(Role.ROLE_ADMIN.name)), user.authorities) },
+      { assertEquals("password", user.password) },
+      { assertEquals("username", user.username) },
+      { assertTrue(user.isAccountNonExpired) },
+      { assertTrue(user.isAccountNonLocked) },
+      { assertTrue(user.isCredentialsNonExpired) },
+      { assertTrue(user.isEnabled) }
+    )
     assertThat(user)
       .usingRecursiveComparison()
       .ignoringFields("id", "createdAt")

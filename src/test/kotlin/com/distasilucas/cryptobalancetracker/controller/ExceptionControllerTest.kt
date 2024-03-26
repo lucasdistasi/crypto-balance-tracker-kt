@@ -21,9 +21,11 @@ import com.distasilucas.cryptobalancetracker.service.CoingeckoCryptoNotFoundExce
 import com.distasilucas.cryptobalancetracker.service.DuplicatedCryptoPlatFormException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedGoalException
 import com.distasilucas.cryptobalancetracker.service.DuplicatedPlatformException
+import com.distasilucas.cryptobalancetracker.service.DuplicatedPriceTargetException
 import com.distasilucas.cryptobalancetracker.service.GoalNotFoundException
 import com.distasilucas.cryptobalancetracker.service.InsufficientBalanceException
 import com.distasilucas.cryptobalancetracker.service.PlatformNotFoundException
+import com.distasilucas.cryptobalancetracker.service.PriceTargetNotFoundException
 import com.distasilucas.cryptobalancetracker.service.UserCryptoNotFoundException
 import com.distasilucas.cryptobalancetracker.service.UsernameNotFoundException
 import io.mockk.every
@@ -112,6 +114,36 @@ class ExceptionControllerTest {
 
     assertThat(responseEntity)
       .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf(problemDetail)))
+  }
+
+  @Test
+  fun `should handle PriceTargetNotFoundException`() {
+    val exception = PriceTargetNotFoundException("Price target with id 123e4567-e89b-12d3-a456-426614174000 not found")
+    val httpServletRequest = MockHttpServletRequest("DELETE", "/api/v1/price-targets/123e4567-e89b-12d3-a456-426614174000")
+    val servletRequest = ServletWebRequest(httpServletRequest)
+    val problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND)
+    problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+    problemDetail.detail = exception.message
+
+    val responseEntity = exceptionController.handlePriceTargetNotFoundException(exception, servletRequest)
+
+    assertThat(responseEntity)
+      .isEqualTo(ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf(problemDetail)))
+  }
+
+  @Test
+  fun `should handle DuplicatedPriceTargetException`() {
+    val exception = DuplicatedPriceTargetException("You already have a price target for bitcoin at that price")
+    val httpServletRequest = MockHttpServletRequest("POST", "/api/v1/price-targets")
+    val servletRequest = ServletWebRequest(httpServletRequest)
+    val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+    problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+    problemDetail.detail = exception.message
+
+    val responseEntity = exceptionController.handleDuplicatedPriceTargetException(exception, servletRequest)
+
+    assertThat(responseEntity)
+      .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
   }
 
   @Test
@@ -280,6 +312,22 @@ class ExceptionControllerTest {
   }
 
   @Test
+  fun `should handle MissingServletRequestParameterException with exception message`() {
+    val exception = mockk<MissingServletRequestParameterException>()
+    val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+    problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
+    problemDetail.detail = "Exception message"
+
+    every { exception.body } returns ProblemDetail.forStatus(404)
+    every { exception.message } returns "Exception message"
+
+    val responseEntity = exceptionController.handleMissingServletRequestParameterException(exception, servletRequest)
+
+    assertThat(responseEntity)
+      .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
+  }
+
+  @Test
   fun `should handle AccessDeniedException with custom message`() {
     val exception = AccessDeniedException("AccessDeniedException")
     val problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN)
@@ -308,14 +356,15 @@ class ExceptionControllerTest {
   @Test
   fun `should handle MethodArgumentTypeMismatchException`() {
     val exceptionMock = mockk<MethodArgumentTypeMismatchException>()
-    val detail = INVALID_VALUE_FOR.format("idontknow", "idontknow", "")
 
-    every { exceptionMock.name } returns "idontknow"
-    every { exceptionMock.value } returns "idontknow"
+    every { exceptionMock.name } returns "idontknow_name"
+    every { exceptionMock.value } returns "idontknow_value"
+    every { exceptionMock.requiredType } returns null
+    every { exceptionMock.message } returns null
 
     val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
     problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
-    problemDetail.detail = detail
+    problemDetail.detail = "Invalid value idontknow_value for idontknow_name"
 
     val responseEntity = exceptionController.handleMethodArgumentTypeMismatchException(exceptionMock, servletRequest)
 
@@ -325,17 +374,14 @@ class ExceptionControllerTest {
 
   @Test
   fun `should handle MethodArgumentTypeMismatchException for SortBy`() {
-    val exceptionMock = mockk<MethodArgumentTypeMismatchException>()
-    val detail = INVALID_VALUE_FOR.format("idontknow", "sortBy", SortBy.entries.toTypedArray().contentToString())
-
-    every { exceptionMock.name } returns "sortBy"
-    every { exceptionMock.value } returns "idontknow"
+    val methodParameter = createMethodParameter(String::class.java, "compareTo", String::class.java)
+    val exception = MethodArgumentTypeMismatchException("idontknow", SortBy::class.java, "sortBy", methodParameter, RuntimeException())
 
     val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
     problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
-    problemDetail.detail = detail
+    problemDetail.detail = INVALID_VALUE_FOR.format("idontknow", "sortBy", SortBy.entries.toTypedArray().contentToString())
 
-    val responseEntity = exceptionController.handleMethodArgumentTypeMismatchException(exceptionMock, servletRequest)
+    val responseEntity = exceptionController.handleMethodArgumentTypeMismatchException(exception, servletRequest)
 
     assertThat(responseEntity)
       .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))
@@ -343,17 +389,14 @@ class ExceptionControllerTest {
 
   @Test
   fun `should handle MethodArgumentTypeMismatchException for SortType`() {
-    val exceptionMock = mockk<MethodArgumentTypeMismatchException>()
-    val detail = INVALID_VALUE_FOR.format("idontknow", "sortType", SortType.entries.toTypedArray().contentToString())
-
-    every { exceptionMock.name } returns "sortType"
-    every { exceptionMock.value } returns "idontknow"
+    val methodParameter = createMethodParameter(String::class.java, "compareTo", String::class.java)
+    val exception = MethodArgumentTypeMismatchException("idontknow", SortType::class.java, "sortType", methodParameter, RuntimeException())
 
     val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
     problemDetail.type = URI.create(httpServletRequest.requestURL.toString())
-    problemDetail.detail = detail
+    problemDetail.detail = INVALID_VALUE_FOR.format("idontknow", "sortType", SortType.entries.toTypedArray().contentToString())
 
-    val responseEntity = exceptionController.handleMethodArgumentTypeMismatchException(exceptionMock, servletRequest)
+    val responseEntity = exceptionController.handleMethodArgumentTypeMismatchException(exception, servletRequest)
 
     assertThat(responseEntity)
       .isEqualTo(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listOf(problemDetail)))

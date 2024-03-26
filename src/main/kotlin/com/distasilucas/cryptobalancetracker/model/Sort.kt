@@ -25,8 +25,8 @@ enum class SortType {
 }
 
 data class SortParams(
-  val sortBy: SortBy = SortBy.PERCENTAGE,
-  val sortType: SortType = SortType.DESC
+  val sortBy: SortBy,
+  val sortType: SortType
 ) {
 
   fun cryptosInsightsResponseComparator(): Comparator<UserCryptosInsights> {

@@ -2113,6 +2113,38 @@ class InsightsServiceTest {
   }
 
   @Test
+  fun `should retrieve empty if startIndex is higher than size of userCryptosInsights`() {
+    val cryptos = listOf("bitcoin", "litecoin")
+    val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
+    val cryptosEntities = cryptos().filter { cryptos.contains(it.id) }
+    val binancePlatform = Platform(
+      id = "163b1731-7a24-4e23-ac90-dc95ad8cb9e8",
+      name = "BINANCE"
+    )
+    val coinbasePlatform = Platform(
+      id = "a76b400e-8ffc-42d6-bf47-db866eb20153",
+      name = "COINBASE"
+    )
+
+    every { cryptoServiceMock.findAllByIds(setOf("litecoin", "bitcoin")) } returns cryptosEntities
+    every {
+      platformServiceMock.findAllByIds(
+        setOf(
+          "a76b400e-8ffc-42d6-bf47-db866eb20153",
+          "163b1731-7a24-4e23-ac90-dc95ad8cb9e8"
+        )
+      )
+    } returns listOf(binancePlatform, coinbasePlatform)
+    every { userCryptoServiceMock.findAll() } returns userCryptos
+
+    val userCryptosInsights = insightsService.retrieveUserCryptosInsights(1)
+
+    assertThat(userCryptosInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(Optional.empty<PageUserCryptosInsightsResponse>())
+  }
+
+  @Test
   fun `should retrieve user cryptos platforms insights`() {
     val cryptos = listOf("bitcoin", "ethereum", "tether")
     val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
