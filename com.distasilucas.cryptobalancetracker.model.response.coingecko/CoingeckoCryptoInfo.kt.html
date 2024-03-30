@@ -36,29 +36,22 @@ import java.math.RoundingMode
 <span class="fc" id="L36">  val marketCap: MarketCap,</span>
 
 <span class="fc" id="L38">  @JsonProperty(&quot;price_change_percentage_24h&quot;)</span>
-<span class="nc" id="L39">  val changePercentageIn24h: BigDecimal,</span>
+<span class="fc" id="L39">  val changePercentageIn24h: BigDecimal,</span>
 
 <span class="fc" id="L41">  @JsonProperty(&quot;price_change_percentage_7d&quot;)</span>
-<span class="nc" id="L42">  val changePercentageIn7d: BigDecimal,</span>
+<span class="fc" id="L42">  val changePercentageIn7d: BigDecimal,</span>
 
 <span class="fc" id="L44">  @JsonProperty(&quot;price_change_percentage_30d&quot;)</span>
-<span class="nc" id="L45">  val changePercentageIn30d: BigDecimal</span>
-) : Serializable {
-
-<span class="fc" id="L48">  fun roundChangePercentageIn24h(): BigDecimal = changePercentageIn24h.setScale(2, RoundingMode.HALF_UP)</span>
-
-<span class="fc" id="L50">  fun roundChangePercentageIn7d(): BigDecimal = changePercentageIn7d.setScale(2, RoundingMode.HALF_UP)</span>
-
-<span class="fc" id="L52">  fun roundChangePercentageIn30d(): BigDecimal = changePercentageIn30d.setScale(2, RoundingMode.HALF_UP)</span>
-}
-
-<span class="fc" id="L55">data class CurrentPrice(</span>
-<span class="fc" id="L56">  val usd: BigDecimal,</span>
-<span class="fc" id="L57">  val eur: BigDecimal,</span>
-<span class="fc" id="L58">  val btc: BigDecimal</span>
+<span class="fc" id="L45">  val changePercentageIn30d: BigDecimal</span>
 ) : Serializable
 
-<span class="fc" id="L61">data class MarketCap(</span>
-<span class="fc" id="L62">  val usd: BigDecimal</span>
+<span class="fc" id="L48">data class CurrentPrice(</span>
+<span class="fc" id="L49">  val usd: BigDecimal,</span>
+<span class="fc" id="L50">  val eur: BigDecimal,</span>
+<span class="fc" id="L51">  val btc: BigDecimal</span>
+) : Serializable
+
+<span class="fc" id="L54">data class MarketCap(</span>
+<span class="fc" id="L55">  val usd: BigDecimal</span>
 ) : Serializable
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

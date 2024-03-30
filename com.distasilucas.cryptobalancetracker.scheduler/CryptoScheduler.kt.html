@@ -4,6 +4,7 @@ import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.exception.TooManyRequestsException
 import com.distasilucas.cryptobalancetracker.service.CoingeckoService
 import com.distasilucas.cryptobalancetracker.service.CryptoService
+import com.distasilucas.cryptobalancetracker.service.roundChangePercentage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -14,71 +15,71 @@ import java.math.BigDecimal
 import java.time.Clock
 import java.time.LocalDateTime
 
-<span class="fc" id="L17">@Component</span>
-<span class="fc" id="L18">class CryptoScheduler(</span>
-<span class="fc" id="L19">  @Value(&quot;\${crypto.scheduler.update.quantity}&quot;)</span>
+<span class="fc" id="L18">@Component</span>
+<span class="fc" id="L19">class CryptoScheduler(</span>
+<span class="fc" id="L20">  @Value(&quot;\${crypto.scheduler.update.quantity}&quot;)</span>
   private val maxLimit: Int,
-<span class="fc" id="L21">  private val clock: Clock,</span>
-<span class="fc" id="L22">  private val cryptoService: CryptoService,</span>
-<span class="fc" id="L23">  private val coingeckoService: CoingeckoService</span>
+<span class="fc" id="L22">  private val clock: Clock,</span>
+<span class="fc" id="L23">  private val cryptoService: CryptoService,</span>
+<span class="fc" id="L24">  private val coingeckoService: CoingeckoService</span>
 ) {
 
-<span class="fc" id="L26">  private val logger = KotlinLogging.logger { }</span>
+<span class="fc" id="L27">  private val logger = KotlinLogging.logger { }</span>
 
   @Scheduled(cron = &quot;\${crypto.scheduler.update.cron}&quot;)
   fun updateCryptosInformation() {
-<span class="fc" id="L30">    logger.info { &quot;Running cron to update cryptos information...&quot; }</span>
+<span class="fc" id="L31">    logger.info { &quot;Running cron to update cryptos information...&quot; }</span>
 
-<span class="fc" id="L32">    val cryptosToUpdate = getCryptosToUpdate()</span>
-<span class="fc" id="L33">      .map {</span>
-<span class="fc" id="L34">        try {</span>
-<span class="fc" id="L35">          val crypto = coingeckoService.retrieveCryptoInfo(it.id)</span>
+<span class="fc" id="L33">    val cryptosToUpdate = getCryptosToUpdate()</span>
+<span class="fc" id="L34">      .map {</span>
+<span class="fc" id="L35">        try {</span>
+<span class="fc" id="L36">          val crypto = coingeckoService.retrieveCryptoInfo(it.id)</span>
 
-<span class="fc" id="L37">          with(crypto) {</span>
-<span class="fc" id="L38">            Crypto(</span>
-<span class="fc" id="L39">              id = id,</span>
-<span class="fc" id="L40">              name = name,</span>
-<span class="fc" id="L41">              ticker = symbol,</span>
-<span class="fc" id="L42">              image = image.large,</span>
-<span class="fc" id="L43">              lastKnownPrice = marketData.currentPrice.usd,</span>
-<span class="fc" id="L44">              lastKnownPriceInEUR = marketData.currentPrice.eur,</span>
-<span class="fc" id="L45">              lastKnownPriceInBTC = marketData.currentPrice.btc,</span>
-<span class="fc" id="L46">              circulatingSupply = marketData.circulatingSupply,</span>
-<span class="fc bfc" id="L47" title="All 2 branches covered.">              maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,</span>
-<span class="fc" id="L48">              marketCapRank = marketCapRank,</span>
-<span class="fc" id="L49">              marketCap = marketData.marketCap.usd,</span>
-<span class="fc" id="L50">              changePercentageIn24h = marketData.roundChangePercentageIn24h(),</span>
-<span class="fc" id="L51">              changePercentageIn7d = marketData.roundChangePercentageIn7d(),</span>
-<span class="fc" id="L52">              changePercentageIn30d = marketData.roundChangePercentageIn30d(),</span>
-<span class="fc" id="L53">              lastUpdatedAt = LocalDateTime.now(clock)</span>
+<span class="fc" id="L38">          with(crypto) {</span>
+<span class="fc" id="L39">            Crypto(</span>
+<span class="fc" id="L40">              id = id,</span>
+<span class="fc" id="L41">              name = name,</span>
+<span class="fc" id="L42">              ticker = symbol,</span>
+<span class="fc" id="L43">              image = image.large,</span>
+<span class="fc" id="L44">              lastKnownPrice = marketData.currentPrice.usd,</span>
+<span class="fc" id="L45">              lastKnownPriceInEUR = marketData.currentPrice.eur,</span>
+<span class="fc" id="L46">              lastKnownPriceInBTC = marketData.currentPrice.btc,</span>
+<span class="fc" id="L47">              circulatingSupply = marketData.circulatingSupply,</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">              maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,</span>
+<span class="fc" id="L49">              marketCapRank = marketCapRank,</span>
+<span class="fc" id="L50">              marketCap = marketData.marketCap.usd,</span>
+<span class="fc" id="L51">              changePercentageIn24h = marketData.changePercentageIn24h.roundChangePercentage(),</span>
+<span class="fc" id="L52">              changePercentageIn7d = marketData.changePercentageIn7d.roundChangePercentage(),</span>
+<span class="fc" id="L53">              changePercentageIn30d = marketData.changePercentageIn30d.roundChangePercentage(),</span>
+<span class="fc" id="L54">              lastUpdatedAt = LocalDateTime.now(clock)</span>
             )
           }
-<span class="fc" id="L56">        } catch (exception: RestClientResponseException) {</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">          if (exception.statusCode == HttpStatus.TOO_MANY_REQUESTS) {</span>
-<span class="fc" id="L58">            throw TooManyRequestsException()</span>
+<span class="fc" id="L57">        } catch (exception: RestClientResponseException) {</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">          if (exception.statusCode == HttpStatus.TOO_MANY_REQUESTS) {</span>
+<span class="fc" id="L59">            throw TooManyRequestsException()</span>
           } else {
-<span class="fc" id="L60">            logger.warn { &quot;A WebClientResponseException occurred while retrieving info for ${it.id}. Exception: $exception&quot; }</span>
-<span class="fc" id="L61">            it</span>
+<span class="fc" id="L61">            logger.warn { &quot;A WebClientResponseException occurred while retrieving info for ${it.id}. Exception: $exception&quot; }</span>
+<span class="fc" id="L62">            it</span>
           }
-<span class="fc" id="L63">        } catch (exception: Exception) {</span>
-<span class="fc" id="L64">          logger.error { &quot;An exception occurred while retrieving info for ${it.id}, therefore crypto info might be outdated. Exception: $exception&quot; }</span>
-<span class="fc" id="L65">          it</span>
+<span class="fc" id="L64">        } catch (exception: Exception) {</span>
+<span class="fc" id="L65">          logger.error { &quot;An exception occurred while retrieving info for ${it.id}, therefore crypto info might be outdated. Exception: $exception&quot; }</span>
+<span class="fc" id="L66">          it</span>
         }
       }
 
-<span class="fc bfc" id="L69" title="All 4 branches covered.">    if (cryptosToUpdate.isNotEmpty()) {</span>
-<span class="fc" id="L70">      logger.info { &quot;About to update ${cryptosToUpdate.size} crypto(s)&quot; }</span>
+<span class="fc bfc" id="L70" title="All 4 branches covered.">    if (cryptosToUpdate.isNotEmpty()) {</span>
+<span class="fc" id="L71">      logger.info { &quot;About to update ${cryptosToUpdate.size} crypto(s)&quot; }</span>
 
-<span class="fc" id="L72">      cryptoService.updateCryptos(cryptosToUpdate)</span>
+<span class="fc" id="L73">      cryptoService.updateCryptos(cryptosToUpdate)</span>
     } else {
-<span class="fc" id="L74">      logger.info { &quot;No cryptos to update&quot; }</span>
+<span class="fc" id="L75">      logger.info { &quot;No cryptos to update&quot; }</span>
     }
-<span class="fc" id="L76">  }</span>
+<span class="fc" id="L77">  }</span>
 
   private fun getCryptosToUpdate(): List&lt;Crypto&gt; {
-<span class="fc" id="L79">    return cryptoService.findOldestNCryptosByLastPriceUpdate(</span>
-<span class="fc" id="L80">      LocalDateTime.now(clock).minusMinutes(5),</span>
-<span class="fc" id="L81">      maxLimit</span>
+<span class="fc" id="L80">    return cryptoService.findOldestNCryptosByLastPriceUpdate(</span>
+<span class="fc" id="L81">      LocalDateTime.now(clock).minusMinutes(5),</span>
+<span class="fc" id="L82">      maxLimit</span>
     )
   }
 }
