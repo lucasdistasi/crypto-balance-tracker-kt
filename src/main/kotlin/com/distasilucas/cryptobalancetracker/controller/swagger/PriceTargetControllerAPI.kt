@@ -2,7 +2,6 @@ package com.distasilucas.cryptobalancetracker.controller.swagger
 
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PRICE_TARGET_UUID
-import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.request.pricetarget.PriceTargetRequest
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PagePriceTargetResponse
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PriceTargetResponse

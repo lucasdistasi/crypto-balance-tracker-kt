@@ -2145,6 +2145,432 @@ class InsightsServiceTest {
   }
 
   @Test
+  fun `should retrieve userCryptosInsights with next page`() {
+    val cryptos = listOf(
+      "bitcoin",
+      "tether",
+      "ethereum",
+      "binancecoin",
+      "litecoin",
+      "cardano",
+      "solana",
+      "matic-network",
+      "chainlink",
+      "avalanche-2",
+      "uniswap"
+    )
+    val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
+    val cryptosEntities = cryptos().filter { cryptos.contains(it.id) }
+    val binancePlatform = Platform(
+      id = "163b1731-7a24-4e23-ac90-dc95ad8cb9e8",
+      name = "BINANCE"
+    )
+    val coinbasePlatform = Platform(
+      id = "a76b400e-8ffc-42d6-bf47-db866eb20153",
+      name = "COINBASE"
+    )
+
+    every {
+      cryptoServiceMock.findAllByIds(
+        setOf("bitcoin", "tether", "ethereum", "litecoin", "binancecoin", "cardano", "solana", "matic-network", "chainlink", "avalanche-2", "uniswap")
+      )
+    } returns cryptosEntities
+    every {
+      platformServiceMock.findAllByIds(
+        setOf(
+          "a76b400e-8ffc-42d6-bf47-db866eb20153",
+          "163b1731-7a24-4e23-ac90-dc95ad8cb9e8"
+        )
+      )
+    } returns listOf(binancePlatform, coinbasePlatform)
+    every { userCryptoServiceMock.findAll() } returns userCryptos
+
+    val userCryptosInsights = insightsService.retrieveUserCryptosInsights(0)
+
+    assertThat(userCryptosInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(
+        Optional.of(
+          PageUserCryptosInsightsResponse(
+            page = 1,
+            totalPages = 2,
+            hasNextPage = true,
+            balances = BalancesResponse(
+              totalUSDBalance = "8158.57",
+              totalBTCBalance = "0.29138361932",
+              totalEURBalance = "7463.42"
+            ),
+            cryptos = listOf(
+              UserCryptosInsights(
+                cryptoInfo = CryptoInfo(
+                  id = "676fb38a-556e-11ee-b56e-325096b39f47",
+                  cryptoName = "Bitcoin",
+                  coingeckoCryptoId = "bitcoin",
+                  symbol = "btc",
+                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+                ),
+                quantity = "0.15",
+                percentage = 55.16f,
+                balances = BalancesResponse(
+                  totalUSDBalance = "4500.00",
+                  totalBTCBalance = "0.15",
+                  totalEURBalance = "4050.00"
+                ),
+                marketCapRank = 1,
+                marketData = MarketData(
+                  circulatingSupply = CirculatingSupply(
+                    totalCirculatingSupply = "19000000",
+                    percentage = 90.48f
+                  ),
+                  maxSupply = "21000000",
+                  currentPrice = CurrentPrice(
+                    usd = "30000",
+                    eur = "27000",
+                    btc = "1"
+                  ),
+                  marketCap = "813208997089",
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("0.00")
+                  )
+                ),
+                platforms = listOf("BINANCE")
+              ),
+              UserCryptosInsights(
+                cryptoInfo = CryptoInfo(
+                  id = "676fba74-556e-11ee-9bff-325096b39f47",
+                  cryptoName = "Ethereum",
+                  coingeckoCryptoId = "ethereum",
+                  symbol = "eth",
+                  image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880"
+                ),
+                quantity = "1.112",
+                percentage = 22.05f,
+                balances = BalancesResponse(
+                  totalUSDBalance = "1798.59",
+                  totalBTCBalance = "0.06983755872",
+                  totalEURBalance = "1678.42"
+                ),
+                marketCapRank = 2,
+                marketData = MarketData(
+                  circulatingSupply = CirculatingSupply(
+                    totalCirculatingSupply = "120220572",
+                    percentage = 0F
+                  ),
+                  maxSupply = "0",
+                  currentPrice = CurrentPrice(
+                    usd = "1617.44",
+                    eur = "1509.37",
+                    btc = "0.06280356"
+                  ),
+                  marketCap = "298219864117",
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("2.00")
+                  )
+                ),
+                platforms = listOf("COINBASE")
+              ),
+              UserCryptosInsights(
+                cryptoInfo = CryptoInfo(
+                  id = "676fb696-556e-11ee-aa1c-325096b39f47",
+                  cryptoName = "Ethereum",
+                  coingeckoCryptoId = "ethereum",
+                  symbol = "eth",
+                  image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880"
+                ),
+                quantity = "0.26",
+                percentage = 5.15f,
+                balances = BalancesResponse(
+                  totalUSDBalance = "420.53",
+                  totalBTCBalance = "0.0163289256",
+                  totalEURBalance = "392.44"
+                ),
+                marketCapRank = 2,
+                marketData = MarketData(
+                  circulatingSupply = CirculatingSupply(
+                    totalCirculatingSupply = "120220572",
+                    percentage = 0F
+                  ),
+                  maxSupply = "0",
+                  currentPrice = CurrentPrice(
+                    usd = "1617.44",
+                    eur = "1509.37",
+                    btc = "0.06280356"
+                  ),
+                  marketCap = "298219864117",
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("2.00")
+                  )
+                ),
+                platforms = listOf("BINANCE")
+              ),
+                UserCryptosInsights(
+                cryptoInfo = CryptoInfo(
+                  id = "676fb9f2-556e-11ee-a929-325096b39f47",
+                  cryptoName = "Avalanche",
+                  coingeckoCryptoId = "avalanche-2",
+                  symbol = "avax",
+                  image = "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png?1670992574"
+                ),
+              quantity = "25",
+              percentage = 2.85F,
+              balances = BalancesResponse(
+                totalUSDBalance = "232.50",
+                totalBTCBalance = "0.008879",
+                totalEURBalance = "216.75"
+              ),
+              marketCapRank = 10,
+              marketData = MarketData(
+                circulatingSupply = CirculatingSupply(
+                  totalCirculatingSupply = "353804673",
+                  percentage = 49.14F
+                ),
+                maxSupply = "720000000",
+                currentPrice = CurrentPrice(
+                  usd = "9.3",
+                  eur = "8.67",
+                  btc = "0.00035516"
+                ),
+                marketCap = "11953262327",
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("4.00"),
+                  changePercentageIn7d = BigDecimal("1.00"),
+                  changePercentageIn30d = BigDecimal("8.00")
+                )
+              ),
+              platforms = listOf("BINANCE")
+            ),
+            UserCryptosInsights(
+              cryptoInfo = CryptoInfo(
+                id = "676fb768-556e-11ee-8b42-325096b39f47",
+                cryptoName = "BNB",
+                coingeckoCryptoId = "binancecoin",
+                symbol = "bnb",
+                image = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850"
+              ),
+              quantity = "1",
+              percentage = 2.6F,
+              balances = BalancesResponse(
+                totalUSDBalance = "211.79",
+                totalBTCBalance = "0.00811016",
+                totalEURBalance = "197.80"
+              ),
+              marketCapRank = 4,
+              marketData = MarketData(
+                circulatingSupply = CirculatingSupply(
+                  totalCirculatingSupply = "153856150",
+                  percentage = 76.93F
+                ),
+                maxSupply = "200000000",
+                currentPrice = CurrentPrice(
+                  usd = "211.79",
+                  eur = "197.80",
+                  btc = "0.00811016"
+                ),
+                marketCap = "48318686968",
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("6.00"),
+                  changePercentageIn7d = BigDecimal("-2.00"),
+                  changePercentageIn30d = BigDecimal("12.00")
+                )
+              ),
+              platforms = listOf("BINANCE")
+            ),
+            UserCryptosInsights(
+              cryptoInfo = CryptoInfo(
+                id = "676fb966-556e-11ee-81d6-325096b39f47",
+                cryptoName = "Chainlink",
+                coingeckoCryptoId = "chainlink",
+                symbol = "link",
+                image = "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png?1547034700"
+              ),
+              quantity = "35",
+              percentage = 2.57F,
+              balances = BalancesResponse(
+                totalUSDBalance = "209.65",
+                totalBTCBalance = "0.0080031",
+                totalEURBalance = "195.30"
+              ),
+              marketCapRank = 16,
+              marketData = MarketData(
+                circulatingSupply = CirculatingSupply(
+                  totalCirculatingSupply = "538099971",
+                  percentage = 53.81F
+                ),
+                maxSupply = "1000000000",
+                currentPrice = CurrentPrice(
+                  usd = "5.99",
+                  eur = "5.58",
+                  btc = "0.00022866"
+                ),
+                marketCap = "9021587267",
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("4.00"),
+                  changePercentageIn7d = BigDecimal("-1.00"),
+                  changePercentageIn30d = BigDecimal("8.00")
+                )
+              ),
+              platforms = listOf("BINANCE")
+            ),
+              UserCryptosInsights(
+                cryptoInfo = CryptoInfo(
+                  id = "676fb600-556e-11ee-83b6-325096b39f47",
+                  cryptoName = "Tether",
+                  coingeckoCryptoId = "tether",
+                  symbol = "usdt",
+                  image = "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663"
+                ),
+                quantity = "200",
+                percentage = 2.45F,
+                balances = BalancesResponse(
+                  totalUSDBalance = "199.92",
+                  totalBTCBalance = "0.00776",
+                  totalEURBalance = "186.62"
+                ),
+                marketCapRank = 3,
+                marketData = MarketData(
+                  circulatingSupply = CirculatingSupply(
+                    totalCirculatingSupply = "83016246102",
+                    percentage = 0F
+                  ),
+                  maxSupply = "0",
+                  currentPrice = CurrentPrice(
+                    usd = "0.999618",
+                    eur = "0.933095",
+                    btc = "0.0000388"
+                  ),
+                  marketCap = "95085861049",
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("0.00"),
+                    changePercentageIn7d = BigDecimal("0.00"),
+                    changePercentageIn30d = BigDecimal("0.00")
+                  )
+                ),
+                platforms = listOf("BINANCE")
+              ),
+              UserCryptosInsights(
+                cryptoInfo = CryptoInfo(
+                  id = "676fb70e-556e-11ee-8c2c-325096b39f47",
+                  cryptoName = "Litecoin",
+                  coingeckoCryptoId = "litecoin",
+                  symbol = "ltc",
+                  image = "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1547033580"
+                ),
+                quantity = "3.125",
+                percentage = 2.32F,
+                balances = BalancesResponse(
+                  totalUSDBalance = "189.34",
+                  totalBTCBalance = "0.007352875",
+                  totalEURBalance = "176.75"
+                ),
+                marketCapRank = 19,
+                marketData = MarketData(
+                  circulatingSupply = CirculatingSupply(
+                    totalCirculatingSupply = "73638701",
+                    percentage = 87.67F
+                  ),
+                  maxSupply = "84000000",
+                  currentPrice = CurrentPrice(
+                    usd = "60.59",
+                    eur = "56.56",
+                    btc = "0.00235292"
+                  ),
+                  marketCap = "5259205267",
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("6.00"),
+                    changePercentageIn7d = BigDecimal("-2.00"),
+                    changePercentageIn30d = BigDecimal("12.00")
+                  )
+                ),
+                platforms = listOf("COINBASE")
+              ),
+
+              UserCryptosInsights(
+                cryptoInfo = CryptoInfo(
+                  id = "676fb8e4-556e-11ee-883e-325096b39f47",
+                  cryptoName = "Solana",
+                  coingeckoCryptoId = "solana",
+                  symbol = "sol",
+                  image = "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422"
+                ),
+                quantity = "10",
+                percentage = 2.21F,
+                balances = BalancesResponse(
+                  totalUSDBalance = "180.40",
+                  totalBTCBalance = "0.0068809",
+                  totalEURBalance = "168.20"
+                ),
+                marketCapRank = 5,
+                marketData = MarketData(
+                  circulatingSupply = CirculatingSupply(
+                    totalCirculatingSupply = "410905807",
+                    percentage = 0F
+                  ),
+                  maxSupply = "0",
+                  currentPrice = CurrentPrice(
+                    usd = "18.04",
+                    eur = "16.82",
+                    btc = "0.00068809"
+                  ),
+                  marketCap = "40090766907",
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("4.00"),
+                    changePercentageIn7d = BigDecimal("1.00"),
+                    changePercentageIn30d = BigDecimal("-2.00")
+                  )
+                ),
+                platforms = listOf("BINANCE")
+              ),
+
+              UserCryptosInsights(
+                cryptoInfo = CryptoInfo(
+                  id = "676fba2e-556e-11ee-a181-325096b39f47",
+                  cryptoName = "Uniswap",
+                  coingeckoCryptoId = "uniswap",
+                  symbol = "uni",
+                  image = "https://assets.coingecko.com/coins/images/12504/large/uni.jpg?1687143398"
+                ),
+                quantity = "30",
+                percentage = 1.56F,
+                balances = BalancesResponse(
+                  totalUSDBalance = "127.50",
+                  totalBTCBalance = "0.0048591",
+                  totalEURBalance = "118.80"
+                ),
+                marketCapRank = 22,
+                marketData = MarketData(
+                  circulatingSupply = CirculatingSupply(
+                    totalCirculatingSupply = "753766667",
+                    percentage = 75.38F
+                  ),
+                  maxSupply = "1000000000",
+                  currentPrice = CurrentPrice(
+                    usd = "4.25",
+                    eur = "3.96",
+                    btc = "0.00016197"
+                  ),
+                  marketCap = "4772322900",
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("2.00"),
+                    changePercentageIn7d = BigDecimal("-1.00"),
+                    changePercentageIn30d = BigDecimal("3.00")
+                  )
+                ),
+                platforms = listOf("COINBASE")
+              ),
+
+            )
+          )
+        )
+      )
+  }
+
+  @Test
   fun `should retrieve user cryptos platforms insights`() {
     val cryptos = listOf("bitcoin", "ethereum", "tether")
     val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }

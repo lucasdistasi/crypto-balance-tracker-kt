@@ -8,7 +8,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.UUID
 
-@Document("PriceTarget")
+@Document("PriceTargets")
 data class PriceTarget(
   @Id
   val id: String = UUID.randomUUID().toString(),
