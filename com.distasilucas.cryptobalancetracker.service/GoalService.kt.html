@@ -36,7 +36,7 @@ import java.math.RoundingMode
 <span class="fc" id="L36">    logger.info { &quot;Retrieving goals for page $page&quot; }</span>
 
 <span class="fc" id="L38">    val pageRequest: Pageable = PageRequest.of(page, 10)</span>
-<span class="fc" id="L39">    val entityGoalsPage = goalRepository.findAll(pageRequest) // TODO - ADD CACHE?? - Use find all with page</span>
+<span class="fc" id="L39">    val entityGoalsPage = goalRepository.findAll(pageRequest)</span>
 <span class="fc" id="L40">    val goalsResponse = entityGoalsPage.content.map { it.toGoalResponse(id = it.id) }</span>
 
 <span class="fc" id="L42">    return PageGoalResponse(</span>

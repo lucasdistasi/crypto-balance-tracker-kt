@@ -337,7 +337,7 @@ private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
     }
 
 <span class="fc" id="L339">    val totalPages = ceil(userCryptos.size.toDouble() / ELEMENTS_PER_PAGE).toInt()</span>
-<span class="pc bpc" id="L340" title="1 of 2 branches missed.">    val endIndex = if (isLastPage(page, totalPages)) userCryptosInsights.size else startIndex + INT_ELEMENTS_PER_PAGE</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">    val endIndex = if (isLastPage(page, totalPages)) userCryptosInsights.size else startIndex + INT_ELEMENTS_PER_PAGE</span>
 <span class="fc" id="L341">    val cryptosInsights = userCryptosInsights.subList(startIndex, endIndex)</span>
 
 <span class="fc" id="L343">    return Optional.of(</span>
