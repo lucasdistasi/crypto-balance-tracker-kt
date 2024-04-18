@@ -12,7 +12,10 @@ import deleteGoal
 import getGoalResponse
 import io.mockk.every
 import io.mockk.justRun
-import org.hamcrest.Matchers
+import org.hamcrest.Matchers.containsInAnyOrder
+import org.hamcrest.Matchers.everyItem
+import org.hamcrest.Matchers.hasSize
+import org.hamcrest.Matchers.`is`
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
@@ -22,7 +25,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import retrieveGoal
 import retrieveGoalsForPage
 import saveGoal
@@ -46,14 +50,14 @@ class GoalControllerMvcTest(
     every { goalServiceMock.retrieveGoalById("123e4567-e89b-12d3-a456-426614174111") } returns goalResponse
 
     mockMvc.retrieveGoal("123e4567-e89b-12d3-a456-426614174111")
-      .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174111")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`("1")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100.0)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`("0")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`("1")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`("0")))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id", `is`("123e4567-e89b-12d3-a456-426614174111")))
+      .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.actualQuantity", `is`("1")))
+      .andExpect(jsonPath("$.progress", `is`(100.0)))
+      .andExpect(jsonPath("$.remainingQuantity", `is`("0")))
+      .andExpect(jsonPath("$.goalQuantity", `is`("1")))
+      .andExpect(jsonPath("$.moneyNeeded", `is`("0")))
   }
 
   @ParameterizedTest
@@ -65,12 +69,12 @@ class GoalControllerMvcTest(
   )
   fun `should fail with status 400 with 1 message when retrieving goal with invalid id`(goalId: String) {
     mockMvc.retrieveGoal(goalId)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("Goal id must be a valid UUID")))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`("Goal id must be a valid UUID")))
   }
 
   @Test
@@ -85,39 +89,29 @@ class GoalControllerMvcTest(
     every { goalServiceMock.retrieveGoalsForPage(0) } returns pageGoalResponse
 
     mockMvc.retrieveGoalsForPage(0)
-      .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(MockMvcResultMatchers.jsonPath("$.page", Matchers.`is`(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages", Matchers.`is`(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goals").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goals", Matchers.hasSize<Int>(1)))
-      .andExpect(
-        MockMvcResultMatchers.jsonPath(
-          "$.goals[0].id",
-          Matchers.`is`("123e4567-e89b-12d3-a456-426614174111")
-        )
-      )
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].cryptoName", Matchers.`is`("Bitcoin")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].actualQuantity", Matchers.`is`("1")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].progress", Matchers.`is`(100.0)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].remainingQuantity", Matchers.`is`("0")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].goalQuantity", Matchers.`is`("1")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goals[0].moneyNeeded", Matchers.`is`("0")))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.page", `is`(1)))
+      .andExpect(jsonPath("$.totalPages", `is`(1)))
+      .andExpect(jsonPath("$.goals").isArray())
+      .andExpect(jsonPath("$.goals", hasSize<Int>(1)))
+      .andExpect(jsonPath("$.goals[0].id", `is`("123e4567-e89b-12d3-a456-426614174111")))
+      .andExpect(jsonPath("$.goals[0].cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.goals[0].actualQuantity", `is`("1")))
+      .andExpect(jsonPath("$.goals[0].progress", `is`(100.0)))
+      .andExpect(jsonPath("$.goals[0].remainingQuantity", `is`("0")))
+      .andExpect(jsonPath("$.goals[0].goalQuantity", `is`("1")))
+      .andExpect(jsonPath("$.goals[0].moneyNeeded", `is`("0")))
   }
 
   @Test
   fun `should fail with status 400 with 1 message when retrieving goals with invalid page`() {
     mockMvc.retrieveGoalsForPage(-1)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-      .andExpect(
-        MockMvcResultMatchers.jsonPath(
-          "$[0].detail",
-          Matchers.`is`(INVALID_PAGE_NUMBER)
-        )
-      )
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`(INVALID_PAGE_NUMBER)))
   }
 
   @Test
@@ -137,14 +131,14 @@ class GoalControllerMvcTest(
     every { goalServiceMock.saveGoal(goalRequest) } returns goalResponse
 
     mockMvc.saveGoal(payload)
-      .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174111")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`("1")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100.0)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`("0")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`("1")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`("0")))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id", `is`("123e4567-e89b-12d3-a456-426614174111")))
+      .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.actualQuantity", `is`("1")))
+      .andExpect(jsonPath("$.progress", `is`(100.0)))
+      .andExpect(jsonPath("$.remainingQuantity", `is`("0")))
+      .andExpect(jsonPath("$.goalQuantity", `is`("1")))
+      .andExpect(jsonPath("$.moneyNeeded", `is`("0")))
   }
 
   @Test
@@ -164,14 +158,14 @@ class GoalControllerMvcTest(
     every { goalServiceMock.saveGoal(goalRequest) } returns goalResponse
 
     mockMvc.saveGoal(payload)
-      .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174111")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`("1")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100.0)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`("0")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`("1")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`("0")))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id", `is`("123e4567-e89b-12d3-a456-426614174111")))
+      .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.actualQuantity", `is`("1")))
+      .andExpect(jsonPath("$.progress", `is`(100.0)))
+      .andExpect(jsonPath("$.remainingQuantity", `is`("0")))
+      .andExpect(jsonPath("$.goalQuantity", `is`("1")))
+      .andExpect(jsonPath("$.moneyNeeded", `is`("0")))
   }
 
   @Test
@@ -184,24 +178,12 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.saveGoal(payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].status").value(Matchers.everyItem(Matchers.`is`(400)))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].detail")
-          .value(
-            Matchers.containsInAnyOrder(
-              CRYPTO_NAME_NOT_BLANK,
-              "Invalid crypto name"
-            )
-          )
-      )
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(2)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
+      .andExpect(jsonPath("$[*].detail").value(containsInAnyOrder(CRYPTO_NAME_NOT_BLANK, "Invalid crypto name")))
   }
 
   @Test
@@ -214,24 +196,13 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.saveGoal(payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(3)))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(3)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
       .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].status").value(Matchers.everyItem(Matchers.`is`(400)))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].detail")
-          .value(
-            Matchers.containsInAnyOrder(
-              CRYPTO_NAME_NOT_BLANK,
-              CRYPTO_NAME_SIZE,
-              "Invalid crypto name"
-            )
-          )
+        jsonPath("$[*].detail").value(containsInAnyOrder(CRYPTO_NAME_NOT_BLANK, CRYPTO_NAME_SIZE, "Invalid crypto name"))
       )
   }
 
@@ -246,23 +217,12 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.saveGoal(payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].status").value(Matchers.everyItem(Matchers.`is`(400)))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].detail")
-          .value(
-            Matchers.containsInAnyOrder(
-              CRYPTO_NAME_SIZE
-            )
-          )
-      )
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
+      .andExpect(jsonPath("$[*].detail").value(containsInAnyOrder(CRYPTO_NAME_SIZE)))
   }
 
   @ParameterizedTest
@@ -280,12 +240,12 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.saveGoal(payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("Invalid crypto name")))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`("Invalid crypto name")))
   }
 
   @Test
@@ -297,24 +257,12 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.saveGoal(payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].status").value(Matchers.everyItem(Matchers.`is`(400)))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].detail")
-          .value(
-            Matchers.containsInAnyOrder(
-              CRYPTO_NAME_NOT_BLANK,
-              "Invalid crypto name"
-            )
-          )
-      )
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(2)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
+      .andExpect(jsonPath("$[*].detail").value(containsInAnyOrder(CRYPTO_NAME_NOT_BLANK, "Invalid crypto name")))
   }
 
   @Test
@@ -326,12 +274,12 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.saveGoal(payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("Goal quantity can not be null")))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`("Goal quantity can not be null")))
   }
 
   @ParameterizedTest
@@ -349,19 +297,15 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.saveGoal(payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(2)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
       .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].status").value(Matchers.everyItem(Matchers.`is`(400)))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].detail")
+        jsonPath("$[*].detail")
           .value(
-            Matchers.containsInAnyOrder(
+            containsInAnyOrder(
               "Goal quantity must be less than or equal to 9999999999999999.999999999999",
               "Goal quantity must have up to 16 digits in the integer part and up to 12 digits in the decimal part"
             )
@@ -379,15 +323,15 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.saveGoal(payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
       .andExpect(
-        MockMvcResultMatchers.jsonPath(
+        jsonPath(
           "$[0].detail",
-          Matchers.`is`("Goal quantity must have up to 16 digits in the integer part and up to 12 digits in the decimal part")
+          `is`("Goal quantity must have up to 16 digits in the integer part and up to 12 digits in the decimal part")
         )
       )
   }
@@ -403,17 +347,12 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.saveGoal(payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-      .andExpect(
-        MockMvcResultMatchers.jsonPath(
-          "$[0].detail",
-          Matchers.`is`("Goal quantity must be greater than 0")
-        )
-      )
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`("Goal quantity must be greater than 0")))
   }
 
   @Test
@@ -433,14 +372,14 @@ class GoalControllerMvcTest(
     every { goalServiceMock.updateGoal("123e4567-e89b-12d3-a456-426614174111", goalRequest) } returns goalResponse
 
     mockMvc.updateGoal("123e4567-e89b-12d3-a456-426614174111", payload)
-      .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174111")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`("1")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100.0)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`("0")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`("1")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`("0")))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id", `is`("123e4567-e89b-12d3-a456-426614174111")))
+      .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.actualQuantity", `is`("1")))
+      .andExpect(jsonPath("$.progress", `is`(100.0)))
+      .andExpect(jsonPath("$.remainingQuantity", `is`("0")))
+      .andExpect(jsonPath("$.goalQuantity", `is`("1")))
+      .andExpect(jsonPath("$.moneyNeeded", `is`("0")))
   }
 
   @Test
@@ -460,14 +399,14 @@ class GoalControllerMvcTest(
     every { goalServiceMock.updateGoal("123e4567-e89b-12d3-a456-426614174111", goalRequest) } returns goalResponse
 
     mockMvc.updateGoal("123e4567-e89b-12d3-a456-426614174111", payload)
-      .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`("123e4567-e89b-12d3-a456-426614174111")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.cryptoName", Matchers.`is`("Bitcoin")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.actualQuantity", Matchers.`is`("1")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.progress", Matchers.`is`(100.0)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.remainingQuantity", Matchers.`is`("0")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.goalQuantity", Matchers.`is`("1")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.moneyNeeded", Matchers.`is`("0")))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id", `is`("123e4567-e89b-12d3-a456-426614174111")))
+      .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.actualQuantity", `is`("1")))
+      .andExpect(jsonPath("$.progress", `is`(100.0)))
+      .andExpect(jsonPath("$.remainingQuantity", `is`("0")))
+      .andExpect(jsonPath("$.goalQuantity", `is`("1")))
+      .andExpect(jsonPath("$.moneyNeeded", `is`("0")))
   }
 
   @Test
@@ -480,24 +419,12 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.updateGoal("123e4567-e89b-12d3-a456-426614174111", payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].status").value(Matchers.everyItem(Matchers.`is`(400)))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].detail")
-          .value(
-            Matchers.containsInAnyOrder(
-              CRYPTO_NAME_NOT_BLANK,
-              "Invalid crypto name"
-            )
-          )
-      )
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(2)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
+      .andExpect(jsonPath("$[*].detail").value(containsInAnyOrder(CRYPTO_NAME_NOT_BLANK, "Invalid crypto name")))
   }
 
   @Test
@@ -510,19 +437,15 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.updateGoal("123e4567-e89b-12d3-a456-426614174111", payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(3)))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(3)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
       .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].status").value(Matchers.everyItem(Matchers.`is`(400)))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].detail")
+        jsonPath("$[*].detail")
           .value(
-            Matchers.containsInAnyOrder(
+            containsInAnyOrder(
               CRYPTO_NAME_NOT_BLANK,
               CRYPTO_NAME_SIZE,
               "Invalid crypto name"
@@ -542,23 +465,12 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.updateGoal("123e4567-e89b-12d3-a456-426614174111", payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].status").value(Matchers.everyItem(Matchers.`is`(400)))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].detail")
-          .value(
-            Matchers.containsInAnyOrder(
-              CRYPTO_NAME_SIZE
-            )
-          )
-      )
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
+      .andExpect(jsonPath("$[*].detail").value(containsInAnyOrder(CRYPTO_NAME_SIZE)))
   }
 
   @ParameterizedTest
@@ -576,12 +488,12 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.updateGoal("123e4567-e89b-12d3-a456-426614174111", payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("Invalid crypto name")))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`("Invalid crypto name")))
   }
 
   @Test
@@ -593,19 +505,15 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.updateGoal("123e4567-e89b-12d3-a456-426614174111", payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(2)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
       .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].status").value(Matchers.everyItem(Matchers.`is`(400)))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].detail")
+        jsonPath("$[*].detail")
           .value(
-            Matchers.containsInAnyOrder(
+            containsInAnyOrder(
               CRYPTO_NAME_NOT_BLANK,
               "Invalid crypto name"
             )
@@ -622,12 +530,12 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.updateGoal("123e4567-e89b-12d3-a456-426614174111", payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`("Goal quantity can not be null")))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`("Goal quantity can not be null")))
   }
 
   @ParameterizedTest
@@ -645,19 +553,15 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.updateGoal("123e4567-e89b-12d3-a456-426614174111", payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(2)))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(2)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
       .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].title").value(Matchers.everyItem(Matchers.`is`("Bad Request")))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].status").value(Matchers.everyItem(Matchers.`is`(400)))
-      )
-      .andExpect(
-        MockMvcResultMatchers.jsonPath("$[*].detail")
+        jsonPath("$[*].detail")
           .value(
-            Matchers.containsInAnyOrder(
+            containsInAnyOrder(
               "Goal quantity must be less than or equal to 9999999999999999.999999999999",
               "Goal quantity must have up to 16 digits in the integer part and up to 12 digits in the decimal part"
             )
@@ -675,15 +579,15 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.updateGoal("123e4567-e89b-12d3-a456-426614174111", payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
       .andExpect(
-        MockMvcResultMatchers.jsonPath(
+        jsonPath(
           "$[0].detail",
-          Matchers.`is`("Goal quantity must have up to 16 digits in the integer part and up to 12 digits in the decimal part")
+          `is`("Goal quantity must have up to 16 digits in the integer part and up to 12 digits in the decimal part")
         )
       )
   }
@@ -699,17 +603,12 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.updateGoal("123e4567-e89b-12d3-a456-426614174111", payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-      .andExpect(
-        MockMvcResultMatchers.jsonPath(
-          "$[0].detail",
-          Matchers.`is`("Goal quantity must be greater than 0")
-        )
-      )
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`("Goal quantity must be greater than 0")))
   }
 
   @Test
@@ -723,12 +622,12 @@ class GoalControllerMvcTest(
         """
 
     mockMvc.updateGoal(invalidId, payload)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`(INVALID_GOAL_UUID)))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`(INVALID_GOAL_UUID)))
   }
 
   @Test
@@ -736,7 +635,7 @@ class GoalControllerMvcTest(
     justRun { goalServiceMock.deleteGoal("123e4567-e89b-12d3-a456-426614174111") }
 
     mockMvc.deleteGoal("123e4567-e89b-12d3-a456-426614174111")
-      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andExpect(status().isOk)
   }
 
   @ParameterizedTest
@@ -748,12 +647,12 @@ class GoalControllerMvcTest(
   )
   fun `should fail with status 400 with 1 message when deleting goal with invalid goalId`(goalId: String) {
     mockMvc.deleteGoal(goalId)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].detail", Matchers.`is`(INVALID_GOAL_UUID)))
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`(INVALID_GOAL_UUID)))
   }
 
 }

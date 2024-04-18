@@ -4,6 +4,7 @@ import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.exception.TooManyRequestsException
 import com.distasilucas.cryptobalancetracker.service.CoingeckoService
 import com.distasilucas.cryptobalancetracker.service.CryptoService
+import com.distasilucas.cryptobalancetracker.service.roundChangePercentage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -47,9 +48,9 @@ class CryptoScheduler(
               maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,
               marketCapRank = marketCapRank,
               marketCap = marketData.marketCap.usd,
-              changePercentageIn24h = marketData.roundChangePercentageIn24h(),
-              changePercentageIn7d = marketData.roundChangePercentageIn7d(),
-              changePercentageIn30d = marketData.roundChangePercentageIn30d(),
+              changePercentageIn24h = marketData.changePercentageIn24h.roundChangePercentage(),
+              changePercentageIn7d = marketData.changePercentageIn7d.roundChangePercentage(),
+              changePercentageIn30d = marketData.changePercentageIn30d.roundChangePercentage(),
               lastUpdatedAt = LocalDateTime.now(clock)
             )
           }

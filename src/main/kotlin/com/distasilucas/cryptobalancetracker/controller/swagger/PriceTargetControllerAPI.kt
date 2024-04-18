@@ -1,10 +1,10 @@
 package com.distasilucas.cryptobalancetracker.controller.swagger
 
-import com.distasilucas.cryptobalancetracker.constants.INVALID_GOAL_UUID
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
-import com.distasilucas.cryptobalancetracker.model.request.goal.GoalRequest
-import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
-import com.distasilucas.cryptobalancetracker.model.response.goal.PageGoalResponse
+import com.distasilucas.cryptobalancetracker.constants.INVALID_PRICE_TARGET_UUID
+import com.distasilucas.cryptobalancetracker.model.request.pricetarget.PriceTargetRequest
+import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PagePriceTargetResponse
+import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PriceTargetResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
@@ -18,19 +18,19 @@ import org.hibernate.validator.constraints.UUID
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 
-@Tag(name = "Goal Controller", description = "API endpoints for goal management")
-interface GoalControllerAPI {
+@Tag(name = "Price Target Controller", description = "API endpoints for price target management")
+interface PriceTargetControllerAPI {
 
-  @Operation(summary = "Retrieve information for the given goal")
+  @Operation(summary = "Retrieve price target")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "200",
-        description = "Goal information",
+        description = "Price target",
         content = [Content(
           mediaType = "application/json",
           schema = Schema(
-            implementation = GoalResponse::class
+            implementation = PriceTargetResponse::class
           )
         )]
       ),
@@ -67,7 +67,7 @@ interface GoalControllerAPI {
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Goal not found",
+        description = "Price target not found",
         content = [Content(
           mediaType = "application/json",
           schema = Schema(
@@ -89,24 +89,26 @@ interface GoalControllerAPI {
       )
     ]
   )
-  fun retrieveGoal(@UUID(message = INVALID_GOAL_UUID) goalId: String): ResponseEntity<GoalResponse>
+  fun retrievePriceTarget(
+    @UUID(message = INVALID_PRICE_TARGET_UUID) priceTargetId: String
+  ): ResponseEntity<PriceTargetResponse>
 
-  @Operation(summary = "Retrieve goals by page")
+  @Operation(summary = "Retrieve price targets by page")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "200",
-        description = "Goals by page",
+        description = "Price targets by page",
         content = [Content(
           mediaType = "application/json",
           schema = Schema(
-            implementation = PageGoalResponse::class
+            implementation = PagePriceTargetResponse::class
           )
         )]
       ),
       ApiResponse(
         responseCode = "204",
-        description = "No goals found",
+        description = "No price targets found",
         content = [Content(
           mediaType = "application/json",
           schema = Schema(
@@ -159,18 +161,20 @@ interface GoalControllerAPI {
       )
     ]
   )
-  fun retrieveGoalsForPage(@Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int): ResponseEntity<PageGoalResponse>
+  fun retrievePriceTargetsByPage(
+    @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int,
+  ): ResponseEntity<PagePriceTargetResponse>
 
-  @Operation(summary = "Save goal")
+  @Operation(summary = "Save price target")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "200",
-        description = "Goal saved",
+        description = "Price target saved",
         content = [Content(
           mediaType = "application/json",
           schema = Schema(
-            implementation = GoalResponse::class
+            implementation = PriceTargetResponse::class
           )
         )]
       ),
@@ -219,18 +223,18 @@ interface GoalControllerAPI {
       )
     ]
   )
-  fun saveGoal(@Valid goalRequest: GoalRequest): ResponseEntity<GoalResponse>
+  fun savePriceTarget(@Valid priceTargetRequest: PriceTargetRequest): ResponseEntity<PriceTargetResponse>
 
-  @Operation(summary = "Update goal")
+  @Operation(summary = "Update price target")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "200",
-        description = "Goal updated",
+        description = "Price target updated",
         content = [Content(
           mediaType = "application/json",
           schema = Schema(
-            implementation = GoalResponse::class
+            implementation = PriceTargetResponse::class
           )
         )]
       ),
@@ -267,7 +271,7 @@ interface GoalControllerAPI {
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Goal not found",
+        description = "Price target not found",
         content = [Content(
           mediaType = "application/json",
           schema = Schema(
@@ -289,17 +293,17 @@ interface GoalControllerAPI {
       )
     ]
   )
-  fun updateGoal(
-    @UUID(message = INVALID_GOAL_UUID) goalId: String,
-    @Valid goalRequest: GoalRequest
-  ): ResponseEntity<GoalResponse>
+  fun updatePriceTarget(
+    @UUID(message = INVALID_PRICE_TARGET_UUID) priceTargetId: String,
+    @Valid priceTargetRequest: PriceTargetRequest
+  ): ResponseEntity<PriceTargetResponse>
 
-  @Operation(summary = "Delete goal")
+  @Operation(summary = "Delete price target")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "200",
-        description = "Goal deleted",
+        description = "Price target deleted",
         content = [Content(
           mediaType = "application/json",
           schema = Schema(
@@ -340,7 +344,7 @@ interface GoalControllerAPI {
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Goal not found",
+        description = "Price target not found",
         content = [Content(
           mediaType = "application/json",
           schema = Schema(
@@ -362,5 +366,8 @@ interface GoalControllerAPI {
       )
     ]
   )
-  fun deleteGoal(@UUID(message = INVALID_GOAL_UUID) goalId: String): ResponseEntity<Unit>
+  fun deletePriceTarget(
+    @UUID(message = INVALID_PRICE_TARGET_UUID) priceTargetId: String
+  ): ResponseEntity<Unit>
+
 }

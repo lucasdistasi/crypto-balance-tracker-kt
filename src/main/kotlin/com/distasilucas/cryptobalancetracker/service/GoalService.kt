@@ -36,7 +36,7 @@ class GoalService(
     logger.info { "Retrieving goals for page $page" }
 
     val pageRequest: Pageable = PageRequest.of(page, 10)
-    val entityGoalsPage = goalRepository.findAll(pageRequest) // TODO - ADD CACHE??
+    val entityGoalsPage = goalRepository.findAll(pageRequest)
     val goalsResponse = entityGoalsPage.content.map { it.toGoalResponse(id = it.id) }
 
     return PageGoalResponse(

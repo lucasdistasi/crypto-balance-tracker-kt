@@ -43,14 +43,7 @@ data class MarketData(
 
   @JsonProperty("price_change_percentage_30d")
   val changePercentageIn30d: BigDecimal
-) : Serializable {
-
-  fun roundChangePercentageIn24h(): BigDecimal = changePercentageIn24h.setScale(2, RoundingMode.HALF_UP)
-
-  fun roundChangePercentageIn7d(): BigDecimal = changePercentageIn7d.setScale(2, RoundingMode.HALF_UP)
-
-  fun roundChangePercentageIn30d(): BigDecimal = changePercentageIn30d.setScale(2, RoundingMode.HALF_UP)
-}
+) : Serializable
 
 data class CurrentPrice(
   val usd: BigDecimal,

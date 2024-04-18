@@ -40,10 +40,11 @@ class CoingeckoService(
   @Cacheable(cacheNames = [COINGECKO_CRYPTOS_CACHE])
   @Retryable(retryFor = [RestClientException::class], backoff = Backoff(delay = 1500))
   fun retrieveAllCryptos(): List<CoingeckoCrypto> {
-    logger.info { "Hitting Coingecko API... Retrieving all cryptos..." }
+    val coingeckoCryptosURI = getCryptosURI()
+    logger.info { "Hitting Coingecko API for URI[$coingeckoCryptosURI]. Retrieving all cryptos." }
 
     return coingeckoRestClient.get()
-      .uri(getCryptosURI())
+      .uri(coingeckoCryptosURI)
       .retrieve()
       .body(object : ParameterizedTypeReference<List<CoingeckoCrypto>>() {}) ?: emptyList()
   }
@@ -51,11 +52,12 @@ class CoingeckoService(
   @Cacheable(cacheNames = [CRYPTO_INFO_CACHE], key = "#coingeckoCryptoId")
   @Retryable(retryFor = [RestClientException::class], backoff = Backoff(delay = 1500))
   fun retrieveCryptoInfo(coingeckoCryptoId: String): CoingeckoCryptoInfo {
-    logger.info { "Hitting Coingecko API... Retrieving information for $coingeckoCryptoId..." }
     val coinURI = "$COIN_URI/$coingeckoCryptoId"
+    val coingeckoCryptoInfoURI = getCoingeckoCryptoInfoURI(coinURI)
+    logger.info { "Hitting Coingecko API for URI [$coingeckoCryptoInfoURI]. Retrieving information for [$coingeckoCryptoId]." }
 
     return coingeckoRestClient.get()
-      .uri(getCoingeckoCryptoInfoURI(coinURI))
+      .uri(coingeckoCryptoInfoURI)
       .retrieve()
       .body(object : ParameterizedTypeReference<CoingeckoCryptoInfo>() {})
       ?: throw ApiException("Error retrieving crypto information for $coingeckoCryptoId")

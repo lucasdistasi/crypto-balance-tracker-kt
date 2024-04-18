@@ -12,6 +12,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.Clock
 import java.time.LocalDateTime
 
@@ -108,9 +109,9 @@ class CryptoService(
         maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,
         marketCapRank,
         marketCap = marketData.marketCap.usd,
-        changePercentageIn24h = marketData.roundChangePercentageIn24h(),
-        changePercentageIn7d = marketData.roundChangePercentageIn7d(),
-        changePercentageIn30d = marketData.roundChangePercentageIn30d(),
+        changePercentageIn24h = marketData.changePercentageIn24h.roundChangePercentage(),
+        changePercentageIn7d = marketData.changePercentageIn7d.roundChangePercentage(),
+        changePercentageIn30d = marketData.changePercentageIn30d.roundChangePercentage(),
         lastUpdatedAt = LocalDateTime.now(clock)
       )
     }
@@ -118,3 +119,7 @@ class CryptoService(
 }
 
 class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)
+
+fun BigDecimal.roundChangePercentage(): BigDecimal {
+  return this.setScale(2, RoundingMode.HALF_UP)
+}
