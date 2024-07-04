@@ -32,17 +32,13 @@ class CryptoService(
   fun retrieveCryptoInfoById(coingeckoCryptoId: String): Crypto {
     logger.info { "Retrieving crypto info for id $coingeckoCryptoId" }
 
-    val cryptoOptional = cryptoRepository.findById(coingeckoCryptoId)
-
-    if (cryptoOptional.isPresent) {
-      return cryptoOptional.get()
-    }
-
-    val cryptoToSave = getCrypto(coingeckoCryptoId)
-
-    logger.info { "Saved crypto $cryptoToSave because it didn't exist" }
-
-    return cryptoRepository.save(cryptoToSave)
+    return cryptoRepository.findById(coingeckoCryptoId)
+      .orElseGet {
+        val crypto = getCrypto(coingeckoCryptoId)
+        cacheService.invalidateCryptosCache()
+        logger.info { "Saved crypto $crypto because it didn't exist" }
+        cryptoRepository.save(crypto)
+      }
   }
 
   fun retrieveCoingeckoCryptoInfoByNameOrId(cryptoNameOrId: String): CoingeckoCrypto {

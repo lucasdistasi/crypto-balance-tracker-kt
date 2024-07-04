@@ -92,6 +92,7 @@ class CryptoServiceTest {
     every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns zonedDateTime.zone
     every { cryptoRepositoryMock.save(cryptoEntity) } returns cryptoEntity
+    justRun { cacheServiceMock.invalidateCryptosCache() }
 
     val crypto = cryptoService.retrieveCryptoInfoById("bitcoin")
 
@@ -137,6 +138,7 @@ class CryptoServiceTest {
     every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns zonedDateTime.zone
     every { cryptoRepositoryMock.save(cryptoEntity) } returns cryptoEntity
+    justRun { cacheServiceMock.invalidateCryptosCache() }
 
     val crypto = cryptoService.retrieveCryptoInfoById("bitcoin")
 
