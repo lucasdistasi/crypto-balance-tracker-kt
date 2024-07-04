@@ -85,7 +85,7 @@ import java.util.Optional
   fun updateUserCrypto(userCryptoId: String, userCryptoRequest: UserCryptoRequest): UserCryptoResponse {
 <span class="fc" id="L86">    val userCrypto = findByUserCryptoId(userCryptoId)</span>
 <span class="fc" id="L87">    val requestPlatform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)</span>
-<span class="fc" id="L88">    val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(userCryptoRequest.cryptoName!!)</span>
+<span class="fc" id="L88">    val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(userCrypto.coingeckoCryptoId)</span>
 
 <span class="fc bfc" id="L90" title="All 2 branches covered.">    if (didChangePlatform(requestPlatform.id, userCrypto.platformId)) {</span>
 <span class="fc" id="L91">      val existingUserCrypto =</span>
