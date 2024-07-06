@@ -8,15 +8,15 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.UUID
 
-<span class="fc" id="L11">@Document(&quot;PriceTargets&quot;)</span>
+@Document(&quot;PriceTargets&quot;)
 <span class="fc" id="L12">data class PriceTarget(</span>
 <span class="fc" id="L13">  @Id</span>
 <span class="fc" id="L14">  val id: String = UUID.randomUUID().toString(),</span>
 
 <span class="fc" id="L16">  @Field(&quot;crypto_id&quot;)</span>
-<span class="fc" id="L17">  val coingeckoCryptoId: String,</span>
+  val coingeckoCryptoId: String,
 <span class="pc" id="L18">  val target: BigDecimal</span>
-) {
+<span class="fc" id="L19">) {</span>
 
   fun toPriceTargetResponse(cryptoName: String, currentPrice: BigDecimal, change: Float) =
 <span class="fc" id="L22">    PriceTargetResponse(id, cryptoName, currentPrice.toPlainString(), target.toPlainString(), change)</span>
@@ -28,5 +28,5 @@ import java.util.UUID
 <span class="fc" id="L28">      .setScale(2, RoundingMode.HALF_UP)</span>
 <span class="fc" id="L29">      .toFloat()</span>
   }
-<span class="fc" id="L31">}</span>
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

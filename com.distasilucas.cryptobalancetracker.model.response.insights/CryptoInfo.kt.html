@@ -3,14 +3,14 @@
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
-<span class="fc" id="L6">@JsonInclude(JsonInclude.Include.NON_NULL)</span>
+@JsonInclude(JsonInclude.Include.NON_NULL)
 <span class="fc" id="L7">data class CryptoInfo(</span>
 <span class="fc" id="L8">  val id: String? = null,</span>
 <span class="fc" id="L9">  val cryptoName: String,</span>
 
 <span class="fc" id="L11">  @JsonProperty(&quot;cryptoId&quot;)</span>
-<span class="fc" id="L12">  val coingeckoCryptoId: String,</span>
+  val coingeckoCryptoId: String,
 <span class="fc" id="L13">  val symbol: String,</span>
 <span class="fc" id="L14">  val image: String</span>
 <span class="fc" id="L15">)</span>
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

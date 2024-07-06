@@ -8,20 +8,20 @@ import java.io.Serializable
 import java.math.BigDecimal
 import java.util.UUID
 
-<span class="fc" id="L11">@Document(&quot;UserCryptos&quot;)</span>
+@Document(&quot;UserCryptos&quot;)
 <span class="fc" id="L12">data class UserCrypto(</span>
 <span class="fc" id="L13">  @Id</span>
 <span class="fc" id="L14">  val id: String = UUID.randomUUID().toString(),</span>
 
 <span class="fc" id="L16">  @Field(&quot;crypto_id&quot;)</span>
-<span class="fc" id="L17">  val coingeckoCryptoId: String,</span>
+  val coingeckoCryptoId: String,
 
 <span class="fc" id="L19">  val quantity: BigDecimal,</span>
 
 <span class="fc" id="L21">  @Field(&quot;platform_id&quot;)</span>
-<span class="fc" id="L22">  val platformId: String</span>
+  val platformId: String
 
-) : Serializable {
+<span class="fc" id="L24">) : Serializable {</span>
 
   fun toUserCryptoResponse(cryptoName: String, platformName: String): UserCryptoResponse {
 <span class="fc" id="L27">    return UserCryptoResponse(</span>
@@ -31,5 +31,5 @@ import java.util.UUID
 <span class="fc" id="L31">      platform = platformName</span>
     )
   }
-<span class="fc" id="L34">}</span>
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

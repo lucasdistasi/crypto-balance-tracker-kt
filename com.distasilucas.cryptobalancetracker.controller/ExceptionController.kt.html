@@ -32,9 +32,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.net.URI
 
 <span class="fc" id="L34">@RestControllerAdvice</span>
-<span class="fc" id="L35">class ExceptionController {</span>
+class ExceptionController {
 
-<span class="fc" id="L37">  private val logger = KotlinLogging.logger { }</span>
+<span class="pc" id="L37">  private val logger = KotlinLogging.logger { }</span>
 <span class="fc" id="L38">  private val NOT_FOUND_STATUS = HttpStatus.NOT_FOUND</span>
 <span class="fc" id="L39">  private val BAD_REQUEST_STATUS = HttpStatus.BAD_REQUEST</span>
 
@@ -218,7 +218,7 @@ import java.net.URI
 <span class="fc" id="L218">      HttpStatus.BAD_REQUEST.withDetailsAndURI(</span>
 <span class="fc bfc" id="L219" title="All 2 branches covered.">        it.defaultMessage ?: UNKNOWN_ERROR,</span>
 <span class="fc" id="L220">        URI.create(request.requestURL.toString())</span>
-      )
+<span class="fc" id="L221">      )</span>
     }
 
 <span class="fc" id="L224">    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetails)</span>
@@ -340,4 +340,4 @@ import java.net.URI
 <span class="fc" id="L340">    return problemDetail</span>
   }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

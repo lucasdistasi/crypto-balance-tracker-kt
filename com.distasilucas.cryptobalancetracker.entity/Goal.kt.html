@@ -7,17 +7,17 @@ import org.springframework.data.mongodb.core.mapping.Field
 import java.math.BigDecimal
 import java.util.UUID
 
-<span class="fc" id="L10">@Document(&quot;Goals&quot;)</span>
+@Document(&quot;Goals&quot;)
 <span class="fc" id="L11">data class Goal(</span>
 <span class="fc" id="L12">  @Id</span>
 <span class="fc" id="L13">  val id: String = UUID.randomUUID().toString(),</span>
 
 <span class="fc" id="L15">  @Field(&quot;crypto_id&quot;)</span>
-<span class="fc" id="L16">  val coingeckoCryptoId: String,</span>
+  val coingeckoCryptoId: String,
 
 <span class="fc" id="L18">  @Field(&quot;goal_quantity&quot;)</span>
-<span class="fc" id="L19">  val goalQuantity: BigDecimal</span>
-) {
+  val goalQuantity: BigDecimal
+<span class="fc" id="L20">) {</span>
 
   fun toGoalResponse(
     id: String,
@@ -37,5 +37,5 @@ import java.util.UUID
 <span class="fc" id="L37">      moneyNeeded = moneyNeeded.toPlainString()</span>
     )
   }
-<span class="fc" id="L40">}</span>
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

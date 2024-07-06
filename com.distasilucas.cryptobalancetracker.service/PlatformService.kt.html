@@ -14,14 +14,14 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
-<span class="fc" id="L17">@Service</span>
+@Service
 <span class="fc" id="L18">class PlatformService(</span>
 <span class="fc" id="L19">  private val platformRepository: PlatformRepository,</span>
 <span class="fc" id="L20">  @Lazy private val userCryptoService: UserCryptoService,</span>
 <span class="fc" id="L21">  private val cacheService: CacheService</span>
 ) {
 
-<span class="fc" id="L24">  private val logger = KotlinLogging.logger { }</span>
+<span class="pc" id="L24">  private val logger = KotlinLogging.logger { }</span>
 
 <span class="fc" id="L26">  fun countPlatforms() = platformRepository.count()</span>
 
@@ -107,4 +107,4 @@ import org.springframework.stereotype.Service
 <span class="fc" id="L107">class PlatformNotFoundException(message: String) : RuntimeException(message)</span>
 
 <span class="fc" id="L109">class DuplicatedPlatformException(message: String) : RuntimeException(message)</span>
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

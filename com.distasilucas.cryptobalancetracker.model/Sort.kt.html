@@ -17,12 +17,12 @@ import java.math.BigDecimal
   fun getUserCryptosInsightsComparator(sortType: SortType): Comparator&lt;UserCryptosInsights&gt; {
 <span class="fc bfc" id="L18" title="All 2 branches covered.">    return if (sortType == SortType.ASC) userCryptosInsightsComparator else userCryptosInsightsComparator.reversed()</span>
   }
-}
+<span class="fc" id="L20">}</span>
 
 enum class SortType {
 <span class="fc" id="L23">  ASC,</span>
 <span class="fc" id="L24">  DESC</span>
-}
+<span class="fc" id="L25">}</span>
 
 <span class="fc" id="L27">data class SortParams(</span>
 <span class="pc" id="L28">  val sortBy: SortBy,</span>
@@ -33,4 +33,4 @@ enum class SortType {
 <span class="fc" id="L33">    return sortBy.getUserCryptosInsightsComparator(sortType)</span>
   }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

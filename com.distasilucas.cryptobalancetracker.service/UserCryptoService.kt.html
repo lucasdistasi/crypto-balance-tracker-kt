@@ -17,7 +17,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.util.Optional
 
-<span class="fc" id="L20">@Service</span>
+@Service
 <span class="fc" id="L21">class UserCryptoService(</span>
 <span class="fc" id="L22">  private val userCryptoRepository: UserCryptoRepository,</span>
 <span class="fc" id="L23">  private val platformService: PlatformService,</span>
@@ -25,7 +25,7 @@ import java.util.Optional
 <span class="fc" id="L25">  private val cacheService: CacheService</span>
 ) {
 
-<span class="fc" id="L28">  private val logger = KotlinLogging.logger { }</span>
+<span class="pc" id="L28">  private val logger = KotlinLogging.logger { }</span>
 
   fun retrieveUserCryptoById(userCryptoId: String): UserCryptoResponse {
 <span class="fc" id="L31">    logger.info { &quot;Retrieving user crypto with id $userCryptoId&quot; }</span>
@@ -170,4 +170,4 @@ import java.util.Optional
 
 <span class="fc" id="L171">class UserCryptoNotFoundException(message: String) : RuntimeException(message)</span>
 <span class="fc" id="L172">class DuplicatedCryptoPlatFormException(message: String) : RuntimeException(message)</span>
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -15,14 +15,14 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-<span class="fc" id="L18">@Service</span>
+@Service
 <span class="fc" id="L19">class GoalService(</span>
 <span class="fc" id="L20">  private val goalRepository: GoalRepository,</span>
 <span class="fc" id="L21">  private val cryptoService: CryptoService,</span>
 <span class="fc" id="L22">  private val userCryptoService: UserCryptoService</span>
 ) {
 
-<span class="fc" id="L25">  private val logger = KotlinLogging.logger { }</span>
+<span class="pc" id="L25">  private val logger = KotlinLogging.logger { }</span>
 
   fun retrieveGoalById(goalId: String): GoalResponse {
 <span class="fc" id="L28">    logger.info { &quot;Retrieving for goal with $goalId&quot; }</span>
@@ -123,4 +123,4 @@ import java.math.RoundingMode
 
 <span class="fc" id="L124">class GoalNotFoundException(message: String) : RuntimeException(message)</span>
 <span class="fc" id="L125">class DuplicatedGoalException(message: String) : RuntimeException(message)</span>
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

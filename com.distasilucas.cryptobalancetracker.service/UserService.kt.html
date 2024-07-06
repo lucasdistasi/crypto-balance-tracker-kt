@@ -6,10 +6,10 @@ import com.distasilucas.cryptobalancetracker.repository.UserRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 
-<span class="fc" id="L9">@Service</span>
+@Service
 <span class="fc" id="L10">class UserService(private val userRepository: UserRepository) {</span>
 
-<span class="fc" id="L12">  private val logger = KotlinLogging.logger { }</span>
+<span class="pc" id="L12">  private val logger = KotlinLogging.logger { }</span>
 
   fun findByUsername(username: String): User {
 <span class="fc" id="L15">    logger.info { &quot;Searching for username $username&quot; }</span>
@@ -20,4 +20,4 @@ import org.springframework.stereotype.Service
 }
 
 <span class="fc" id="L22">class UsernameNotFoundException : RuntimeException(USERNAME_NOT_FOUND)</span>
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

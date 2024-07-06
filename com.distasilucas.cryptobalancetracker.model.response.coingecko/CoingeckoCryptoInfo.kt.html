@@ -12,10 +12,10 @@ import java.math.RoundingMode
 <span class="fc" id="L12">  val image: Image,</span>
 
 <span class="fc" id="L14">  @JsonProperty(&quot;market_cap_rank&quot;)</span>
-<span class="fc" id="L15">  val marketCapRank: Int,</span>
+  val marketCapRank: Int,
 
 <span class="fc" id="L17">  @JsonProperty(&quot;market_data&quot;)</span>
-<span class="fc" id="L18">  val marketData: MarketData</span>
+  val marketData: MarketData
 ) : Serializable
 
 <span class="fc" id="L21">data class Image(</span>
@@ -24,25 +24,25 @@ import java.math.RoundingMode
 
 <span class="fc" id="L25">data class MarketData(</span>
 <span class="fc" id="L26">  @JsonProperty(&quot;current_price&quot;)</span>
-<span class="fc" id="L27">  val currentPrice: CurrentPrice,</span>
+  val currentPrice: CurrentPrice,
 
 <span class="fc" id="L29">  @JsonProperty(&quot;circulating_supply&quot;)</span>
-<span class="fc" id="L30">  val circulatingSupply: BigDecimal,</span>
+  val circulatingSupply: BigDecimal,
 
 <span class="fc" id="L32">  @JsonProperty(&quot;max_supply&quot;)</span>
-<span class="fc" id="L33">  val maxSupply: BigDecimal?,</span>
+  val maxSupply: BigDecimal?,
 
 <span class="fc" id="L35">  @JsonProperty(&quot;market_cap&quot;)</span>
-<span class="fc" id="L36">  val marketCap: MarketCap,</span>
+  val marketCap: MarketCap,
 
 <span class="fc" id="L38">  @JsonProperty(&quot;price_change_percentage_24h&quot;)</span>
-<span class="fc" id="L39">  val changePercentageIn24h: BigDecimal,</span>
+  val changePercentageIn24h: BigDecimal,
 
 <span class="fc" id="L41">  @JsonProperty(&quot;price_change_percentage_7d&quot;)</span>
-<span class="fc" id="L42">  val changePercentageIn7d: BigDecimal,</span>
+  val changePercentageIn7d: BigDecimal,
 
 <span class="fc" id="L44">  @JsonProperty(&quot;price_change_percentage_30d&quot;)</span>
-<span class="fc" id="L45">  val changePercentageIn30d: BigDecimal</span>
+  val changePercentageIn30d: BigDecimal
 ) : Serializable
 
 <span class="fc" id="L48">data class CurrentPrice(</span>
@@ -54,4 +54,4 @@ import java.math.RoundingMode
 <span class="fc" id="L54">data class MarketCap(</span>
 <span class="fc" id="L55">  val usd: BigDecimal</span>
 ) : Serializable
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

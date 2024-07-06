@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.UUID
 
-<span class="fc" id="L15">@Service</span>
+@Service
 <span class="fc" id="L16">class TransferCryptoService(</span>
 <span class="fc" id="L17">  private val userCryptoService: UserCryptoService,</span>
 <span class="fc" id="L18">  private val platformService: PlatformService</span>
 ) {
 
-<span class="fc" id="L21">  private val logger = KotlinLogging.logger { }</span>
+<span class="pc" id="L21">  private val logger = KotlinLogging.logger { }</span>
 
   fun transferCrypto(transferCryptoRequest: TransferCryptoRequest): TransferCryptoResponse {
 <span class="fc" id="L24">    val toPlatformResponse = platformService.retrievePlatformById(transferCryptoRequest.toPlatformId!!)</span>
@@ -134,4 +134,4 @@ import java.util.UUID
 }
 
 <span class="fc" id="L136">class InsufficientBalanceException(message: String) : RuntimeException(message)</span>
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

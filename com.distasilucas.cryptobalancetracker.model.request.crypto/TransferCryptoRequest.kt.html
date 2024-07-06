@@ -26,7 +26,7 @@ import java.math.BigDecimal
 <span class="fc" id="L26">data class TransferCryptoRequest(</span>
 <span class="fc" id="L27">  @field: NotBlank(message = USER_CRYPTO_ID_NOT_BLANK)</span>
   @field: UUID(message = USER_CRYPTO_ID_UUID)
-<span class="fc" id="L29">  val userCryptoId: String?,</span>
+  val userCryptoId: String?,
 
 <span class="fc" id="L31">  @field: NotNull(message = QUANTITY_TO_TRANSFER_NOT_NULL)</span>
   @field: Digits(
@@ -39,23 +39,23 @@ import java.math.BigDecimal
     message = QUANTITY_TO_TRANSFER_DECIMAL_MAX
   )
   @field: Positive(message = QUANTITY_TO_TRANSFER_POSITIVE)
-<span class="fc" id="L42">  val quantityToTransfer: BigDecimal?,</span>
+  val quantityToTransfer: BigDecimal?,
 
-<span class="fc" id="L44">  @field: NotNull(message = NETWORK_FEE_NOT_NULL)</span>
+<span class="pc" id="L44">  @field: NotNull(message = NETWORK_FEE_NOT_NULL)</span>
   @field: Digits(
     integer = 16,
     fraction = 12,
     message = NETWORK_FEE_DIGITS
   )
   @field: Min(value = 0, message = NETWORK_FEE_MIN)
-<span class="nc" id="L51">  val networkFee: BigDecimal?,</span>
+  val networkFee: BigDecimal?,
 
 <span class="fc" id="L53">  val sendFullQuantity: Boolean? = false,</span>
 
 <span class="fc" id="L55">  @field: NotBlank(message = TO_PLATFORM_ID_NOT_BLANK)</span>
   @field: UUID(message = TO_PLATFORM_ID_UUID)
-<span class="fc" id="L57">  val toPlatformId: String?</span>
-) {
+  val toPlatformId: String?
+<span class="fc" id="L58">) {</span>
 
   fun toTransferCryptoResponse(
     remainingCryptoQuantity: BigDecimal,
@@ -109,5 +109,5 @@ import java.math.BigDecimal
 
 <span class="pc bpc" id="L110" title="1 of 4 branches missed.">  fun hasInsufficientBalance(availableQuantity: BigDecimal) = availableQuantity &lt; quantityToTransfer || networkFee!! &gt; availableQuantity</span>
 
-<span class="fc" id="L112">}</span>
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -11,10 +11,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
 
-<span class="fc" id="L14">@Service</span>
+@Service
 <span class="fc" id="L15">class CacheService(private val cacheManager: CacheManager) {</span>
 
-<span class="fc" id="L17">  private val logger = KotlinLogging.logger { }</span>
+<span class="pc" id="L17">  private val logger = KotlinLogging.logger { }</span>
 
   fun invalidateUserCryptosCaches() {
 <span class="fc" id="L20">    logger.info { &quot;Invalidating user cryptos cache&quot; }</span>
@@ -38,4 +38,4 @@ import org.springframework.stereotype.Service
 <span class="fc" id="L38">    cacheManager.getCache(CRYPTOS_CRYPTOS_IDS_CACHE)!!.invalidate()</span>
 <span class="fc" id="L39">  }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

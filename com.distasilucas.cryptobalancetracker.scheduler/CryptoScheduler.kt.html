@@ -15,7 +15,7 @@ import java.math.BigDecimal
 import java.time.Clock
 import java.time.LocalDateTime
 
-<span class="fc" id="L18">@Component</span>
+@Component
 <span class="fc" id="L19">class CryptoScheduler(</span>
 <span class="fc" id="L20">  @Value(&quot;\${crypto.scheduler.update.quantity}&quot;)</span>
   private val maxLimit: Int,
@@ -24,7 +24,7 @@ import java.time.LocalDateTime
 <span class="fc" id="L24">  private val coingeckoService: CoingeckoService</span>
 ) {
 
-<span class="fc" id="L27">  private val logger = KotlinLogging.logger { }</span>
+<span class="pc" id="L27">  private val logger = KotlinLogging.logger { }</span>
 
   @Scheduled(cron = &quot;\${crypto.scheduler.update.cron}&quot;)
   fun updateCryptosInformation() {
@@ -52,7 +52,7 @@ import java.time.LocalDateTime
 <span class="fc" id="L52">              changePercentageIn7d = marketData.changePercentageIn7d.roundChangePercentage(),</span>
 <span class="fc" id="L53">              changePercentageIn30d = marketData.changePercentageIn30d.roundChangePercentage(),</span>
 <span class="fc" id="L54">              lastUpdatedAt = LocalDateTime.now(clock)</span>
-            )
+<span class="fc" id="L55">            )</span>
           }
 <span class="fc" id="L57">        } catch (exception: RestClientResponseException) {</span>
 <span class="fc bfc" id="L58" title="All 2 branches covered.">          if (exception.statusCode == HttpStatus.TOO_MANY_REQUESTS) {</span>
@@ -64,7 +64,7 @@ import java.time.LocalDateTime
 <span class="fc" id="L64">        } catch (exception: Exception) {</span>
 <span class="fc" id="L65">          logger.error { &quot;An exception occurred while retrieving info for ${it.id}, therefore crypto info might be outdated. Exception: $exception&quot; }</span>
 <span class="fc" id="L66">          it</span>
-        }
+<span class="fc" id="L67">        }</span>
       }
 
 <span class="fc bfc" id="L70" title="All 4 branches covered.">    if (cryptosToUpdate.isNotEmpty()) {</span>
@@ -83,4 +83,4 @@ import java.time.LocalDateTime
     )
   }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

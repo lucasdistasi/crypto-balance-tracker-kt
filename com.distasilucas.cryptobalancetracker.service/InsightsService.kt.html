@@ -42,7 +42,7 @@ import kotlin.math.ceil
 private const val ELEMENTS_PER_PAGE = 10.0
 private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
 
-<span class="fc" id="L45">@Service</span>
+@Service
 <span class="fc" id="L46">class InsightsService(</span>
 <span class="fc" id="L47">  @Value(&quot;\${crypto.insights.max-single-items-count}&quot;)</span>
   private val maxSingleItemsCount: Int,
@@ -53,7 +53,7 @@ private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
 <span class="fc" id="L53">  private val clock: Clock</span>
 ) {
 
-<span class="fc" id="L56">  private val logger = KotlinLogging.logger { }</span>
+<span class="pc" id="L56">  private val logger = KotlinLogging.logger { }</span>
 
   fun retrieveTotalBalances(): Optional&lt;BalancesResponse&gt; {
 <span class="fc" id="L59">    logger.info { &quot;Retrieving total balances&quot; }</span>
@@ -134,7 +134,7 @@ private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
 <span class="fc" id="L134">        quantity = quantity.toPlainString(),</span>
 <span class="fc" id="L135">        balances = cryptoTotalBalances,</span>
 <span class="fc" id="L136">        percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance)</span>
-      )
+<span class="fc" id="L137">      )</span>
 <span class="fc" id="L138">    }.sortedByDescending { it.percentage }</span>
 
 <span class="fc" id="L140">    val platformInsightsResponse = PlatformInsightsResponse(</span>
@@ -260,7 +260,7 @@ private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
 <span class="fc" id="L260">        quantity = quantity.toPlainString(),</span>
 <span class="fc" id="L261">        balances = cryptoBalances,</span>
 <span class="fc" id="L262">        percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoBalances.totalUSDBalance)</span>
-      )
+<span class="fc" id="L263">      )</span>
 <span class="fc" id="L264">    }.sortedByDescending { it.percentage }</span>
 
 <span class="fc" id="L266">    return Optional.of(</span>
@@ -327,7 +327,7 @@ private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
           )
         ),
 <span class="fc" id="L329">        platforms = listOf(platform.name)</span>
-      )
+<span class="fc" id="L330">      )</span>
 <span class="fc" id="L331">    }.sortedWith(sortParams.cryptosInsightsResponseComparator())</span>
 
 <span class="fc" id="L333">    val startIndex = page * INT_ELEMENTS_PER_PAGE</span>
@@ -410,7 +410,7 @@ private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
           )
         ),
 <span class="fc" id="L412">        platforms = cryptoPlatforms</span>
-      )
+<span class="fc" id="L413">      )</span>
 <span class="fc" id="L414">    }.sortedWith(sortParams.cryptosInsightsResponseComparator())</span>
 
 <span class="fc" id="L416">    val startIndex = page * INT_ELEMENTS_PER_PAGE</span>
@@ -632,4 +632,4 @@ private const val INT_ELEMENTS_PER_PAGE = ELEMENTS_PER_PAGE.toInt()
 
 <span class="fc bfc" id="L633" title="All 2 branches covered.">  private fun isLastPage(page: Int, totalPages: Int) = page + 1 &gt;= totalPages</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

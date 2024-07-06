@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import java.time.LocalDateTime
 import java.util.UUID
 
-<span class="fc" id="L12">@Document(&quot;Users&quot;)</span>
+@Document(&quot;Users&quot;)
 <span class="fc" id="L13">data class User(</span>
 <span class="fc" id="L14">  @Id</span>
 <span class="fc" id="L15">  private val id: String = UUID.randomUUID().toString(),</span>
@@ -20,7 +20,7 @@ import java.util.UUID
 <span class="fc" id="L20">  @Field(&quot;created_at&quot;)</span>
   private val createdAt: LocalDateTime
 
-) : UserDetails {
+<span class="fc" id="L23">) : UserDetails {</span>
 <span class="fc" id="L24">  override fun getAuthorities() = listOf(SimpleGrantedAuthority(role.name))</span>
 
 <span class="fc" id="L26">  override fun getPassword() = password</span>
@@ -35,5 +35,5 @@ import java.util.UUID
 
 <span class="fc" id="L36">  override fun isEnabled() = true</span>
 
-<span class="fc" id="L38">}</span>
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

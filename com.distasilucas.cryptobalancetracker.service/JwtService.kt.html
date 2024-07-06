@@ -17,14 +17,14 @@ import java.util.Date
 import java.util.function.Function
 import javax.crypto.SecretKey
 
-<span class="fc" id="L20">@Service</span>
+@Service
 @ConditionalOnProperty(prefix = &quot;security&quot;, name = [&quot;enabled&quot;], havingValue = &quot;true&quot;)
 <span class="fc" id="L22">class JwtService(</span>
 <span class="fc" id="L23">  @Value(&quot;\${jwt.signing-key}&quot;)</span>
   private val jwtSigningKey: String
 ) {
 
-<span class="fc" id="L27">  private val logger = KotlinLogging.logger { }</span>
+<span class="pc" id="L27">  private val logger = KotlinLogging.logger { }</span>
 
   fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
 <span class="fc" id="L30">    logger.info { &quot;Validating JWT token for ${userDetails.username}&quot; }</span>
@@ -68,4 +68,4 @@ import javax.crypto.SecretKey
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

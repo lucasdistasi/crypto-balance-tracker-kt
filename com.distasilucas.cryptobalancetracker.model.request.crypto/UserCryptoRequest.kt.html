@@ -23,7 +23,7 @@ import java.math.BigDecimal
 <span class="fc" id="L23">  @field: NotBlank(message = CRYPTO_NAME_NOT_BLANK)</span>
   @field: Size(min = 1, max = 64, message = CRYPTO_NAME_SIZE)
   @field: ValidCryptoName
-<span class="fc" id="L26">  val cryptoName: String?,</span>
+  val cryptoName: String?,
 
 <span class="fc" id="L28">  @field: NotNull(message = CRYPTO_QUANTITY_NOT_NULL)</span>
   @field: Digits(
@@ -36,11 +36,11 @@ import java.math.BigDecimal
     message = CRYPTO_QUANTITY_DECIMAL_MAX
   )
   @field: Positive(message = CRYPTO_QUANTITY_POSITIVE)
-<span class="fc" id="L39">  val quantity: BigDecimal?,</span>
+  val quantity: BigDecimal?,
 
 <span class="fc" id="L41">  @field: NotBlank(message = PLATFORM_ID_NOT_BLANK)</span>
   @field: UUID(message = PLATFORM_ID_UUID)
-<span class="fc" id="L43">  val platformId: String?</span>
+  val platformId: String?
 ) {
 
 <span class="fc" id="L46">  fun toEntity(coingeckoCryptoId: String) = UserCrypto(</span>
@@ -49,4 +49,4 @@ import java.math.BigDecimal
 <span class="fc" id="L49">    platformId = platformId!!</span>
 <span class="fc" id="L50">  )</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
