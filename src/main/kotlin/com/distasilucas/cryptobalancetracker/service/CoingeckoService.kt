@@ -18,6 +18,7 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
 import org.springframework.web.util.UriBuilder
+import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.util.function.Function
 
@@ -41,7 +42,8 @@ class CoingeckoService(
   @Retryable(retryFor = [RestClientException::class], backoff = Backoff(delay = 1500))
   fun retrieveAllCryptos(): List<CoingeckoCrypto> {
     val coingeckoCryptosURI = getCryptosURI()
-    logger.info { "Hitting Coingecko API for URI[$coingeckoCryptosURI]. Retrieving all cryptos." }
+    val uriAsString = coingeckoCryptosURI.apply(UriComponentsBuilder.newInstance())
+    logger.info { "Hitting Coingecko API for URI[$uriAsString]. Retrieving all cryptos." }
 
     return coingeckoRestClient.get()
       .uri(coingeckoCryptosURI)
@@ -54,7 +56,8 @@ class CoingeckoService(
   fun retrieveCryptoInfo(coingeckoCryptoId: String): CoingeckoCryptoInfo {
     val coinURI = "$COIN_URI/$coingeckoCryptoId"
     val coingeckoCryptoInfoURI = getCoingeckoCryptoInfoURI(coinURI)
-    logger.info { "Hitting Coingecko API for URI [$coingeckoCryptoInfoURI]. Retrieving information for [$coingeckoCryptoId]." }
+    val uriAsString = coingeckoCryptoInfoURI.apply(UriComponentsBuilder.newInstance())
+    logger.info { "Hitting Coingecko API for URI [$uriAsString]. Retrieving information for [$coingeckoCryptoId]." }
 
     return coingeckoRestClient.get()
       .uri(coingeckoCryptoInfoURI)

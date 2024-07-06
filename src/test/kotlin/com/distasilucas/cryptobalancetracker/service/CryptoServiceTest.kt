@@ -5,12 +5,9 @@ import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.Goal
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
 import com.distasilucas.cryptobalancetracker.repository.CryptoRepository
-import com.distasilucas.cryptobalancetracker.repository.GoalRepository
-import com.distasilucas.cryptobalancetracker.repository.UserCryptoRepository
 import getCoingeckoCryptoInfo
 import getCryptoEntity
 import getMarketData
-import getUserCrypto
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
@@ -25,24 +22,21 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 
 class CryptoServiceTest {
 
   private val coingeckoServiceMock = mockk<CoingeckoService>()
   private val cacheServiceMock = mockk<CacheService>()
   private val cryptoRepositoryMock = mockk<CryptoRepository>()
-  private val userCryptoRepositoryMock = mockk<UserCryptoRepository>()
-  private val goalRepositoryMock = mockk<GoalRepository>()
+  private val orphanCryptoService = mockk<OrphanCryptoService>()
   private val clockMock = mockk<Clock>()
 
   private val cryptoService = CryptoService(
     coingeckoServiceMock,
     cacheServiceMock,
+    orphanCryptoService,
     cryptoRepositoryMock,
-    userCryptoRepositoryMock,
-    goalRepositoryMock,
     clockMock
   )
 
@@ -92,6 +86,7 @@ class CryptoServiceTest {
     every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns zonedDateTime.zone
     every { cryptoRepositoryMock.save(cryptoEntity) } returns cryptoEntity
+    justRun { cacheServiceMock.invalidateCryptosCache() }
 
     val crypto = cryptoService.retrieveCryptoInfoById("bitcoin")
 
@@ -137,6 +132,7 @@ class CryptoServiceTest {
     every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns zonedDateTime.zone
     every { cryptoRepositoryMock.save(cryptoEntity) } returns cryptoEntity
+    justRun { cacheServiceMock.invalidateCryptosCache() }
 
     val crypto = cryptoService.retrieveCryptoInfoById("bitcoin")
 
@@ -331,8 +327,7 @@ class CryptoServiceTest {
 
   @Test
   fun `should delete crypto if it is not being used`() {
-    every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns emptyList()
-    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.empty()
+    every { orphanCryptoService.isCryptoOrphan("bitcoin") } returns true
     justRun { cryptoRepositoryMock.deleteById("bitcoin") }
     justRun { cacheServiceMock.invalidateCryptosCache() }
 
@@ -342,25 +337,13 @@ class CryptoServiceTest {
   }
 
   @Test
-  fun `should not delete crypto if it is being used by goals table`() {
+  fun `should not delete crypto if it is being used`() {
     val goal = Goal(
       coingeckoCryptoId = "bitcoin",
       goalQuantity = BigDecimal("1")
     )
 
-    every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns emptyList()
-    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.of(goal)
-
-    cryptoService.deleteCryptoIfNotUsed("bitcoin")
-
-    verify(exactly = 0) { cryptoRepositoryMock.deleteById("bitcoin") }
-  }
-
-  @Test
-  fun `should not delete crypto if it is being used by user cryptos table`() {
-    val userCrypto = getUserCrypto()
-
-    every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns listOf(userCrypto)
+    every { orphanCryptoService.isCryptoOrphan("bitcoin") } returns false
 
     cryptoService.deleteCryptoIfNotUsed("bitcoin")
 

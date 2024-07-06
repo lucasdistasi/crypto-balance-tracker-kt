@@ -1,25 +1,26 @@
 import com.adarshr.gradle.testlogger.theme.ThemeType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val ioMockkVersion = "1.13.9"
-val springDocVersion = "2.3.0"
-val ioGithubOshaiVersion = "5.1.1"
+val springDocVersion = "2.6.0"
+val ioGithubOshaiVersion = "7.0.0"
 val ninjaSquadVersion = "4.0.2"
-val springRetryVersion = "2.0.5"
+val springRetryVersion = "2.0.6"
 val ehcacheVersion = "3.10.8"
 val javaxCacheVersion = "1.1.1"
-val aspectjweaverVersion = "1.9.20.1"
+val aspectjweaverVersion = "1.9.22.1"
 val okHttp3Version = "4.12.0"
-val jacocoVersion = "0.8.11"
-val jsonWebTokenVersion = "0.12.3"
+val jacocoVersion = "0.8.12"
+val jsonWebTokenVersion = "0.12.6"
 
 plugins {
-	id("org.springframework.boot") version "3.2.2"
-	id("io.spring.dependency-management") version "1.1.4"
+	id("org.springframework.boot") version "3.3.1"
+	id("io.spring.dependency-management") version "1.1.5"
 	id("com.adarshr.test-logger") version "4.0.0"
 	id("jacoco")
-	kotlin("jvm") version "1.9.21"
-	kotlin("plugin.spring") version "1.9.21"
+	kotlin("jvm") version "2.0.0"
+	kotlin("plugin.spring") version "2.0.0"
 }
 
 group = "com.distasilucas"
@@ -65,9 +66,9 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-	kotlinOptions {
-		freeCompilerArgs += "-Xjsr305=strict"
-		jvmTarget = "21"
+	compilerOptions {
+		freeCompilerArgs.add("-Xjsr305=strict")
+		jvmTarget.set(JvmTarget.JVM_21)
 	}
 }
 
