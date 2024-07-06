@@ -8,4 +8,5 @@ import java.util.Optional
 interface PriceTargetRepository : MongoRepository<PriceTarget, String> {
 
   fun findByCoingeckoCryptoIdAndTarget(coingeckoCryptoId: String, target: BigDecimal): Optional<PriceTarget>
+  fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List<PriceTarget>
 }

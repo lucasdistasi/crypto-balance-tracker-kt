@@ -14,6 +14,7 @@ import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientResponseException
 
 private const val COINGECKO_API_URL = "https://api.coingecko.com/api/v3"
+private const val PRO_COINGECKO_API_URL = "https://pro-api.coingecko.com/api/v3"
 
 class CoingeckoServiceTest {
 
@@ -71,41 +72,35 @@ class CoingeckoServiceTest {
 
     val exception = assertThrows<RestClientResponseException> { coingeckoService.retrieveCryptoInfo("pipicoin") }
 
-    assertThat(exception)
-      .usingRecursiveComparison()
-      .comparingOnlyFields("statusCode")
+    assertThat(exception.statusCode)
       .isEqualTo(HttpStatus.NOT_FOUND)
   }
 
   @Test
-  fun `should throw WebClientResponseException with Bad Request when using invalid api key for crypto info`() {
+  fun `should throw WebClientResponseException with Unauthorized when using invalid api key for crypto info`() {
     val mockResponse = MockResponse()
     mockWebServer.enqueue(mockResponse)
 
-    val webClient = RestClient.create(COINGECKO_API_URL)
+    val webClient = RestClient.create(PRO_COINGECKO_API_URL)
     coingeckoService = CoingeckoService("TEST123", "", webClient)
 
     val exception = assertThrows<RestClientResponseException> { coingeckoService.retrieveCryptoInfo("bitcoin") }
 
-    assertThat(exception)
-      .usingRecursiveComparison()
-      .comparingOnlyFields("statusCode")
-      .isEqualTo(HttpStatus.BAD_REQUEST)
+    assertThat(exception.statusCode)
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
   }
 
   @Test
-  fun `should throw WebClientResponseException with Bad Request when using invalid api key for all cryptos`() {
+  fun `should throw WebClientResponseException with Unauthorized when using invalid api key for all cryptos`() {
     val mockResponse = MockResponse()
     mockWebServer.enqueue(mockResponse)
 
-    val webClient = RestClient.create(COINGECKO_API_URL)
+    val webClient = RestClient.create(PRO_COINGECKO_API_URL)
     coingeckoService = CoingeckoService("TEST123", "", webClient)
 
     val exception = assertThrows<RestClientResponseException> { coingeckoService.retrieveAllCryptos() }
 
-    assertThat(exception)
-      .usingRecursiveComparison()
-      .comparingOnlyFields("statusCode")
-      .isEqualTo(HttpStatus.BAD_REQUEST)
+    assertThat(exception.statusCode)
+      .isEqualTo(HttpStatus.UNAUTHORIZED)
   }
 }
