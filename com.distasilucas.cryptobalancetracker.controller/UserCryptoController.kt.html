@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RestController
   override fun retrieveUserCrypto(
     @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
   ): ResponseEntity&lt;UserCryptoResponse&gt; {
-<span class="fc" id="L43">    val userCrypto = userCryptoService.retrieveUserCryptoById(userCryptoId)</span>
+<span class="fc" id="L43">    val userCrypto = userCryptoService.retrieveUserCryptoResponseById(userCryptoId)</span>
 
 <span class="fc" id="L45">    return ResponseEntity.ok(userCrypto)</span>
   }
@@ -78,7 +78,7 @@ import org.springframework.web.bind.annotation.RestController
   ): ResponseEntity&lt;Unit&gt; {
 <span class="fc" id="L79">    userCryptoService.deleteUserCrypto(userCryptoId)</span>
 
-<span class="fc" id="L81">    return ResponseEntity.ok().build()</span>
+<span class="fc" id="L81">    return ResponseEntity.noContent().build()</span>
   }
 
   @PostMapping(&quot;/transfer&quot;)

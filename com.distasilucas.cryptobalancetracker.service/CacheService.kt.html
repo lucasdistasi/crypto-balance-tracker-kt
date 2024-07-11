@@ -2,40 +2,66 @@
 
 import com.distasilucas.cryptobalancetracker.constants.ALL_PLATFORMS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_CRYPTOS_IDS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.GOAL_RESPONSE_GOAL_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PAGE_GOALS_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_RESPONSE_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_RESPONSE_PAGE_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
 
 @Service
-<span class="fc" id="L15">class CacheService(private val cacheManager: CacheManager) {</span>
+<span class="fc" id="L23">class CacheService(private val cacheManager: CacheManager) {</span>
 
-<span class="pc" id="L17">  private val logger = KotlinLogging.logger { }</span>
+<span class="pc" id="L25">  private val logger = KotlinLogging.logger { }</span>
 
   fun invalidateUserCryptosCaches() {
-<span class="fc" id="L20">    logger.info { &quot;Invalidating user cryptos cache&quot; }</span>
+<span class="fc" id="L28">    logger.info { &quot;Invalidating user cryptos cache&quot; }</span>
 
-<span class="fc" id="L22">    cacheManager.getCache(USER_CRYPTOS_CACHE)!!.invalidate()</span>
-<span class="fc" id="L23">    cacheManager.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE)!!.invalidate()</span>
-<span class="fc" id="L24">    cacheManager.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE)!!.invalidate()</span>
-<span class="fc" id="L25">  }</span>
+<span class="fc" id="L30">    cacheManager.getCache(USER_CRYPTOS_CACHE)!!.invalidate()</span>
+<span class="fc" id="L31">    cacheManager.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE)!!.invalidate()</span>
+<span class="fc" id="L32">    cacheManager.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE)!!.invalidate()</span>
+<span class="fc" id="L33">    cacheManager.getCache(USER_CRYPTO_ID_CACHE)!!.invalidate()</span>
+<span class="fc" id="L34">    cacheManager.getCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE)!!.invalidate()</span>
+<span class="fc" id="L35">    cacheManager.getCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE)!!.invalidate()</span>
+<span class="fc" id="L36">  }</span>
 
   fun invalidatePlatformsCaches() {
-<span class="fc" id="L28">    logger.info { &quot;Invalidating platforms cache&quot; }</span>
+<span class="fc" id="L39">    logger.info { &quot;Invalidating platforms cache&quot; }</span>
 
-<span class="fc" id="L30">    cacheManager.getCache(PLATFORMS_PLATFORMS_IDS_CACHE)!!.invalidate()</span>
-<span class="fc" id="L31">    cacheManager.getCache(ALL_PLATFORMS_CACHE)!!.invalidate()</span>
-<span class="fc" id="L32">    cacheManager.getCache(PLATFORM_PLATFORM_ID_CACHE)!!.invalidate()</span>
-<span class="fc" id="L33">  }</span>
+<span class="fc" id="L41">    cacheManager.getCache(PLATFORMS_PLATFORMS_IDS_CACHE)!!.invalidate()</span>
+<span class="fc" id="L42">    cacheManager.getCache(ALL_PLATFORMS_CACHE)!!.invalidate()</span>
+<span class="fc" id="L43">    cacheManager.getCache(PLATFORM_PLATFORM_ID_CACHE)!!.invalidate()</span>
+<span class="fc" id="L44">  }</span>
 
   fun invalidateCryptosCache() {
-<span class="fc" id="L36">    logger.info { &quot;Invalidating cryptos cache&quot; }</span>
+<span class="fc" id="L47">    logger.info { &quot;Invalidating cryptos cache&quot; }</span>
 
-<span class="fc" id="L38">    cacheManager.getCache(CRYPTOS_CRYPTOS_IDS_CACHE)!!.invalidate()</span>
-<span class="fc" id="L39">  }</span>
+<span class="fc" id="L49">    cacheManager.getCache(CRYPTOS_CRYPTOS_IDS_CACHE)!!.invalidate()</span>
+<span class="fc" id="L50">  }</span>
+
+  fun invalidateGoalsCaches() {
+<span class="fc" id="L53">    logger.info { &quot;Invalidating goals cache&quot; }</span>
+
+<span class="fc" id="L55">    cacheManager.getCache(GOAL_RESPONSE_GOAL_ID_CACHE)!!.invalidate()</span>
+<span class="fc" id="L56">    cacheManager.getCache(PAGE_GOALS_RESPONSE_PAGE_CACHE)!!.invalidate()</span>
+<span class="fc" id="L57">  }</span>
+
+  fun invalidatePriceTargetCaches() {
+<span class="fc" id="L60">    logger.info { &quot;Invalidating price target caches&quot; }</span>
+
+<span class="fc" id="L62">    cacheManager.getCache(PRICE_TARGET_ID_CACHE)!!.invalidate()</span>
+<span class="fc" id="L63">    cacheManager.getCache(PRICE_TARGET_RESPONSE_ID_CACHE)!!.invalidate()</span>
+<span class="fc" id="L64">    cacheManager.getCache(PRICE_TARGET_RESPONSE_PAGE_CACHE)!!.invalidate()</span>
+<span class="fc" id="L65">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

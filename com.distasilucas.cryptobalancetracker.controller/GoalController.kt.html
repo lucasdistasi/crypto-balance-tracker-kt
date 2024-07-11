@@ -67,7 +67,7 @@ import org.springframework.web.bind.annotation.RestController
   override fun deleteGoal(@PathVariable @UUID(message = INVALID_GOAL_UUID) goalId: String): ResponseEntity&lt;Unit&gt; {
 <span class="fc" id="L68">    goalService.deleteGoal(goalId)</span>
 
-<span class="fc" id="L70">    return ResponseEntity.ok().build()</span>
+<span class="fc" id="L70">    return ResponseEntity.noContent().build()</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

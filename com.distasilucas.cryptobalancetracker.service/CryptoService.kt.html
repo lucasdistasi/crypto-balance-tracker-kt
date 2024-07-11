@@ -44,87 +44,88 @@ import java.time.LocalDateTime
   fun retrieveCoingeckoCryptoInfoByNameOrId(cryptoNameOrId: String): CoingeckoCrypto {
 <span class="fc" id="L45">    logger.info { &quot;Retrieving info for coingecko crypto $cryptoNameOrId&quot; }</span>
 
-<span class="fc bfc" id="L47" title="All 10 branches covered.">    return coingeckoService.retrieveAllCryptos().find { it.name.equals(cryptoNameOrId, true) || it.id.equals(cryptoNameOrId, true) }</span>
-<span class="fc" id="L48">      ?: throw CoingeckoCryptoNotFoundException(COINGECKO_CRYPTO_NOT_FOUND.format(cryptoNameOrId))</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">    return coingeckoService.retrieveAllCryptos()</span>
+<span class="fc bfc" id="L48" title="All 8 branches covered.">      .find { it.name.equals(cryptoNameOrId, true) || it.id.equals(cryptoNameOrId, true) }</span>
+<span class="fc" id="L49">      ?: throw CoingeckoCryptoNotFoundException(COINGECKO_CRYPTO_NOT_FOUND.format(cryptoNameOrId))</span>
   }
 
   fun saveCryptoIfNotExists(coingeckoCryptoId: String) {
-<span class="fc" id="L52">    val cryptoOptional = cryptoRepository.findById(coingeckoCryptoId)</span>
+<span class="fc" id="L53">    val cryptoOptional = cryptoRepository.findById(coingeckoCryptoId)</span>
 
-<span class="fc bfc" id="L54" title="All 2 branches covered.">    if (cryptoOptional.isEmpty) {</span>
-<span class="fc" id="L55">      val crypto = getCrypto(coingeckoCryptoId)</span>
-<span class="fc" id="L56">      cryptoRepository.save(crypto)</span>
-<span class="fc" id="L57">      cacheService.invalidateCryptosCache()</span>
-<span class="fc" id="L58">      logger.info { &quot;Saved crypto $crypto&quot; }</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">    if (cryptoOptional.isEmpty) {</span>
+<span class="fc" id="L56">      val crypto = getCrypto(coingeckoCryptoId)</span>
+<span class="fc" id="L57">      cryptoRepository.save(crypto)</span>
+<span class="fc" id="L58">      cacheService.invalidateCryptosCache()</span>
+<span class="fc" id="L59">      logger.info { &quot;Saved crypto $crypto&quot; }</span>
     }
-<span class="fc" id="L60">  }</span>
+<span class="fc" id="L61">  }</span>
 
   fun deleteCryptoIfNotUsed(coingeckoCryptoId: String) {
-<span class="fc bfc" id="L63" title="All 2 branches covered.">    if (orphanCryptoService.isCryptoOrphan(coingeckoCryptoId)) {</span>
-<span class="fc" id="L64">      cryptoRepository.deleteById(coingeckoCryptoId)</span>
-<span class="fc" id="L65">      cacheService.invalidateCryptosCache()</span>
-<span class="fc" id="L66">      logger.info { &quot;Deleted crypto [$coingeckoCryptoId] because it was not used&quot; }</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">    if (orphanCryptoService.isCryptoOrphan(coingeckoCryptoId)) {</span>
+<span class="fc" id="L65">      cryptoRepository.deleteById(coingeckoCryptoId)</span>
+<span class="fc" id="L66">      cacheService.invalidateCryptosCache()</span>
+<span class="fc" id="L67">      logger.info { &quot;Deleted crypto [$coingeckoCryptoId] because it was not used&quot; }</span>
     }
-<span class="fc" id="L68">  }</span>
+<span class="fc" id="L69">  }</span>
 
   fun findOldestNCryptosByLastPriceUpdate(dateFilter: LocalDateTime, limit: Int): List&lt;Crypto&gt; {
-<span class="fc" id="L71">    return cryptoRepository.findOldestNCryptosByLastPriceUpdate(dateFilter, limit)</span>
+<span class="fc" id="L72">    return cryptoRepository.findOldestNCryptosByLastPriceUpdate(dateFilter, limit)</span>
   }
 
   fun updateCryptos(cryptosToUpdate: List&lt;Crypto&gt;) {
-<span class="fc" id="L75">    cryptoRepository.saveAll(cryptosToUpdate)</span>
-<span class="fc" id="L76">    logger.info { &quot;Updated cryptos ${cryptosToUpdate.map { it.name }}&quot; }</span>
-<span class="fc" id="L77">  }</span>
+<span class="fc" id="L76">    cryptoRepository.saveAll(cryptosToUpdate)</span>
+<span class="fc" id="L77">    logger.info { &quot;Updated cryptos ${cryptosToUpdate.map { it.name }}&quot; }</span>
+<span class="fc" id="L78">  }</span>
 
   @Cacheable(cacheNames = [CRYPTOS_CRYPTOS_IDS_CACHE], key = &quot;#ids&quot;)
   fun findAllByIds(ids: Collection&lt;String&gt;): List&lt;Crypto&gt; {
-<span class="fc" id="L81">    logger.info { &quot;Retrieving cryptos with ids $ids&quot; }</span>
+<span class="fc" id="L82">    logger.info { &quot;Retrieving cryptos with ids $ids&quot; }</span>
 
-<span class="fc" id="L83">    return cryptoRepository.findAllByIdIn(ids)</span>
+<span class="fc" id="L84">    return cryptoRepository.findAllByIdIn(ids)</span>
   }
 
   private fun getCrypto(coingeckoCryptoId: String): Crypto {
-<span class="fc" id="L87">    val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo(coingeckoCryptoId)</span>
+<span class="fc" id="L88">    val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo(coingeckoCryptoId)</span>
 
-<span class="fc" id="L89">    return with(coingeckoCryptoInfo) {</span>
-<span class="fc" id="L90">      Crypto(</span>
-<span class="fc" id="L91">        id = coingeckoCryptoId,</span>
-<span class="fc" id="L92">        name,</span>
-<span class="fc" id="L93">        ticker = symbol,</span>
-<span class="fc" id="L94">        image = image.large,</span>
-<span class="fc" id="L95">        lastKnownPrice = marketData.currentPrice.usd,</span>
-<span class="fc" id="L96">        lastKnownPriceInEUR = marketData.currentPrice.eur,</span>
-<span class="fc" id="L97">        lastKnownPriceInBTC = marketData.currentPrice.btc,</span>
-<span class="fc" id="L98">        circulatingSupply = marketData.circulatingSupply,</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">        maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,</span>
-<span class="fc" id="L100">        marketCapRank,</span>
-<span class="fc" id="L101">        marketCap = marketData.marketCap.usd,</span>
-<span class="fc" id="L102">        changePercentageIn24h = marketData.changePercentageIn24h.roundChangePercentage(),</span>
-<span class="fc" id="L103">        changePercentageIn7d = marketData.changePercentageIn7d.roundChangePercentage(),</span>
-<span class="fc" id="L104">        changePercentageIn30d = marketData.changePercentageIn30d.roundChangePercentage(),</span>
-<span class="fc" id="L105">        lastUpdatedAt = LocalDateTime.now(clock)</span>
-<span class="fc" id="L106">      )</span>
+<span class="fc" id="L90">    return with(coingeckoCryptoInfo) {</span>
+<span class="fc" id="L91">      Crypto(</span>
+<span class="fc" id="L92">        id = coingeckoCryptoId,</span>
+<span class="fc" id="L93">        name,</span>
+<span class="fc" id="L94">        ticker = symbol,</span>
+<span class="fc" id="L95">        image = image.large,</span>
+<span class="fc" id="L96">        lastKnownPrice = marketData.currentPrice.usd,</span>
+<span class="fc" id="L97">        lastKnownPriceInEUR = marketData.currentPrice.eur,</span>
+<span class="fc" id="L98">        lastKnownPriceInBTC = marketData.currentPrice.btc,</span>
+<span class="fc" id="L99">        circulatingSupply = marketData.circulatingSupply,</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,</span>
+<span class="fc" id="L101">        marketCapRank,</span>
+<span class="fc" id="L102">        marketCap = marketData.marketCap.usd,</span>
+<span class="fc" id="L103">        changePercentageIn24h = marketData.changePercentageIn24h.roundChangePercentage(),</span>
+<span class="fc" id="L104">        changePercentageIn7d = marketData.changePercentageIn7d.roundChangePercentage(),</span>
+<span class="fc" id="L105">        changePercentageIn30d = marketData.changePercentageIn30d.roundChangePercentage(),</span>
+<span class="fc" id="L106">        lastUpdatedAt = LocalDateTime.now(clock)</span>
+<span class="fc" id="L107">      )</span>
     }
   }
 }
 
-<span class="fc" id="L111">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L112">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
 
 fun BigDecimal.roundChangePercentage(): BigDecimal {
-<span class="fc" id="L114">  return this.setScale(2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L115">  return this.setScale(2, RoundingMode.HALF_UP)</span>
 }
 
 @Service
-<span class="fc" id="L118">class OrphanCryptoService(</span>
-<span class="fc" id="L119">  private val userCryptoRepository: UserCryptoRepository,</span>
-<span class="fc" id="L120">  private val goalRepository: GoalRepository,</span>
-<span class="fc" id="L121">  private val priceTargetRepository: PriceTargetRepository</span>
+<span class="fc" id="L119">class OrphanCryptoService(</span>
+<span class="fc" id="L120">  private val userCryptoRepository: UserCryptoRepository,</span>
+<span class="fc" id="L121">  private val goalRepository: GoalRepository,</span>
+<span class="fc" id="L122">  private val priceTargetRepository: PriceTargetRepository</span>
 ) {
 
   fun isCryptoOrphan(coingeckoCryptoId: String): Boolean {
-<span class="fc bfc" id="L125" title="All 2 branches covered.">    return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId).isEmpty() &amp;&amp;</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">      goalRepository.findByCoingeckoCryptoId(coingeckoCryptoId).isEmpty &amp;&amp;</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">      priceTargetRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId).isEmpty()</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">    return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId).isEmpty() &amp;&amp;</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">      goalRepository.findByCoingeckoCryptoId(coingeckoCryptoId).isEmpty &amp;&amp;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">      priceTargetRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId).isEmpty()</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
