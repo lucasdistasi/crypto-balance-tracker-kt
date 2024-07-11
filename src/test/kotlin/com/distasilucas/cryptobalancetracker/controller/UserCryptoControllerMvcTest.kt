@@ -75,7 +75,7 @@ class UserCryptoControllerMvcTest(
     )
 
     every {
-      userCryptoServiceMock.retrieveUserCryptoById("123e4567-e89b-12d3-a456-426614174000")
+      userCryptoServiceMock.retrieveUserCryptoResponseById("123e4567-e89b-12d3-a456-426614174000")
     } returns userCryptoResponse
 
     mockMvc.retrieveUserCrypto("123e4567-e89b-12d3-a456-426614174000")
@@ -101,7 +101,7 @@ class UserCryptoControllerMvcTest(
     )
 
     every {
-      userCryptoServiceMock.retrieveUserCryptoById("123e4567-e89b-12d3-a456-426614174000")
+      userCryptoServiceMock.retrieveUserCryptoResponseById("123e4567-e89b-12d3-a456-426614174000")
     } returns userCryptoResponse
 
     mockMvc.retrieveUserCrypto("123e4567-e89b-12d3-a456-426614174000")
@@ -1090,11 +1090,11 @@ class UserCryptoControllerMvcTest(
   }
 
   @Test
-  fun `should delete user crypto with status 200`() {
+  fun `should delete user crypto`() {
     justRun { userCryptoServiceMock.deleteUserCrypto("123e4567-e89b-12d3-a456-426614174000") }
 
     mockMvc.deleteUserCrypto("123e4567-e89b-12d3-a456-426614174000")
-      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andExpect(MockMvcResultMatchers.status().isNoContent)
   }
 
   @ParameterizedTest

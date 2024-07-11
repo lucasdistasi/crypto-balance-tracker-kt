@@ -1,5 +1,6 @@
 package com.distasilucas.cryptobalancetracker.controller
 
+import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
 import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import com.distasilucas.cryptobalancetracker.service.PlatformService
@@ -30,26 +31,26 @@ class PlatformControllerTest {
   @Test
   fun `should retrieve platform with status 200`() {
     val id = UUID.randomUUID().toString()
-    val platformResponse = PlatformResponse(id, "BINANCE")
+    val platform = Platform(id, "BINANCE")
 
-    every { platformServiceMock.retrievePlatformById(id) } returns platformResponse
+    every { platformServiceMock.retrievePlatformById(id) } returns platform
 
     val responseEntity = platformController.retrievePlatform(id)
 
     assertThat(responseEntity)
-      .isEqualTo(ResponseEntity.ok(platformResponse))
+      .isEqualTo(ResponseEntity.ok(platform.toPlatformResponse()))
   }
 
   @Test
   fun `should retrieve all platforms with status 200`() {
-    val platformResponse = PlatformResponse(UUID.randomUUID().toString(), "BINANCE")
+    val platform = Platform(UUID.randomUUID().toString(), "BINANCE")
 
-    every { platformServiceMock.retrieveAllPlatforms() } returns listOf(platformResponse)
+    every { platformServiceMock.retrieveAllPlatforms() } returns listOf(platform)
 
     val responseEntity = platformController.retrieveAllPlatforms()
 
     assertThat(responseEntity)
-      .isEqualTo(ResponseEntity.ok(listOf(platformResponse)))
+      .isEqualTo(ResponseEntity.ok(listOf(platform.toPlatformResponse())))
   }
 
   @Test
@@ -68,7 +69,7 @@ class PlatformControllerTest {
     val platformEntity = platformRequest.toEntity()
     val platformResponse = platformEntity.toPlatformResponse()
 
-    every { platformServiceMock.savePlatform(platformRequest) } returns platformResponse
+    every { platformServiceMock.savePlatform(platformRequest) } returns platformEntity
 
     val responseEntity = platformController.savePlatform(platformRequest)
 
@@ -83,7 +84,7 @@ class PlatformControllerTest {
     val platformEntity = platformRequest.toEntity()
     val platformResponse = platformEntity.toPlatformResponse()
 
-    every { platformServiceMock.updatePlatform(id, platformRequest) } returns platformResponse
+    every { platformServiceMock.updatePlatform(id, platformRequest) } returns platformEntity
 
     val responseEntity = platformController.updatePlatform(id, platformRequest)
 
@@ -92,7 +93,7 @@ class PlatformControllerTest {
   }
 
   @Test
-  fun `should delete platform with status 200`() {
+  fun `should delete platform`() {
     val id = UUID.randomUUID().toString()
 
     every { platformServiceMock.deletePlatform(id) } just runs
@@ -100,6 +101,6 @@ class PlatformControllerTest {
     val responseEntity = platformController.deletePlatform(id)
 
     assertThat(responseEntity)
-      .isEqualTo(ResponseEntity.ok().build<ResponseEntity<Unit>>())
+      .isEqualTo(ResponseEntity.noContent().build<ResponseEntity<Unit>>())
   }
 }

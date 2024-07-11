@@ -27,7 +27,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.platform.Pl
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsInsights
 import com.distasilucas.cryptobalancetracker.repository.DateBalanceRepository
 import getCryptoEntity
-import getPlatformResponse
+import getPlatformEntity
 import getUserCrypto
 import io.mockk.every
 import io.mockk.mockk
@@ -417,13 +417,13 @@ class InsightsServiceTest {
 
   @Test
   fun `should retrieve platform insights with one crypto`() {
-    val platformResponse = getPlatformResponse()
+    val platformEntity = getPlatformEntity()
     val userCryptos = getUserCrypto()
     val bitcoinCryptoEntity = getCryptoEntity()
 
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
-    } returns platformResponse
+    } returns platformEntity
     every {
       userCryptoServiceMock.findAllByPlatformId("123e4567-e89b-12d3-a456-426614174111")
     } returns listOf(userCryptos)
@@ -466,7 +466,7 @@ class InsightsServiceTest {
   @Test
   fun `should retrieve platform insights with multiple cryptos`() {
     val localDateTime = LocalDateTime.now()
-    val platformResponse = getPlatformResponse()
+    val platformEntity = getPlatformEntity()
     val bitcoinUserCrypto = getUserCrypto()
     val polkadotUserCrypto = UserCrypto(
       coingeckoCryptoId = "polkadot",
@@ -494,7 +494,7 @@ class InsightsServiceTest {
 
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
-    } returns platformResponse
+    } returns platformEntity
     every {
       userCryptoServiceMock.findAllByPlatformId("123e4567-e89b-12d3-a456-426614174111")
     } returns listOf(bitcoinUserCrypto, polkadotUserCrypto)

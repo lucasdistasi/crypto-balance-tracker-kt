@@ -2,11 +2,19 @@ package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.ALL_PLATFORMS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_CRYPTOS_IDS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.GOAL_RESPONSE_GOAL_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PAGE_GOALS_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_RESPONSE_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_RESPONSE_PAGE_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
@@ -22,6 +30,9 @@ class CacheService(private val cacheManager: CacheManager) {
     cacheManager.getCache(USER_CRYPTOS_CACHE)!!.invalidate()
     cacheManager.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE)!!.invalidate()
     cacheManager.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE)!!.invalidate()
+    cacheManager.getCache(USER_CRYPTO_ID_CACHE)!!.invalidate()
+    cacheManager.getCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE)!!.invalidate()
+    cacheManager.getCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE)!!.invalidate()
   }
 
   fun invalidatePlatformsCaches() {
@@ -36,5 +47,20 @@ class CacheService(private val cacheManager: CacheManager) {
     logger.info { "Invalidating cryptos cache" }
 
     cacheManager.getCache(CRYPTOS_CRYPTOS_IDS_CACHE)!!.invalidate()
+  }
+
+  fun invalidateGoalsCaches() {
+    logger.info { "Invalidating goals cache" }
+
+    cacheManager.getCache(GOAL_RESPONSE_GOAL_ID_CACHE)!!.invalidate()
+    cacheManager.getCache(PAGE_GOALS_RESPONSE_PAGE_CACHE)!!.invalidate()
+  }
+
+  fun invalidatePriceTargetCaches() {
+    logger.info { "Invalidating price target caches" }
+
+    cacheManager.getCache(PRICE_TARGET_ID_CACHE)!!.invalidate()
+    cacheManager.getCache(PRICE_TARGET_RESPONSE_ID_CACHE)!!.invalidate()
+    cacheManager.getCache(PRICE_TARGET_RESPONSE_PAGE_CACHE)!!.invalidate()
   }
 }

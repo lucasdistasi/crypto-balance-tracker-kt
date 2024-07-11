@@ -44,7 +44,8 @@ class CryptoService(
   fun retrieveCoingeckoCryptoInfoByNameOrId(cryptoNameOrId: String): CoingeckoCrypto {
     logger.info { "Retrieving info for coingecko crypto $cryptoNameOrId" }
 
-    return coingeckoService.retrieveAllCryptos().find { it.name.equals(cryptoNameOrId, true) || it.id.equals(cryptoNameOrId, true) }
+    return coingeckoService.retrieveAllCryptos()
+      .find { it.name.equals(cryptoNameOrId, true) || it.id.equals(cryptoNameOrId, true) }
       ?: throw CoingeckoCryptoNotFoundException(COINGECKO_CRYPTO_NOT_FOUND.format(cryptoNameOrId))
   }
 

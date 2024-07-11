@@ -25,13 +25,16 @@ class PriceTargetServiceTest {
 
   private val priceTargetRepositoryMock = mockk<PriceTargetRepository>()
   private val cryptoServiceMock = mockk<CryptoService>()
-  private val priceTargetService = PriceTargetService(priceTargetRepositoryMock, cryptoServiceMock)
+  private val cacheServiceMock = mockk<CacheService>()
+  private val _priceTargetServiceMock = mockk<PriceTargetService>()
+
+  private val priceTargetService = PriceTargetService(priceTargetRepositoryMock, cryptoServiceMock, cacheServiceMock, _priceTargetServiceMock)
 
   @Test
   fun `should retrieve price target by id`() {
     val priceTarget = PriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", "bitcoin", BigDecimal("120000"))
 
-    every { priceTargetRepositoryMock.findById(priceTarget.id) } returns Optional.of(priceTarget)
+    every { _priceTargetServiceMock.findById(priceTarget.id) } returns priceTarget
     every {
       cryptoServiceMock.retrieveCryptoInfoById(priceTarget.coingeckoCryptoId)
     } returns getCryptoEntity(lastKnownPrice = BigDecimal("60000"))
@@ -51,13 +54,17 @@ class PriceTargetServiceTest {
 
   @Test
   fun `should throw PriceTargetNotFoundException when retrieving price target by id`() {
-    every { priceTargetRepositoryMock.findById("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08") } returns Optional.empty()
+    val exceptionMessage = "Price target with id f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08 not found"
+
+    every {
+      _priceTargetServiceMock.findById("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08")
+    } throws PriceTargetNotFoundException(exceptionMessage)
 
     val exception = assertThrows<PriceTargetNotFoundException> {
       priceTargetService.retrievePriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08")
     }
 
-    assertEquals("Price target with id f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08 not found", exception.message)
+    assertEquals(exceptionMessage, exception.message)
   }
 
   @Test
@@ -121,6 +128,7 @@ class PriceTargetServiceTest {
     mockkStatic(UUID::class)
     every { UUID.randomUUID().toString() } returns priceTargetEntity.id
     every { priceTargetRepositoryMock.save(priceTargetEntity) } returns priceTargetEntity
+    justRun { cacheServiceMock.invalidatePriceTargetCaches() }
 
     val priceTargetResponse = priceTargetService.savePriceTarget(priceTargetRequest)
 
@@ -159,7 +167,7 @@ class PriceTargetServiceTest {
     val priceTargetRequest = PriceTargetRequest("bitcoin", BigDecimal("100000"))
     val priceTargetEntity = PriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", "bitcoin", priceTargetRequest.priceTarget!!)
 
-    every { priceTargetRepositoryMock.findById(priceTargetEntity.id) } returns Optional.of(priceTargetEntity)
+    every { _priceTargetServiceMock.findById(priceTargetEntity.id) } returns priceTargetEntity
     every {
       priceTargetRepositoryMock.findByCoingeckoCryptoIdAndTarget("bitcoin", priceTargetRequest.priceTarget!!)
     } returns Optional.empty()
@@ -167,6 +175,7 @@ class PriceTargetServiceTest {
       cryptoServiceMock.retrieveCryptoInfoById(priceTargetRequest.cryptoNameOrId!!)
     } returns getCryptoEntity(lastKnownPrice = BigDecimal("60000"))
     every { priceTargetRepositoryMock.save(priceTargetEntity) } returns priceTargetEntity
+    justRun { cacheServiceMock.invalidatePriceTargetCaches() }
 
     val priceTargetResponse = priceTargetService.updatePriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", priceTargetRequest)
 
@@ -188,7 +197,7 @@ class PriceTargetServiceTest {
     val priceTargetEntity = PriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", "bitcoin", priceTargetRequest.priceTarget!!)
     val anotherSamePriceTargetEntity = PriceTarget("6fda6f49-9070-4ffa-b9ea-ac52316110d7", "bitcoin", priceTargetRequest.priceTarget!!)
 
-    every { priceTargetRepositoryMock.findById(priceTargetEntity.id) } returns Optional.of(priceTargetEntity)
+    every { _priceTargetServiceMock.findById(priceTargetEntity.id) } returns priceTargetEntity
     every {
       priceTargetRepositoryMock.findByCoingeckoCryptoIdAndTarget("bitcoin", priceTargetRequest.priceTarget!!)
     } returns Optional.of(anotherSamePriceTargetEntity)
@@ -203,14 +212,17 @@ class PriceTargetServiceTest {
   @Test
   fun `should throw PriceTargetNotFoundException when updating price target`() {
     val priceTargetRequest = PriceTargetRequest("bitcoin", BigDecimal("100000"))
+    val exceptionMessage = "Price target with id f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08 not found"
 
-    every { priceTargetRepositoryMock.findById("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08") } returns Optional.empty()
+    every {
+      _priceTargetServiceMock.findById("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08")
+    } throws PriceTargetNotFoundException(exceptionMessage)
 
     val exception = assertThrows<PriceTargetNotFoundException> {
       priceTargetService.updatePriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", priceTargetRequest)
     }
 
-    assertEquals("Price target with id f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08 not found", exception.message)
+    assertEquals(exceptionMessage, exception.message)
     verify(exactly = 0) { priceTargetRepositoryMock.save(any()) }
   }
 
@@ -218,9 +230,10 @@ class PriceTargetServiceTest {
   fun `should delete price target`() {
     val priceTargetEntity = PriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", "bitcoin", BigDecimal("120000"))
 
-    every { priceTargetRepositoryMock.findById(priceTargetEntity.id) } returns Optional.of(priceTargetEntity)
+    every { _priceTargetServiceMock.findById(priceTargetEntity.id) } returns priceTargetEntity
     justRun { priceTargetRepositoryMock.delete(priceTargetEntity) }
     justRun { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
+    justRun { cacheServiceMock.invalidatePriceTargetCaches() }
 
     priceTargetService.deletePriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08")
 
@@ -230,13 +243,17 @@ class PriceTargetServiceTest {
 
   @Test
   fun `should throw PriceTargetNotFoundException when deleting price target`() {
-    every { priceTargetRepositoryMock.findById("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08") } returns Optional.empty()
+    val exceptionMessage = "Price target with id f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08 not found"
+
+    every {
+      _priceTargetServiceMock.findById("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08")
+    } throws PriceTargetNotFoundException(exceptionMessage)
 
     val exception = assertThrows<PriceTargetNotFoundException> {
       priceTargetService.deletePriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08")
     }
 
-    assertEquals("Price target with id f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08 not found", exception.message)
+    assertEquals(exceptionMessage, exception.message)
     verify(exactly = 0) { priceTargetRepositoryMock.delete(any()) }
     verify(exactly = 0) { cryptoServiceMock.deleteCryptoIfNotUsed(any()) }
   }

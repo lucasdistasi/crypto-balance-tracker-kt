@@ -4,7 +4,10 @@ import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_CRYPTO_PLATFOR
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_RESPONSE_PAGE_CACHE
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
@@ -12,22 +15,33 @@ import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoRes
 import com.distasilucas.cryptobalancetracker.repository.UserCryptoRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.context.annotation.Scope
+import org.springframework.context.annotation.ScopedProxyMode
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.util.Optional
 
 @Service
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 class UserCryptoService(
   private val userCryptoRepository: UserCryptoRepository,
   private val platformService: PlatformService,
   private val cryptoService: CryptoService,
-  private val cacheService: CacheService
+  private val cacheService: CacheService,
+  private val _userCryptoService: UserCryptoService?
 ) {
 
   private val logger = KotlinLogging.logger { }
 
-  fun retrieveUserCryptoById(userCryptoId: String): UserCryptoResponse {
+  @Cacheable(cacheNames = [USER_CRYPTO_ID_CACHE], key = "#userCryptoId")
+  fun findByUserCryptoId(userCryptoId: String): UserCrypto {
+    return userCryptoRepository.findById(userCryptoId)
+      .orElseThrow { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) }
+  }
+
+  @Cacheable(cacheNames = [USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE], key = "#userCryptoId")
+  fun retrieveUserCryptoResponseById(userCryptoId: String): UserCryptoResponse {
     logger.info { "Retrieving user crypto with id $userCryptoId" }
 
     val userCrypto = findByUserCryptoId(userCryptoId)
@@ -37,11 +51,12 @@ class UserCryptoService(
     return userCrypto.toUserCryptoResponse(crypto.name, platform.name)
   }
 
-  fun retrieveUserCryptosByPage(page: Int): PageUserCryptoResponse { // TODO - ADD CACHE??
+  @Cacheable(cacheNames = [USER_CRYPTOS_RESPONSE_PAGE_CACHE], key = "#page")
+  fun retrieveUserCryptosByPage(page: Int): PageUserCryptoResponse {
     logger.info { "Retrieving user cryptos for page $page" }
 
     val pageRequest: Pageable = PageRequest.of(page, 10)
-    val entityUserCryptosPage = userCryptoRepository.findAll(pageRequest) // TODO - ADD CACHE??
+    val entityUserCryptosPage = userCryptoRepository.findAll(pageRequest)
     val userCryptosPage = entityUserCryptosPage.content.map { userCrypto ->
       val platform = platformService.retrievePlatformById(userCrypto.platformId)
       val crypto = cryptoService.retrieveCryptoInfoById(userCrypto.coingeckoCryptoId)
@@ -83,7 +98,7 @@ class UserCryptoService(
   }
 
   fun updateUserCrypto(userCryptoId: String, userCryptoRequest: UserCryptoRequest): UserCryptoResponse {
-    val userCrypto = findByUserCryptoId(userCryptoId)
+    val userCrypto = _userCryptoService!!.findByUserCryptoId(userCryptoId)
     val requestPlatform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)
     val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(userCrypto.coingeckoCryptoId)
 
@@ -116,7 +131,7 @@ class UserCryptoService(
   }
 
   fun deleteUserCrypto(userCryptoId: String) {
-    val userCrypto = findByUserCryptoId(userCryptoId)
+    val userCrypto = _userCryptoService!!.findByUserCryptoId(userCryptoId)
     userCryptoRepository.deleteById(userCryptoId)
     cacheService.invalidateUserCryptosCaches()
     cryptoService.deleteCryptoIfNotUsed(userCrypto.coingeckoCryptoId)
@@ -128,11 +143,6 @@ class UserCryptoService(
     logger.info { "Deleting user cryptos ${userCryptos.map { it.coingeckoCryptoId }}" }
     userCryptoRepository.deleteAllById(userCryptos.map { it.id })
     cacheService.invalidateUserCryptosCaches()
-  }
-
-  fun findByUserCryptoId(userCryptoId: String): UserCrypto {
-    return userCryptoRepository.findById(userCryptoId)
-      .orElseThrow { throw UserCryptoNotFoundException(USER_CRYPTO_ID_NOT_FOUND.format(userCryptoId)) }
   }
 
   fun findByCoingeckoCryptoIdAndPlatformId(cryptoId: String, platformId: String): Optional<UserCrypto> {

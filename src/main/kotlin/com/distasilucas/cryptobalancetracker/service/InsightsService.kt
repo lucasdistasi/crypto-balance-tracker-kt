@@ -12,11 +12,9 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesRes
 import com.distasilucas.cryptobalancetracker.model.response.insights.CirculatingSupply
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
-import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
-import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
@@ -116,7 +114,7 @@ class InsightsService(
       return Optional.empty()
     }
 
-    val platformResponse = platformService.retrievePlatformById(platformId)
+    val platform = platformService.retrievePlatformById(platformId)
     val cryptosIds = userCryptosInPlatform.map { it.coingeckoCryptoId }
     val cryptos = cryptoService.findAllByIds(cryptosIds)
     val userCryptosQuantity = getUserCryptoQuantity(userCryptosInPlatform)
@@ -138,7 +136,7 @@ class InsightsService(
     }.sortedByDescending { it.percentage }
 
     val platformInsightsResponse = PlatformInsightsResponse(
-      platformName = platformResponse.name,
+      platformName = platform.name,
       balances = totalBalances,
       cryptos = cryptosInsights
     )
@@ -311,21 +309,7 @@ class InsightsService(
         percentage = calculatePercentage(totalBalances.totalUSDBalance, balances.totalUSDBalance),
         balances = balances,
         marketCapRank = crypto.marketCapRank,
-        marketData = MarketData(
-          circulatingSupply,
-          maxSupply = crypto.maxSupply.toPlainString(),
-          currentPrice = CurrentPrice(
-            usd = crypto.lastKnownPrice.toPlainString(),
-            eur = crypto.lastKnownPriceInEUR.toPlainString(),
-            btc = crypto.lastKnownPriceInBTC.toPlainString()
-          ),
-          marketCap = crypto.marketCap.toPlainString(),
-          priceChange = PriceChange(
-            crypto.changePercentageIn24h,
-            crypto.changePercentageIn7d,
-            crypto.changePercentageIn30d
-          )
-        ),
+        marketData = MarketData(crypto, circulatingSupply),
         platforms = listOf(platform.name)
       )
     }.sortedWith(sortParams.cryptosInsightsResponseComparator())
@@ -394,21 +378,7 @@ class InsightsService(
         percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),
         balances = cryptoTotalBalances,
         marketCapRank = crypto.marketCapRank,
-        marketData = MarketData(
-          circulatingSupply,
-          maxSupply = crypto.maxSupply.toPlainString(),
-          currentPrice = CurrentPrice(
-            usd = crypto.lastKnownPrice.toPlainString(),
-            eur = crypto.lastKnownPriceInEUR.toPlainString(),
-            btc = crypto.lastKnownPriceInBTC.toPlainString()
-          ),
-          marketCap = crypto.marketCap.toPlainString(),
-          priceChange = PriceChange(
-            crypto.changePercentageIn24h,
-            crypto.changePercentageIn7d,
-            crypto.changePercentageIn30d
-          )
-        ),
+        marketData = MarketData(crypto, circulatingSupply),
         platforms = cryptoPlatforms
       )
     }.sortedWith(sortParams.cryptosInsightsResponseComparator())

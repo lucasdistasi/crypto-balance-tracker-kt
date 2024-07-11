@@ -67,6 +67,6 @@ class GoalController(private val goalService: GoalService) : GoalControllerAPI {
   override fun deleteGoal(@PathVariable @UUID(message = INVALID_GOAL_UUID) goalId: String): ResponseEntity<Unit> {
     goalService.deleteGoal(goalId)
 
-    return ResponseEntity.ok().build()
+    return ResponseEntity.noContent().build()
   }
 }

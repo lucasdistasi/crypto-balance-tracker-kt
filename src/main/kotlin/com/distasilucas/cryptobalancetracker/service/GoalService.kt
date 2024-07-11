@@ -2,6 +2,8 @@ package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_GOAL
 import com.distasilucas.cryptobalancetracker.constants.GOAL_ID_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.constants.GOAL_RESPONSE_GOAL_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PAGE_GOALS_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.Goal
 import com.distasilucas.cryptobalancetracker.model.request.goal.GoalRequest
@@ -9,6 +11,7 @@ import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.goal.PageGoalResponse
 import com.distasilucas.cryptobalancetracker.repository.GoalRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -19,11 +22,13 @@ import java.math.RoundingMode
 class GoalService(
   private val goalRepository: GoalRepository,
   private val cryptoService: CryptoService,
-  private val userCryptoService: UserCryptoService
+  private val userCryptoService: UserCryptoService,
+  private val cacheService: CacheService
 ) {
 
   private val logger = KotlinLogging.logger { }
 
+  @Cacheable(cacheNames = [GOAL_RESPONSE_GOAL_ID_CACHE], key = "#goalId")
   fun retrieveGoalById(goalId: String): GoalResponse {
     logger.info { "Retrieving for goal with $goalId" }
 
@@ -32,6 +37,7 @@ class GoalService(
       .toGoalResponse(id = goalId)
   }
 
+  @Cacheable(cacheNames = [PAGE_GOALS_RESPONSE_PAGE_CACHE], key = "#page")
   fun retrieveGoalsForPage(page: Int): PageGoalResponse {
     logger.info { "Retrieving goals for page $page" }
 
@@ -58,6 +64,7 @@ class GoalService(
     val goal = goalRequest.toEntity(coingeckoCrypto.id)
     cryptoService.saveCryptoIfNotExists(goal.coingeckoCryptoId)
     goalRepository.save(goal)
+    cacheService.invalidateGoalsCaches()
     logger.info { "Saved goal $goal" }
 
     return goal.toGoalResponse(id = goal.id)
@@ -70,6 +77,7 @@ class GoalService(
     val updatedGoal = goal.copy(goalQuantity = goalRequest.goalQuantity!!)
 
     goalRepository.save(updatedGoal)
+    cacheService.invalidateGoalsCaches()
     logger.info { "Updated goal. Before: $goal | After: $updatedGoal" }
 
     return updatedGoal.toGoalResponse(id = updatedGoal.id)
@@ -80,6 +88,7 @@ class GoalService(
       .ifPresentOrElse({
         goalRepository.deleteById(goalId)
         cryptoService.deleteCryptoIfNotUsed(it.coingeckoCryptoId)
+        cacheService.invalidateGoalsCaches()
         logger.info { "Deleted goal $it" }
       }, {
         throw GoalNotFoundException(GOAL_ID_NOT_FOUND.format(goalId))

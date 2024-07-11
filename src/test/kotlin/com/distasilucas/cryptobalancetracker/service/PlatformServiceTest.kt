@@ -23,9 +23,10 @@ class PlatformServiceTest {
 
   private val platformRepositoryMock = mockk<PlatformRepository>()
   private val userCryptoServiceMock = mockk<UserCryptoService>()
+  private val _platformServiceMock = mockk<PlatformService>()
   private val cacheServiceMock = mockk<CacheService>()
 
-  private val platformService = PlatformService(platformRepositoryMock, userCryptoServiceMock, cacheServiceMock)
+  private val platformService = PlatformService(platformRepositoryMock, userCryptoServiceMock, cacheServiceMock, _platformServiceMock)
 
   @Test
   fun `should return count of platforms`() {
@@ -113,7 +114,7 @@ class PlatformServiceTest {
 
     assertThat(platforms)
       .hasSize(1)
-      .containsExactlyInAnyOrder(PlatformResponse(id, "BINANCE"))
+      .containsExactlyInAnyOrder(Platform(id, "BINANCE"))
   }
 
   @Test
@@ -167,6 +168,7 @@ class PlatformServiceTest {
     val newPlatform = existingPlatform.copy(name = "OKX")
 
     every { platformRepositoryMock.findByName("OKX") } returns Optional.empty()
+    every { _platformServiceMock.retrievePlatformById(existingPlatform.id) } returns newPlatform
     every { platformRepositoryMock.findById(id) } returns Optional.of(existingPlatform)
     every { platformRepositoryMock.save(newPlatform) } returns newPlatform
     justRun { cacheServiceMock.invalidatePlatformsCaches() }
@@ -202,9 +204,12 @@ class PlatformServiceTest {
     val platformRequest = PlatformRequest("OKX")
     val existingPlatform = Platform(UUID.randomUUID().toString(), "BINANCE")
     val id = existingPlatform.id
+    val exceptionMessage = PLATFORM_ID_NOT_FOUND.format(id)
 
     every { platformRepositoryMock.findByName("OKX") } returns Optional.empty()
-    every { platformRepositoryMock.findById(id) } returns Optional.empty()
+    every {
+      _platformServiceMock.retrievePlatformById(id)
+    } throws PlatformNotFoundException(exceptionMessage)
 
     val exception = assertThrows<PlatformNotFoundException> {
       platformService.updatePlatform(id, platformRequest)
@@ -212,7 +217,7 @@ class PlatformServiceTest {
 
     verify(exactly = 0) { platformRepositoryMock.save(existingPlatform) }
 
-    assertThat(exception.message).isEqualTo(PLATFORM_ID_NOT_FOUND.format(id))
+    assertThat(exception.message).isEqualTo(exceptionMessage)
   }
 
   @Test
@@ -226,7 +231,7 @@ class PlatformServiceTest {
       platformId = id
     )
 
-    every { platformRepositoryMock.findById(id) } returns Optional.of(existingPlatform)
+    every { _platformServiceMock.retrievePlatformById(id) } returns existingPlatform
     every { userCryptoServiceMock.findAllByPlatformId(id) } returns listOf(userCryptos)
     justRun { userCryptoServiceMock.deleteUserCryptos(listOf(userCryptos)) }
     justRun { platformRepositoryMock.deleteById(id) }
@@ -242,13 +247,16 @@ class PlatformServiceTest {
   fun `should throw PlatformNotFoundException when deleting platform`() {
     val id = UUID.randomUUID().toString()
     val existingPlatform = Platform(id, "BINANCE")
+    val exceptionMessage = PLATFORM_ID_NOT_FOUND.format(id)
 
-    every { platformRepositoryMock.findById(id) } returns Optional.empty()
+    every {
+      _platformServiceMock.retrievePlatformById(id)
+    } throws PlatformNotFoundException(exceptionMessage)
 
     val exception = assertThrows<PlatformNotFoundException> { platformService.deletePlatform(id) }
 
     verify(exactly = 0) { platformRepositoryMock.delete(existingPlatform) }
 
-    assertThat(exception.message).isEqualTo(PLATFORM_ID_NOT_FOUND.format(id))
+    assertThat(exception.message).isEqualTo(exceptionMessage)
   }
 }

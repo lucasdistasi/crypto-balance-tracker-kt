@@ -337,7 +337,7 @@ interface PlatformControllerAPI {
   @ApiResponses(
     value = [
       ApiResponse(
-        responseCode = "200",
+        responseCode = "204",
         description = "Platform deleted",
         content = [Content(
           mediaType = "application/json",
