@@ -43,7 +43,7 @@ const val COINS_URI = &quot;$COIN_URI/list&quot;
   fun retrieveAllCryptos(): List&lt;CoingeckoCrypto&gt; {
 <span class="fc" id="L44">    val coingeckoCryptosURI = getCryptosURI()</span>
 <span class="fc" id="L45">    val uriAsString = coingeckoCryptosURI.apply(UriComponentsBuilder.newInstance())</span>
-<span class="fc" id="L46">    logger.info { &quot;Hitting Coingecko API for URI[$uriAsString]. Retrieving all cryptos.&quot; }</span>
+<span class="fc" id="L46">    logger.info { &quot;Hitting Coingecko API for URI [$uriAsString]. Retrieving all cryptos.&quot; }</span>
 
 <span class="pc bpc" id="L48" title="1 of 2 branches missed.">    return coingeckoRestClient.get()</span>
 <span class="fc" id="L49">      .uri(coingeckoCryptosURI)</span>
