@@ -43,7 +43,7 @@ class CoingeckoService(
   fun retrieveAllCryptos(): List<CoingeckoCrypto> {
     val coingeckoCryptosURI = getCryptosURI()
     val uriAsString = coingeckoCryptosURI.apply(UriComponentsBuilder.newInstance())
-    logger.info { "Hitting Coingecko API for URI[$uriAsString]. Retrieving all cryptos." }
+    logger.info { "Hitting Coingecko API for URI [$uriAsString]. Retrieving all cryptos." }
 
     return coingeckoRestClient.get()
       .uri(coingeckoCryptosURI)

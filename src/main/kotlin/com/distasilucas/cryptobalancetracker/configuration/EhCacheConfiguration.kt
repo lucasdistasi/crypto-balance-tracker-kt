@@ -257,7 +257,7 @@ class EhCacheConfiguration {
     ).withExpiry(expirationPolicyBuilder).build()
   }
 
-  private fun getPlatformCache(): CacheConfiguration<String, PlatformResponse> {
+  private fun getPlatformCache(): CacheConfiguration<String, Platform> {
     val resourcePools = ResourcePoolsBuilder.newResourcePoolsBuilder()
       .offheap(1, MemoryUnit.MB)
       .build()
@@ -265,7 +265,7 @@ class EhCacheConfiguration {
 
     return CacheConfigurationBuilder.newCacheConfigurationBuilder(
       String::class.java,
-      PlatformResponse::class.java,
+      Platform::class.java,
       resourcePools
     ).withExpiry(expirationPolicyBuilder).build()
   }
