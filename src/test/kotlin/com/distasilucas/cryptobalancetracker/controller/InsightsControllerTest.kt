@@ -2,9 +2,11 @@ package com.distasilucas.cryptobalancetracker.controller
 
 import balances
 import com.distasilucas.cryptobalancetracker.model.DateRange
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalances
+import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
+import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -56,11 +58,11 @@ class InsightsControllerTest {
   fun `should retrieve dates balances with status 200`() {
     val dateBalanceResponse = DatesBalanceResponse(
       datesBalances = listOf(
-        DatesBalances("16 March 2024", "1000"),
-        DatesBalances("17 March 2024", "1500")
+        DateBalances("16 March 2024", BalancesResponse("1000", "918.45", "0.01438911")),
+        DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.021583665"))
       ),
-      change = 50F,
-      priceDifference = "500"
+      change = BalanceChanges(50F, 30F, 10F),
+      priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
     )
 
     every { insightsServiceMock.retrieveDatesBalances(DateRange.LAST_DAY) } returns Optional.of(dateBalanceResponse)

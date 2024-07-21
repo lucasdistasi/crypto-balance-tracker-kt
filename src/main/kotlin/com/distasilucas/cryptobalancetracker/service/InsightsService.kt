@@ -8,12 +8,14 @@ import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortParams
 import com.distasilucas.cryptobalancetracker.model.SortType
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CirculatingSupply
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalances
+import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
+import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
@@ -86,23 +88,16 @@ class InsightsService(
 
     val datesBalances = dateBalances.map {
       val formattedDate = it.date.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
-      DatesBalances(formattedDate, it.balance)
+      DateBalances(formattedDate, BalancesResponse(it.usdBalance, it.eurBalance, it.btcBalance))
     }.toList()
+
     logger.info { "Balances found: ${datesBalances.size}" }
 
     if (datesBalances.isEmpty()) return Optional.empty()
 
-    val newestValue = BigDecimal(datesBalances.last().balance)
-    val oldestValue = BigDecimal(datesBalances.first().balance)
-    val change = newestValue
-      .subtract(oldestValue)
-      .divide(oldestValue, 4, RoundingMode.HALF_UP)
-      .multiply(BigDecimal("100"))
-      .setScale(2, RoundingMode.HALF_UP)
-      .toFloat()
-    val priceDifference = newestValue.subtract(oldestValue).toPlainString()
+    val changesPair = changesPair(datesBalances)
 
-    return Optional.of(DatesBalanceResponse(datesBalances, change, priceDifference))
+    return Optional.of(DatesBalanceResponse(datesBalances, changesPair.first, changesPair.second))
   }
 
   fun retrievePlatformInsights(platformId: String): Optional<PlatformInsightsResponse> {
@@ -450,7 +445,43 @@ class InsightsService(
     }
   }
 
-  fun retrieveLastTwelveDaysBalances(): List<DateBalance> {
+  private fun changesPair(dateBalances: List<DateBalances>): Pair<BalanceChanges, DifferencesChanges> {
+    val usdChange = getChange(BalanceType.USD_BALANCE, dateBalances)
+    val eurChange = getChange(BalanceType.EUR_BALANCE, dateBalances)
+    val btcChange = getChange(BalanceType.BTC_BALANCE, dateBalances)
+
+    return Pair(
+      BalanceChanges(usdChange.first, eurChange.first, btcChange.first),
+      DifferencesChanges(usdChange.second, eurChange.second, btcChange.second)
+    )
+  }
+
+  private fun getChange(balanceType: BalanceType, dateBalances: List<DateBalances>): Pair<Float, String> {
+    val newestValues = dateBalances.last().balances
+    val oldestValues = dateBalances.first().balances
+    val divisionScale = if (BalanceType.BTC_BALANCE == balanceType) 10 else 4
+
+    val values = when (balanceType) {
+      BalanceType.USD_BALANCE -> Pair(BigDecimal(oldestValues.totalUSDBalance), BigDecimal(newestValues.totalUSDBalance))
+      BalanceType.EUR_BALANCE -> Pair(BigDecimal(oldestValues.totalEURBalance), BigDecimal(newestValues.totalEURBalance))
+      BalanceType.BTC_BALANCE -> Pair(BigDecimal(oldestValues.totalBTCBalance), BigDecimal(newestValues.totalBTCBalance))
+    }
+
+    val newestValue = values.second
+    val oldestValue = values.first
+
+    val change = newestValue
+      .subtract(oldestValue)
+      .divide(oldestValue, divisionScale, RoundingMode.HALF_UP)
+      .multiply(BigDecimal("100"))
+      .setScale(2, RoundingMode.HALF_UP)
+      .toFloat()
+    val difference = newestValue.subtract(oldestValue).toPlainString()
+
+    return Pair(change, difference)
+  }
+
+  private fun retrieveLastTwelveDaysBalances(): List<DateBalance> {
     val to = LocalDateTime.now(clock).toLocalDate().atTime(LocalTime.MAX)
     val from = to.toLocalDate().minusDays(12).atTime(23, 59, 59, 0)
     logger.info { "Not enough balances. Retrieving balances for the last twelve days from $from to $to" }
@@ -476,7 +507,7 @@ class InsightsService(
 
     return BalancesResponse(
       totalUSDBalance = totalUSDBalance.toPlainString(),
-      totalBTCBalance = totalBTCBalance.setScale(12, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
+      totalBTCBalance = totalBTCBalance.setScale(10, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
       totalEURBalance = totalEURBalance.toPlainString()
     )
   }
@@ -484,7 +515,7 @@ class InsightsService(
   private fun getCryptoTotalBalances(crypto: Crypto, quantity: BigDecimal): BalancesResponse {
     return BalancesResponse(
       totalUSDBalance = crypto.lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString(),
-      totalBTCBalance = crypto.lastKnownPriceInBTC.multiply(quantity).setScale(12, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
+      totalBTCBalance = crypto.lastKnownPriceInBTC.multiply(quantity).setScale(10, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
       totalEURBalance = crypto.lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString()
     )
   }
@@ -601,4 +632,10 @@ class InsightsService(
   }
 
   private fun isLastPage(page: Int, totalPages: Int) = page + 1 >= totalPages
+}
+
+enum class BalanceType {
+  USD_BALANCE,
+  EUR_BALANCE,
+  BTC_BALANCE
 }

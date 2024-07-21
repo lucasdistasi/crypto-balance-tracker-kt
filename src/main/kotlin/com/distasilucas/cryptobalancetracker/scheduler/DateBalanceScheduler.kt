@@ -23,18 +23,25 @@ class DateBalanceScheduler(
     logger.info { "Running cron to save daily balance" }
 
     val now = LocalDateTime.now(clock).toLocalDate().atTime(23, 59, 59, 0)
-    val totalUSDBalance = insightsService.retrieveTotalBalances().map { it.totalUSDBalance }
+    val totalBalances = insightsService.retrieveTotalBalances()
     val optionalDateBalance = dateBalancesRepository.findDateBalanceByDate(now)
 
-    totalUSDBalance.ifPresent { balance ->
+    totalBalances.ifPresent { balances ->
       optionalDateBalance.ifPresentOrElse(
         {
-          logger.info {"Updating balance for date $now. Old Balance: ${it.balance}. New balance $balance" }
-          dateBalancesRepository.save(DateBalance(it.id, now, balance))
+          logger.info {"Updating balances for date $now. Old Balance: $it. New balances $balances" }
+          dateBalancesRepository.save(DateBalance(it.id, now, balances.totalUSDBalance, balances.totalEURBalance, balances.totalBTCBalance))
         },
         {
-          logger.info { "Saving balance $balance for date $now" }
-          dateBalancesRepository.save(DateBalance(date = now, balance = balance))
+          logger.info { "Saving balances $balances for date $now" }
+          dateBalancesRepository.save(
+            DateBalance(
+              date = now,
+              usdBalance = balances.totalUSDBalance,
+              eurBalance = balances.totalEURBalance,
+              btcBalance = balances.totalBTCBalance
+            )
+          )
         }
       )
     }

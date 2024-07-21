@@ -8,13 +8,15 @@ import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortParams
 import com.distasilucas.cryptobalancetracker.model.SortType
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CirculatingSupply
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalances
+import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
+import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
@@ -76,7 +78,7 @@ class InsightsServiceTest {
         Optional.of(
           BalancesResponse(
             totalUSDBalance = "7108.39",
-            totalBTCBalance = "0.25127935932",
+            totalBTCBalance = "0.2512793593",
             totalEURBalance = "6484.23"
           )
         )
@@ -99,8 +101,8 @@ class InsightsServiceTest {
     val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
     val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
     val dateBalances = listOf(
-      DateBalance(date = now.minusDays(1), balance = "1000"),
-      DateBalance(date = now, balance = "1500")
+      DateBalance(date = now.minusDays(1), usdBalance = "1000", eurBalance = "918.45", btcBalance = "0.01438911"),
+      DateBalance(date = now, usdBalance = "1500", eurBalance = "1377.67", btcBalance = "0.021583665")
     )
 
     every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
@@ -117,11 +119,11 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DatesBalances("16 March 2024", "1000"),
-              DatesBalances("17 March 2024", "1500")
+              DateBalances("16 March 2024", BalancesResponse("1000", "918.45", "0.01438911")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.021583665"))
             ),
-            change = 50F,
-            priceDifference = "500"
+            change = BalanceChanges(50F, 50F, 50F),
+            priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
           )
         )
       )
@@ -132,9 +134,9 @@ class InsightsServiceTest {
     val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
     val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
     val dateBalances = listOf(
-      DateBalance(date = now.minusDays(2), balance = "1200"),
-      DateBalance(date = now.minusDays(1), balance = "1000"),
-      DateBalance(date = now, balance = "1500")
+      DateBalance(date = now.minusDays(2), usdBalance = "1200", eurBalance = "1102.14", btcBalance = "0.020689655"),
+      DateBalance(date = now.minusDays(1), usdBalance = "1000", eurBalance = "918.85", btcBalance = "0.017241379"),
+      DateBalance(date = now, usdBalance = "1500", eurBalance = "1378.27", btcBalance = "0.025862069")
     )
 
     every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
@@ -151,12 +153,12 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DatesBalances("15 March 2024", "1200"),
-              DatesBalances("16 March 2024", "1000"),
-              DatesBalances("17 March 2024", "1500")
+              DateBalances("15 March 2024", BalancesResponse("1200", "1102.14", "0.020689655")),
+              DateBalances("16 March 2024", BalancesResponse("1000", "918.85", "0.017241379")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1378.27", "0.025862069"))
             ),
-            change = 25F,
-            priceDifference = "300"
+            change = BalanceChanges(25F, 25.05F, 25F),
+            priceDifference = DifferencesChanges("300", "276.13", "0.005172414")
           )
         )
       )
@@ -167,10 +169,10 @@ class InsightsServiceTest {
     val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
     val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
     val dateBalances = listOf(
-      DateBalance(date = now.minusDays(3), balance = "1200"),
-      DateBalance(date = now.minusDays(2), balance = "900"),
-      DateBalance(date = now.minusDays(1), balance = "1000"),
-      DateBalance(date = now, balance = "1500")
+      DateBalance(date = now.minusDays(3), usdBalance = "1200", eurBalance = "1102.62", btcBalance = "0.020689655"),
+      DateBalance(date = now.minusDays(2), usdBalance = "900", eurBalance = "823.63", btcBalance = "0.015789474"),
+      DateBalance(date = now.minusDays(1), usdBalance = "1000", eurBalance = "913", btcBalance = "0.016806723"),
+      DateBalance(date = now, usdBalance = "1500", eurBalance = "1377.67", btcBalance = "0.025862069")
     )
 
     every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
@@ -187,13 +189,13 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DatesBalances("14 March 2024", "1200"),
-              DatesBalances("15 March 2024", "900"),
-              DatesBalances("16 March 2024", "1000"),
-              DatesBalances("17 March 2024", "1500")
+              DateBalances("14 March 2024", BalancesResponse("1200", "1102.62", "0.020689655")),
+              DateBalances("15 March 2024", BalancesResponse("900", "823.63", "0.015789474")),
+              DateBalances("16 March 2024", BalancesResponse("1000", "913", "0.016806723")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.025862069"))
             ),
-            change = 25F,
-            priceDifference = "300"
+            change = BalanceChanges(25F, 24.95F, 25F),
+            priceDifference = DifferencesChanges("300", "275.05", "0.005172414")
           )
         )
       )
@@ -204,10 +206,10 @@ class InsightsServiceTest {
     val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
     val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
     val dateBalances = listOf(
-      DateBalance(date = now.minusDays(6), balance = "1200"),
-      DateBalance(date = now.minusDays(4), balance = "900"),
-      DateBalance(date = now.minusDays(2), balance = "1000"),
-      DateBalance(date = now, balance = "1500")
+      DateBalance(date = now.minusDays(6), usdBalance = "1200", eurBalance = "1102.14", btcBalance = "0.020530368"),
+      DateBalance(date = now.minusDays(4), usdBalance = "900", eurBalance = "826.61", btcBalance = "0.015544041"),
+      DateBalance(date = now.minusDays(2), usdBalance = "1000", eurBalance = "918.45", btcBalance = "0.016906171"),
+      DateBalance(date = now, usdBalance = "1500", eurBalance = "1377.67", btcBalance = "0.025862069")
     )
     val dates = getMockDates(now.minusMonths(1), now, 2)
 
@@ -223,13 +225,13 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DatesBalances("11 March 2024", "1200"),
-              DatesBalances("13 March 2024", "900"),
-              DatesBalances("15 March 2024", "1000"),
-              DatesBalances("17 March 2024", "1500")
+              DateBalances("11 March 2024", BalancesResponse("1200", "1102.14", "0.020530368")),
+              DateBalances("13 March 2024", BalancesResponse("900", "826.61", "0.015544041")),
+              DateBalances("15 March 2024", BalancesResponse("1000", "918.45", "0.016906171")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.025862069"))
             ),
-            change = 25F,
-            priceDifference = "300"
+            change = BalanceChanges(25F, 25F, 25.97F),
+            priceDifference = DifferencesChanges("300", "275.53", "0.005331701")
           )
         )
       )
@@ -240,11 +242,11 @@ class InsightsServiceTest {
     val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
     val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
     val dateBalances = listOf(
-      DateBalance(date = now.minusDays(24), balance = "1150"),
-      DateBalance(date = now.minusDays(18), balance = "1200"),
-      DateBalance(date = now.minusDays(12), balance = "900"),
-      DateBalance(date = now.minusDays(6), balance = "1000"),
-      DateBalance(date = now, balance = "1500")
+      DateBalance(date = now.minusDays(24), usdBalance = "1150", eurBalance = "1067.03", btcBalance = "0.019827586"),
+      DateBalance(date = now.minusDays(18), usdBalance = "1200", eurBalance = "1108.50", btcBalance = "0.020512821"),
+      DateBalance(date = now.minusDays(12), usdBalance = "900", eurBalance = "830.38", btcBalance = "0.015319149"),
+      DateBalance(date = now.minusDays(6), usdBalance = "1000", eurBalance = "921.15", btcBalance = "0.016949153"),
+      DateBalance(date = now, usdBalance = "1500", eurBalance = "1372.73", btcBalance = "0.025")
     )
     val dates = getMockDates(now.minusMonths(3), now, 6)
 
@@ -260,14 +262,14 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DatesBalances("22 February 2024", "1150"),
-              DatesBalances("28 February 2024", "1200"),
-              DatesBalances("5 March 2024", "900"),
-              DatesBalances("11 March 2024", "1000"),
-              DatesBalances("17 March 2024", "1500")
+              DateBalances("22 February 2024", BalancesResponse("1150", "1067.03", "0.019827586")),
+              DateBalances("28 February 2024", BalancesResponse("1200", "1108.50", "0.020512821")),
+              DateBalances("5 March 2024", BalancesResponse("900", "830.38", "0.015319149")),
+              DateBalances("11 March 2024", BalancesResponse("1000", "921.15", "0.016949153")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1372.73", "0.025"))
             ),
-            change = 30.43F,
-            priceDifference = "350"
+            change = BalanceChanges(30.43F, 28.65F, 26.09F),
+            priceDifference = DifferencesChanges("350", "305.70", "0.005172414")
           )
         )
       )
@@ -278,12 +280,12 @@ class InsightsServiceTest {
     val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
     val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
     val dateBalances = listOf(
-      DateBalance(date = now.minusDays(50), balance = "1150"),
-      DateBalance(date = now.minusDays(40), balance = "1150"),
-      DateBalance(date = now.minusDays(30), balance = "1200"),
-      DateBalance(date = now.minusDays(20), balance = "900"),
-      DateBalance(date = now.minusDays(10), balance = "1000"),
-      DateBalance(date = now, balance = "1500")
+      DateBalance(date = now.minusDays(50), usdBalance = "1150", eurBalance = "1057.14", btcBalance = "0.019827586"),
+      DateBalance(date = now.minusDays(40), usdBalance = "1150", eurBalance = "1060.30", btcBalance = "0.019311503"),
+      DateBalance(date = now.minusDays(30), usdBalance = "1200", eurBalance = "1113.18", btcBalance = "0.020689655"),
+      DateBalance(date = now.minusDays(20), usdBalance = "900", eurBalance = "840.46", btcBalance = "0.015062762"),
+      DateBalance(date = now.minusDays(10), usdBalance = "1000", eurBalance = "923.75", btcBalance = "0.016666667"),
+      DateBalance(date = now, usdBalance = "1500", eurBalance = "1381.73", btcBalance = "0.025062657")
     )
     val dates = getMockDates(now.minusMonths(6), now, 10)
 
@@ -299,15 +301,15 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DatesBalances("27 January 2024", "1150"),
-              DatesBalances("6 February 2024", "1150"),
-              DatesBalances("16 February 2024", "1200"),
-              DatesBalances("26 February 2024", "900"),
-              DatesBalances("7 March 2024", "1000"),
-              DatesBalances("17 March 2024", "1500")
+              DateBalances("27 January 2024", BalancesResponse("1150", "1057.14", "0.019827586")),
+              DateBalances("6 February 2024", BalancesResponse("1150", "1060.30", "0.019311503")),
+              DateBalances("16 February 2024", BalancesResponse("1200", "1113.18", "0.020689655")),
+              DateBalances("26 February 2024", BalancesResponse("900", "840.46", "0.015062762")),
+              DateBalances("7 March 2024", BalancesResponse("1000", "923.75", "0.016666667")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1381.73", "0.025062657"))
             ),
-            change = 30.43F,
-            priceDifference = "350"
+            change = BalanceChanges(30.43F, 30.7F, 26.4F),
+            priceDifference = DifferencesChanges("350", "324.59", "0.005235071")
           )
         )
       )
@@ -318,12 +320,12 @@ class InsightsServiceTest {
     val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
     val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
     val dateBalances = listOf(
-      DateBalance(date = now.minusMonths(5), balance = "1150"),
-      DateBalance(date = now.minusMonths(4), balance = "1150"),
-      DateBalance(date = now.minusMonths(3), balance = "1200"),
-      DateBalance(date = now.minusMonths(2), balance = "900"),
-      DateBalance(date = now.minusMonths(1), balance = "1000"),
-      DateBalance(date = now, balance = "1500")
+      DateBalance(date = now.minusMonths(5), usdBalance = "1150", eurBalance = "1024.36", btcBalance = "0.020909091"),
+      DateBalance(date = now.minusMonths(4), usdBalance = "1150", eurBalance = "1054.66", btcBalance = "0.020720721"),
+      DateBalance(date = now.minusMonths(3), usdBalance = "1200", eurBalance = "1101.42", btcBalance = "0.021428571"),
+      DateBalance(date = now.minusMonths(2), usdBalance = "900", eurBalance = "827.33", btcBalance = "0.015929204"),
+      DateBalance(date = now.minusMonths(1), usdBalance = "1000", eurBalance = "928.25", btcBalance = "0.01754386"),
+      DateBalance(date = now, usdBalance = "1500", eurBalance = "1378.20", btcBalance = "0.025862069")
     )
     val dates = getMockDates(now)
 
@@ -339,15 +341,15 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DatesBalances("17 October 2023", "1150"),
-              DatesBalances("17 November 2023", "1150"),
-              DatesBalances("17 December 2023", "1200"),
-              DatesBalances("17 January 2024", "900"),
-              DatesBalances("17 February 2024", "1000"),
-              DatesBalances("17 March 2024", "1500")
+              DateBalances("17 October 2023", BalancesResponse("1150", "1024.36", "0.020909091")),
+              DateBalances("17 November 2023", BalancesResponse("1150", "1054.66", "0.020720721")),
+              DateBalances("17 December 2023", BalancesResponse("1200", "1101.42", "0.021428571")),
+              DateBalances("17 January 2024", BalancesResponse("900", "827.33", "0.015929204")),
+              DateBalances("17 February 2024", BalancesResponse("1000", "928.25", "0.01754386")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1378.20", "0.025862069"))
             ),
-            change = 30.43F,
-            priceDifference = "350"
+            change = BalanceChanges(30.43F, 34.54F, 23.69F),
+            priceDifference = DifferencesChanges("350", "353.84", "0.004952978")
           )
         )
       )
@@ -359,15 +361,15 @@ class InsightsServiceTest {
     val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
     val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
     val dateBalances = listOf(
-      DateBalance(date = now.minusDays(4), balance = "900"),
-      DateBalance(date = now.minusDays(2), balance = "1000"),
-      DateBalance(date = now, balance = "1500")
+      DateBalance(date = now.minusDays(4), usdBalance = "900", eurBalance = "826.92", btcBalance = "0.015397776"),
+      DateBalance(date = now.minusDays(2), usdBalance = "1000", eurBalance = "918.80", btcBalance = "0.016949153"),
+      DateBalance(date = now, usdBalance = "1500", eurBalance = "1378.20", btcBalance = "0.025359256")
     )
     val lastTwelvesDaysBalances = listOf(
-      DateBalance(date = now.minusDays(3), balance = "950"),
-      DateBalance(date = now.minusDays(2), balance = "1000"),
-      DateBalance(date = now.minusDays(1), balance = "900"),
-      DateBalance(date = now, balance = "1500")
+      DateBalance(date = now.minusDays(3), usdBalance = "950", eurBalance = "872.86", btcBalance = "0.016225448"),
+      DateBalance(date = now.minusDays(2), usdBalance = "1000", eurBalance = "918.80", btcBalance = "0.016949153"),
+      DateBalance(date = now.minusDays(1), usdBalance = "900", eurBalance = "826.92", btcBalance = "0.015397776"),
+      DateBalance(date = now, usdBalance = "1500", eurBalance = "1378.20", btcBalance = "0.025359256")
     )
 
     every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
@@ -385,13 +387,13 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DatesBalances("14 March 2024", "950"),
-              DatesBalances("15 March 2024", "1000"),
-              DatesBalances("16 March 2024", "900"),
-              DatesBalances("17 March 2024", "1500")
+              DateBalances("14 March 2024", BalancesResponse("950", "872.86", "0.016225448")),
+              DateBalances("15 March 2024", BalancesResponse("1000", "918.80", "0.016949153")),
+              DateBalances("16 March 2024", BalancesResponse("900", "826.92", "0.015397776")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1378.20", "0.025359256"))
             ),
-            change = 57.89F,
-            priceDifference = "550"
+            change = BalanceChanges(57.89F, 57.89F, 56.29F),
+            priceDifference = DifferencesChanges("550", "505.34", "0.009133808")
           )
         )
       )
@@ -737,7 +739,7 @@ class InsightsServiceTest {
           PlatformsBalancesInsightsResponse(
             balances = BalancesResponse(
               totalUSDBalance = "7108.39",
-              totalBTCBalance = "0.25127935932",
+              totalBTCBalance = "0.2512793593",
               totalEURBalance = "6484.23"
             ),
             platforms = listOf(
@@ -754,7 +756,7 @@ class InsightsServiceTest {
                 platformName = "COINBASE",
                 balances = BalancesResponse(
                   totalUSDBalance = "1987.93",
-                  totalBTCBalance = "0.07719043372",
+                  totalBTCBalance = "0.0771904337",
                   totalEURBalance = "1855.17"
                 ),
                 percentage = 27.97f
@@ -803,7 +805,7 @@ class InsightsServiceTest {
           CryptosBalancesInsightsResponse(
             balances = BalancesResponse(
               totalUSDBalance = "7108.39",
-              totalBTCBalance = "0.25127935932",
+              totalBTCBalance = "0.2512793593",
               totalEURBalance = "6484.23"
             ),
             cryptos = listOf(
@@ -824,7 +826,7 @@ class InsightsServiceTest {
                 quantity = "1.372",
                 balances = BalancesResponse(
                   totalUSDBalance = "2219.13",
-                  totalBTCBalance = "0.08616648432",
+                  totalBTCBalance = "0.0861664843",
                   totalEURBalance = "2070.86"
                 ),
                 percentage = 31.22f
@@ -890,7 +892,7 @@ class InsightsServiceTest {
           CryptosBalancesInsightsResponse(
             balances = BalancesResponse(
               totalUSDBalance = "8373.63",
-              totalBTCBalance = "0.29959591932",
+              totalBTCBalance = "0.2995959193",
               totalEURBalance = "7663.61"
             ),
             cryptos = listOf(
@@ -911,7 +913,7 @@ class InsightsServiceTest {
                 quantity = "1.372",
                 balances = BalancesResponse(
                   totalUSDBalance = "2219.13",
-                  totalBTCBalance = "0.08616648432",
+                  totalBTCBalance = "0.0861664843",
                   totalEURBalance = "2070.86"
                 ),
                 percentage = 26.5f
@@ -2197,7 +2199,7 @@ class InsightsServiceTest {
             hasNextPage = true,
             balances = BalancesResponse(
               totalUSDBalance = "8158.57",
-              totalBTCBalance = "0.29138361932",
+              totalBTCBalance = "0.2913836193",
               totalEURBalance = "7463.42"
             ),
             cryptos = listOf(
@@ -2249,7 +2251,7 @@ class InsightsServiceTest {
                 percentage = 22.05f,
                 balances = BalancesResponse(
                   totalUSDBalance = "1798.59",
-                  totalBTCBalance = "0.06983755872",
+                  totalBTCBalance = "0.0698375587",
                   totalEURBalance = "1678.42"
                 ),
                 marketCapRank = 2,
@@ -2607,7 +2609,7 @@ class InsightsServiceTest {
             hasNextPage = false,
             balances = BalancesResponse(
               totalUSDBalance = "6919.05",
-              totalBTCBalance = "0.24392648432",
+              totalBTCBalance = "0.2439264843",
               totalEURBalance = "6307.48"
             ),
             cryptos = listOf(
@@ -2657,7 +2659,7 @@ class InsightsServiceTest {
                 percentage = 32.07f,
                 balances = BalancesResponse(
                   totalUSDBalance = "2219.13",
-                  totalBTCBalance = "0.08616648432",
+                  totalBTCBalance = "0.0861664843",
                   totalEURBalance = "2070.86"
                 ),
                 marketCapRank = 2,
@@ -2775,7 +2777,7 @@ class InsightsServiceTest {
             hasNextPage = true,
             balances = BalancesResponse(
               totalUSDBalance = "8373.63",
-              totalBTCBalance = "0.29959591932",
+              totalBTCBalance = "0.2995959193",
               totalEURBalance = "7663.61"
             ),
             cryptos = listOf(
@@ -2825,7 +2827,7 @@ class InsightsServiceTest {
                 percentage = 26.5f,
                 balances = BalancesResponse(
                   totalUSDBalance = "2219.13",
-                  totalBTCBalance = "0.08616648432",
+                  totalBTCBalance = "0.0861664843",
                   totalEURBalance = "2070.86"
                 ),
                 marketCapRank = 2,
@@ -3184,7 +3186,7 @@ class InsightsServiceTest {
             hasNextPage = false,
             balances = BalancesResponse(
               totalUSDBalance = "8373.63",
-              totalBTCBalance = "0.29959591932",
+              totalBTCBalance = "0.2995959193",
               totalEURBalance = "7663.61"
             ),
             cryptos = listOf(

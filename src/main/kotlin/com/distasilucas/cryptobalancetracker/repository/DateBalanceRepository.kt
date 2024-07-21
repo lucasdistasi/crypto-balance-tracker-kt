@@ -3,7 +3,7 @@ package com.distasilucas.cryptobalancetracker.repository
 import com.distasilucas.cryptobalancetracker.entity.DateBalance
 import org.springframework.data.mongodb.repository.MongoRepository
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
 
 interface DateBalanceRepository : MongoRepository<DateBalance, String> {
 
