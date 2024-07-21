@@ -23,21 +23,28 @@ import java.time.LocalDateTime
 <span class="fc" id="L23">    logger.info { &quot;Running cron to save daily balance&quot; }</span>
 
 <span class="fc" id="L25">    val now = LocalDateTime.now(clock).toLocalDate().atTime(23, 59, 59, 0)</span>
-<span class="fc" id="L26">    val totalUSDBalance = insightsService.retrieveTotalBalances().map { it.totalUSDBalance }</span>
+<span class="fc" id="L26">    val totalBalances = insightsService.retrieveTotalBalances()</span>
 <span class="fc" id="L27">    val optionalDateBalance = dateBalancesRepository.findDateBalanceByDate(now)</span>
 
-<span class="fc" id="L29">    totalUSDBalance.ifPresent { balance -&gt;</span>
+<span class="fc" id="L29">    totalBalances.ifPresent { balances -&gt;</span>
 <span class="fc" id="L30">      optionalDateBalance.ifPresentOrElse(</span>
 <span class="fc" id="L31">        {</span>
-<span class="fc" id="L32">          logger.info {&quot;Updating balance for date $now. Old Balance: ${it.balance}. New balance $balance&quot; }</span>
-<span class="fc" id="L33">          dateBalancesRepository.save(DateBalance(it.id, now, balance))</span>
+<span class="fc" id="L32">          logger.info {&quot;Updating balances for date $now. Old Balance: $it. New balances $balances&quot; }</span>
+<span class="fc" id="L33">          dateBalancesRepository.save(DateBalance(it.id, now, balances.totalUSDBalance, balances.totalEURBalance, balances.totalBTCBalance))</span>
 <span class="fc" id="L34">        },</span>
         {
-<span class="fc" id="L36">          logger.info { &quot;Saving balance $balance for date $now&quot; }</span>
-<span class="fc" id="L37">          dateBalancesRepository.save(DateBalance(date = now, balance = balance))</span>
-<span class="fc" id="L38">        }</span>
+<span class="fc" id="L36">          logger.info { &quot;Saving balances $balances for date $now&quot; }</span>
+<span class="fc" id="L37">          dateBalancesRepository.save(</span>
+<span class="fc" id="L38">            DateBalance(</span>
+<span class="fc" id="L39">              date = now,</span>
+<span class="fc" id="L40">              usdBalance = balances.totalUSDBalance,</span>
+<span class="fc" id="L41">              eurBalance = balances.totalEURBalance,</span>
+<span class="fc" id="L42">              btcBalance = balances.totalBTCBalance</span>
+            )
+          )
+<span class="fc" id="L45">        }</span>
       )
-<span class="fc" id="L40">    }</span>
-<span class="fc" id="L41">  }</span>
+<span class="fc" id="L47">    }</span>
+<span class="fc" id="L48">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
