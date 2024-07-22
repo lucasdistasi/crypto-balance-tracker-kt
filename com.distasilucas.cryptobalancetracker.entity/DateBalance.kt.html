@@ -3,14 +3,14 @@
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.util.UUID
 
 @Document(&quot;DateBalances&quot;)
 <span class="fc" id="L10">data class DateBalance(</span>
 <span class="fc" id="L11">  @Id</span>
 <span class="fc" id="L12">  val id: String = UUID.randomUUID().toString(),</span>
-<span class="fc" id="L13">  val date: LocalDateTime,</span>
+<span class="fc" id="L13">  val date: String,</span>
 
 <span class="fc" id="L15">  @Field(&quot;usd_balance&quot;)</span>
   val usdBalance: String,
@@ -20,5 +20,7 @@ import java.util.UUID
 
 <span class="fc" id="L21">  @Field(&quot;btc_balance&quot;)</span>
   val btcBalance: String,
-<span class="fc" id="L23">)</span>
+<span class="fc" id="L23">) {</span>
+<span class="fc" id="L24">  constructor(date: LocalDate, usdBalance: String, eurBalance: String, btcBalance: String) : this(UUID.randomUUID().toString(), date.toString(), usdBalance, eurBalance, btcBalance)</span>
+}
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
