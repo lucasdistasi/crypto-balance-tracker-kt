@@ -32,8 +32,7 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.Clock
-import java.time.LocalDateTime
-import java.time.LocalTime
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.LongStream
@@ -74,12 +73,12 @@ class InsightsService(
 
   fun retrieveDatesBalances(dateRange: DateRange): Optional<DatesBalanceResponse> {
     logger.info { "Retrieving balances for date range: $dateRange" }
-    val now = LocalDateTime.now(clock).toLocalDate().atTime(LocalTime.of(23, 59, 59, 0))
+    val now = LocalDate.now(clock)
 
     val dateBalances = when (dateRange) {
-      DateRange.LAST_DAY -> retrieveDatesBalances(now.minusDays(2), now)
-      DateRange.THREE_DAYS -> retrieveDatesBalances(now.minusDays(3), now)
-      DateRange.ONE_WEEK -> retrieveDatesBalances(now.minusWeeks(1), now)
+      DateRange.LAST_DAY -> retrieveDatesBalances(now.minusDays(1), now)
+      DateRange.THREE_DAYS -> retrieveDatesBalances(now.minusDays(2), now)
+      DateRange.ONE_WEEK -> retrieveDatesBalances(now.minusDays(6), now)
       DateRange.ONE_MONTH -> retrieveDatesBalances(2, 4, now.minusMonths(1), now)
       DateRange.THREE_MONTHS -> retrieveDatesBalances(6, 5, now.minusMonths(3), now)
       DateRange.SIX_MONTHS -> retrieveDatesBalances(10, 6, now.minusMonths(6), now)
@@ -87,7 +86,8 @@ class InsightsService(
     }
 
     val datesBalances = dateBalances.map {
-      val formattedDate = it.date.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+      val localDate = LocalDate.parse(it.date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+      val formattedDate = localDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
       DateBalances(formattedDate, BalancesResponse(it.usdBalance, it.eurBalance, it.btcBalance))
     }.toList()
 
@@ -398,20 +398,20 @@ class InsightsService(
     )
   }
 
-  private fun retrieveDatesBalances(from: LocalDateTime, to: LocalDateTime): List<DateBalance> {
-    val toMax = to.toLocalDate().atTime(LocalTime.MAX)
-    logger.info { "Retrieving date balances from $from to $toMax" }
+  private fun retrieveDatesBalances(from: LocalDate, to: LocalDate): List<DateBalance> {
+    val toPlusOne = to.plusDays(1) // To date is not inclusive. We want to retrieve balances for today too
+    logger.info { "Retrieving date balances from $from to $toPlusOne" }
 
-    return dateBalanceRepository.findDateBalancesByDateBetween(from, toMax)
+    return dateBalanceRepository.findDateBalancesByDateBetween(from.toString(), toPlusOne.toString())
   }
 
   private fun retrieveDatesBalances(daysSubtraction: Long, minRequired: Int,
-                                    from: LocalDateTime, to: LocalDateTime): List<DateBalance> {
-    val dates = mutableListOf<LocalDateTime>()
+                                    from: LocalDate, to: LocalDate): List<DateBalance> {
+    val dates = mutableListOf<String>()
     var toDate = to
 
     while (from.isBefore(toDate)) {
-      dates.add(toDate)
+      dates.add(toDate.toString())
       toDate = toDate.minusDays(daysSubtraction)
     }
 
@@ -427,12 +427,12 @@ class InsightsService(
     }
   }
 
-  private fun retrieveYearDatesBalances(now: LocalDateTime): List<DateBalance> {
-    val dates = mutableListOf<LocalDateTime>()
-    dates.add(now)
+  private fun retrieveYearDatesBalances(now: LocalDate): List<DateBalance> {
+    val dates = mutableListOf<String>()
+    dates.add(now.toString())
 
     LongStream.range(1, 12)
-      .forEach { dates.add(now.minusMonths(it)) }
+      .forEach { dates.add(now.minusMonths(it).toString()) }
 
     logger.info { "Searching balances for dates $dates" }
 
@@ -482,11 +482,12 @@ class InsightsService(
   }
 
   private fun retrieveLastTwelveDaysBalances(): List<DateBalance> {
-    val to = LocalDateTime.now(clock).toLocalDate().atTime(LocalTime.MAX)
-    val from = to.toLocalDate().minusDays(12).atTime(23, 59, 59, 0)
+    // To date is not inclusive. We want to retrieve balances for today too
+    val to = LocalDate.now(clock).plusDays(1)
+    val from = to.minusDays(12)
     logger.info { "Not enough balances. Retrieving balances for the last twelve days from $from to $to" }
 
-    return dateBalanceRepository.findDateBalancesByDateBetween(from, to)
+    return dateBalanceRepository.findDateBalancesByDateBetween(from.toString(), to.toString())
   }
 
   private fun getTotalBalances(cryptos: List<Crypto>, userCryptoQuantity: Map<String, BigDecimal>): BalancesResponse {

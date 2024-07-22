@@ -14,8 +14,8 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.Circulating
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
-import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
@@ -34,17 +34,17 @@ import getUserCrypto
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import java.math.BigDecimal
 import java.time.Clock
+import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.util.*
 import java.util.stream.IntStream
 
@@ -98,17 +98,18 @@ class InsightsServiceTest {
 
   @Test
   fun `should retrieve dates balances for LAST_DAY`() {
-    val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
-    val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
+    val now = LocalDate.of(2024, 3, 17)
     val dateBalances = listOf(
       DateBalance(date = now.minusDays(1), usdBalance = "1000", eurBalance = "918.45", btcBalance = "0.01438911"),
       DateBalance(date = now, usdBalance = "1500", eurBalance = "1377.67", btcBalance = "0.021583665")
     )
+    val from = now.minusDays(1).toString()
+    val to = now.plusDays(1).toString()
 
-    every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
-    every { clockMock.zone } returns zonedDateTime.zone
+    every { clockMock.instant() } returns now.atStartOfDay().toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns now.atStartOfDay().atZone(ZoneId.of("UTC")).zone
     every {
-      dateBalanceRepositoryMock.findDateBalancesByDateBetween(now.minusDays(2), now.toLocalDate().atTime(LocalTime.MAX))
+      dateBalanceRepositoryMock.findDateBalancesByDateBetween(from, to)
     } returns dateBalances
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.LAST_DAY)
@@ -131,22 +132,22 @@ class InsightsServiceTest {
 
   @Test
   fun `should retrieve dates balances for THREE_DAYS`() {
-    val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
-    val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
+    val now = LocalDate.of(2024, 3, 17)
     val dateBalances = listOf(
       DateBalance(date = now.minusDays(2), usdBalance = "1200", eurBalance = "1102.14", btcBalance = "0.020689655"),
       DateBalance(date = now.minusDays(1), usdBalance = "1000", eurBalance = "918.85", btcBalance = "0.017241379"),
       DateBalance(date = now, usdBalance = "1500", eurBalance = "1378.27", btcBalance = "0.025862069")
     )
+    val from = now.minusDays(2).toString()
+    val to = now.plusDays(1).toString()
 
-    every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
-    every { clockMock.zone } returns zonedDateTime.zone
-    every {
-      dateBalanceRepositoryMock.findDateBalancesByDateBetween(now.minusDays(3), now.toLocalDate().atTime(LocalTime.MAX))
-    } returns dateBalances
+    every { clockMock.instant() } returns now.atStartOfDay().toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns now.atStartOfDay().atZone(ZoneId.of("UTC")).zone
+    every { dateBalanceRepositoryMock.findDateBalancesByDateBetween(from, to) } returns dateBalances
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.THREE_DAYS)
 
+    assertEquals(3, datesBalances.get().datesBalances.size)
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
@@ -166,19 +167,20 @@ class InsightsServiceTest {
 
   @Test
   fun `should retrieve dates balances for ONE_WEEK`() {
-    val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
-    val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
+    val now = LocalDate.of(2024, 3, 17)
     val dateBalances = listOf(
       DateBalance(date = now.minusDays(3), usdBalance = "1200", eurBalance = "1102.62", btcBalance = "0.020689655"),
       DateBalance(date = now.minusDays(2), usdBalance = "900", eurBalance = "823.63", btcBalance = "0.015789474"),
       DateBalance(date = now.minusDays(1), usdBalance = "1000", eurBalance = "913", btcBalance = "0.016806723"),
       DateBalance(date = now, usdBalance = "1500", eurBalance = "1377.67", btcBalance = "0.025862069")
     )
+    val from = now.minusDays(6).toString()
+    val to = now.plusDays(1).toString()
 
-    every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
-    every { clockMock.zone } returns zonedDateTime.zone
+    every { clockMock.instant() } returns now.atStartOfDay().toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns now.atStartOfDay().atZone(ZoneId.of("UTC")).zone
     every {
-      dateBalanceRepositoryMock.findDateBalancesByDateBetween(now.minusDays(7), now.toLocalDate().atTime(LocalTime.MAX))
+      dateBalanceRepositoryMock.findDateBalancesByDateBetween(from, to)
     } returns dateBalances
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.ONE_WEEK)
@@ -203,8 +205,7 @@ class InsightsServiceTest {
 
   @Test
   fun `should retrieve dates balances for ONE_MONTH`() {
-    val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
-    val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
+    val now = LocalDate.of(2024, 3, 17)
     val dateBalances = listOf(
       DateBalance(date = now.minusDays(6), usdBalance = "1200", eurBalance = "1102.14", btcBalance = "0.020530368"),
       DateBalance(date = now.minusDays(4), usdBalance = "900", eurBalance = "826.61", btcBalance = "0.015544041"),
@@ -213,8 +214,8 @@ class InsightsServiceTest {
     )
     val dates = getMockDates(now.minusMonths(1), now, 2)
 
-    every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
-    every { clockMock.zone } returns zonedDateTime.zone
+    every { clockMock.instant() } returns now.atStartOfDay().toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns now.atStartOfDay().atZone(ZoneId.of("UTC")).zone
     every { dateBalanceRepositoryMock.findAllByDateIn(dates) } returns dateBalances
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.ONE_MONTH)
@@ -239,8 +240,7 @@ class InsightsServiceTest {
 
   @Test
   fun `should retrieve dates balances for THREE_MONTHS`() {
-    val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
-    val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
+    val now = LocalDate.of(2024, 3, 17)
     val dateBalances = listOf(
       DateBalance(date = now.minusDays(24), usdBalance = "1150", eurBalance = "1067.03", btcBalance = "0.019827586"),
       DateBalance(date = now.minusDays(18), usdBalance = "1200", eurBalance = "1108.50", btcBalance = "0.020512821"),
@@ -250,8 +250,8 @@ class InsightsServiceTest {
     )
     val dates = getMockDates(now.minusMonths(3), now, 6)
 
-    every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
-    every { clockMock.zone } returns zonedDateTime.zone
+    every { clockMock.instant() } returns now.atStartOfDay().toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns now.atStartOfDay().atZone(ZoneId.of("UTC")).zone
     every { dateBalanceRepositoryMock.findAllByDateIn(dates) } returns dateBalances
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.THREE_MONTHS)
@@ -277,8 +277,7 @@ class InsightsServiceTest {
 
   @Test
   fun `should retrieve dates balances for SIX_MONTHS`() {
-    val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
-    val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
+    val now = LocalDate.of(2024, 3, 17)
     val dateBalances = listOf(
       DateBalance(date = now.minusDays(50), usdBalance = "1150", eurBalance = "1057.14", btcBalance = "0.019827586"),
       DateBalance(date = now.minusDays(40), usdBalance = "1150", eurBalance = "1060.30", btcBalance = "0.019311503"),
@@ -289,8 +288,8 @@ class InsightsServiceTest {
     )
     val dates = getMockDates(now.minusMonths(6), now, 10)
 
-    every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
-    every { clockMock.zone } returns zonedDateTime.zone
+    every { clockMock.instant() } returns now.atStartOfDay().toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns now.atStartOfDay().atZone(ZoneId.of("UTC")).zone
     every { dateBalanceRepositoryMock.findAllByDateIn(dates) } returns dateBalances
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.SIX_MONTHS)
@@ -317,8 +316,7 @@ class InsightsServiceTest {
 
   @Test
   fun `should retrieve dates balances for ONE_YEAR`() {
-    val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
-    val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
+    val now = LocalDate.of(2024, 3, 17)
     val dateBalances = listOf(
       DateBalance(date = now.minusMonths(5), usdBalance = "1150", eurBalance = "1024.36", btcBalance = "0.020909091"),
       DateBalance(date = now.minusMonths(4), usdBalance = "1150", eurBalance = "1054.66", btcBalance = "0.020720721"),
@@ -329,8 +327,8 @@ class InsightsServiceTest {
     )
     val dates = getMockDates(now)
 
-    every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
-    every { clockMock.zone } returns zonedDateTime.zone
+    every { clockMock.instant() } returns now.atStartOfDay().toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns now.atStartOfDay().atZone(ZoneId.of("UTC")).zone
     every { dateBalanceRepositoryMock.findAllByDateIn(dates) } returns dateBalances
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.ONE_YEAR)
@@ -358,8 +356,7 @@ class InsightsServiceTest {
   @ParameterizedTest
   @ValueSource(strings = ["ONE_MONTH", "THREE_MONTHS", "SIX_MONTHS", "ONE_YEAR"])
   fun `should retrieve last twelve days balances for ONE_MONTH, THREE_MONTHS, SIX_MONTHS and ONE_YEAR`(dateRange: String) {
-    val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
-    val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
+    val now = LocalDate.of(2024, 3, 17)
     val dateBalances = listOf(
       DateBalance(date = now.minusDays(4), usdBalance = "900", eurBalance = "826.92", btcBalance = "0.015397776"),
       DateBalance(date = now.minusDays(2), usdBalance = "1000", eurBalance = "918.80", btcBalance = "0.016949153"),
@@ -371,12 +368,14 @@ class InsightsServiceTest {
       DateBalance(date = now.minusDays(1), usdBalance = "900", eurBalance = "826.92", btcBalance = "0.015397776"),
       DateBalance(date = now, usdBalance = "1500", eurBalance = "1378.20", btcBalance = "0.025359256")
     )
+    val from = now.minusDays(11).toString()
+    val to = now.plusDays(1).toString()
 
-    every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
-    every { clockMock.zone } returns zonedDateTime.zone
+    every { clockMock.instant() } returns now.atStartOfDay().toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns now.atStartOfDay().atZone(ZoneId.of("UTC")).zone
     every { dateBalanceRepositoryMock.findAllByDateIn(any()) } returns dateBalances
     every {
-      dateBalanceRepositoryMock.findDateBalancesByDateBetween(now.minusDays(12), now.toLocalDate().atTime(LocalTime.MAX))
+      dateBalanceRepositoryMock.findDateBalancesByDateBetween(from, to)
     } returns lastTwelvesDaysBalances
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.valueOf(dateRange))
@@ -401,14 +400,13 @@ class InsightsServiceTest {
 
   @Test
   fun `should retrieve empty dates balances`() {
-    val now = LocalDateTime.of(2024, 3, 17, 23, 59, 59, 0)
-    val zonedDateTime = ZonedDateTime.of(now, ZoneId.of("UTC"))
+    val now = LocalDate.of(2024, 3, 17)
+    val from = now.minusDays(6).toString()
+    val to = now.plusDays(1).toString()
 
-    every { clockMock.instant() } returns now.toInstant(ZoneOffset.UTC)
-    every { clockMock.zone } returns zonedDateTime.zone
-    every {
-      dateBalanceRepositoryMock.findDateBalancesByDateBetween(now.minusWeeks(1), now.toLocalDate().atTime(LocalTime.MAX))
-    } returns emptyList()
+    every { clockMock.instant() } returns now.atStartOfDay().toInstant(ZoneOffset.UTC)
+    every { clockMock.zone } returns now.atStartOfDay().atZone(ZoneId.of("UTC")).zone
+    every { dateBalanceRepositoryMock.findDateBalancesByDateBetween(from, to) } returns emptyList()
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.ONE_WEEK)
 
@@ -3702,24 +3700,24 @@ class InsightsServiceTest {
     )
   }
 
-  private fun getMockDates(from: LocalDateTime, to: LocalDateTime, daysSubtraction: Int): List<LocalDateTime> {
+  private fun getMockDates(from: LocalDate, to: LocalDate, daysSubtraction: Int): List<String> {
     var mutableTo = to
-    val dates: MutableList<LocalDateTime> = ArrayList()
+    val dates: MutableList<String> = ArrayList()
 
     while (from.isBefore(mutableTo)) {
-      dates.add(mutableTo)
+      dates.add(mutableTo.toString())
       mutableTo = mutableTo.minusDays(daysSubtraction.toLong())
     }
 
     return dates
   }
 
-  private fun getMockDates(now: LocalDateTime): List<LocalDateTime> {
-    val dates: MutableList<LocalDateTime> = ArrayList()
-    dates.add(now)
+  private fun getMockDates(now: LocalDate): List<String> {
+    val dates: MutableList<String> = ArrayList()
+    dates.add(now.toString())
 
     IntStream.range(1, 12)
-      .forEach { n: Int -> dates.add(now.minusMonths(n.toLong())) }
+      .forEach { n: Int -> dates.add(now.minusMonths(n.toLong()).toString()) }
 
     return dates
   }
