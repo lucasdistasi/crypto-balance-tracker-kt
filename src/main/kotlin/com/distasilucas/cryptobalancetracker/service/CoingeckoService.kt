@@ -87,7 +87,7 @@ class CoingeckoService(
     params.add("tickers", "false")
     params.add("community_data", "false")
     params.add("developer_data", "false")
-    params.add(DEMO_API_KEY_QUERY_PARAM, demoCoingeckoApiKey)
+    params.add("localization", "false")
 
     val proCoingeckoUri = Function { uriBuilder: UriBuilder ->
       uriBuilder.path(url)
@@ -98,6 +98,7 @@ class CoingeckoService(
 
     val freeCoingeckoUri = Function { uriBuilder: UriBuilder ->
       uriBuilder.path(url)
+        .queryParam(DEMO_API_KEY_QUERY_PARAM, demoCoingeckoApiKey)
         .queryParams(params)
         .build()
     }

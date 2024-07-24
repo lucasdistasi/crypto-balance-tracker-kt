@@ -89,12 +89,10 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$.datesBalances[0].balances.totalUSDBalance", `is`("1000")))
       .andExpect(jsonPath("$.datesBalances[0].balances.totalEURBalance", `is`("918.45")))
       .andExpect(jsonPath("$.datesBalances[0].balances.totalBTCBalance", `is`("0.01438911")))
-
       .andExpect(jsonPath("$.datesBalances[1].date", `is`("17 March 2024")))
       .andExpect(jsonPath("$.datesBalances[1].balances.totalUSDBalance", `is`("1500")))
       .andExpect(jsonPath("$.datesBalances[1].balances.totalEURBalance", `is`("1377.67")))
       .andExpect(jsonPath("$.datesBalances[1].balances.totalBTCBalance", `is`("0.021583665")))
-
       .andExpect(jsonPath("$.change.usdChange", `is`(50.0)))
       .andExpect(jsonPath("$.change.eurChange", `is`(50.0)))
       .andExpect(jsonPath("$.change.btcChange", `is`(49.99)))

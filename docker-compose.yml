@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   mongo-crypto-db:
     image: 'mongo:latest'

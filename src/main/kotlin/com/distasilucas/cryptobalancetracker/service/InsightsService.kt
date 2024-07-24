@@ -1,5 +1,11 @@
 package com.distasilucas.cryptobalancetracker.service
 
+import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_BALANCES_INSIGHTS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_INSIGHTS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.DATES_BALANCES_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_BALANCES_INSIGHTS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.PLATFORM_INSIGHTS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.TOTAL_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.DateBalance
 import com.distasilucas.cryptobalancetracker.entity.Platform
@@ -28,6 +34,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.platform.Pl
 import com.distasilucas.cryptobalancetracker.repository.DateBalanceRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -54,6 +61,7 @@ class InsightsService(
 
   private val logger = KotlinLogging.logger { }
 
+  @Cacheable(cacheNames = [TOTAL_BALANCES_CACHE])
   fun retrieveTotalBalances(): Optional<BalancesResponse> {
     logger.info { "Retrieving total balances" }
 
@@ -71,6 +79,7 @@ class InsightsService(
     return Optional.of(totalBalances)
   }
 
+  @Cacheable(cacheNames = [DATES_BALANCES_CACHE], key = "#dateRange")
   fun retrieveDatesBalances(dateRange: DateRange): Optional<DatesBalanceResponse> {
     logger.info { "Retrieving balances for date range: $dateRange" }
     val now = LocalDate.now(clock)
@@ -100,6 +109,7 @@ class InsightsService(
     return Optional.of(DatesBalanceResponse(datesBalances, changesPair.first, changesPair.second))
   }
 
+  @Cacheable(cacheNames = [PLATFORM_INSIGHTS_CACHE], key = "#platformId")
   fun retrievePlatformInsights(platformId: String): Optional<PlatformInsightsResponse> {
     logger.info { "Retrieving insights for platform with id $platformId" }
 
@@ -139,6 +149,7 @@ class InsightsService(
     return Optional.of(platformInsightsResponse)
   }
 
+  @Cacheable(cacheNames = [CRYPTO_INSIGHTS_CACHE], key = "#coingeckoCryptoId")
   fun retrieveCryptoInsights(coingeckoCryptoId: String): Optional<CryptoInsightResponse> {
     logger.info { "Retrieving insights for crypto with coingeckoCryptoId $coingeckoCryptoId" }
 
@@ -179,6 +190,7 @@ class InsightsService(
     )
   }
 
+  @Cacheable(cacheNames = [PLATFORMS_BALANCES_INSIGHTS_CACHE])
   fun retrievePlatformsBalancesInsights(): Optional<PlatformsBalancesInsightsResponse> {
     logger.info { "Retrieving all platforms balances insights" }
 
@@ -229,6 +241,7 @@ class InsightsService(
     )
   }
 
+  @Cacheable(cacheNames = [CRYPTOS_BALANCES_INSIGHTS_CACHE])
   fun retrieveCryptosBalancesInsights(): Optional<CryptosBalancesInsightsResponse> {
     logger.info { "Retrieving all cryptos balances insights" }
 
@@ -399,10 +412,9 @@ class InsightsService(
   }
 
   private fun retrieveDatesBalances(from: LocalDate, to: LocalDate): List<DateBalance> {
-    val toPlusOne = to.plusDays(1) // To date is not inclusive. We want to retrieve balances for today too
-    logger.info { "Retrieving date balances from $from to $toPlusOne" }
+    logger.info { "Retrieving date balances from $from to $to" }
 
-    return dateBalanceRepository.findDateBalancesByDateBetween(from.toString(), toPlusOne.toString())
+    return dateBalanceRepository.findDateBalancesByInclusiveDateBetween(from.toString(), to.toString())
   }
 
   private fun retrieveDatesBalances(daysSubtraction: Long, minRequired: Int,
@@ -482,12 +494,11 @@ class InsightsService(
   }
 
   private fun retrieveLastTwelveDaysBalances(): List<DateBalance> {
-    // To date is not inclusive. We want to retrieve balances for today too
-    val to = LocalDate.now(clock).plusDays(1)
+    val to = LocalDate.now(clock)
     val from = to.minusDays(12)
     logger.info { "Not enough balances. Retrieving balances for the last twelve days from $from to $to" }
 
-    return dateBalanceRepository.findDateBalancesByDateBetween(from.toString(), to.toString())
+    return dateBalanceRepository.findDateBalancesByInclusiveDateBetween(from.toString(), to.toString())
   }
 
   private fun getTotalBalances(cryptos: List<Crypto>, userCryptoQuantity: Map<String, BigDecimal>): BalancesResponse {
