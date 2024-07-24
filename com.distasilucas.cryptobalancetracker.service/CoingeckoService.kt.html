@@ -87,7 +87,7 @@ const val COINS_URI = &quot;$COIN_URI/list&quot;
 <span class="fc" id="L87">    params.add(&quot;tickers&quot;, &quot;false&quot;)</span>
 <span class="fc" id="L88">    params.add(&quot;community_data&quot;, &quot;false&quot;)</span>
 <span class="fc" id="L89">    params.add(&quot;developer_data&quot;, &quot;false&quot;)</span>
-<span class="fc" id="L90">    params.add(DEMO_API_KEY_QUERY_PARAM, demoCoingeckoApiKey)</span>
+<span class="fc" id="L90">    params.add(&quot;localization&quot;, &quot;false&quot;)</span>
 
 <span class="fc" id="L92">    val proCoingeckoUri = Function { uriBuilder: UriBuilder -&gt;</span>
 <span class="fc" id="L93">      uriBuilder.path(url)</span>
@@ -98,11 +98,12 @@ const val COINS_URI = &quot;$COIN_URI/list&quot;
 
 <span class="fc" id="L99">    val freeCoingeckoUri = Function { uriBuilder: UriBuilder -&gt;</span>
 <span class="fc" id="L100">      uriBuilder.path(url)</span>
-<span class="fc" id="L101">        .queryParams(params)</span>
-<span class="fc" id="L102">        .build()</span>
+<span class="fc" id="L101">        .queryParam(DEMO_API_KEY_QUERY_PARAM, demoCoingeckoApiKey)</span>
+<span class="fc" id="L102">        .queryParams(params)</span>
+<span class="fc" id="L103">        .build()</span>
     }
 
-<span class="fc bfc" id="L105" title="All 2 branches covered.">    return if (StringUtils.isNotBlank(proCoingeckoApiKey)) proCoingeckoUri else freeCoingeckoUri</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">    return if (StringUtils.isNotBlank(proCoingeckoApiKey)) proCoingeckoUri else freeCoingeckoUri</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

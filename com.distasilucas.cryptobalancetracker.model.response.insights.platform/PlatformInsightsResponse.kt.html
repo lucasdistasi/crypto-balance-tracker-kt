@@ -2,10 +2,11 @@
 
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
+import java.io.Serializable
 
-<span class="fc" id="L6">data class PlatformInsightsResponse(</span>
-<span class="fc" id="L7">  val platformName: String,</span>
-<span class="fc" id="L8">  val balances: BalancesResponse,</span>
-<span class="fc" id="L9">  val cryptos: List&lt;CryptoInsights&gt;,</span>
-)
+<span class="fc" id="L7">data class PlatformInsightsResponse(</span>
+<span class="fc" id="L8">  val platformName: String,</span>
+<span class="fc" id="L9">  val balances: BalancesResponse,</span>
+<span class="fc" id="L10">  val cryptos: List&lt;CryptoInsights&gt;,</span>
+): Serializable
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

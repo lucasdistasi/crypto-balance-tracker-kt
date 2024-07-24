@@ -89,7 +89,7 @@ import java.util.Optional
 <span class="fc" id="L89">    cryptoService.saveCryptoIfNotExists(coingeckoCrypto.id)</span>
 <span class="fc" id="L90">    userCryptoRepository.save(userCrypto)</span>
 <span class="fc" id="L91">    logger.info { &quot;Saved user crypto $userCrypto&quot; }</span>
-<span class="fc" id="L92">    cacheService.invalidateUserCryptosCaches()</span>
+<span class="fc" id="L92">    cacheService.invalidateUserCryptosAndInsightsCaches()</span>
 
 <span class="fc" id="L94">    return userCrypto.toUserCryptoResponse(</span>
 <span class="fc" id="L95">      cryptoName = coingeckoCrypto.name,</span>
@@ -121,7 +121,7 @@ import java.util.Optional
     )
 
 <span class="fc" id="L123">    userCryptoRepository.save(updatedUserCrypto)</span>
-<span class="fc" id="L124">    cacheService.invalidateUserCryptosCaches()</span>
+<span class="fc" id="L124">    cacheService.invalidateUserCryptosAndInsightsCaches()</span>
 <span class="fc" id="L125">    logger.info { &quot;Updated user crypto. Before: $userCrypto | After: $updatedUserCrypto&quot; }</span>
 
 <span class="fc" id="L127">    return updatedUserCrypto.toUserCryptoResponse(</span>
@@ -133,7 +133,7 @@ import java.util.Optional
   fun deleteUserCrypto(userCryptoId: String) {
 <span class="fc" id="L134">    val userCrypto = _userCryptoService!!.findByUserCryptoId(userCryptoId)</span>
 <span class="fc" id="L135">    userCryptoRepository.deleteById(userCryptoId)</span>
-<span class="fc" id="L136">    cacheService.invalidateUserCryptosCaches()</span>
+<span class="fc" id="L136">    cacheService.invalidateUserCryptosAndInsightsCaches()</span>
 <span class="fc" id="L137">    cryptoService.deleteCryptoIfNotUsed(userCrypto.coingeckoCryptoId)</span>
 
 <span class="fc" id="L139">    logger.info { &quot;Deleted user crypto $userCryptoId&quot; }</span>
@@ -142,7 +142,7 @@ import java.util.Optional
   fun deleteUserCryptos(userCryptos: List&lt;UserCrypto&gt;) {
 <span class="fc" id="L143">    logger.info { &quot;Deleting user cryptos ${userCryptos.map { it.coingeckoCryptoId }}&quot; }</span>
 <span class="fc" id="L144">    userCryptoRepository.deleteAllById(userCryptos.map { it.id })</span>
-<span class="fc" id="L145">    cacheService.invalidateUserCryptosCaches()</span>
+<span class="fc" id="L145">    cacheService.invalidateUserCryptosAndInsightsCaches()</span>
 <span class="fc" id="L146">  }</span>
 
   fun findByCoingeckoCryptoIdAndPlatformId(cryptoId: String, platformId: String): Optional&lt;UserCrypto&gt; {
@@ -151,7 +151,7 @@ import java.util.Optional
 
   fun saveOrUpdateAll(userCryptos: List&lt;UserCrypto&gt;) {
 <span class="fc" id="L153">    userCryptoRepository.saveAll(userCryptos)</span>
-<span class="fc" id="L154">    cacheService.invalidateUserCryptosCaches()</span>
+<span class="fc" id="L154">    cacheService.invalidateUserCryptosAndInsightsCaches()</span>
 <span class="fc" id="L155">  }</span>
 
   @Cacheable(cacheNames = [USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE], key = &quot;#coingeckoCryptoId&quot;)
