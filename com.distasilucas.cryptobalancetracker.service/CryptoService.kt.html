@@ -87,45 +87,27 @@ import java.time.LocalDateTime
   private fun getCrypto(coingeckoCryptoId: String): Crypto {
 <span class="fc" id="L88">    val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo(coingeckoCryptoId)</span>
 
-<span class="fc" id="L90">    return with(coingeckoCryptoInfo) {</span>
-<span class="fc" id="L91">      Crypto(</span>
-<span class="fc" id="L92">        id = coingeckoCryptoId,</span>
-<span class="fc" id="L93">        name,</span>
-<span class="fc" id="L94">        ticker = symbol,</span>
-<span class="fc" id="L95">        image = image.large,</span>
-<span class="fc" id="L96">        lastKnownPrice = marketData.currentPrice.usd,</span>
-<span class="fc" id="L97">        lastKnownPriceInEUR = marketData.currentPrice.eur,</span>
-<span class="fc" id="L98">        lastKnownPriceInBTC = marketData.currentPrice.btc,</span>
-<span class="fc" id="L99">        circulatingSupply = marketData.circulatingSupply,</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">        maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,</span>
-<span class="fc" id="L101">        marketCapRank,</span>
-<span class="fc" id="L102">        marketCap = marketData.marketCap.usd,</span>
-<span class="fc" id="L103">        changePercentageIn24h = marketData.changePercentageIn24h.roundChangePercentage(),</span>
-<span class="fc" id="L104">        changePercentageIn7d = marketData.changePercentageIn7d.roundChangePercentage(),</span>
-<span class="fc" id="L105">        changePercentageIn30d = marketData.changePercentageIn30d.roundChangePercentage(),</span>
-<span class="fc" id="L106">        lastUpdatedAt = LocalDateTime.now(clock)</span>
-<span class="fc" id="L107">      )</span>
-    }
+<span class="fc" id="L90">    return coingeckoCryptoInfo.toCrypto(clock)</span>
   }
 }
 
-<span class="fc" id="L112">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L94">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
 
 fun BigDecimal.roundChangePercentage(): BigDecimal {
-<span class="fc" id="L115">  return this.setScale(2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L97">  return this.setScale(2, RoundingMode.HALF_UP)</span>
 }
 
 @Service
-<span class="fc" id="L119">class OrphanCryptoService(</span>
-<span class="fc" id="L120">  private val userCryptoRepository: UserCryptoRepository,</span>
-<span class="fc" id="L121">  private val goalRepository: GoalRepository,</span>
-<span class="fc" id="L122">  private val priceTargetRepository: PriceTargetRepository</span>
+<span class="fc" id="L101">class OrphanCryptoService(</span>
+<span class="fc" id="L102">  private val userCryptoRepository: UserCryptoRepository,</span>
+<span class="fc" id="L103">  private val goalRepository: GoalRepository,</span>
+<span class="fc" id="L104">  private val priceTargetRepository: PriceTargetRepository</span>
 ) {
 
   fun isCryptoOrphan(coingeckoCryptoId: String): Boolean {
-<span class="fc bfc" id="L126" title="All 2 branches covered.">    return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId).isEmpty() &amp;&amp;</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">      goalRepository.findByCoingeckoCryptoId(coingeckoCryptoId).isEmpty &amp;&amp;</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">      priceTargetRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId).isEmpty()</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">    return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId).isEmpty() &amp;&amp;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">      goalRepository.findByCoingeckoCryptoId(coingeckoCryptoId).isEmpty &amp;&amp;</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">      priceTargetRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId).isEmpty()</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DateBalance.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.entity</a> &gt; <span class="el_source">DateBalance.kt</span></div><h1>DateBalance.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.entity
 
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
@@ -7,20 +8,22 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Document(&quot;DateBalances&quot;)
-<span class="fc" id="L10">data class DateBalance(</span>
-<span class="fc" id="L11">  @Id</span>
-<span class="fc" id="L12">  val id: String = UUID.randomUUID().toString(),</span>
-<span class="fc" id="L13">  val date: String,</span>
+<span class="fc" id="L11">data class DateBalance(</span>
+<span class="fc" id="L12">  @Id</span>
+<span class="fc" id="L13">  val id: String = UUID.randomUUID().toString(),</span>
+<span class="fc" id="L14">  val date: String,</span>
 
-<span class="fc" id="L15">  @Field(&quot;usd_balance&quot;)</span>
+<span class="fc" id="L16">  @Field(&quot;usd_balance&quot;)</span>
   val usdBalance: String,
 
-<span class="fc" id="L18">  @Field(&quot;eur_balance&quot;)</span>
+<span class="fc" id="L19">  @Field(&quot;eur_balance&quot;)</span>
   val eurBalance: String,
 
-<span class="fc" id="L21">  @Field(&quot;btc_balance&quot;)</span>
+<span class="fc" id="L22">  @Field(&quot;btc_balance&quot;)</span>
   val btcBalance: String,
-<span class="fc" id="L23">) {</span>
-<span class="fc" id="L24">  constructor(date: LocalDate, usdBalance: String, eurBalance: String, btcBalance: String) : this(UUID.randomUUID().toString(), date.toString(), usdBalance, eurBalance, btcBalance)</span>
+<span class="fc" id="L24">) {</span>
+<span class="fc" id="L25">  constructor(date: LocalDate, usdBalance: String, eurBalance: String, btcBalance: String) : this(UUID.randomUUID().toString(), date.toString(), usdBalance, eurBalance, btcBalance)</span>
+
+<span class="fc" id="L27">  constructor(id: String, date: String, balances: BalancesResponse) : this(id, date, balances.totalUSDBalance, balances.totalEURBalance, balances.totalBTCBalance)</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

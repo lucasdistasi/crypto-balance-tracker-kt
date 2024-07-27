@@ -29,21 +29,22 @@ import java.time.LocalDate
 <span class="fc" id="L29">    totalBalances.ifPresent { balances -&gt;</span>
 <span class="fc" id="L30">      optionalDateBalance.ifPresentOrElse(</span>
 <span class="fc" id="L31">        {</span>
-<span class="fc" id="L32">          logger.info {&quot;Updating balances for date $today. Old Balance: $it. New balances $balances&quot; }</span>
-<span class="fc" id="L33">          dateBalancesRepository.save(DateBalance(it.id, today, balances.totalUSDBalance, balances.totalEURBalance, balances.totalBTCBalance))</span>
-<span class="fc" id="L34">        },</span>
+<span class="fc" id="L32">          val updatedDateBalance = DateBalance(it.id, today, balances)</span>
+<span class="fc" id="L33">          logger.info {&quot;Updating balances for date $today. Old Balance: $it. New balances $updatedDateBalance&quot; }</span>
+<span class="fc" id="L34">          dateBalancesRepository.save(updatedDateBalance)</span>
+<span class="fc" id="L35">        },</span>
         {
-<span class="fc" id="L36">          logger.info { &quot;Saving balances $balances for date $today&quot; }</span>
-<span class="fc" id="L37">          dateBalancesRepository.save(</span>
-<span class="fc" id="L38">            DateBalance(</span>
-<span class="fc" id="L39">              date = today,</span>
-<span class="fc" id="L40">              usdBalance = balances.totalUSDBalance,</span>
-<span class="fc" id="L41">              eurBalance = balances.totalEURBalance,</span>
-<span class="fc" id="L42">              btcBalance = balances.totalBTCBalance)</span>
+<span class="fc" id="L37">          logger.info { &quot;Saving balances $balances for date $today&quot; }</span>
+<span class="fc" id="L38">          dateBalancesRepository.save(</span>
+<span class="fc" id="L39">            DateBalance(</span>
+<span class="fc" id="L40">              date = today,</span>
+<span class="fc" id="L41">              usdBalance = balances.totalUSDBalance,</span>
+<span class="fc" id="L42">              eurBalance = balances.totalEURBalance,</span>
+<span class="fc" id="L43">              btcBalance = balances.totalBTCBalance)</span>
           )
-<span class="fc" id="L44">        }</span>
+<span class="fc" id="L45">        }</span>
       )
-<span class="fc" id="L46">    }</span>
-<span class="fc" id="L47">  }</span>
+<span class="fc" id="L47">    }</span>
+<span class="fc" id="L48">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
