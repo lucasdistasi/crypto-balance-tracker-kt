@@ -4,14 +4,12 @@ import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.exception.TooManyRequestsException
 import com.distasilucas.cryptobalancetracker.service.CoingeckoService
 import com.distasilucas.cryptobalancetracker.service.CryptoService
-import com.distasilucas.cryptobalancetracker.service.roundChangePercentage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClientResponseException
-import java.math.BigDecimal
 import java.time.Clock
 import java.time.LocalDateTime
 
@@ -33,27 +31,8 @@ class CryptoScheduler(
     val cryptosToUpdate = getCryptosToUpdate()
       .map {
         try {
-          val crypto = coingeckoService.retrieveCryptoInfo(it.id)
-
-          with(crypto) {
-            Crypto(
-              id = id,
-              name = name,
-              ticker = symbol,
-              image = image.large,
-              lastKnownPrice = marketData.currentPrice.usd,
-              lastKnownPriceInEUR = marketData.currentPrice.eur,
-              lastKnownPriceInBTC = marketData.currentPrice.btc,
-              circulatingSupply = marketData.circulatingSupply,
-              maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,
-              marketCapRank = marketCapRank,
-              marketCap = marketData.marketCap.usd,
-              changePercentageIn24h = marketData.changePercentageIn24h.roundChangePercentage(),
-              changePercentageIn7d = marketData.changePercentageIn7d.roundChangePercentage(),
-              changePercentageIn30d = marketData.changePercentageIn30d.roundChangePercentage(),
-              lastUpdatedAt = LocalDateTime.now(clock)
-            )
-          }
+          val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo(it.id)
+          coingeckoCryptoInfo.toCrypto(clock)
         } catch (exception: RestClientResponseException) {
           if (exception.statusCode == HttpStatus.TOO_MANY_REQUESTS) {
             throw TooManyRequestsException()

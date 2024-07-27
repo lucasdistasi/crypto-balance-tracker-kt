@@ -1,9 +1,12 @@
 package com.distasilucas.cryptobalancetracker.model.response.coingecko
 
+import com.distasilucas.cryptobalancetracker.entity.Crypto
+import com.distasilucas.cryptobalancetracker.service.roundChangePercentage
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.Serializable
 import java.math.BigDecimal
-import java.math.RoundingMode
+import java.time.Clock
+import java.time.LocalDateTime
 
 data class CoingeckoCryptoInfo(
   val id: String,
@@ -16,7 +19,28 @@ data class CoingeckoCryptoInfo(
 
   @JsonProperty("market_data")
   val marketData: MarketData
-) : Serializable
+) : Serializable {
+
+  fun toCrypto(clock: Clock): Crypto {
+    return Crypto(
+      id = id,
+      name = name,
+      ticker = symbol,
+      image = image.large,
+      lastKnownPrice = marketData.currentPrice.usd,
+      lastKnownPriceInEUR = marketData.currentPrice.eur,
+      lastKnownPriceInBTC = marketData.currentPrice.btc,
+      circulatingSupply = marketData.circulatingSupply,
+      maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,
+      marketCapRank = marketCapRank,
+      marketCap = marketData.marketCap.usd,
+      changePercentageIn24h = marketData.changePercentageIn24h.roundChangePercentage(),
+      changePercentageIn7d = marketData.changePercentageIn7d.roundChangePercentage(),
+      changePercentageIn30d = marketData.changePercentageIn30d.roundChangePercentage(),
+      lastUpdatedAt = LocalDateTime.now(clock)
+    )
+  }
+}
 
 data class Image(
   val large: String

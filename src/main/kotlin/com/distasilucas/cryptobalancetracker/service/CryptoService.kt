@@ -87,25 +87,7 @@ class CryptoService(
   private fun getCrypto(coingeckoCryptoId: String): Crypto {
     val coingeckoCryptoInfo = coingeckoService.retrieveCryptoInfo(coingeckoCryptoId)
 
-    return with(coingeckoCryptoInfo) {
-      Crypto(
-        id = coingeckoCryptoId,
-        name,
-        ticker = symbol,
-        image = image.large,
-        lastKnownPrice = marketData.currentPrice.usd,
-        lastKnownPriceInEUR = marketData.currentPrice.eur,
-        lastKnownPriceInBTC = marketData.currentPrice.btc,
-        circulatingSupply = marketData.circulatingSupply,
-        maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,
-        marketCapRank,
-        marketCap = marketData.marketCap.usd,
-        changePercentageIn24h = marketData.changePercentageIn24h.roundChangePercentage(),
-        changePercentageIn7d = marketData.changePercentageIn7d.roundChangePercentage(),
-        changePercentageIn30d = marketData.changePercentageIn30d.roundChangePercentage(),
-        lastUpdatedAt = LocalDateTime.now(clock)
-      )
-    }
+    return coingeckoCryptoInfo.toCrypto(clock)
   }
 }
 

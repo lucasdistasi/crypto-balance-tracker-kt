@@ -29,8 +29,9 @@ class DateBalanceScheduler(
     totalBalances.ifPresent { balances ->
       optionalDateBalance.ifPresentOrElse(
         {
-          logger.info {"Updating balances for date $today. Old Balance: $it. New balances $balances" }
-          dateBalancesRepository.save(DateBalance(it.id, today, balances.totalUSDBalance, balances.totalEURBalance, balances.totalBTCBalance))
+          val updatedDateBalance = DateBalance(it.id, today, balances)
+          logger.info {"Updating balances for date $today. Old Balance: $it. New balances $updatedDateBalance" }
+          dateBalancesRepository.save(updatedDateBalance)
         },
         {
           logger.info { "Saving balances $balances for date $today" }

@@ -63,63 +63,45 @@ class EhCacheConfiguration {
   @Bean
   fun ehcacheManager(): CacheManager {
     val cacheManager = Caching.getCachingProvider().cacheManager
+
+    getAllCaches().forEach { (name, config) -> cacheManager.createCache(name, config as CacheConfiguration<Any,Any>) }
+
+    return cacheManager
+  }
+
+  private fun getAllCaches(): Map<String, CacheConfiguration<*, *>> {
     val coingeckoCryptoList = CastUtils.cast<Class<List<CoingeckoCrypto>>>(MutableList::class.java)
     val userCryptoList = CastUtils.cast<Class<List<UserCrypto>>>(MutableList::class.java)
     val stringCollection = CastUtils.cast<Class<Collection<String>>>(Collection::class.java)
     val platformList = CastUtils.cast<Class<List<Platform>>>(MutableList::class.java)
     val cryptoList = CastUtils.cast<Class<List<Crypto>>>(MutableList::class.java)
 
-    val coingeckoCryptosCache = getCacheConfig(SimpleKey::class.java, coingeckoCryptoList, Duration.ofDays(3))
-    val coingeckoCryptoInfoCache = getCacheConfig(String::class.java, CoingeckoCryptoInfo::class.java, Duration.ofMinutes(10))
-    val userCryptosCache = getCacheConfig(SimpleKey::class.java, userCryptoList)
-    val userCryptosPlatformIdCache = getCacheConfig(String::class.java, userCryptoList)
-    val userCryptosCoingeckoCryptoIdCache = getCacheConfig(String::class.java, userCryptoList)
-    val userCryptoIdCache = getCacheConfig(String::class.java, UserCrypto::class.java)
-    val userCryptoResponseIdCache = getCacheConfig(String::class.java, UserCryptoResponse::class.java)
-    val userCryptosResponsePageCache = getCacheConfig(Int::class.javaObjectType, PageUserCryptoResponse::class.java)
-    val platformsIdsCache = getCacheConfig(stringCollection, platformList)
-    val cryptoCoingeckoCryptoIdCache = getCacheConfig(String::class.java, Crypto::class.java, Duration.ofMinutes(2))
-    val cryptosIdsCache = getCacheConfig(stringCollection, cryptoList, Duration.ofMinutes(2))
-    val allPlatformsCache = getCacheConfig(SimpleKey::class.java, platformList, Duration.ofDays(10))
-    val platformCache = getCacheConfig(String::class.java, Platform::class.java, Duration.ofDays(10))
-    val priceTargetCache = getCacheConfig(String::class.java, PriceTarget::class.java)
-    val priceTargetResponseCache = getCacheConfig(String::class.java, PriceTargetResponse::class.java)
-    val pagePriceTargetResponseCache = getCacheConfig(Int::class.javaObjectType, PagePriceTargetResponse::class.java)
-    val goalResponseCache = getCacheConfig(String::class.java, GoalResponse::class.java)
-    val pageGoalsResponseCache = getCacheConfig(Int::class.javaObjectType, PageGoalResponse::class.java)
-    val totalBalancesCache = getCacheConfig(SimpleKey::class.java, BalancesResponse::class.java, Duration.ofMinutes(5))
-    val datesBalancesCache = getCacheConfig(DateRange::class.java, DatesBalanceResponse::class.java, Duration.ofMinutes(5))
-    val platformInsightsCache = getCacheConfig(String::class.java, PlatformInsightsResponse::class.java, Duration.ofMinutes(5))
-    val cryptoInsightsCache = getCacheConfig(String::class.java, CryptoInsightResponse::class.java, Duration.ofMinutes(5))
-    val platformsBalancesInsightsCache = getCacheConfig(SimpleKey::class.java, PlatformsBalancesInsightsResponse::class.java, Duration.ofMinutes(5))
-    val cryptosBalancesInsightsCache = getCacheConfig(SimpleKey::class.java, CryptosBalancesInsightsResponse::class.java, Duration.ofMinutes(5))
-
-    cacheManager.createCache(COINGECKO_CRYPTOS_CACHE, coingeckoCryptosCache)
-    cacheManager.createCache(CRYPTO_INFO_CACHE, coingeckoCryptoInfoCache)
-    cacheManager.createCache(USER_CRYPTOS_CACHE, userCryptosCache)
-    cacheManager.createCache(USER_CRYPTOS_PLATFORM_ID_CACHE, userCryptosPlatformIdCache)
-    cacheManager.createCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE, userCryptosCoingeckoCryptoIdCache)
-    cacheManager.createCache(USER_CRYPTO_ID_CACHE, userCryptoIdCache)
-    cacheManager.createCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE, userCryptoResponseIdCache)
-    cacheManager.createCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE, userCryptosResponsePageCache)
-    cacheManager.createCache(PLATFORMS_PLATFORMS_IDS_CACHE, platformsIdsCache)
-    cacheManager.createCache(CRYPTO_COINGECKO_CRYPTO_ID_CACHE, cryptoCoingeckoCryptoIdCache)
-    cacheManager.createCache(CRYPTOS_CRYPTOS_IDS_CACHE, cryptosIdsCache)
-    cacheManager.createCache(ALL_PLATFORMS_CACHE, allPlatformsCache)
-    cacheManager.createCache(PLATFORM_PLATFORM_ID_CACHE, platformCache)
-    cacheManager.createCache(PRICE_TARGET_ID_CACHE, priceTargetCache)
-    cacheManager.createCache(PRICE_TARGET_RESPONSE_ID_CACHE, priceTargetResponseCache)
-    cacheManager.createCache(PRICE_TARGET_RESPONSE_PAGE_CACHE, pagePriceTargetResponseCache)
-    cacheManager.createCache(GOAL_RESPONSE_GOAL_ID_CACHE, goalResponseCache)
-    cacheManager.createCache(PAGE_GOALS_RESPONSE_PAGE_CACHE, pageGoalsResponseCache)
-    cacheManager.createCache(TOTAL_BALANCES_CACHE, totalBalancesCache)
-    cacheManager.createCache(DATES_BALANCES_CACHE, datesBalancesCache)
-    cacheManager.createCache(PLATFORM_INSIGHTS_CACHE, platformInsightsCache)
-    cacheManager.createCache(CRYPTO_INSIGHTS_CACHE, cryptoInsightsCache)
-    cacheManager.createCache(PLATFORMS_BALANCES_INSIGHTS_CACHE, platformsBalancesInsightsCache)
-    cacheManager.createCache(CRYPTOS_BALANCES_INSIGHTS_CACHE, cryptosBalancesInsightsCache)
-
-    return cacheManager
+    return mapOf(
+      COINGECKO_CRYPTOS_CACHE to getCacheConfig(SimpleKey::class.java, coingeckoCryptoList, Duration.ofDays(3)),
+      CRYPTO_INFO_CACHE to getCacheConfig(String::class.java, CoingeckoCryptoInfo::class.java, Duration.ofMinutes(10)),
+      USER_CRYPTOS_CACHE to getCacheConfig(SimpleKey::class.java, userCryptoList),
+      USER_CRYPTOS_PLATFORM_ID_CACHE to getCacheConfig(String::class.java, userCryptoList),
+      USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE to getCacheConfig(String::class.java, userCryptoList),
+      USER_CRYPTO_ID_CACHE to getCacheConfig(String::class.java, UserCrypto::class.java),
+      USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE to getCacheConfig(String::class.java, UserCryptoResponse::class.java),
+      USER_CRYPTOS_RESPONSE_PAGE_CACHE to getCacheConfig(Int::class.javaObjectType, PageUserCryptoResponse::class.java),
+      PLATFORMS_PLATFORMS_IDS_CACHE to getCacheConfig(stringCollection, platformList),
+      CRYPTO_COINGECKO_CRYPTO_ID_CACHE to getCacheConfig(String::class.java, Crypto::class.java, Duration.ofMinutes(2)),
+      CRYPTOS_CRYPTOS_IDS_CACHE to getCacheConfig(stringCollection, cryptoList, Duration.ofMinutes(2)),
+      ALL_PLATFORMS_CACHE to getCacheConfig(SimpleKey::class.java, platformList, Duration.ofDays(10)),
+      PLATFORM_PLATFORM_ID_CACHE to getCacheConfig(String::class.java, Platform::class.java, Duration.ofDays(10)),
+      PRICE_TARGET_ID_CACHE to getCacheConfig(String::class.java, PriceTarget::class.java),
+      PRICE_TARGET_RESPONSE_ID_CACHE to getCacheConfig(String::class.java, PriceTargetResponse::class.java),
+      PRICE_TARGET_RESPONSE_PAGE_CACHE to getCacheConfig(Int::class.javaObjectType, PagePriceTargetResponse::class.java),
+      GOAL_RESPONSE_GOAL_ID_CACHE to getCacheConfig(String::class.java, GoalResponse::class.java),
+      PAGE_GOALS_RESPONSE_PAGE_CACHE to getCacheConfig(Int::class.javaObjectType, PageGoalResponse::class.java),
+      TOTAL_BALANCES_CACHE to getCacheConfig(SimpleKey::class.java, BalancesResponse::class.java, Duration.ofMinutes(5)),
+      DATES_BALANCES_CACHE to getCacheConfig(DateRange::class.java, DatesBalanceResponse::class.java, Duration.ofMinutes(5)),
+      PLATFORM_INSIGHTS_CACHE to getCacheConfig(String::class.java, PlatformInsightsResponse::class.java, Duration.ofMinutes(5)),
+      CRYPTO_INSIGHTS_CACHE to getCacheConfig(String::class.java, CryptoInsightResponse::class.java, Duration.ofMinutes(5)),
+      PLATFORMS_BALANCES_INSIGHTS_CACHE to getCacheConfig(SimpleKey::class.java, PlatformsBalancesInsightsResponse::class.java, Duration.ofMinutes(5)),
+      CRYPTOS_BALANCES_INSIGHTS_CACHE to getCacheConfig(SimpleKey::class.java, CryptosBalancesInsightsResponse::class.java, Duration.ofMinutes(5)),
+    )
   }
 
   private fun <K, V> getCacheConfig(

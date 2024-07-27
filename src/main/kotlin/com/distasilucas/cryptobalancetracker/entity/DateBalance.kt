@@ -1,5 +1,6 @@
 package com.distasilucas.cryptobalancetracker.entity
 
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
@@ -22,4 +23,6 @@ data class DateBalance(
   val btcBalance: String,
 ) {
   constructor(date: LocalDate, usdBalance: String, eurBalance: String, btcBalance: String) : this(UUID.randomUUID().toString(), date.toString(), usdBalance, eurBalance, btcBalance)
+
+  constructor(id: String, date: String, balances: BalancesResponse) : this(id, date, balances.totalUSDBalance, balances.totalEURBalance, balances.totalBTCBalance)
 }
