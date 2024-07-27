@@ -29,8 +29,8 @@ import java.math.BigDecimal
 
   @Cacheable(cacheNames = [PRICE_TARGET_ID_CACHE], key = &quot;#priceTargetId&quot;)
   fun findById(priceTargetId: String): PriceTarget {
-<span class="nc" id="L32">    return priceTargetRepository.findById(priceTargetId)</span>
-<span class="nc" id="L33">      .orElseThrow { PriceTargetNotFoundException(&quot;Price target with id $priceTargetId not found&quot;) }</span>
+<span class="fc" id="L32">    return priceTargetRepository.findById(priceTargetId)</span>
+<span class="fc" id="L33">      .orElseThrow { PriceTargetNotFoundException(&quot;Price target with id $priceTargetId not found&quot;) }</span>
   }
 
   @Cacheable(cacheNames = [PRICE_TARGET_RESPONSE_ID_CACHE], key = &quot;#priceTargetId&quot;)
