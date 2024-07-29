@@ -62,25 +62,24 @@ class InsightsService(
   private val logger = KotlinLogging.logger { }
 
   @Cacheable(cacheNames = [TOTAL_BALANCES_CACHE])
-  fun retrieveTotalBalances(): Optional<BalancesResponse> {
+  fun retrieveTotalBalances(): BalancesResponse {
     logger.info { "Retrieving total balances" }
 
     val userCryptos = userCryptoService.findAll()
 
     if (userCryptos.isEmpty()) {
-      return Optional.empty()
+      return BalancesResponse("0", "0", "0")
     }
 
     val userCryptoQuantity = getUserCryptoQuantity(userCryptos)
     val cryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet()
     val cryptos = cryptoService.findAllByIds(cryptosIds)
-    val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)
 
-    return Optional.of(totalBalances)
+    return getTotalBalances(cryptos, userCryptoQuantity)
   }
 
   @Cacheable(cacheNames = [DATES_BALANCES_CACHE], key = "#dateRange")
-  fun retrieveDatesBalances(dateRange: DateRange): Optional<DatesBalanceResponse> {
+  fun retrieveDatesBalances(dateRange: DateRange): DatesBalanceResponse {
     logger.info { "Retrieving balances for date range: $dateRange" }
     val now = LocalDate.now(clock)
 
@@ -102,21 +101,28 @@ class InsightsService(
 
     logger.info { "Balances found: ${datesBalances.size}" }
 
-    if (datesBalances.isEmpty()) return Optional.empty()
+    if (datesBalances.isEmpty()) {
+      val emptyBalanceChanges = BalanceChanges(0F, 0F, 0F)
+      val emptyDifferencesChanges = DifferencesChanges("0", "0", "0")
+
+      return DatesBalanceResponse(emptyList(), emptyBalanceChanges, emptyDifferencesChanges)
+    }
 
     val changesPair = changesPair(datesBalances)
 
-    return Optional.of(DatesBalanceResponse(datesBalances, changesPair.first, changesPair.second))
+    return DatesBalanceResponse(datesBalances, changesPair.first, changesPair.second)
   }
 
   @Cacheable(cacheNames = [PLATFORM_INSIGHTS_CACHE], key = "#platformId")
-  fun retrievePlatformInsights(platformId: String): Optional<PlatformInsightsResponse> {
+  fun retrievePlatformInsights(platformId: String): PlatformInsightsResponse {
     logger.info { "Retrieving insights for platform with id $platformId" }
 
     val userCryptosInPlatform = userCryptoService.findAllByPlatformId(platformId)
 
     if (userCryptosInPlatform.isEmpty()) {
-      return Optional.empty()
+      val emptyBalancesResponse = BalancesResponse("0", "0", "0")
+
+      return PlatformInsightsResponse(null, emptyBalancesResponse, emptyList())
     }
 
     val platform = platformService.retrievePlatformById(platformId)
@@ -140,23 +146,19 @@ class InsightsService(
       )
     }.sortedByDescending { it.percentage }
 
-    val platformInsightsResponse = PlatformInsightsResponse(
-      platformName = platform.name,
-      balances = totalBalances,
-      cryptos = cryptosInsights
-    )
-
-    return Optional.of(platformInsightsResponse)
+    return PlatformInsightsResponse(platform.name, totalBalances, cryptosInsights)
   }
 
   @Cacheable(cacheNames = [CRYPTO_INSIGHTS_CACHE], key = "#coingeckoCryptoId")
-  fun retrieveCryptoInsights(coingeckoCryptoId: String): Optional<CryptoInsightResponse> {
+  fun retrieveCryptoInsights(coingeckoCryptoId: String): CryptoInsightResponse {
     logger.info { "Retrieving insights for crypto with coingeckoCryptoId $coingeckoCryptoId" }
 
     val userCryptos = userCryptoService.findAllByCoingeckoCryptoId(coingeckoCryptoId)
 
     if (userCryptos.isEmpty()) {
-      return Optional.empty()
+      val emptyBalancesResponse = BalancesResponse("0", "0", "0")
+
+      return CryptoInsightResponse(null, emptyBalancesResponse, emptyList())
     }
 
     val platformsIds = userCryptos.map { it.platformId }
@@ -181,23 +183,19 @@ class InsightsService(
       platformInsight
     }.sortedByDescending { it.percentage }
 
-    return Optional.of(
-      CryptoInsightResponse(
-        cryptoName = crypto.name,
-        balances = totalBalances,
-        platforms = platformInsights
-      )
-    )
+    return CryptoInsightResponse(crypto.name, totalBalances, platformInsights)
   }
 
   @Cacheable(cacheNames = [PLATFORMS_BALANCES_INSIGHTS_CACHE])
-  fun retrievePlatformsBalancesInsights(): Optional<PlatformsBalancesInsightsResponse> {
+  fun retrievePlatformsBalancesInsights(): PlatformsBalancesInsightsResponse {
     logger.info { "Retrieving all platforms balances insights" }
 
     val userCryptos = userCryptoService.findAll()
 
     if (userCryptos.isEmpty()) {
-      return Optional.empty()
+      val emptyBalancesResponse = BalancesResponse("0", "0", "0")
+
+      return PlatformsBalancesInsightsResponse(emptyBalancesResponse, emptyList())
     }
 
     val platformsIds = userCryptos.map { it.platformId }.toSet()
@@ -233,22 +231,19 @@ class InsightsService(
       platformInsight
     }.sortedByDescending { it.percentage }
 
-    return Optional.of(
-      PlatformsBalancesInsightsResponse(
-        balances = totalBalances,
-        platforms = platformsInsights
-      )
-    )
+    return PlatformsBalancesInsightsResponse(totalBalances, platformsInsights)
   }
 
   @Cacheable(cacheNames = [CRYPTOS_BALANCES_INSIGHTS_CACHE])
-  fun retrieveCryptosBalancesInsights(): Optional<CryptosBalancesInsightsResponse> {
+  fun retrieveCryptosBalancesInsights(): CryptosBalancesInsightsResponse {
     logger.info { "Retrieving all cryptos balances insights" }
 
     val userCryptos = userCryptoService.findAll()
 
     if (userCryptos.isEmpty()) {
-      return Optional.empty()
+      val emptyBalancesResponse = BalancesResponse("0", "0", "0")
+
+      return CryptosBalancesInsightsResponse(emptyBalancesResponse, emptyList())
     }
 
     val userCryptoQuantity = getUserCryptoQuantity(userCryptos)
@@ -269,12 +264,10 @@ class InsightsService(
       )
     }.sortedByDescending { it.percentage }
 
-    return Optional.of(
-      CryptosBalancesInsightsResponse(
-        balances = totalBalances,
-        cryptos = if (cryptosInsights.size > maxSingleItemsCount)
-          getCryptoInsightsWithOthers(totalBalances, cryptosInsights) else cryptosInsights
-      )
+    return CryptosBalancesInsightsResponse(
+      balances = totalBalances,
+      cryptos = if (cryptosInsights.size > maxSingleItemsCount)
+        getCryptoInsightsWithOthers(totalBalances, cryptosInsights) else cryptosInsights
     )
   }
 

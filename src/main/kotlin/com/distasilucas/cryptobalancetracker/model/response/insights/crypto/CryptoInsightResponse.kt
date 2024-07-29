@@ -4,7 +4,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesRes
 import java.io.Serializable
 
 data class CryptoInsightResponse(
-  val cryptoName: String,
+  val cryptoName: String?,
   val balances: BalancesResponse,
   val platforms: List<PlatformInsight>
 ): Serializable

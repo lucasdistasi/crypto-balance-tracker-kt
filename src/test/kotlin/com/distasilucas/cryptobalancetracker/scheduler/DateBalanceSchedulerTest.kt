@@ -32,7 +32,7 @@ class DateBalanceSchedulerTest {
 
     every { clockMock.instant() } returns localDate.atStartOfDay().toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns localDate.atStartOfDay().atZone(ZoneId.of("UTC")).zone
-    every { insightsServiceMock.retrieveTotalBalances() } returns Optional.of(balancesResponse)
+    every { insightsServiceMock.retrieveTotalBalances() } returns balancesResponse
     every { dateBalancesRepositoryMock.findDateBalanceByDate(localDate.toString()) } returns Optional.empty()
     every { dateBalancesRepositoryMock.save(dateBalance) } returns dateBalance
     mockkStatic(UUID::class)
@@ -52,7 +52,7 @@ class DateBalanceSchedulerTest {
 
     every { clockMock.instant() } returns localDate.atStartOfDay().toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns localDate.atStartOfDay().atZone(ZoneId.of("UTC")).zone
-    every { insightsServiceMock.retrieveTotalBalances() } returns Optional.of(balancesResponse)
+    every { insightsServiceMock.retrieveTotalBalances() } returns balancesResponse
     every { dateBalancesRepositoryMock.findDateBalanceByDate(localDate.toString()) } returns Optional.of(dateBalance)
     every { dateBalancesRepositoryMock.save(dateBalance) } returns dateBalance
     mockkStatic(UUID::class)
@@ -61,19 +61,5 @@ class DateBalanceSchedulerTest {
     dateBalanceScheduler.saveDateBalance()
 
     verify(exactly = 1) { dateBalancesRepositoryMock.save(dateBalance) }
-  }
-
-  @Test
-  fun `should not save nor update daily balance`() {
-    val localDate = LocalDate.of(2024, 3, 17)
-
-    every { clockMock.instant() } returns localDate.atStartOfDay().toInstant(ZoneOffset.UTC)
-    every { clockMock.zone } returns localDate.atStartOfDay().atZone(ZoneId.of("UTC")).zone
-    every { insightsServiceMock.retrieveTotalBalances() } returns Optional.empty()
-    every { dateBalancesRepositoryMock.findDateBalanceByDate(localDate.toString()) } returns Optional.empty()
-
-    dateBalanceScheduler.saveDateBalance()
-
-    verify(exactly = 0) { dateBalancesRepositoryMock.save(any()) }
   }
 }

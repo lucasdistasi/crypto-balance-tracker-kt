@@ -75,12 +75,10 @@ class InsightsServiceTest {
     assertThat(balances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          BalancesResponse(
-            totalUSDBalance = "7108.39",
-            totalBTCBalance = "0.2512793593",
-            totalEURBalance = "6484.23"
-          )
+        BalancesResponse(
+          totalUSDBalance = "7108.39",
+          totalBTCBalance = "0.2512793593",
+          totalEURBalance = "6484.23"
         )
       )
   }
@@ -93,7 +91,7 @@ class InsightsServiceTest {
 
     assertThat(balances)
       .usingRecursiveComparison()
-      .isEqualTo(Optional.empty<BalancesResponse>())
+      .isEqualTo(BalancesResponse("0", "0", "0"))
   }
 
   @Test
@@ -117,15 +115,13 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("16 March 2024", BalancesResponse("1000", "918.45", "0.01438911")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.021583665"))
-            ),
-            change = BalanceChanges(50F, 50F, 50F),
-            priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("16 March 2024", BalancesResponse("1000", "918.45", "0.01438911")),
+            DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.021583665"))
+          ),
+          change = BalanceChanges(50F, 50F, 50F),
+          priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
         )
       )
   }
@@ -147,20 +143,18 @@ class InsightsServiceTest {
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.THREE_DAYS)
 
-    assertEquals(3, datesBalances.get().datesBalances.size)
+    assertEquals(3, datesBalances.datesBalances.size)
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("15 March 2024", BalancesResponse("1200", "1102.14", "0.020689655")),
-              DateBalances("16 March 2024", BalancesResponse("1000", "918.85", "0.017241379")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1378.27", "0.025862069"))
-            ),
-            change = BalanceChanges(25F, 25.05F, 25F),
-            priceDifference = DifferencesChanges("300", "276.13", "0.005172414")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("15 March 2024", BalancesResponse("1200", "1102.14", "0.020689655")),
+            DateBalances("16 March 2024", BalancesResponse("1000", "918.85", "0.017241379")),
+            DateBalances("17 March 2024", BalancesResponse("1500", "1378.27", "0.025862069"))
+          ),
+          change = BalanceChanges(25F, 25.05F, 25F),
+          priceDifference = DifferencesChanges("300", "276.13", "0.005172414")
         )
       )
   }
@@ -188,17 +182,15 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("14 March 2024", BalancesResponse("1200", "1102.62", "0.020689655")),
-              DateBalances("15 March 2024", BalancesResponse("900", "823.63", "0.015789474")),
-              DateBalances("16 March 2024", BalancesResponse("1000", "913", "0.016806723")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.025862069"))
-            ),
-            change = BalanceChanges(25F, 24.95F, 25F),
-            priceDifference = DifferencesChanges("300", "275.05", "0.005172414")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("14 March 2024", BalancesResponse("1200", "1102.62", "0.020689655")),
+            DateBalances("15 March 2024", BalancesResponse("900", "823.63", "0.015789474")),
+            DateBalances("16 March 2024", BalancesResponse("1000", "913", "0.016806723")),
+            DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.025862069"))
+          ),
+          change = BalanceChanges(25F, 24.95F, 25F),
+          priceDifference = DifferencesChanges("300", "275.05", "0.005172414")
         )
       )
   }
@@ -223,17 +215,15 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("11 March 2024", BalancesResponse("1200", "1102.14", "0.020530368")),
-              DateBalances("13 March 2024", BalancesResponse("900", "826.61", "0.015544041")),
-              DateBalances("15 March 2024", BalancesResponse("1000", "918.45", "0.016906171")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.025862069"))
-            ),
-            change = BalanceChanges(25F, 25F, 25.97F),
-            priceDifference = DifferencesChanges("300", "275.53", "0.005331701")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("11 March 2024", BalancesResponse("1200", "1102.14", "0.020530368")),
+            DateBalances("13 March 2024", BalancesResponse("900", "826.61", "0.015544041")),
+            DateBalances("15 March 2024", BalancesResponse("1000", "918.45", "0.016906171")),
+            DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.025862069"))
+          ),
+          change = BalanceChanges(25F, 25F, 25.97F),
+          priceDifference = DifferencesChanges("300", "275.53", "0.005331701")
         )
       )
   }
@@ -259,18 +249,16 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("22 February 2024", BalancesResponse("1150", "1067.03", "0.019827586")),
-              DateBalances("28 February 2024", BalancesResponse("1200", "1108.50", "0.020512821")),
-              DateBalances("5 March 2024", BalancesResponse("900", "830.38", "0.015319149")),
-              DateBalances("11 March 2024", BalancesResponse("1000", "921.15", "0.016949153")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1372.73", "0.025"))
-            ),
-            change = BalanceChanges(30.43F, 28.65F, 26.09F),
-            priceDifference = DifferencesChanges("350", "305.70", "0.005172414")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("22 February 2024", BalancesResponse("1150", "1067.03", "0.019827586")),
+            DateBalances("28 February 2024", BalancesResponse("1200", "1108.50", "0.020512821")),
+            DateBalances("5 March 2024", BalancesResponse("900", "830.38", "0.015319149")),
+            DateBalances("11 March 2024", BalancesResponse("1000", "921.15", "0.016949153")),
+            DateBalances("17 March 2024", BalancesResponse("1500", "1372.73", "0.025"))
+          ),
+          change = BalanceChanges(30.43F, 28.65F, 26.09F),
+          priceDifference = DifferencesChanges("350", "305.70", "0.005172414")
         )
       )
   }
@@ -297,19 +285,17 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("27 January 2024", BalancesResponse("1150", "1057.14", "0.019827586")),
-              DateBalances("6 February 2024", BalancesResponse("1150", "1060.30", "0.019311503")),
-              DateBalances("16 February 2024", BalancesResponse("1200", "1113.18", "0.020689655")),
-              DateBalances("26 February 2024", BalancesResponse("900", "840.46", "0.015062762")),
-              DateBalances("7 March 2024", BalancesResponse("1000", "923.75", "0.016666667")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1381.73", "0.025062657"))
-            ),
-            change = BalanceChanges(30.43F, 30.7F, 26.4F),
-            priceDifference = DifferencesChanges("350", "324.59", "0.005235071")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("27 January 2024", BalancesResponse("1150", "1057.14", "0.019827586")),
+            DateBalances("6 February 2024", BalancesResponse("1150", "1060.30", "0.019311503")),
+            DateBalances("16 February 2024", BalancesResponse("1200", "1113.18", "0.020689655")),
+            DateBalances("26 February 2024", BalancesResponse("900", "840.46", "0.015062762")),
+            DateBalances("7 March 2024", BalancesResponse("1000", "923.75", "0.016666667")),
+            DateBalances("17 March 2024", BalancesResponse("1500", "1381.73", "0.025062657"))
+          ),
+          change = BalanceChanges(30.43F, 30.7F, 26.4F),
+          priceDifference = DifferencesChanges("350", "324.59", "0.005235071")
         )
       )
   }
@@ -336,19 +322,17 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("17 October 2023", BalancesResponse("1150", "1024.36", "0.020909091")),
-              DateBalances("17 November 2023", BalancesResponse("1150", "1054.66", "0.020720721")),
-              DateBalances("17 December 2023", BalancesResponse("1200", "1101.42", "0.021428571")),
-              DateBalances("17 January 2024", BalancesResponse("900", "827.33", "0.015929204")),
-              DateBalances("17 February 2024", BalancesResponse("1000", "928.25", "0.01754386")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1378.20", "0.025862069"))
-            ),
-            change = BalanceChanges(30.43F, 34.54F, 23.69F),
-            priceDifference = DifferencesChanges("350", "353.84", "0.004952978")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("17 October 2023", BalancesResponse("1150", "1024.36", "0.020909091")),
+            DateBalances("17 November 2023", BalancesResponse("1150", "1054.66", "0.020720721")),
+            DateBalances("17 December 2023", BalancesResponse("1200", "1101.42", "0.021428571")),
+            DateBalances("17 January 2024", BalancesResponse("900", "827.33", "0.015929204")),
+            DateBalances("17 February 2024", BalancesResponse("1000", "928.25", "0.01754386")),
+            DateBalances("17 March 2024", BalancesResponse("1500", "1378.20", "0.025862069"))
+          ),
+          change = BalanceChanges(30.43F, 34.54F, 23.69F),
+          priceDifference = DifferencesChanges("350", "353.84", "0.004952978")
         )
       )
   }
@@ -381,17 +365,15 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("14 March 2024", BalancesResponse("950", "872.86", "0.016225448")),
-              DateBalances("15 March 2024", BalancesResponse("1000", "918.80", "0.016949153")),
-              DateBalances("16 March 2024", BalancesResponse("900", "826.92", "0.015397776")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1378.20", "0.025359256"))
-            ),
-            change = BalanceChanges(57.89F, 57.89F, 56.29F),
-            priceDifference = DifferencesChanges("550", "505.34", "0.009133808")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("14 March 2024", BalancesResponse("950", "872.86", "0.016225448")),
+            DateBalances("15 March 2024", BalancesResponse("1000", "918.80", "0.016949153")),
+            DateBalances("16 March 2024", BalancesResponse("900", "826.92", "0.015397776")),
+            DateBalances("17 March 2024", BalancesResponse("1500", "1378.20", "0.025359256"))
+          ),
+          change = BalanceChanges(57.89F, 57.89F, 56.29F),
+          priceDifference = DifferencesChanges("550", "505.34", "0.009133808")
         )
       )
   }
@@ -410,7 +392,11 @@ class InsightsServiceTest {
 
     assertThat(datesBalances)
       .usingRecursiveComparison()
-      .isEqualTo(Optional.empty<DatesBalanceResponse>())
+      .isEqualTo(DatesBalanceResponse(
+        emptyList(),
+        BalanceChanges(0F, 0F, 0F),
+        DifferencesChanges("0", "0", "0")
+      ))
   }
 
   @Test
@@ -434,27 +420,25 @@ class InsightsServiceTest {
     assertThat(platformInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          PlatformInsightsResponse(
-            platformName = "BINANCE",
-            balances = BalancesResponse(
-              totalUSDBalance = "7500.00",
-              totalBTCBalance = "0.25",
-              totalEURBalance = "6750.00"
-            ),
-            cryptos = listOf(
-              CryptoInsights(
-                id = "123e4567-e89b-12d3-a456-426614174000",
-                cryptoName = "Bitcoin",
-                cryptoId = "bitcoin",
-                quantity = "0.25",
-                balances = BalancesResponse(
-                  totalUSDBalance = "7500.00",
-                  totalBTCBalance = "0.25",
-                  totalEURBalance = "6750.00"
-                ),
-                percentage = 100f
-              )
+        PlatformInsightsResponse(
+          platformName = "BINANCE",
+          balances = BalancesResponse(
+            totalUSDBalance = "7500.00",
+            totalBTCBalance = "0.25",
+            totalEURBalance = "6750.00"
+          ),
+          cryptos = listOf(
+            CryptoInsights(
+              id = "123e4567-e89b-12d3-a456-426614174000",
+              cryptoName = "Bitcoin",
+              cryptoId = "bitcoin",
+              quantity = "0.25",
+              balances = BalancesResponse(
+                totalUSDBalance = "7500.00",
+                totalBTCBalance = "0.25",
+                totalEURBalance = "6750.00"
+              ),
+              percentage = 100f
             )
           )
         )
@@ -505,39 +489,37 @@ class InsightsServiceTest {
     assertThat(platformInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          PlatformInsightsResponse(
-            platformName = "BINANCE",
-            balances = BalancesResponse(
-              totalUSDBalance = "7925.00",
-              totalBTCBalance = "0.266554",
-              totalEURBalance = "7147.00"
-            ),
-            cryptos = listOf(
-              CryptoInsights(
-                id = "123e4567-e89b-12d3-a456-426614174000",
-                cryptoName = "Bitcoin",
-                cryptoId = "bitcoin",
-                quantity = "0.25",
-                balances = BalancesResponse(
-                  totalUSDBalance = "7500.00",
-                  totalBTCBalance = "0.25",
-                  totalEURBalance = "6750.00"
-                ),
-                percentage = 94.64f
+        PlatformInsightsResponse(
+          platformName = "BINANCE",
+          balances = BalancesResponse(
+            totalUSDBalance = "7925.00",
+            totalBTCBalance = "0.266554",
+            totalEURBalance = "7147.00"
+          ),
+          cryptos = listOf(
+            CryptoInsights(
+              id = "123e4567-e89b-12d3-a456-426614174000",
+              cryptoName = "Bitcoin",
+              cryptoId = "bitcoin",
+              quantity = "0.25",
+              balances = BalancesResponse(
+                totalUSDBalance = "7500.00",
+                totalBTCBalance = "0.25",
+                totalEURBalance = "6750.00"
               ),
-              CryptoInsights(
-                id = polkadotUserCrypto.id,
-                cryptoName = "Polkadot",
-                cryptoId = "polkadot",
-                quantity = "100",
-                balances = BalancesResponse(
-                  totalUSDBalance = "425.00",
-                  totalBTCBalance = "0.016554",
-                  totalEURBalance = "397.00"
-                ),
-                percentage = 5.36f
-              )
+              percentage = 94.64f
+            ),
+            CryptoInsights(
+              id = polkadotUserCrypto.id,
+              cryptoName = "Polkadot",
+              cryptoId = "polkadot",
+              quantity = "100",
+              balances = BalancesResponse(
+                totalUSDBalance = "425.00",
+                totalBTCBalance = "0.016554",
+                totalEURBalance = "397.00"
+              ),
+              percentage = 5.36f
             )
           )
         )
@@ -553,7 +535,13 @@ class InsightsServiceTest {
     val platformInsights = insightsService.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
     assertThat(platformInsights)
-      .isEqualTo(Optional.empty<PlatformInsightsResponse>())
+      .isEqualTo(
+        PlatformInsightsResponse(
+          null,
+          BalancesResponse("0", "0", "0"),
+          emptyList()
+        )
+      )
   }
 
   @Test
@@ -580,25 +568,23 @@ class InsightsServiceTest {
     assertThat(cryptoInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          CryptoInsightResponse(
-            cryptoName = "Bitcoin",
-            balances = BalancesResponse(
-              totalUSDBalance = "7500.00",
-              totalBTCBalance = "0.25",
-              totalEURBalance = "6750.00"
-            ),
-            platforms = listOf(
-              PlatformInsight(
-                quantity = "0.25",
-                balances = BalancesResponse(
-                  totalUSDBalance = "7500.00",
-                  totalBTCBalance = "0.25",
-                  totalEURBalance = "6750.00"
-                ),
-                percentage = 100f,
-                platformName = "BINANCE"
-              )
+        CryptoInsightResponse(
+          cryptoName = "Bitcoin",
+          balances = BalancesResponse(
+            totalUSDBalance = "7500.00",
+            totalBTCBalance = "0.25",
+            totalEURBalance = "6750.00"
+          ),
+          platforms = listOf(
+            PlatformInsight(
+              quantity = "0.25",
+              balances = BalancesResponse(
+                totalUSDBalance = "7500.00",
+                totalBTCBalance = "0.25",
+                totalEURBalance = "6750.00"
+              ),
+              percentage = 100f,
+              platformName = "BINANCE"
             )
           )
         )
@@ -645,35 +631,33 @@ class InsightsServiceTest {
     assertThat(cryptoInsightResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          CryptoInsightResponse(
-            cryptoName = "Bitcoin",
-            balances = BalancesResponse(
-              totalUSDBalance = "8536.50",
-              totalBTCBalance = "0.28455",
-              totalEURBalance = "7682.85"
-            ),
-            platforms = listOf(
-              PlatformInsight(
-                quantity = "0.25",
-                balances = BalancesResponse(
-                  totalUSDBalance = "7500.00",
-                  totalBTCBalance = "0.25",
-                  totalEURBalance = "6750.00"
-                ),
-                percentage = 87.86f,
-                platformName = "BINANCE"
+        CryptoInsightResponse(
+          cryptoName = "Bitcoin",
+          balances = BalancesResponse(
+            totalUSDBalance = "8536.50",
+            totalBTCBalance = "0.28455",
+            totalEURBalance = "7682.85"
+          ),
+          platforms = listOf(
+            PlatformInsight(
+              quantity = "0.25",
+              balances = BalancesResponse(
+                totalUSDBalance = "7500.00",
+                totalBTCBalance = "0.25",
+                totalEURBalance = "6750.00"
               ),
-              PlatformInsight(
-                quantity = "0.03455",
-                balances = BalancesResponse(
-                  totalUSDBalance = "1036.50",
-                  totalBTCBalance = "0.03455",
-                  totalEURBalance = "932.85"
-                ),
-                percentage = 12.14f,
-                platformName = "COINBASE"
-              )
+              percentage = 87.86f,
+              platformName = "BINANCE"
+            ),
+            PlatformInsight(
+              quantity = "0.03455",
+              balances = BalancesResponse(
+                totalUSDBalance = "1036.50",
+                totalBTCBalance = "0.03455",
+                totalEURBalance = "932.85"
+              ),
+              percentage = 12.14f,
+              platformName = "COINBASE"
             )
           )
         )
@@ -689,7 +673,13 @@ class InsightsServiceTest {
     val cryptoInsightResponse = insightsService.retrieveCryptoInsights("bitcoin")
 
     assertThat(cryptoInsightResponse)
-      .isEqualTo(Optional.empty<CryptoInsightResponse>())
+      .isEqualTo(
+        CryptoInsightResponse(
+          null,
+          BalancesResponse("0", "0", "0"),
+          emptyList()
+        )
+      )
   }
 
   @Test
@@ -731,32 +721,30 @@ class InsightsServiceTest {
     assertThat(platformBalancesInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          PlatformsBalancesInsightsResponse(
-            balances = BalancesResponse(
-              totalUSDBalance = "7108.39",
-              totalBTCBalance = "0.2512793593",
-              totalEURBalance = "6484.23"
-            ),
-            platforms = listOf(
-              PlatformsInsights(
-                platformName = "BINANCE",
-                balances = BalancesResponse(
-                  totalUSDBalance = "5120.45",
-                  totalBTCBalance = "0.1740889256",
-                  totalEURBalance = "4629.06"
-                ),
-                percentage = 72.03f
+        PlatformsBalancesInsightsResponse(
+          balances = BalancesResponse(
+            totalUSDBalance = "7108.39",
+            totalBTCBalance = "0.2512793593",
+            totalEURBalance = "6484.23"
+          ),
+          platforms = listOf(
+            PlatformsInsights(
+              platformName = "BINANCE",
+              balances = BalancesResponse(
+                totalUSDBalance = "5120.45",
+                totalBTCBalance = "0.1740889256",
+                totalEURBalance = "4629.06"
               ),
-              PlatformsInsights(
-                platformName = "COINBASE",
-                balances = BalancesResponse(
-                  totalUSDBalance = "1987.93",
-                  totalBTCBalance = "0.0771904337",
-                  totalEURBalance = "1855.17"
-                ),
-                percentage = 27.97f
-              )
+              percentage = 72.03f
+            ),
+            PlatformsInsights(
+              platformName = "COINBASE",
+              balances = BalancesResponse(
+                totalUSDBalance = "1987.93",
+                totalBTCBalance = "0.0771904337",
+                totalEURBalance = "1855.17"
+              ),
+              percentage = 27.97f
             )
           )
         )
@@ -771,7 +759,12 @@ class InsightsServiceTest {
 
     assertThat(platformBalancesInsightsResponse)
       .usingRecursiveComparison()
-      .isEqualTo(Optional.empty<PlatformsBalancesInsightsResponse>())
+      .isEqualTo(
+        PlatformsBalancesInsightsResponse(
+          BalancesResponse("0", "0", "0"),
+          emptyList()
+        )
+      )
   }
 
   @Test
@@ -797,58 +790,56 @@ class InsightsServiceTest {
     assertThat(cryptosBalancesInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          CryptosBalancesInsightsResponse(
-            balances = BalancesResponse(
-              totalUSDBalance = "7108.39",
-              totalBTCBalance = "0.2512793593",
-              totalEURBalance = "6484.23"
+        CryptosBalancesInsightsResponse(
+          balances = BalancesResponse(
+            totalUSDBalance = "7108.39",
+            totalBTCBalance = "0.2512793593",
+            totalEURBalance = "6484.23"
+          ),
+          cryptos = listOf(
+            CryptoInsights(
+              cryptoName = "Bitcoin",
+              cryptoId = "bitcoin",
+              quantity = "0.15",
+              balances = BalancesResponse(
+                totalUSDBalance = "4500.00",
+                totalBTCBalance = "0.15",
+                totalEURBalance = "4050.00"
+              ),
+              percentage = 63.31f
             ),
-            cryptos = listOf(
-              CryptoInsights(
-                cryptoName = "Bitcoin",
-                cryptoId = "bitcoin",
-                quantity = "0.15",
-                balances = BalancesResponse(
-                  totalUSDBalance = "4500.00",
-                  totalBTCBalance = "0.15",
-                  totalEURBalance = "4050.00"
-                ),
-                percentage = 63.31f
+            CryptoInsights(
+              cryptoName = "Ethereum",
+              cryptoId = "ethereum",
+              quantity = "1.372",
+              balances = BalancesResponse(
+                totalUSDBalance = "2219.13",
+                totalBTCBalance = "0.0861664843",
+                totalEURBalance = "2070.86"
               ),
-              CryptoInsights(
-                cryptoName = "Ethereum",
-                cryptoId = "ethereum",
-                quantity = "1.372",
-                balances = BalancesResponse(
-                  totalUSDBalance = "2219.13",
-                  totalBTCBalance = "0.0861664843",
-                  totalEURBalance = "2070.86"
-                ),
-                percentage = 31.22f
+              percentage = 31.22f
+            ),
+            CryptoInsights(
+              cryptoName = "Tether",
+              cryptoId = "tether",
+              quantity = "200",
+              balances = BalancesResponse(
+                totalUSDBalance = "199.92",
+                totalBTCBalance = "0.00776",
+                totalEURBalance = "186.62"
               ),
-              CryptoInsights(
-                cryptoName = "Tether",
-                cryptoId = "tether",
-                quantity = "200",
-                balances = BalancesResponse(
-                  totalUSDBalance = "199.92",
-                  totalBTCBalance = "0.00776",
-                  totalEURBalance = "186.62"
-                ),
-                percentage = 2.81f
+              percentage = 2.81f
+            ),
+            CryptoInsights(
+              cryptoName = "Litecoin",
+              cryptoId = "litecoin",
+              quantity = "3.125",
+              balances = BalancesResponse(
+                totalUSDBalance = "189.34",
+                totalBTCBalance = "0.007352875",
+                totalEURBalance = "176.75"
               ),
-              CryptoInsights(
-                cryptoName = "Litecoin",
-                cryptoId = "litecoin",
-                quantity = "3.125",
-                balances = BalancesResponse(
-                  totalUSDBalance = "189.34",
-                  totalBTCBalance = "0.007352875",
-                  totalEURBalance = "176.75"
-                ),
-                percentage = 2.66f
-              )
+              percentage = 2.66f
             )
           )
         )
@@ -884,155 +875,153 @@ class InsightsServiceTest {
     assertThat(cryptosBalancesInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          CryptosBalancesInsightsResponse(
-            balances = BalancesResponse(
-              totalUSDBalance = "8373.63",
-              totalBTCBalance = "0.2995959193",
-              totalEURBalance = "7663.61"
+        CryptosBalancesInsightsResponse(
+          balances = BalancesResponse(
+            totalUSDBalance = "8373.63",
+            totalBTCBalance = "0.2995959193",
+            totalEURBalance = "7663.61"
+          ),
+          cryptos = listOf(
+            CryptoInsights(
+              cryptoName = "Bitcoin",
+              cryptoId = "bitcoin",
+              quantity = "0.15",
+              balances = BalancesResponse(
+                totalUSDBalance = "4500.00",
+                totalBTCBalance = "0.15",
+                totalEURBalance = "4050.00"
+              ),
+              percentage = 53.74f
             ),
-            cryptos = listOf(
-              CryptoInsights(
-                cryptoName = "Bitcoin",
-                cryptoId = "bitcoin",
-                quantity = "0.15",
-                balances = BalancesResponse(
-                  totalUSDBalance = "4500.00",
-                  totalBTCBalance = "0.15",
-                  totalEURBalance = "4050.00"
-                ),
-                percentage = 53.74f
+            CryptoInsights(
+              cryptoName = "Ethereum",
+              cryptoId = "ethereum",
+              quantity = "1.372",
+              balances = BalancesResponse(
+                totalUSDBalance = "2219.13",
+                totalBTCBalance = "0.0861664843",
+                totalEURBalance = "2070.86"
               ),
-              CryptoInsights(
-                cryptoName = "Ethereum",
-                cryptoId = "ethereum",
-                quantity = "1.372",
-                balances = BalancesResponse(
-                  totalUSDBalance = "2219.13",
-                  totalBTCBalance = "0.0861664843",
-                  totalEURBalance = "2070.86"
-                ),
-                percentage = 26.5f
+              percentage = 26.5f
+            ),
+            CryptoInsights(
+              cryptoName = "Avalanche",
+              cryptoId = "avalanche-2",
+              quantity = "25",
+              balances = BalancesResponse(
+                totalUSDBalance = "232.50",
+                totalBTCBalance = "0.008879",
+                totalEURBalance = "216.75"
               ),
-              CryptoInsights(
-                cryptoName = "Avalanche",
-                cryptoId = "avalanche-2",
-                quantity = "25",
-                balances = BalancesResponse(
-                  totalUSDBalance = "232.50",
-                  totalBTCBalance = "0.008879",
-                  totalEURBalance = "216.75"
-                ),
-                percentage = 2.78f
+              percentage = 2.78f
+            ),
+            CryptoInsights(
+              cryptoName = "BNB",
+              cryptoId = "binancecoin",
+              quantity = "1",
+              balances = BalancesResponse(
+                totalUSDBalance = "211.79",
+                totalBTCBalance = "0.00811016",
+                totalEURBalance = "197.80"
               ),
-              CryptoInsights(
-                cryptoName = "BNB",
-                cryptoId = "binancecoin",
-                quantity = "1",
-                balances = BalancesResponse(
-                  totalUSDBalance = "211.79",
-                  totalBTCBalance = "0.00811016",
-                  totalEURBalance = "197.80"
-                ),
-                percentage = 2.53f
+              percentage = 2.53f
+            ),
+            CryptoInsights(
+              cryptoName = "Chainlink",
+              cryptoId = "chainlink",
+              quantity = "35",
+              balances = BalancesResponse(
+                totalUSDBalance = "209.65",
+                totalBTCBalance = "0.0080031",
+                totalEURBalance = "195.30"
               ),
-              CryptoInsights(
-                cryptoName = "Chainlink",
-                cryptoId = "chainlink",
-                quantity = "35",
-                balances = BalancesResponse(
-                  totalUSDBalance = "209.65",
-                  totalBTCBalance = "0.0080031",
-                  totalEURBalance = "195.30"
-                ),
-                percentage = 2.5f
+              percentage = 2.5f
+            ),
+            CryptoInsights(
+              cryptoName = "Tether",
+              cryptoId = "tether",
+              quantity = "200",
+              balances = BalancesResponse(
+                totalUSDBalance = "199.92",
+                totalBTCBalance = "0.00776",
+                totalEURBalance = "186.62"
               ),
-              CryptoInsights(
-                cryptoName = "Tether",
-                cryptoId = "tether",
-                quantity = "200",
-                balances = BalancesResponse(
-                  totalUSDBalance = "199.92",
-                  totalBTCBalance = "0.00776",
-                  totalEURBalance = "186.62"
-                ),
-                percentage = 2.39f
+              percentage = 2.39f
+            ),
+            CryptoInsights(
+              cryptoName = "Litecoin",
+              cryptoId = "litecoin",
+              quantity = "3.125",
+              balances = BalancesResponse(
+                totalUSDBalance = "189.34",
+                totalBTCBalance = "0.007352875",
+                totalEURBalance = "176.75"
               ),
-              CryptoInsights(
-                cryptoName = "Litecoin",
-                cryptoId = "litecoin",
-                quantity = "3.125",
-                balances = BalancesResponse(
-                  totalUSDBalance = "189.34",
-                  totalBTCBalance = "0.007352875",
-                  totalEURBalance = "176.75"
-                ),
-                percentage = 2.26f
+              percentage = 2.26f
+            ),
+            CryptoInsights(
+              cryptoName = "Solana",
+              cryptoId = "solana",
+              quantity = "10",
+              balances = BalancesResponse(
+                totalUSDBalance = "180.40",
+                totalBTCBalance = "0.0068809",
+                totalEURBalance = "168.20"
               ),
-              CryptoInsights(
-                cryptoName = "Solana",
-                cryptoId = "solana",
-                quantity = "10",
-                balances = BalancesResponse(
-                  totalUSDBalance = "180.40",
-                  totalBTCBalance = "0.0068809",
-                  totalEURBalance = "168.20"
-                ),
-                percentage = 2.15f
+              percentage = 2.15f
+            ),
+            CryptoInsights(
+              cryptoName = "Polkadot",
+              cryptoId = "polkadot",
+              quantity = "40",
+              balances = BalancesResponse(
+                totalUSDBalance = "160.40",
+                totalBTCBalance = "0.0061208",
+                totalEURBalance = "149.20"
               ),
-              CryptoInsights(
-                cryptoName = "Polkadot",
-                cryptoId = "polkadot",
-                quantity = "40",
-                balances = BalancesResponse(
-                  totalUSDBalance = "160.40",
-                  totalBTCBalance = "0.0061208",
-                  totalEURBalance = "149.20"
-                ),
-                percentage = 1.92f
+              percentage = 1.92f
+            ),
+            CryptoInsights(
+              cryptoName = "Uniswap",
+              cryptoId = "uniswap",
+              quantity = "30",
+              balances = BalancesResponse(
+                totalUSDBalance = "127.50",
+                totalBTCBalance = "0.0048591",
+                totalEURBalance = "118.80"
               ),
-              CryptoInsights(
-                cryptoName = "Uniswap",
-                cryptoId = "uniswap",
-                quantity = "30",
-                balances = BalancesResponse(
-                  totalUSDBalance = "127.50",
-                  totalBTCBalance = "0.0048591",
-                  totalEURBalance = "118.80"
-                ),
-                percentage = 1.52f
+              percentage = 1.52f
+            ),
+            CryptoInsights(
+              cryptoName = "Polygon",
+              cryptoId = "matic-network",
+              quantity = "100",
+              balances = BalancesResponse(
+                totalUSDBalance = "51.00",
+                totalBTCBalance = "0.001947",
+                totalEURBalance = "47.54"
               ),
-              CryptoInsights(
-                cryptoName = "Polygon",
-                cryptoId = "matic-network",
-                quantity = "100",
-                balances = BalancesResponse(
-                  totalUSDBalance = "51.00",
-                  totalBTCBalance = "0.001947",
-                  totalEURBalance = "47.54"
-                ),
-                percentage = 0.61f
+              percentage = 0.61f
+            ),
+            CryptoInsights(
+              cryptoName = "Cardano",
+              cryptoId = "cardano",
+              quantity = "150",
+              balances = BalancesResponse(
+                totalUSDBalance = "37.34",
+                totalBTCBalance = "0.001425",
+                totalEURBalance = "34.80"
               ),
-              CryptoInsights(
-                cryptoName = "Cardano",
-                cryptoId = "cardano",
-                quantity = "150",
-                balances = BalancesResponse(
-                  totalUSDBalance = "37.34",
-                  totalBTCBalance = "0.001425",
-                  totalEURBalance = "34.80"
-                ),
-                percentage = 0.45f
+              percentage = 0.45f
+            ),
+            CryptoInsights(
+              cryptoName = "Others",
+              balances = BalancesResponse(
+                totalUSDBalance = "54.66",
+                totalBTCBalance = "0.0020915",
+                totalEURBalance = "50.99"
               ),
-              CryptoInsights(
-                cryptoName = "Others",
-                balances = BalancesResponse(
-                  totalUSDBalance = "54.66",
-                  totalBTCBalance = "0.0020915",
-                  totalEURBalance = "50.99"
-                ),
-                percentage = 0.65f
-              )
+              percentage = 0.65f
             )
           )
         )
@@ -1047,7 +1036,12 @@ class InsightsServiceTest {
 
     assertThat(cryptosBalancesInsightsResponse)
       .usingRecursiveComparison()
-      .isEqualTo(Optional.empty<CryptosBalancesInsightsResponse>())
+      .isEqualTo(
+        CryptosBalancesInsightsResponse(
+          BalancesResponse("0", "0", "0"),
+          emptyList()
+        )
+      )
   }
 
   @Test

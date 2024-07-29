@@ -61,7 +61,7 @@ class InsightsControllerMvcTest(
 
   @Test
   fun `should retrieve total balances with status 200`() {
-    every { insightsServiceMock.retrieveTotalBalances() } returns Optional.of(balances())
+    every { insightsServiceMock.retrieveTotalBalances() } returns balances()
 
     mockMvc.retrieveTotalBalancesInsights()
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -81,7 +81,7 @@ class InsightsControllerMvcTest(
       priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
     )
 
-    every { insightsServiceMock.retrieveDatesBalances(DateRange.LAST_DAY) } returns Optional.of(dateBalanceResponse)
+    every { insightsServiceMock.retrieveDatesBalances(DateRange.LAST_DAY) } returns dateBalanceResponse
 
     mockMvc.retrieveDatesBalances(DateRange.LAST_DAY)
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -219,9 +219,7 @@ class InsightsControllerMvcTest(
   fun `should retrieve cryptos balances insights with status 200`() {
     val cryptosBalancesInsightsResponse = cryptosBalancesInsightsResponse()
 
-    every {
-      insightsServiceMock.retrieveCryptosBalancesInsights()
-    } returns Optional.of(cryptosBalancesInsightsResponse)
+    every { insightsServiceMock.retrieveCryptosBalancesInsights() } returns cryptosBalancesInsightsResponse
 
     mockMvc.retrieveCryptosBalancesInsights()
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -247,9 +245,7 @@ class InsightsControllerMvcTest(
   fun `should retrieve platforms balances insights with status 200`() {
     val platformsBalancesInsightsResponse = platformsBalancesInsightsResponse()
 
-    every {
-      insightsServiceMock.retrievePlatformsBalancesInsights()
-    } returns Optional.of(platformsBalancesInsightsResponse)
+    every { insightsServiceMock.retrievePlatformsBalancesInsights() } returns platformsBalancesInsightsResponse
 
     mockMvc.retrievePlatformsBalancesInsights()
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -267,9 +263,7 @@ class InsightsControllerMvcTest(
   fun `should retrieve crypto insights with status 200`() {
     val cryptoInsightResponse = cryptoInsightResponse()
 
-    every {
-      insightsServiceMock.retrieveCryptoInsights("bitcoin")
-    } returns Optional.of(cryptoInsightResponse)
+    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns cryptoInsightResponse
 
     mockMvc.retrieveCryptoInsights("bitcoin")
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -291,7 +285,7 @@ class InsightsControllerMvcTest(
 
     every {
       insightsServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
-    } returns Optional.of(platformInsightsResponse)
+    } returns platformInsightsResponse
 
     mockMvc.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
       .andExpect(MockMvcResultMatchers.status().isOk)
