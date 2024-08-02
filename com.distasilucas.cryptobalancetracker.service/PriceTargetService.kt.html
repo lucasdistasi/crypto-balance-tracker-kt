@@ -65,7 +65,7 @@ import java.math.BigDecimal
 <span class="fc" id="L65">    validatePriceTargetIsNotDuplicated(coingeckoCrypto.id, priceTargetRequest.priceTarget!!)</span>
 <span class="fc" id="L66">    val crypto = cryptoService.retrieveCryptoInfoById(coingeckoCrypto.id)</span>
 <span class="fc" id="L67">    val priceTarget = priceTargetRepository.save(priceTargetRequest.toEntity(crypto.id))</span>
-<span class="fc" id="L68">    cacheService.invalidatePriceTargetCaches()</span>
+<span class="fc" id="L68">    cacheService.invalidate(CacheType.PRICE_TARGETS_CACHES)</span>
 
 <span class="fc" id="L70">    return priceTarget.toPriceTargetResponse(crypto.name, crypto.lastKnownPrice, priceTarget.calculateChangeNeeded(crypto.lastKnownPrice))</span>
   }
@@ -78,7 +78,7 @@ import java.math.BigDecimal
 <span class="fc" id="L78">    val crypto = cryptoService.retrieveCryptoInfoById(priceTarget.coingeckoCryptoId)</span>
 <span class="fc" id="L79">    val changeNeeded = priceTarget.calculateChangeNeeded(crypto.lastKnownPrice)</span>
 <span class="fc" id="L80">    val newPriceTarget = priceTargetRepository.save(priceTarget)</span>
-<span class="fc" id="L81">    cacheService.invalidatePriceTargetCaches()</span>
+<span class="fc" id="L81">    cacheService.invalidate(CacheType.PRICE_TARGETS_CACHES)</span>
 
 <span class="fc" id="L83">    return newPriceTarget.toPriceTargetResponse(crypto.name, crypto.lastKnownPrice, changeNeeded)</span>
   }
@@ -89,7 +89,7 @@ import java.math.BigDecimal
 <span class="fc" id="L89">    val priceTarget = _priceTargetService!!.findById(priceTargetId)</span>
 
 <span class="fc" id="L91">    priceTargetRepository.delete(priceTarget)</span>
-<span class="fc" id="L92">    cacheService.invalidatePriceTargetCaches()</span>
+<span class="fc" id="L92">    cacheService.invalidate(CacheType.PRICE_TARGETS_CACHES)</span>
 <span class="fc" id="L93">    cryptoService.deleteCryptoIfNotUsed(priceTarget.coingeckoCryptoId)</span>
 <span class="fc" id="L94">  }</span>
 

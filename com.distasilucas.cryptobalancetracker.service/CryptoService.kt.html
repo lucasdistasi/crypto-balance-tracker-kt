@@ -35,7 +35,7 @@ import java.time.LocalDateTime
 <span class="fc" id="L35">    return cryptoRepository.findById(coingeckoCryptoId)</span>
 <span class="fc" id="L36">      .orElseGet {</span>
 <span class="fc" id="L37">        val crypto = getCrypto(coingeckoCryptoId)</span>
-<span class="fc" id="L38">        cacheService.invalidateCryptosCache()</span>
+<span class="fc" id="L38">        cacheService.invalidate(CacheType.CRYPTOS_CACHES)</span>
 <span class="fc" id="L39">        logger.info { &quot;Saved crypto $crypto because it didn't exist&quot; }</span>
 <span class="fc" id="L40">        cryptoRepository.save(crypto)</span>
       }
@@ -55,7 +55,7 @@ import java.time.LocalDateTime
 <span class="fc bfc" id="L55" title="All 2 branches covered.">    if (cryptoOptional.isEmpty) {</span>
 <span class="fc" id="L56">      val crypto = getCrypto(coingeckoCryptoId)</span>
 <span class="fc" id="L57">      cryptoRepository.save(crypto)</span>
-<span class="fc" id="L58">      cacheService.invalidateCryptosCache()</span>
+<span class="fc" id="L58">      cacheService.invalidate(CacheType.CRYPTOS_CACHES)</span>
 <span class="fc" id="L59">      logger.info { &quot;Saved crypto $crypto&quot; }</span>
     }
 <span class="fc" id="L61">  }</span>
@@ -63,7 +63,7 @@ import java.time.LocalDateTime
   fun deleteCryptoIfNotUsed(coingeckoCryptoId: String) {
 <span class="fc bfc" id="L64" title="All 2 branches covered.">    if (orphanCryptoService.isCryptoOrphan(coingeckoCryptoId)) {</span>
 <span class="fc" id="L65">      cryptoRepository.deleteById(coingeckoCryptoId)</span>
-<span class="fc" id="L66">      cacheService.invalidateCryptosCache()</span>
+<span class="fc" id="L66">      cacheService.invalidate(CacheType.CRYPTOS_CACHES)</span>
 <span class="fc" id="L67">      logger.info { &quot;Deleted crypto [$coingeckoCryptoId] because it was not used&quot; }</span>
     }
 <span class="fc" id="L69">  }</span>
