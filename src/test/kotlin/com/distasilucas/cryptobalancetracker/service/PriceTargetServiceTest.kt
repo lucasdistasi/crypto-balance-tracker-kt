@@ -158,7 +158,7 @@ class PriceTargetServiceTest {
     mockkStatic(UUID::class)
     every { UUID.randomUUID().toString() } returns priceTargetEntity.id
     every { priceTargetRepositoryMock.save(priceTargetEntity) } returns priceTargetEntity
-    justRun { cacheServiceMock.invalidatePriceTargetCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.PRICE_TARGETS_CACHES) }
 
     val priceTargetResponse = priceTargetService.savePriceTarget(priceTargetRequest)
 
@@ -205,7 +205,7 @@ class PriceTargetServiceTest {
       cryptoServiceMock.retrieveCryptoInfoById(priceTargetRequest.cryptoNameOrId!!)
     } returns getCryptoEntity(lastKnownPrice = BigDecimal("60000"))
     every { priceTargetRepositoryMock.save(priceTargetEntity) } returns priceTargetEntity
-    justRun { cacheServiceMock.invalidatePriceTargetCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.PRICE_TARGETS_CACHES) }
 
     val priceTargetResponse = priceTargetService.updatePriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", priceTargetRequest)
 
@@ -263,7 +263,7 @@ class PriceTargetServiceTest {
     every { _priceTargetServiceMock.findById(priceTargetEntity.id) } returns priceTargetEntity
     justRun { priceTargetRepositoryMock.delete(priceTargetEntity) }
     justRun { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
-    justRun { cacheServiceMock.invalidatePriceTargetCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.PRICE_TARGETS_CACHES) }
 
     priceTargetService.deletePriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08")
 

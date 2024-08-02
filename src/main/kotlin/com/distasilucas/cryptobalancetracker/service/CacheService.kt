@@ -30,7 +30,23 @@ class CacheService(private val cacheManager: CacheManager) {
 
   private val logger = KotlinLogging.logger { }
 
-  fun invalidateUserCryptosAndInsightsCaches() {
+  fun invalidate(firstCache: CacheType, vararg caches: CacheType) {
+    invalidate(firstCache)
+    caches.forEach { invalidate(it) }
+  }
+
+  private fun invalidate(cache: CacheType) {
+    when (cache) {
+      CacheType.USER_CRYPTOS_CACHES -> invalidateUserCryptosCaches()
+      CacheType.CRYPTOS_CACHES -> invalidateCryptosCache()
+      CacheType.PLATFORMS_CACHES -> invalidatePlatformsCaches()
+      CacheType.GOALS_CACHES -> invalidateGoalsCaches()
+      CacheType.PRICE_TARGETS_CACHES -> invalidatePriceTargetCaches()
+      CacheType.INSIGHTS_CACHES -> invalidateInsightsCache()
+    }
+  }
+
+  private fun invalidateUserCryptosCaches() {
     logger.info { "Invalidating user cryptos caches" }
 
     cacheManager.getCache(USER_CRYPTOS_CACHE)!!.invalidate()
@@ -39,10 +55,9 @@ class CacheService(private val cacheManager: CacheManager) {
     cacheManager.getCache(USER_CRYPTO_ID_CACHE)!!.invalidate()
     cacheManager.getCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE)!!.invalidate()
     cacheManager.getCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE)!!.invalidate()
-    invalidateInsightsCache()
   }
 
-  fun invalidatePlatformsCaches() {
+  private fun invalidatePlatformsCaches() {
     logger.info { "Invalidating platforms caches" }
 
     cacheManager.getCache(PLATFORMS_PLATFORMS_IDS_CACHE)!!.invalidate()
@@ -50,20 +65,20 @@ class CacheService(private val cacheManager: CacheManager) {
     cacheManager.getCache(PLATFORM_PLATFORM_ID_CACHE)!!.invalidate()
   }
 
-  fun invalidateCryptosCache() {
+  private fun invalidateCryptosCache() {
     logger.info { "Invalidating cryptos cache" }
 
     cacheManager.getCache(CRYPTOS_CRYPTOS_IDS_CACHE)!!.invalidate()
   }
 
-  fun invalidateGoalsCaches() {
+  private fun invalidateGoalsCaches() {
     logger.info { "Invalidating goals caches" }
 
     cacheManager.getCache(GOAL_RESPONSE_GOAL_ID_CACHE)!!.invalidate()
     cacheManager.getCache(PAGE_GOALS_RESPONSE_PAGE_CACHE)!!.invalidate()
   }
 
-  fun invalidatePriceTargetCaches() {
+  private fun invalidatePriceTargetCaches() {
     logger.info { "Invalidating price target caches" }
 
     cacheManager.getCache(PRICE_TARGET_ID_CACHE)!!.invalidate()
@@ -81,4 +96,13 @@ class CacheService(private val cacheManager: CacheManager) {
     cacheManager.getCache(PLATFORMS_BALANCES_INSIGHTS_CACHE)!!.invalidate()
     cacheManager.getCache(CRYPTOS_BALANCES_INSIGHTS_CACHE)!!.invalidate()
   }
+}
+
+enum class CacheType {
+  USER_CRYPTOS_CACHES,
+  CRYPTOS_CACHES,
+  PLATFORMS_CACHES,
+  GOALS_CACHES,
+  PRICE_TARGETS_CACHES,
+  INSIGHTS_CACHES
 }

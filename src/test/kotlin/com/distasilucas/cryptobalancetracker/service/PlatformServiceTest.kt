@@ -134,7 +134,7 @@ class PlatformServiceTest {
     val slot = slot<Platform>()
     every { platformRepositoryMock.findByName("BINANCE") } returns Optional.empty()
     every { platformRepositoryMock.save(capture(slot)) } returns platformEntity
-    justRun { cacheServiceMock.invalidatePlatformsCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.PLATFORMS_CACHES) }
 
     val platformResponse = platformService.savePlatform(platformRequest)
 
@@ -171,7 +171,7 @@ class PlatformServiceTest {
     every { _platformServiceMock.retrievePlatformById(existingPlatform.id) } returns newPlatform
     every { platformRepositoryMock.findById(id) } returns Optional.of(existingPlatform)
     every { platformRepositoryMock.save(newPlatform) } returns newPlatform
-    justRun { cacheServiceMock.invalidatePlatformsCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.PLATFORMS_CACHES, CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES) }
 
     val updatedPlatform = platformService.updatePlatform(id, platformRequest)
 
@@ -235,7 +235,7 @@ class PlatformServiceTest {
     every { userCryptoServiceMock.findAllByPlatformId(id) } returns listOf(userCryptos)
     justRun { userCryptoServiceMock.deleteUserCryptos(listOf(userCryptos)) }
     justRun { platformRepositoryMock.deleteById(id) }
-    justRun { cacheServiceMock.invalidatePlatformsCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.PLATFORMS_CACHES, CacheType.INSIGHTS_CACHES) }
 
     platformService.deletePlatform(id)
 

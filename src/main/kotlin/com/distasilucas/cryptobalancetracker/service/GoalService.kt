@@ -64,7 +64,7 @@ class GoalService(
     val goal = goalRequest.toEntity(coingeckoCrypto.id)
     cryptoService.saveCryptoIfNotExists(goal.coingeckoCryptoId)
     goalRepository.save(goal)
-    cacheService.invalidateGoalsCaches()
+    cacheService.invalidate(CacheType.GOALS_CACHES)
     logger.info { "Saved goal $goal" }
 
     return goal.toGoalResponse(id = goal.id)
@@ -77,7 +77,7 @@ class GoalService(
     val updatedGoal = goal.copy(goalQuantity = goalRequest.goalQuantity!!)
 
     goalRepository.save(updatedGoal)
-    cacheService.invalidateGoalsCaches()
+    cacheService.invalidate(CacheType.GOALS_CACHES)
     logger.info { "Updated goal. Before: $goal | After: $updatedGoal" }
 
     return updatedGoal.toGoalResponse(id = updatedGoal.id)
@@ -88,7 +88,7 @@ class GoalService(
       .ifPresentOrElse({
         goalRepository.deleteById(goalId)
         cryptoService.deleteCryptoIfNotUsed(it.coingeckoCryptoId)
-        cacheService.invalidateGoalsCaches()
+        cacheService.invalidate(CacheType.GOALS_CACHES)
         logger.info { "Deleted goal $it" }
       }, {
         throw GoalNotFoundException(GOAL_ID_NOT_FOUND.format(goalId))

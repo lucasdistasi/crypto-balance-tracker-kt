@@ -65,7 +65,7 @@ class PriceTargetService(
     validatePriceTargetIsNotDuplicated(coingeckoCrypto.id, priceTargetRequest.priceTarget!!)
     val crypto = cryptoService.retrieveCryptoInfoById(coingeckoCrypto.id)
     val priceTarget = priceTargetRepository.save(priceTargetRequest.toEntity(crypto.id))
-    cacheService.invalidatePriceTargetCaches()
+    cacheService.invalidate(CacheType.PRICE_TARGETS_CACHES)
 
     return priceTarget.toPriceTargetResponse(crypto.name, crypto.lastKnownPrice, priceTarget.calculateChangeNeeded(crypto.lastKnownPrice))
   }
@@ -78,7 +78,7 @@ class PriceTargetService(
     val crypto = cryptoService.retrieveCryptoInfoById(priceTarget.coingeckoCryptoId)
     val changeNeeded = priceTarget.calculateChangeNeeded(crypto.lastKnownPrice)
     val newPriceTarget = priceTargetRepository.save(priceTarget)
-    cacheService.invalidatePriceTargetCaches()
+    cacheService.invalidate(CacheType.PRICE_TARGETS_CACHES)
 
     return newPriceTarget.toPriceTargetResponse(crypto.name, crypto.lastKnownPrice, changeNeeded)
   }
@@ -89,7 +89,7 @@ class PriceTargetService(
     val priceTarget = _priceTargetService!!.findById(priceTargetId)
 
     priceTargetRepository.delete(priceTarget)
-    cacheService.invalidatePriceTargetCaches()
+    cacheService.invalidate(CacheType.PRICE_TARGETS_CACHES)
     cryptoService.deleteCryptoIfNotUsed(priceTarget.coingeckoCryptoId)
   }
 

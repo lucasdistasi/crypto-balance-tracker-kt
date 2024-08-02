@@ -48,7 +48,7 @@ class PlatformService(
 
     val platform = platformRequest.toEntity()
     val platformEntity = platformRepository.save(platform)
-    cacheService.invalidatePlatformsCaches()
+    cacheService.invalidate(CacheType.PLATFORMS_CACHES)
 
     logger.info { "Saved platform $platformEntity" }
 
@@ -62,7 +62,7 @@ class PlatformService(
     val updatedPlatform = platformRequest.toEntity(id = existingPlatform.id)
 
     platformRepository.save(updatedPlatform)
-    cacheService.invalidatePlatformsCaches()
+    cacheService.invalidate(CacheType.PLATFORMS_CACHES, CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES)
     logger.info { "Updated platform. Before: $existingPlatform  | After: $updatedPlatform" }
 
     return updatedPlatform
@@ -74,7 +74,8 @@ class PlatformService(
     userCryptoService.deleteUserCryptos(userCryptosToDelete)
 
     platformRepository.deleteById(platformId)
-    cacheService.invalidatePlatformsCaches()
+    cacheService.invalidate(CacheType.PLATFORMS_CACHES, CacheType.INSIGHTS_CACHES)
+
     logger.info { "Deleted platform ${platform.name}" }
   }
 

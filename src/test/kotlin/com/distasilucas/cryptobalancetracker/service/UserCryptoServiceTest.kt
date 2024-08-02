@@ -186,12 +186,12 @@ class UserCryptoServiceTest {
     } returns Optional.empty()
     every { userCryptoRepositoryMock.save(capture(slot)) } answers { slot.captured }
     justRun { cryptoServiceMock.saveCryptoIfNotExists("bitcoin") }
-    justRun { cacheServiceMock.invalidateUserCryptosAndInsightsCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES) }
 
     val userCryptoResponse = userCryptoService.saveUserCrypto(userCryptoRequest)
 
     verify(exactly = 1) { userCryptoRepositoryMock.save(slot.captured) }
-    verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosAndInsightsCaches() }
+    verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES) }
 
     assertThat(userCryptoResponse)
       .usingRecursiveComparison()
@@ -260,13 +260,13 @@ class UserCryptoServiceTest {
       )
     } returns Optional.empty()
     every { userCryptoRepositoryMock.save(updatedUserCrypto) } returns updatedUserCrypto
-    justRun { cacheServiceMock.invalidateUserCryptosAndInsightsCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES, CacheType.GOALS_CACHES) }
 
     val userCryptoResponse =
       userCryptoService.updateUserCrypto("123e4567-e89b-12d3-a456-426614174000", userCryptoRequest)
 
     verify(exactly = 1) { userCryptoRepositoryMock.save(updatedUserCrypto) }
-    verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosAndInsightsCaches() }
+    verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES, CacheType.GOALS_CACHES) }
 
     assertThat(userCryptoResponse)
       .usingRecursiveComparison()
@@ -311,13 +311,13 @@ class UserCryptoServiceTest {
       )
     } returns Optional.empty()
     every { userCryptoRepositoryMock.save(updatedUserCrypto) } returns updatedUserCrypto
-    justRun { cacheServiceMock.invalidateUserCryptosAndInsightsCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES, CacheType.GOALS_CACHES) }
 
     val userCryptoResponse =
       userCryptoService.updateUserCrypto("123e4567-e89b-12d3-a456-426614174000", userCryptoRequest)
 
     verify(exactly = 1) { userCryptoRepositoryMock.save(updatedUserCrypto) }
-    verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosAndInsightsCaches() }
+    verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES, CacheType.GOALS_CACHES) }
 
     assertThat(userCryptoResponse)
       .usingRecursiveComparison()
@@ -395,13 +395,17 @@ class UserCryptoServiceTest {
     } returns getUserCrypto()
     justRun { userCryptoRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174000") }
     justRun { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
-    justRun { cacheServiceMock.invalidateUserCryptosAndInsightsCaches() }
+    justRun {
+      cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
+    }
 
     userCryptoService.deleteUserCrypto("123e4567-e89b-12d3-a456-426614174000")
 
     verify(exactly = 1) { userCryptoRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174000") }
     verify(exactly = 1) { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
-    verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosAndInsightsCaches() }
+    verify(exactly = 1) {
+      cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
+    }
   }
 
   @Test
@@ -413,12 +417,12 @@ class UserCryptoServiceTest {
       platformId = "123e4567-e89b-12d3-a456-426614174444"
     )
 
-    justRun { cacheServiceMock.invalidateUserCryptosAndInsightsCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
     justRun { userCryptoRepositoryMock.deleteAllById(listOf("123e4567-e89b-12d3-a456-426614174000")) }
 
     userCryptoService.deleteUserCryptos(listOf(userCryptos))
 
-    verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosAndInsightsCaches() }
+    verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
     verify(exactly = 1) { userCryptoRepositoryMock.deleteAllById(listOf("123e4567-e89b-12d3-a456-426614174000")) }
   }
 
@@ -531,12 +535,16 @@ class UserCryptoServiceTest {
     val userCryptos = listOf(getUserCrypto())
 
     every { userCryptoRepositoryMock.saveAll(userCryptos) } returns userCryptos
-    justRun { cacheServiceMock.invalidateUserCryptosAndInsightsCaches() }
+    justRun {
+      cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
+    }
 
     userCryptoService.saveOrUpdateAll(userCryptos)
 
     verify(exactly = 1) { userCryptoRepositoryMock.saveAll(userCryptos) }
-    verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosAndInsightsCaches() }
+    verify(exactly = 1) {
+      cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
+    }
   }
 
   @Test

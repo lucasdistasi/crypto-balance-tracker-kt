@@ -89,7 +89,7 @@ class UserCryptoService(
     cryptoService.saveCryptoIfNotExists(coingeckoCrypto.id)
     userCryptoRepository.save(userCrypto)
     logger.info { "Saved user crypto $userCrypto" }
-    cacheService.invalidateUserCryptosAndInsightsCaches()
+    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES)
 
     return userCrypto.toUserCryptoResponse(
       cryptoName = coingeckoCrypto.name,
@@ -121,7 +121,7 @@ class UserCryptoService(
     )
 
     userCryptoRepository.save(updatedUserCrypto)
-    cacheService.invalidateUserCryptosAndInsightsCaches()
+    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES, CacheType.GOALS_CACHES)
     logger.info { "Updated user crypto. Before: $userCrypto | After: $updatedUserCrypto" }
 
     return updatedUserCrypto.toUserCryptoResponse(
@@ -133,7 +133,7 @@ class UserCryptoService(
   fun deleteUserCrypto(userCryptoId: String) {
     val userCrypto = _userCryptoService!!.findByUserCryptoId(userCryptoId)
     userCryptoRepository.deleteById(userCryptoId)
-    cacheService.invalidateUserCryptosAndInsightsCaches()
+    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
     cryptoService.deleteCryptoIfNotUsed(userCrypto.coingeckoCryptoId)
 
     logger.info { "Deleted user crypto $userCryptoId" }
@@ -142,7 +142,7 @@ class UserCryptoService(
   fun deleteUserCryptos(userCryptos: List<UserCrypto>) {
     logger.info { "Deleting user cryptos ${userCryptos.map { it.coingeckoCryptoId }}" }
     userCryptoRepository.deleteAllById(userCryptos.map { it.id })
-    cacheService.invalidateUserCryptosAndInsightsCaches()
+    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
   }
 
   fun findByCoingeckoCryptoIdAndPlatformId(cryptoId: String, platformId: String): Optional<UserCrypto> {
@@ -151,7 +151,7 @@ class UserCryptoService(
 
   fun saveOrUpdateAll(userCryptos: List<UserCrypto>) {
     userCryptoRepository.saveAll(userCryptos)
-    cacheService.invalidateUserCryptosAndInsightsCaches()
+    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
   }
 
   @Cacheable(cacheNames = [USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE], key = "#coingeckoCryptoId")

@@ -35,7 +35,7 @@ class CryptoService(
     return cryptoRepository.findById(coingeckoCryptoId)
       .orElseGet {
         val crypto = getCrypto(coingeckoCryptoId)
-        cacheService.invalidateCryptosCache()
+        cacheService.invalidate(CacheType.CRYPTOS_CACHES)
         logger.info { "Saved crypto $crypto because it didn't exist" }
         cryptoRepository.save(crypto)
       }
@@ -55,7 +55,7 @@ class CryptoService(
     if (cryptoOptional.isEmpty) {
       val crypto = getCrypto(coingeckoCryptoId)
       cryptoRepository.save(crypto)
-      cacheService.invalidateCryptosCache()
+      cacheService.invalidate(CacheType.CRYPTOS_CACHES)
       logger.info { "Saved crypto $crypto" }
     }
   }
@@ -63,7 +63,7 @@ class CryptoService(
   fun deleteCryptoIfNotUsed(coingeckoCryptoId: String) {
     if (orphanCryptoService.isCryptoOrphan(coingeckoCryptoId)) {
       cryptoRepository.deleteById(coingeckoCryptoId)
-      cacheService.invalidateCryptosCache()
+      cacheService.invalidate(CacheType.CRYPTOS_CACHES)
       logger.info { "Deleted crypto [$coingeckoCryptoId] because it was not used" }
     }
   }

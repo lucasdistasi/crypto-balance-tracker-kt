@@ -47,7 +47,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.cache.CacheManager
 import org.springframework.cache.concurrent.ConcurrentMapCache
 import org.springframework.cache.interceptor.SimpleKey
@@ -61,7 +60,7 @@ class CacheServiceTest {
   private val cacheService = CacheService(cacheManagerMock)
 
   @Test
-  fun `should invalidate user cryptos and insights caches they exist`() {
+  fun `should invalidate user cryptos caches if they exist`() {
     val userCrypto = getUserCrypto()
     val userCryptoResponse = userCrypto.toUserCryptoResponse("Bitcoin", "BINANCE")
 
@@ -71,12 +70,6 @@ class CacheServiceTest {
     val userCryptoIdMap = mapOf("bc7a8ee5-13f9-4405-a7fb-887458c21bed" to listOf(userCrypto))
     val userCryptoResponseUserCryptoIdMap = mapOf("bc7a8ee5-13f9-4405-a7fb-887458c21bed" to listOf(userCryptoResponse))
     val userCryptosResponsePageMap = mapOf(0 to listOf(userCryptoResponse))
-    val totalBalancesMap = mapOf(SimpleKey::class.java to BalancesResponse("1000", "927.30", "0.015384615"))
-    val datesBalancesMap = mapOf(DateRange::class.java to getDateBalanceResponse())
-    val platformInsightsMap = mapOf(String::class.java to getPlatformInsightsResponse())
-    val cryptoInsightsMap = mapOf(String::class.java to getCryptoInsightResponse())
-    val platformsBalancesInsightsMap = mapOf(SimpleKey::class.java to getPlatformsBalancesInsightsResponse())
-    val cryptosBalancesInsightsMap = mapOf(SimpleKey::class.java to getCryptosBalancesInsightsResponse())
 
     val userCryptosCache = getMapCache(USER_CRYPTOS_CACHE, userCryptosCacheMap)
     val userCryptosPlatformIdCache = getMapCache(USER_CRYPTOS_PLATFORM_ID_CACHE, userCryptosPlatformIdMap)
@@ -84,12 +77,6 @@ class CacheServiceTest {
     val userCryptoIdCache = getMapCache(USER_CRYPTO_ID_CACHE, userCryptoIdMap)
     val userCryptoResponseUserCryptoIdCache = getMapCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE, userCryptoResponseUserCryptoIdMap)
     val userCryptosResponsePageCache = getMapCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE, userCryptosResponsePageMap)
-    val totalBalancesCache = getMapCache(TOTAL_BALANCES_CACHE, totalBalancesMap)
-    val datesBalancesCache = getMapCache(DATES_BALANCES_CACHE, datesBalancesMap)
-    val platformInsightsCache = getMapCache(PLATFORM_INSIGHTS_CACHE, platformInsightsMap)
-    val cryptoInsightsCache = getMapCache(CRYPTO_INSIGHTS_CACHE, cryptoInsightsMap)
-    val platformsBalancesInsightsCache = getMapCache(PLATFORMS_BALANCES_INSIGHTS_CACHE, platformsBalancesInsightsMap)
-    val cryptosBalancesInsightsCache = getMapCache(CRYPTOS_BALANCES_INSIGHTS_CACHE, cryptosBalancesInsightsMap)
 
     every { cacheManagerMock.getCache(USER_CRYPTOS_CACHE) } returns userCryptosCache
     every { cacheManagerMock.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE) } returns userCryptosPlatformIdCache
@@ -97,14 +84,8 @@ class CacheServiceTest {
     every { cacheManagerMock.getCache(USER_CRYPTO_ID_CACHE) } returns userCryptoIdCache
     every { cacheManagerMock.getCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE) } returns userCryptoResponseUserCryptoIdCache
     every { cacheManagerMock.getCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE) } returns userCryptosResponsePageCache
-    every { cacheManagerMock.getCache(TOTAL_BALANCES_CACHE) } returns totalBalancesCache
-    every { cacheManagerMock.getCache(DATES_BALANCES_CACHE) } returns datesBalancesCache
-    every { cacheManagerMock.getCache(PLATFORM_INSIGHTS_CACHE) } returns platformInsightsCache
-    every { cacheManagerMock.getCache(CRYPTO_INSIGHTS_CACHE) } returns cryptoInsightsCache
-    every { cacheManagerMock.getCache(PLATFORMS_BALANCES_INSIGHTS_CACHE) } returns platformsBalancesInsightsCache
-    every { cacheManagerMock.getCache(CRYPTOS_BALANCES_INSIGHTS_CACHE) } returns cryptosBalancesInsightsCache
 
-    cacheService.invalidateUserCryptosAndInsightsCaches()
+    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES)
 
     assertThat(userCryptosCache.nativeCache).isEmpty()
     assertThat(userCryptosPlatformIdCache.nativeCache).isEmpty()
@@ -112,12 +93,6 @@ class CacheServiceTest {
     assertThat(userCryptoIdCache.nativeCache).isEmpty()
     assertThat(userCryptoResponseUserCryptoIdCache.nativeCache).isEmpty()
     assertThat(userCryptosResponsePageCache.nativeCache).isEmpty()
-    assertThat(totalBalancesCache.nativeCache).isEmpty()
-    assertThat(datesBalancesCache.nativeCache).isEmpty()
-    assertThat(platformInsightsCache.nativeCache).isEmpty()
-    assertThat(cryptoInsightsCache.nativeCache).isEmpty()
-    assertThat(platformsBalancesInsightsCache.nativeCache).isEmpty()
-    assertThat(cryptosBalancesInsightsCache.nativeCache).isEmpty()
 
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE) }
@@ -125,21 +100,22 @@ class CacheServiceTest {
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTO_ID_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE) }
-    verify(exactly = 1) { cacheManagerMock.getCache(TOTAL_BALANCES_CACHE) }
-    verify(exactly = 1) { cacheManagerMock.getCache(DATES_BALANCES_CACHE) }
-    verify(exactly = 1) { cacheManagerMock.getCache(PLATFORM_INSIGHTS_CACHE) }
-    verify(exactly = 1) { cacheManagerMock.getCache(CRYPTO_INSIGHTS_CACHE) }
-    verify(exactly = 1) { cacheManagerMock.getCache(PLATFORMS_BALANCES_INSIGHTS_CACHE) }
-    verify(exactly = 1) { cacheManagerMock.getCache(CRYPTOS_BALANCES_INSIGHTS_CACHE) }
   }
 
   @Test
-  fun `should throw NullPointerException if user cryptos caches dont exists`() {
-    every { cacheManagerMock.getCache(USER_CRYPTOS_CACHE) } returns null
-    every { cacheManagerMock.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE) } returns null
-    every { cacheManagerMock.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE) } returns null
+  fun `should invalidate cryptos cache if it exists`() {
+    val crypto = getCryptoEntity()
+    val map = mapOf(listOf("bitcoin") to listOf(crypto))
+    val cache = ConcurrentMapCache(CRYPTOS_CRYPTOS_IDS_CACHE, ConcurrentHashMap(map), false)
 
-    assertThrows<NullPointerException> { cacheService.invalidateUserCryptosAndInsightsCaches() }
+    every { cacheManagerMock.getCache(CRYPTOS_CRYPTOS_IDS_CACHE) } returns cache
+
+    cacheService.invalidate(CacheType.CRYPTOS_CACHES)
+
+    val store = cache.nativeCache
+
+    assertThat(store).isEmpty()
+    verify(exactly = 1) { cacheManagerMock.getCache(CRYPTOS_CRYPTOS_IDS_CACHE) }
   }
 
   @Test
@@ -160,7 +136,7 @@ class CacheServiceTest {
     every { cacheManagerMock.getCache(ALL_PLATFORMS_CACHE) } returns allPlatformsCache
     every { cacheManagerMock.getCache(PLATFORM_PLATFORM_ID_CACHE) } returns platformIdCache
 
-    cacheService.invalidatePlatformsCaches()
+    cacheService.invalidate(CacheType.PLATFORMS_CACHES)
 
     val platformsIdsStore = platformsIdsCache.nativeCache
     val allPlatformsStore = allPlatformsCache.nativeCache
@@ -175,36 +151,6 @@ class CacheServiceTest {
   }
 
   @Test
-  fun `should throw NullPointerException if platforms cache does not exists`() {
-    every { cacheManagerMock.getCache(PLATFORMS_PLATFORMS_IDS_CACHE) } returns null
-
-    assertThrows<NullPointerException> { cacheService.invalidatePlatformsCaches() }
-  }
-
-  @Test
-  fun `should invalidate cryptos cache if it exists`() {
-    val crypto = getCryptoEntity()
-    val map = mapOf(listOf("bitcoin") to listOf(crypto))
-    val cache = ConcurrentMapCache(CRYPTOS_CRYPTOS_IDS_CACHE, ConcurrentHashMap(map), false)
-
-    every { cacheManagerMock.getCache(CRYPTOS_CRYPTOS_IDS_CACHE) } returns cache
-
-    cacheService.invalidateCryptosCache()
-
-    val store = cache.nativeCache
-
-    assertThat(store).isEmpty()
-    verify(exactly = 1) { cacheManagerMock.getCache(CRYPTOS_CRYPTOS_IDS_CACHE) }
-  }
-
-  @Test
-  fun `should throw NullPointerException if cryptos cache does not exists`() {
-    every { cacheManagerMock.getCache(CRYPTOS_CRYPTOS_IDS_CACHE) } returns null
-
-    assertThrows<NullPointerException> { cacheService.invalidateCryptosCache() }
-  }
-
-  @Test
   fun `should invalidate goals cache if it exists`() {
     val goalResponseGoalIdMap = mapOf("123e4567-e89b-12d3-a456-426614174111" to getGoalResponse())
     val pageGoalsResponsePageMap = mapOf(0 to PageGoalResponse(1, 1, listOf(getGoalResponse())))
@@ -215,7 +161,7 @@ class CacheServiceTest {
     every { cacheManagerMock.getCache(GOAL_RESPONSE_GOAL_ID_CACHE) } returns goalResponseGoalIdCache
     every { cacheManagerMock.getCache(PAGE_GOALS_RESPONSE_PAGE_CACHE) } returns pageGoalsResponsePageCache
 
-    cacheService.invalidateGoalsCaches()
+    cacheService.invalidate(CacheType.GOALS_CACHES)
 
     val goalResponseGoalIdStore = goalResponseGoalIdCache.nativeCache
     val pageGoalsResponsePageStore = pageGoalsResponsePageCache.nativeCache
@@ -224,14 +170,6 @@ class CacheServiceTest {
     assertThat(pageGoalsResponsePageStore).isEmpty()
     verify(exactly = 1) { cacheManagerMock.getCache(GOAL_RESPONSE_GOAL_ID_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(PAGE_GOALS_RESPONSE_PAGE_CACHE) }
-  }
-
-  @Test
-  fun `should throw NullPointerException if goals cache does not exists`() {
-    every { cacheManagerMock.getCache(GOAL_RESPONSE_GOAL_ID_CACHE) } returns null
-    every { cacheManagerMock.getCache(PAGE_GOALS_RESPONSE_PAGE_CACHE) } returns null
-
-    assertThrows<NullPointerException> { cacheService.invalidateGoalsCaches() }
   }
 
   @Test
@@ -256,7 +194,7 @@ class CacheServiceTest {
     every { cacheManagerMock.getCache(PRICE_TARGET_RESPONSE_ID_CACHE) } returns priceTargetResponseIdCache
     every { cacheManagerMock.getCache(PRICE_TARGET_RESPONSE_PAGE_CACHE) } returns priceTargetResponsePageCache
 
-    cacheService.invalidatePriceTargetCaches()
+    cacheService.invalidate(CacheType.PRICE_TARGETS_CACHES)
 
     val priceTargetIdStore = priceTargetIdCache.nativeCache
     val priceTargetResponseIdStore = priceTargetResponseIdCache.nativeCache
@@ -271,12 +209,43 @@ class CacheServiceTest {
   }
 
   @Test
-  fun `should throw NullPointerException if price targets cache does not exists`() {
-    every { cacheManagerMock.getCache(PRICE_TARGET_ID_CACHE) } returns null
-    every { cacheManagerMock.getCache(PRICE_TARGET_RESPONSE_ID_CACHE) } returns null
-    every { cacheManagerMock.getCache(PRICE_TARGET_RESPONSE_PAGE_CACHE) } returns null
+  fun `should invalidate insights caches if they exist`() {
+    val totalBalancesMap = mapOf(SimpleKey::class.java to BalancesResponse("1000", "927.30", "0.015384615"))
+    val datesBalancesMap = mapOf(DateRange::class.java to getDateBalanceResponse())
+    val platformInsightsMap = mapOf(String::class.java to getPlatformInsightsResponse())
+    val cryptoInsightsMap = mapOf(String::class.java to getCryptoInsightResponse())
+    val platformsBalancesInsightsMap = mapOf(SimpleKey::class.java to getPlatformsBalancesInsightsResponse())
+    val cryptosBalancesInsightsMap = mapOf(SimpleKey::class.java to getCryptosBalancesInsightsResponse())
 
-    assertThrows<NullPointerException> { cacheService.invalidatePriceTargetCaches() }
+    val totalBalancesCache = getMapCache(TOTAL_BALANCES_CACHE, totalBalancesMap)
+    val datesBalancesCache = getMapCache(DATES_BALANCES_CACHE, datesBalancesMap)
+    val platformInsightsCache = getMapCache(PLATFORM_INSIGHTS_CACHE, platformInsightsMap)
+    val cryptoInsightsCache = getMapCache(CRYPTO_INSIGHTS_CACHE, cryptoInsightsMap)
+    val platformsBalancesInsightsCache = getMapCache(PLATFORMS_BALANCES_INSIGHTS_CACHE, platformsBalancesInsightsMap)
+    val cryptosBalancesInsightsCache = getMapCache(CRYPTOS_BALANCES_INSIGHTS_CACHE, cryptosBalancesInsightsMap)
+
+    every { cacheManagerMock.getCache(TOTAL_BALANCES_CACHE) } returns totalBalancesCache
+    every { cacheManagerMock.getCache(DATES_BALANCES_CACHE) } returns datesBalancesCache
+    every { cacheManagerMock.getCache(PLATFORM_INSIGHTS_CACHE) } returns platformInsightsCache
+    every { cacheManagerMock.getCache(CRYPTO_INSIGHTS_CACHE) } returns cryptoInsightsCache
+    every { cacheManagerMock.getCache(PLATFORMS_BALANCES_INSIGHTS_CACHE) } returns platformsBalancesInsightsCache
+    every { cacheManagerMock.getCache(CRYPTOS_BALANCES_INSIGHTS_CACHE) } returns cryptosBalancesInsightsCache
+
+    cacheService.invalidate(CacheType.INSIGHTS_CACHES)
+
+    assertThat(totalBalancesCache.nativeCache).isEmpty()
+    assertThat(datesBalancesCache.nativeCache).isEmpty()
+    assertThat(platformInsightsCache.nativeCache).isEmpty()
+    assertThat(cryptoInsightsCache.nativeCache).isEmpty()
+    assertThat(platformsBalancesInsightsCache.nativeCache).isEmpty()
+    assertThat(cryptosBalancesInsightsCache.nativeCache).isEmpty()
+
+    verify(exactly = 1) { cacheManagerMock.getCache(TOTAL_BALANCES_CACHE) }
+    verify(exactly = 1) { cacheManagerMock.getCache(DATES_BALANCES_CACHE) }
+    verify(exactly = 1) { cacheManagerMock.getCache(PLATFORM_INSIGHTS_CACHE) }
+    verify(exactly = 1) { cacheManagerMock.getCache(CRYPTO_INSIGHTS_CACHE) }
+    verify(exactly = 1) { cacheManagerMock.getCache(PLATFORMS_BALANCES_INSIGHTS_CACHE) }
+    verify(exactly = 1) { cacheManagerMock.getCache(CRYPTOS_BALANCES_INSIGHTS_CACHE) }
   }
 
   private fun getMapCache(name: String, map: Map<*, *>) = ConcurrentMapCache(name, ConcurrentHashMap(map), false)
