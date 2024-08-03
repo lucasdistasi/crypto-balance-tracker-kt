@@ -106,7 +106,7 @@ class CacheServiceTest {
   fun `should invalidate cryptos cache if it exists`() {
     val crypto = getCryptoEntity()
     val map = mapOf(listOf("bitcoin") to listOf(crypto))
-    val cache = ConcurrentMapCache(CRYPTOS_CRYPTOS_IDS_CACHE, ConcurrentHashMap(map), false)
+    val cache = getMapCache(CRYPTOS_CRYPTOS_IDS_CACHE, map)
 
     every { cacheManagerMock.getCache(CRYPTOS_CRYPTOS_IDS_CACHE) } returns cache
 
@@ -128,9 +128,9 @@ class CacheServiceTest {
     val allPlatformsMap = mapOf(SimpleKey::class.java to listOf(platform))
     val platformIdMap = mapOf("123e4567-e89b-12d3-a456-426614174000" to platform)
 
-    val platformsIdsCache = ConcurrentMapCache(PLATFORMS_PLATFORMS_IDS_CACHE, ConcurrentHashMap(platformsIdsMap), false)
-    val allPlatformsCache = ConcurrentMapCache(ALL_PLATFORMS_CACHE, ConcurrentHashMap(allPlatformsMap), false)
-    val platformIdCache = ConcurrentMapCache(PLATFORM_PLATFORM_ID_CACHE, ConcurrentHashMap(platformIdMap), false)
+    val platformsIdsCache = getMapCache(PLATFORMS_PLATFORMS_IDS_CACHE, platformsIdsMap)
+    val allPlatformsCache = getMapCache(ALL_PLATFORMS_CACHE, allPlatformsMap)
+    val platformIdCache = getMapCache(PLATFORM_PLATFORM_ID_CACHE, platformIdMap)
 
     every { cacheManagerMock.getCache(PLATFORMS_PLATFORMS_IDS_CACHE) } returns platformsIdsCache
     every { cacheManagerMock.getCache(ALL_PLATFORMS_CACHE) } returns allPlatformsCache
@@ -155,8 +155,8 @@ class CacheServiceTest {
     val goalResponseGoalIdMap = mapOf("123e4567-e89b-12d3-a456-426614174111" to getGoalResponse())
     val pageGoalsResponsePageMap = mapOf(0 to PageGoalResponse(1, 1, listOf(getGoalResponse())))
 
-    val goalResponseGoalIdCache = ConcurrentMapCache(GOAL_RESPONSE_GOAL_ID_CACHE, ConcurrentHashMap(goalResponseGoalIdMap), false)
-    val pageGoalsResponsePageCache = ConcurrentMapCache(PAGE_GOALS_RESPONSE_PAGE_CACHE, ConcurrentHashMap(pageGoalsResponsePageMap), false)
+    val goalResponseGoalIdCache = getMapCache(GOAL_RESPONSE_GOAL_ID_CACHE, goalResponseGoalIdMap)
+    val pageGoalsResponsePageCache = getMapCache(PAGE_GOALS_RESPONSE_PAGE_CACHE, pageGoalsResponsePageMap)
 
     every { cacheManagerMock.getCache(GOAL_RESPONSE_GOAL_ID_CACHE) } returns goalResponseGoalIdCache
     every { cacheManagerMock.getCache(PAGE_GOALS_RESPONSE_PAGE_CACHE) } returns pageGoalsResponsePageCache
@@ -186,9 +186,9 @@ class CacheServiceTest {
     val priceTargetResponseIdMap = mapOf("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08" to priceTargetResponse)
     val priceTargetResponsePageMap = mapOf(0 to PagePriceTargetResponse(0, 1, listOf(priceTargetResponse)))
 
-    val priceTargetIdCache = ConcurrentMapCache(PRICE_TARGET_ID_CACHE, ConcurrentHashMap(priceTargetIdMap), false)
-    val priceTargetResponseIdCache = ConcurrentMapCache(PRICE_TARGET_RESPONSE_ID_CACHE, ConcurrentHashMap(priceTargetResponseIdMap), false)
-    val priceTargetResponsePageCache = ConcurrentMapCache(PRICE_TARGET_RESPONSE_PAGE_CACHE, ConcurrentHashMap(priceTargetResponsePageMap), false)
+    val priceTargetIdCache = getMapCache(PRICE_TARGET_ID_CACHE, priceTargetIdMap)
+    val priceTargetResponseIdCache = getMapCache(PRICE_TARGET_RESPONSE_ID_CACHE, priceTargetResponseIdMap)
+    val priceTargetResponsePageCache = getMapCache(PRICE_TARGET_RESPONSE_PAGE_CACHE, priceTargetResponsePageMap)
 
     every { cacheManagerMock.getCache(PRICE_TARGET_ID_CACHE) } returns priceTargetIdCache
     every { cacheManagerMock.getCache(PRICE_TARGET_RESPONSE_ID_CACHE) } returns priceTargetResponseIdCache
@@ -246,6 +246,35 @@ class CacheServiceTest {
     verify(exactly = 1) { cacheManagerMock.getCache(CRYPTO_INSIGHTS_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(PLATFORMS_BALANCES_INSIGHTS_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(CRYPTOS_BALANCES_INSIGHTS_CACHE) }
+  }
+
+  @Test
+  fun `should invalidate caches`() {
+    val crypto = getCryptoEntity()
+    val map = mapOf(listOf("bitcoin") to listOf(crypto))
+    val goalResponseGoalIdMap = mapOf("123e4567-e89b-12d3-a456-426614174111" to getGoalResponse())
+    val pageGoalsResponsePageMap = mapOf(0 to PageGoalResponse(1, 1, listOf(getGoalResponse())))
+    val cryptosIdsCache = ConcurrentMapCache(CRYPTOS_CRYPTOS_IDS_CACHE, ConcurrentHashMap(map), false)
+    val goalResponseGoalIdCache = ConcurrentMapCache(GOAL_RESPONSE_GOAL_ID_CACHE, ConcurrentHashMap(goalResponseGoalIdMap), false)
+    val pageGoalsResponsePageCache = ConcurrentMapCache(PAGE_GOALS_RESPONSE_PAGE_CACHE, ConcurrentHashMap(pageGoalsResponsePageMap), false)
+
+    every { cacheManagerMock.getCache(CRYPTOS_CRYPTOS_IDS_CACHE) } returns cryptosIdsCache
+    every { cacheManagerMock.getCache(GOAL_RESPONSE_GOAL_ID_CACHE) } returns goalResponseGoalIdCache
+    every { cacheManagerMock.getCache(PAGE_GOALS_RESPONSE_PAGE_CACHE) } returns pageGoalsResponsePageCache
+
+    cacheService.invalidate(CacheType.CRYPTOS_CACHES, CacheType.GOALS_CACHES)
+
+    val cryptosIdsStore = cryptosIdsCache.nativeCache
+    val goalResponseGoalIdStore = goalResponseGoalIdCache.nativeCache
+    val pageGoalsResponsePageStore = pageGoalsResponsePageCache.nativeCache
+
+    assertThat(cryptosIdsStore).isEmpty()
+    assertThat(goalResponseGoalIdStore).isEmpty()
+    assertThat(pageGoalsResponsePageStore).isEmpty()
+
+    verify(exactly = 1) { cacheManagerMock.getCache(CRYPTOS_CRYPTOS_IDS_CACHE) }
+    verify(exactly = 1) { cacheManagerMock.getCache(GOAL_RESPONSE_GOAL_ID_CACHE) }
+    verify(exactly = 1) { cacheManagerMock.getCache(PAGE_GOALS_RESPONSE_PAGE_CACHE) }
   }
 
   private fun getMapCache(name: String, map: Map<*, *>) = ConcurrentMapCache(name, ConcurrentHashMap(map), false)

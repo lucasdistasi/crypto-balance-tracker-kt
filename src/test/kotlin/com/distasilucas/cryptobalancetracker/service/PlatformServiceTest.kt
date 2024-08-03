@@ -234,12 +234,12 @@ class PlatformServiceTest {
     every { _platformServiceMock.retrievePlatformById(id) } returns existingPlatform
     every { userCryptoServiceMock.findAllByPlatformId(id) } returns listOf(userCryptos)
     justRun { userCryptoServiceMock.deleteUserCryptos(listOf(userCryptos)) }
-    justRun { platformRepositoryMock.deleteById(id) }
+    justRun { platformRepositoryMock.delete(existingPlatform) }
     justRun { cacheServiceMock.invalidate(CacheType.PLATFORMS_CACHES, CacheType.INSIGHTS_CACHES) }
 
     platformService.deletePlatform(id)
 
-    verify(exactly = 1) { platformRepositoryMock.deleteById(id) }
+    verify(exactly = 1) { platformRepositoryMock.delete(existingPlatform) }
     verify(exactly = 1) { userCryptoServiceMock.deleteUserCryptos(listOf(userCryptos)) }
   }
 

@@ -337,6 +337,28 @@ class CryptoServiceTest {
   }
 
   @Test
+  fun `should delete cryptos if it is not being used`() {
+    every { orphanCryptoService.getOrphanCryptos(listOf("bitcoin", "ethereum")) } returns listOf("ethereum")
+    justRun { cryptoRepositoryMock.deleteAllById(listOf("ethereum")) }
+    justRun { cacheServiceMock.invalidate(CacheType.CRYPTOS_CACHES) }
+
+    cryptoService.deleteCryptosIfNotUsed(listOf("bitcoin", "ethereum"))
+
+    verify(exactly = 1) { cryptoRepositoryMock.deleteAllById(listOf("ethereum")) }
+    verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.CRYPTOS_CACHES) }
+  }
+
+  @Test
+  fun `should not delete cryptos if list it's empty`() {
+    every { orphanCryptoService.getOrphanCryptos(listOf("bitcoin", "ethereum")) } returns emptyList()
+
+    cryptoService.deleteCryptosIfNotUsed(listOf("bitcoin", "ethereum"))
+
+    verify(exactly = 0) { cryptoRepositoryMock.deleteAllById(any()) }
+    verify(exactly = 0) { cacheServiceMock.invalidate(any()) }
+  }
+
+  @Test
   fun `should not delete crypto if it is being used`() {
     val goal = Goal(
       coingeckoCryptoId = "bitcoin",

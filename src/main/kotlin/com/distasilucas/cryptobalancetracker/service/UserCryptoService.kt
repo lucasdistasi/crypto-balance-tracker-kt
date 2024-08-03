@@ -20,7 +20,7 @@ import org.springframework.context.annotation.ScopedProxyMode
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import java.util.Optional
+import java.util.*
 
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -65,6 +65,31 @@ class UserCryptoService(
     }
 
     return PageUserCryptoResponse(page, entityUserCryptosPage.totalPages, userCryptosPage)
+  }
+
+  @Cacheable(cacheNames = [USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE], key = "#coingeckoCryptoId")
+  fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List<UserCrypto> {
+    logger.info { "Retrieving all user cryptos matching coingecko crypto id $coingeckoCryptoId" }
+
+    return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)
+  }
+
+  @Cacheable(cacheNames = [USER_CRYPTOS_PLATFORM_ID_CACHE], key = "#platformId")
+  fun findAllByPlatformId(platformId: String): List<UserCrypto> {
+    logger.info { "Retrieving all user cryptos for platformId $platformId" }
+
+    return userCryptoRepository.findAllByPlatformId(platformId)
+  }
+
+  @Cacheable(cacheNames = [USER_CRYPTOS_CACHE])
+  fun findAll(): List<UserCrypto> {
+    logger.info { "Retrieving all user cryptos" }
+
+    return userCryptoRepository.findAll()
+  }
+
+  fun findByCoingeckoCryptoIdAndPlatformId(cryptoId: String, platformId: String): Optional<UserCrypto> {
+    return userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(cryptoId, platformId)
   }
 
   fun saveUserCrypto(userCryptoRequest: UserCryptoRequest): UserCryptoResponse {
@@ -140,39 +165,19 @@ class UserCryptoService(
   }
 
   fun deleteUserCryptos(userCryptos: List<UserCrypto>) {
-    logger.info { "Deleting user cryptos ${userCryptos.map { it.coingeckoCryptoId }}" }
-    userCryptoRepository.deleteAllById(userCryptos.map { it.id })
-    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
-  }
+    if (userCryptos.isNotEmpty()) {
+      val coingeckoCryptoIds = userCryptos.map { it.coingeckoCryptoId }
+      userCryptoRepository.deleteAll(userCryptos)
+      cryptoService.deleteCryptosIfNotUsed(coingeckoCryptoIds)
+      cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
 
-  fun findByCoingeckoCryptoIdAndPlatformId(cryptoId: String, platformId: String): Optional<UserCrypto> {
-    return userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(cryptoId, platformId)
+      logger.info { "Deleted user cryptos $coingeckoCryptoIds" }
+    }
   }
 
   fun saveOrUpdateAll(userCryptos: List<UserCrypto>) {
     userCryptoRepository.saveAll(userCryptos)
     cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
-  }
-
-  @Cacheable(cacheNames = [USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE], key = "#coingeckoCryptoId")
-  fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List<UserCrypto> {
-    logger.info { "Retrieving all user cryptos matching coingecko crypto id $coingeckoCryptoId" }
-
-    return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)
-  }
-
-  @Cacheable(cacheNames = [USER_CRYPTOS_PLATFORM_ID_CACHE], key = "#platformId")
-  fun findAllByPlatformId(platformId: String): List<UserCrypto> {
-    logger.info { "Retrieving all user cryptos for platformId $platformId" }
-
-    return userCryptoRepository.findAllByPlatformId(platformId)
-  }
-
-  @Cacheable(cacheNames = [USER_CRYPTOS_CACHE])
-  fun findAll(): List<UserCrypto> {
-    logger.info { "Retrieving all user cryptos" }
-
-    return userCryptoRepository.findAll()
   }
 
   private fun didChangePlatform(newPlatform: String, originalPlatform: String) = newPlatform != originalPlatform

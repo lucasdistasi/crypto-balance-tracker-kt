@@ -43,6 +43,13 @@ class PlatformService(
     return platformRepository.findAll()
   }
 
+  @Cacheable(cacheNames = [PLATFORMS_PLATFORMS_IDS_CACHE], key = "#ids")
+  fun findAllByIds(ids: Collection<String>): List<Platform> {
+    logger.info { "Retrieving platforms for ids $ids" }
+
+    return platformRepository.findAllByIdIn(ids)
+  }
+
   fun savePlatform(platformRequest: PlatformRequest): Platform {
     validatePlatformNotExists(platformRequest.name!!)
 
@@ -71,19 +78,12 @@ class PlatformService(
   fun deletePlatform(platformId: String) {
     val platform = _platformService!!.retrievePlatformById(platformId)
     val userCryptosToDelete = userCryptoService.findAllByPlatformId(platform.id)
-    userCryptoService.deleteUserCryptos(userCryptosToDelete)
 
-    platformRepository.deleteById(platformId)
+    userCryptoService.deleteUserCryptos(userCryptosToDelete)
+    platformRepository.delete(platform)
     cacheService.invalidate(CacheType.PLATFORMS_CACHES, CacheType.INSIGHTS_CACHES)
 
     logger.info { "Deleted platform ${platform.name}" }
-  }
-
-  @Cacheable(cacheNames = [PLATFORMS_PLATFORMS_IDS_CACHE], key = "#ids")
-  fun findAllByIds(ids: Collection<String>): List<Platform> {
-    logger.info { "Retrieving platforms for ids $ids" }
-
-    return platformRepository.findAllByIdIn(ids)
   }
 
   private fun validatePlatformNotExists(platformName: String) {

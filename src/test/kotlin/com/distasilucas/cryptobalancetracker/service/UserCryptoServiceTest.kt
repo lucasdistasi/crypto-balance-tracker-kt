@@ -417,13 +417,24 @@ class UserCryptoServiceTest {
       platformId = "123e4567-e89b-12d3-a456-426614174444"
     )
 
+    justRun { userCryptoRepositoryMock.deleteAll(listOf(userCryptos)) }
+    justRun { cryptoServiceMock.deleteCryptosIfNotUsed(listOf("bitcoin")) }
     justRun { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
-    justRun { userCryptoRepositoryMock.deleteAllById(listOf("123e4567-e89b-12d3-a456-426614174000")) }
 
     userCryptoService.deleteUserCryptos(listOf(userCryptos))
 
+    verify(exactly = 1) { userCryptoRepositoryMock.deleteAll(listOf(userCryptos)) }
+    verify(exactly = 1) { cryptoServiceMock.deleteCryptosIfNotUsed(listOf("bitcoin")) }
     verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
-    verify(exactly = 1) { userCryptoRepositoryMock.deleteAllById(listOf("123e4567-e89b-12d3-a456-426614174000")) }
+  }
+
+  @Test
+  fun `should not delete user cryptos if list it's empty`() {
+    userCryptoService.deleteUserCryptos(emptyList())
+
+    verify(exactly = 0) { userCryptoRepositoryMock.deleteAll(any()) }
+    verify(exactly = 0) { cryptoServiceMock.deleteCryptosIfNotUsed(any()) }
+    verify(exactly = 0) { cacheServiceMock.invalidate(any()) }
   }
 
   @Test

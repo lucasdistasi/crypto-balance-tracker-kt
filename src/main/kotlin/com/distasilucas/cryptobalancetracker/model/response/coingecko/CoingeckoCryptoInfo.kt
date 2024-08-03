@@ -1,10 +1,10 @@
 package com.distasilucas.cryptobalancetracker.model.response.coingecko
 
 import com.distasilucas.cryptobalancetracker.entity.Crypto
-import com.distasilucas.cryptobalancetracker.service.roundChangePercentage
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.Serializable
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.Clock
 import java.time.LocalDateTime
 
@@ -40,6 +40,8 @@ data class CoingeckoCryptoInfo(
       lastUpdatedAt = LocalDateTime.now(clock)
     )
   }
+
+  private fun BigDecimal.roundChangePercentage() = this.setScale(2, RoundingMode.HALF_UP)
 }
 
 data class Image(
