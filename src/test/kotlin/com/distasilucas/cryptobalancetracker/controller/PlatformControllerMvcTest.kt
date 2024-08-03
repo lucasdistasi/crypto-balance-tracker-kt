@@ -1,8 +1,8 @@
 package com.distasilucas.cryptobalancetracker.controller
 
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
+import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.model.request.platform.PlatformRequest
-import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import com.distasilucas.cryptobalancetracker.service.PlatformService
 import com.ninjasquad.springmockk.MockkBean
 import countPlatforms
@@ -50,11 +50,11 @@ class PlatformControllerMvcTest(
   @Test
   fun `should retrieve platform with status 200`() {
     val id = "123e4567-e89b-12d3-a456-426614174000"
-    val platformResponse = PlatformResponse("123e4567-e89b-12d3-a456-426614174000", "BINANCE")
+    val platform = Platform("123e4567-e89b-12d3-a456-426614174000", "BINANCE")
 
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174000")
-    } returns platformResponse
+    } returns platform
 
     mockMvc.retrievePlatform(id)
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -81,9 +81,9 @@ class PlatformControllerMvcTest(
 
   @Test
   fun `should retrieve all platforms with status 200`() {
-    val platformResponse = PlatformResponse("123e4567-e89b-12d3-a456-426614174000", "BINANCE")
+    val platform = Platform("123e4567-e89b-12d3-a456-426614174000", "BINANCE")
 
-    every { platformServiceMock.retrieveAllPlatforms() } returns listOf(platformResponse)
+    every { platformServiceMock.retrieveAllPlatforms() } returns listOf(platform)
 
     mockMvc.retrieveAllPlatforms()
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -106,7 +106,7 @@ class PlatformControllerMvcTest(
 
     every {
       platformServiceMock.savePlatform(PlatformRequest(platformName))
-    } returns PlatformResponse("123e4567-e89b-12d3-a456-426614174000", platformName.uppercase())
+    } returns Platform("123e4567-e89b-12d3-a456-426614174000", platformName.uppercase())
 
     mockMvc.savePlatform(payload)
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -219,7 +219,7 @@ class PlatformControllerMvcTest(
 
     every {
       platformServiceMock.updatePlatform("123e4567-e89b-12d3-a456-426614174000", PlatformRequest(platformName))
-    } returns PlatformResponse("123e4567-e89b-12d3-a456-426614174000", platformName.uppercase())
+    } returns Platform("123e4567-e89b-12d3-a456-426614174000", platformName.uppercase())
 
     mockMvc.updatePlatform("123e4567-e89b-12d3-a456-426614174000", payload)
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -341,13 +341,13 @@ class PlatformControllerMvcTest(
   }
 
   @Test
-  fun `should delete platform with status 200`() {
+  fun `should delete platform`() {
     val id = "123e4567-e89b-12d3-a456-426614174000"
 
     justRun { platformServiceMock.deletePlatform(id) }
 
     mockMvc.deletePlatform(id)
-      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andExpect(MockMvcResultMatchers.status().isNoContent)
   }
 
   @Test

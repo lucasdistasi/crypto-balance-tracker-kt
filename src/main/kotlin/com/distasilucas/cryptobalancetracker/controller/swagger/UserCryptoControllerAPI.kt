@@ -303,7 +303,7 @@ interface UserCryptoControllerAPI {
   @ApiResponses(
     value = [
       ApiResponse(
-        responseCode = "200",
+        responseCode = "204",
         description = "User crypto deleted",
         content = [Content(
           mediaType = "application/json",

@@ -323,7 +323,7 @@ class ExceptionController {
   fun handleException(
     exception: Exception
   ): ResponseEntity<List<ProblemDetail>> {
-    logger.warn { "An unhandled Exception occurred $exception" }
+    logger.error { "An unhandled Exception occurred $exception" }
 
     val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, UNKNOWN_ERROR)
 

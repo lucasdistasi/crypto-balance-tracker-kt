@@ -2,6 +2,7 @@ package com.distasilucas.cryptobalancetracker.model.response.insights
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
+import java.io.Serializable
 
 @JsonInclude(Include.NON_NULL)
 data class CryptoInsights(
@@ -11,7 +12,7 @@ data class CryptoInsights(
   val quantity: String?,
   val balances: BalancesResponse,
   val percentage: Float
-) {
+): Serializable {
   constructor(cryptoName: String, balances: BalancesResponse, percentage: Float) : this(
     null,
     cryptoName,

@@ -1,5 +1,6 @@
 package com.distasilucas.cryptobalancetracker.model.response.insights
 
+import com.distasilucas.cryptobalancetracker.entity.Crypto
 import java.math.BigDecimal
 
 data class MarketData(
@@ -8,7 +9,17 @@ data class MarketData(
   val currentPrice: CurrentPrice,
   val marketCap: String,
   val priceChange: PriceChange
-)
+) {
+
+  constructor(crypto: Crypto, circulatingSupply: CirculatingSupply): this(
+      circulatingSupply,
+      crypto.maxSupply.toPlainString(),
+      CurrentPrice(crypto.lastKnownPrice.toPlainString(), crypto.lastKnownPriceInEUR.toPlainString(), crypto.lastKnownPriceInBTC.toPlainString()),
+      crypto.marketCap.toPlainString(),
+      PriceChange(crypto.changePercentageIn24h, crypto.changePercentageIn7d, crypto.changePercentageIn30d)
+    )
+
+}
 
 data class CurrentPrice(
   val usd: String,

@@ -2,6 +2,7 @@ package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.NOT_ENOUGH_BALANCE
 import com.distasilucas.cryptobalancetracker.constants.SAME_FROM_TO_PLATFORM
+import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.model.request.crypto.TransferCryptoRequest
@@ -50,11 +51,11 @@ class TransferCryptoServiceTest {
     val transferCryptoRequest = getTransferCryptoRequest(sendFullQuantity = false)
     val userCryptoToTransfer = getUserCryptoToTransfer()
     val toPlatformUserCrypto = getToPlatformUserCrypto()
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
     every {
       userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -108,11 +109,11 @@ class TransferCryptoServiceTest {
   fun `should transfer from platform with remaining to platform without existing crypto and full quantity disabled`() {
     val transferCryptoRequest = getTransferCryptoRequest(sendFullQuantity = false)
     val userCryptoToTransfer = getUserCryptoToTransfer()
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
     every {
       userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -169,11 +170,11 @@ class TransferCryptoServiceTest {
     val transferCryptoRequest = getTransferCryptoRequest()
     val userCryptoToTransfer = getUserCryptoToTransfer()
     val toPlatformUserCrypto = getToPlatformUserCrypto()
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
     every {
       userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -227,11 +228,11 @@ class TransferCryptoServiceTest {
   fun `should transfer from platform with remaining to platform without existing crypto and full quantity enabled`() {
     val transferCryptoRequest = getTransferCryptoRequest()
     val userCryptoToTransfer = getUserCryptoToTransfer()
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
     every {
       userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -290,11 +291,11 @@ class TransferCryptoServiceTest {
       networkFee = BigDecimal("0.51")
     )
     val userCryptoToTransfer = getUserCryptoToTransfer()
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
     every {
       userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -362,11 +363,11 @@ class TransferCryptoServiceTest {
     val transferCryptoRequest = getTransferCryptoRequest(quantityToTransfer = BigDecimal("1.105734142"))
     val userCryptoToTransfer = getUserCryptoToTransfer(quantity = BigDecimal("1.105734142"))
     val toPlatformUserCrypto = getToPlatformUserCrypto(quantity = BigDecimal("0.2512"))
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
     every {
       userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -417,11 +418,11 @@ class TransferCryptoServiceTest {
   fun `should transfer from platform without remaining to platform without existing crypto and full quantity enabled`() {
     val transferCryptoRequest = getTransferCryptoRequest(quantityToTransfer = BigDecimal("1.105734142"))
     val userCryptoToTransfer = getUserCryptoToTransfer(quantity = BigDecimal("1.105734142"))
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
     every {
       userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -473,11 +474,11 @@ class TransferCryptoServiceTest {
     )
     val userCryptoToTransfer = getUserCryptoToTransfer(quantity = BigDecimal("1.105734142"))
     val toPlatformUserCrypto = getToPlatformUserCrypto()
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
     every {
       userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -531,11 +532,11 @@ class TransferCryptoServiceTest {
       sendFullQuantity = false
     )
     val userCryptoToTransfer = getUserCryptoToTransfer()
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
     every {
       userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -587,11 +588,11 @@ class TransferCryptoServiceTest {
       sendFullQuantity = false
     )
     val userCryptoToTransfer = getUserCryptoToTransfer()
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
     every {
       userCryptoServiceMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -630,13 +631,13 @@ class TransferCryptoServiceTest {
   fun `should throw ApiException if fromPlatform and toPlatform are the same`() {
     val transferCryptoRequest = getTransferCryptoRequest()
     val userCryptoToTransfer = getUserCryptoToTransfer()
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse(
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform(
       id = "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
     )
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
 
     val exception = assertThrows<ApiException> { transferCryptoService.transferCrypto(transferCryptoRequest) }
@@ -653,11 +654,11 @@ class TransferCryptoServiceTest {
       sendFullQuantity = false
     )
     val userCryptoToTransfer = getUserCryptoToTransfer(quantity = BigDecimal("0.5"))
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
 
     val exception = assertThrows<InsufficientBalanceException> {
@@ -674,11 +675,11 @@ class TransferCryptoServiceTest {
       sendFullQuantity = true
     )
     val userCryptoToTransfer = getUserCryptoToTransfer(quantity = BigDecimal("0.5"))
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
 
     val exception = assertThrows<InsufficientBalanceException> {
@@ -697,11 +698,11 @@ class TransferCryptoServiceTest {
     val userCryptoToTransfer = getUserCryptoToTransfer(
       quantity = BigDecimal("1")
     )
-    val toPlatformResponse = getToPlatformResponse()
-    val fromPlatformResponse = getFromPlatformResponse()
+    val toPlatform = getToPlatform()
+    val fromPlatform = getFromPlatform()
 
-    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatformResponse
-    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatformResponse
+    every { platformServiceMock.retrievePlatformById("b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b") } returns toPlatform
+    every { platformServiceMock.retrievePlatformById("d5f63c4d-98e7-4d26-b380-e7d0f5c423e9") } returns fromPlatform
     every { userCryptoServiceMock.findByUserCryptoId("f47ac10b-58cc-4372-a567-0e02b2c3d479") } returns userCryptoToTransfer
 
     val exception = assertThrows<InsufficientBalanceException> {
@@ -757,10 +758,26 @@ class TransferCryptoServiceTest {
     name = name
   )
 
+  private fun getToPlatform(
+    id: String = "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b",
+    name: String = "BINANCE"
+  ) = Platform(
+    id = id,
+    name = name
+  )
+
   private fun getFromPlatformResponse(
     id: String = "d5f63c4d-98e7-4d26-b380-e7d0f5c423e9",
     name: String = "BYBIT"
   ) = PlatformResponse(
+    id = id,
+    name = name
+  )
+
+  private fun getFromPlatform(
+    id: String = "d5f63c4d-98e7-4d26-b380-e7d0f5c423e9",
+    name: String = "BYBIT"
+  ) = Platform(
     id = id,
     name = name
   )

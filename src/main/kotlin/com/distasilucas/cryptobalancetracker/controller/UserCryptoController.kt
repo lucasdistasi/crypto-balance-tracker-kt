@@ -40,7 +40,7 @@ class UserCryptoController(
   override fun retrieveUserCrypto(
     @PathVariable @UUID(message = USER_CRYPTO_ID_UUID) userCryptoId: String
   ): ResponseEntity<UserCryptoResponse> {
-    val userCrypto = userCryptoService.retrieveUserCryptoById(userCryptoId)
+    val userCrypto = userCryptoService.retrieveUserCryptoResponseById(userCryptoId)
 
     return ResponseEntity.ok(userCrypto)
   }
@@ -78,7 +78,7 @@ class UserCryptoController(
   ): ResponseEntity<Unit> {
     userCryptoService.deleteUserCrypto(userCryptoId)
 
-    return ResponseEntity.ok().build()
+    return ResponseEntity.noContent().build()
   }
 
   @PostMapping("/transfer")

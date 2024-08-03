@@ -635,7 +635,7 @@ class GoalControllerMvcTest(
     justRun { goalServiceMock.deleteGoal("123e4567-e89b-12d3-a456-426614174111") }
 
     mockMvc.deleteGoal("123e4567-e89b-12d3-a456-426614174111")
-      .andExpect(status().isOk)
+      .andExpect(status().isNoContent)
   }
 
   @ParameterizedTest
