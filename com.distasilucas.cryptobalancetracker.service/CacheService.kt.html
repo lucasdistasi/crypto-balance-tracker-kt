@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service
 
   fun invalidate(firstCache: CacheType, vararg caches: CacheType) {
 <span class="fc" id="L34">    invalidate(firstCache)</span>
-<span class="pc" id="L35">    caches.forEach { invalidate(it) }</span>
+<span class="fc" id="L35">    caches.forEach { invalidate(it) }</span>
 <span class="fc" id="L36">  }</span>
 
   private fun invalidate(cache: CacheType) {

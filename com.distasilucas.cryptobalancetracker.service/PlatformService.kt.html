@@ -43,48 +43,48 @@ import org.springframework.stereotype.Service
 <span class="fc" id="L43">    return platformRepository.findAll()</span>
   }
 
+  @Cacheable(cacheNames = [PLATFORMS_PLATFORMS_IDS_CACHE], key = &quot;#ids&quot;)
+  fun findAllByIds(ids: Collection&lt;String&gt;): List&lt;Platform&gt; {
+<span class="fc" id="L48">    logger.info { &quot;Retrieving platforms for ids $ids&quot; }</span>
+
+<span class="fc" id="L50">    return platformRepository.findAllByIdIn(ids)</span>
+  }
+
   fun savePlatform(platformRequest: PlatformRequest): Platform {
-<span class="fc" id="L47">    validatePlatformNotExists(platformRequest.name!!)</span>
+<span class="fc" id="L54">    validatePlatformNotExists(platformRequest.name!!)</span>
 
-<span class="fc" id="L49">    val platform = platformRequest.toEntity()</span>
-<span class="fc" id="L50">    val platformEntity = platformRepository.save(platform)</span>
-<span class="fc" id="L51">    cacheService.invalidate(CacheType.PLATFORMS_CACHES)</span>
+<span class="fc" id="L56">    val platform = platformRequest.toEntity()</span>
+<span class="fc" id="L57">    val platformEntity = platformRepository.save(platform)</span>
+<span class="fc" id="L58">    cacheService.invalidate(CacheType.PLATFORMS_CACHES)</span>
 
-<span class="fc" id="L53">    logger.info { &quot;Saved platform $platformEntity&quot; }</span>
+<span class="fc" id="L60">    logger.info { &quot;Saved platform $platformEntity&quot; }</span>
 
-<span class="fc" id="L55">    return platformEntity</span>
+<span class="fc" id="L62">    return platformEntity</span>
   }
 
   fun updatePlatform(platformId: String, platformRequest: PlatformRequest): Platform {
-<span class="fc" id="L59">    validatePlatformNotExists(platformRequest.name!!)</span>
+<span class="fc" id="L66">    validatePlatformNotExists(platformRequest.name!!)</span>
 
-<span class="fc" id="L61">    val existingPlatform = _platformService!!.retrievePlatformById(platformId)</span>
-<span class="fc" id="L62">    val updatedPlatform = platformRequest.toEntity(id = existingPlatform.id)</span>
+<span class="fc" id="L68">    val existingPlatform = _platformService!!.retrievePlatformById(platformId)</span>
+<span class="fc" id="L69">    val updatedPlatform = platformRequest.toEntity(id = existingPlatform.id)</span>
 
-<span class="fc" id="L64">    platformRepository.save(updatedPlatform)</span>
-<span class="fc" id="L65">    cacheService.invalidate(CacheType.PLATFORMS_CACHES, CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES)</span>
-<span class="fc" id="L66">    logger.info { &quot;Updated platform. Before: $existingPlatform  | After: $updatedPlatform&quot; }</span>
+<span class="fc" id="L71">    platformRepository.save(updatedPlatform)</span>
+<span class="fc" id="L72">    cacheService.invalidate(CacheType.PLATFORMS_CACHES, CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES)</span>
+<span class="fc" id="L73">    logger.info { &quot;Updated platform. Before: $existingPlatform  | After: $updatedPlatform&quot; }</span>
 
-<span class="fc" id="L68">    return updatedPlatform</span>
+<span class="fc" id="L75">    return updatedPlatform</span>
   }
 
   fun deletePlatform(platformId: String) {
-<span class="fc" id="L72">    val platform = _platformService!!.retrievePlatformById(platformId)</span>
-<span class="fc" id="L73">    val userCryptosToDelete = userCryptoService.findAllByPlatformId(platform.id)</span>
-<span class="fc" id="L74">    userCryptoService.deleteUserCryptos(userCryptosToDelete)</span>
+<span class="fc" id="L79">    val platform = _platformService!!.retrievePlatformById(platformId)</span>
+<span class="fc" id="L80">    val userCryptosToDelete = userCryptoService.findAllByPlatformId(platform.id)</span>
 
-<span class="fc" id="L76">    platformRepository.deleteById(platformId)</span>
-<span class="fc" id="L77">    cacheService.invalidate(CacheType.PLATFORMS_CACHES, CacheType.INSIGHTS_CACHES)</span>
+<span class="fc" id="L82">    userCryptoService.deleteUserCryptos(userCryptosToDelete)</span>
+<span class="fc" id="L83">    platformRepository.delete(platform)</span>
+<span class="fc" id="L84">    cacheService.invalidate(CacheType.PLATFORMS_CACHES, CacheType.INSIGHTS_CACHES)</span>
 
-<span class="fc" id="L79">    logger.info { &quot;Deleted platform ${platform.name}&quot; }</span>
-<span class="fc" id="L80">  }</span>
-
-  @Cacheable(cacheNames = [PLATFORMS_PLATFORMS_IDS_CACHE], key = &quot;#ids&quot;)
-  fun findAllByIds(ids: Collection&lt;String&gt;): List&lt;Platform&gt; {
-<span class="fc" id="L84">    logger.info { &quot;Retrieving platforms for ids $ids&quot; }</span>
-
-<span class="fc" id="L86">    return platformRepository.findAllByIdIn(ids)</span>
-  }
+<span class="fc" id="L86">    logger.info { &quot;Deleted platform ${platform.name}&quot; }</span>
+<span class="fc" id="L87">  }</span>
 
   private fun validatePlatformNotExists(platformName: String) {
 <span class="fc" id="L90">    val existingPlatform = platformRepository.findByName(platformName.uppercase())</span>
