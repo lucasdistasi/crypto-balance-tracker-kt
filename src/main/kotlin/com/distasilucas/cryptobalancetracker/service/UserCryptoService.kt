@@ -114,7 +114,7 @@ class UserCryptoService(
     cryptoService.saveCryptoIfNotExists(coingeckoCrypto.id)
     userCryptoRepository.save(userCrypto)
     logger.info { "Saved user crypto $userCrypto" }
-    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES)
+    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
 
     return userCrypto.toUserCryptoResponse(
       cryptoName = coingeckoCrypto.name,
@@ -146,7 +146,7 @@ class UserCryptoService(
     )
 
     userCryptoRepository.save(updatedUserCrypto)
-    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES, CacheType.GOALS_CACHES)
+    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
     logger.info { "Updated user crypto. Before: $userCrypto | After: $updatedUserCrypto" }
 
     return updatedUserCrypto.toUserCryptoResponse(

@@ -45,7 +45,7 @@ import getUserCrypto
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.cache.CacheManager
 import org.springframework.cache.concurrent.ConcurrentMapCache
@@ -87,12 +87,12 @@ class CacheServiceTest {
 
     cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES)
 
-    assertThat(userCryptosCache.nativeCache).isEmpty()
-    assertThat(userCryptosPlatformIdCache.nativeCache).isEmpty()
-    assertThat(userCryptosCoingeckoCryptoIdCache.nativeCache).isEmpty()
-    assertThat(userCryptoIdCache.nativeCache).isEmpty()
-    assertThat(userCryptoResponseUserCryptoIdCache.nativeCache).isEmpty()
-    assertThat(userCryptosResponsePageCache.nativeCache).isEmpty()
+    assertTrue(userCryptosCache.nativeCache.isEmpty())
+    assertTrue(userCryptosPlatformIdCache.nativeCache.isEmpty())
+    assertTrue(userCryptosCoingeckoCryptoIdCache.nativeCache.isEmpty())
+    assertTrue(userCryptoIdCache.nativeCache.isEmpty())
+    assertTrue(userCryptoResponseUserCryptoIdCache.nativeCache.isEmpty())
+    assertTrue(userCryptosResponsePageCache.nativeCache.isEmpty())
 
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE) }
@@ -114,7 +114,8 @@ class CacheServiceTest {
 
     val store = cache.nativeCache
 
-    assertThat(store).isEmpty()
+    assertTrue(store.isEmpty())
+
     verify(exactly = 1) { cacheManagerMock.getCache(CRYPTOS_CRYPTOS_IDS_CACHE) }
   }
 
@@ -142,9 +143,10 @@ class CacheServiceTest {
     val allPlatformsStore = allPlatformsCache.nativeCache
     val platformIdStore = platformIdCache.nativeCache
 
-    assertThat(platformsIdsStore).isEmpty()
-    assertThat(allPlatformsStore).isEmpty()
-    assertThat(platformIdStore).isEmpty()
+    assertTrue(platformsIdsStore.isEmpty())
+    assertTrue(allPlatformsStore.isEmpty())
+    assertTrue(platformIdStore.isEmpty())
+
     verify(exactly = 1) { cacheManagerMock.getCache(PLATFORMS_PLATFORMS_IDS_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(ALL_PLATFORMS_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(PLATFORM_PLATFORM_ID_CACHE) }
@@ -166,8 +168,9 @@ class CacheServiceTest {
     val goalResponseGoalIdStore = goalResponseGoalIdCache.nativeCache
     val pageGoalsResponsePageStore = pageGoalsResponsePageCache.nativeCache
 
-    assertThat(goalResponseGoalIdStore).isEmpty()
-    assertThat(pageGoalsResponsePageStore).isEmpty()
+    assertTrue(goalResponseGoalIdStore.isEmpty())
+    assertTrue(pageGoalsResponsePageStore.isEmpty())
+
     verify(exactly = 1) { cacheManagerMock.getCache(GOAL_RESPONSE_GOAL_ID_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(PAGE_GOALS_RESPONSE_PAGE_CACHE) }
   }
@@ -200,9 +203,10 @@ class CacheServiceTest {
     val priceTargetResponseIdStore = priceTargetResponseIdCache.nativeCache
     val priceTargetResponsePageStore = priceTargetResponsePageCache.nativeCache
 
-    assertThat(priceTargetIdStore).isEmpty()
-    assertThat(priceTargetResponseIdStore).isEmpty()
-    assertThat(priceTargetResponsePageStore).isEmpty()
+    assertTrue(priceTargetIdStore.isEmpty())
+    assertTrue(priceTargetResponseIdStore.isEmpty())
+    assertTrue(priceTargetResponsePageStore.isEmpty())
+
     verify(exactly = 1) { cacheManagerMock.getCache(PRICE_TARGET_ID_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(PRICE_TARGET_RESPONSE_ID_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(PRICE_TARGET_RESPONSE_PAGE_CACHE) }
@@ -233,12 +237,12 @@ class CacheServiceTest {
 
     cacheService.invalidate(CacheType.INSIGHTS_CACHES)
 
-    assertThat(totalBalancesCache.nativeCache).isEmpty()
-    assertThat(datesBalancesCache.nativeCache).isEmpty()
-    assertThat(platformInsightsCache.nativeCache).isEmpty()
-    assertThat(cryptoInsightsCache.nativeCache).isEmpty()
-    assertThat(platformsBalancesInsightsCache.nativeCache).isEmpty()
-    assertThat(cryptosBalancesInsightsCache.nativeCache).isEmpty()
+    assertTrue(totalBalancesCache.nativeCache.isEmpty())
+    assertTrue(datesBalancesCache.nativeCache.isEmpty())
+    assertTrue(platformInsightsCache.nativeCache.isEmpty())
+    assertTrue(cryptoInsightsCache.nativeCache.isEmpty())
+    assertTrue(platformsBalancesInsightsCache.nativeCache.isEmpty())
+    assertTrue(cryptosBalancesInsightsCache.nativeCache.isEmpty())
 
     verify(exactly = 1) { cacheManagerMock.getCache(TOTAL_BALANCES_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(DATES_BALANCES_CACHE) }
@@ -268,9 +272,9 @@ class CacheServiceTest {
     val goalResponseGoalIdStore = goalResponseGoalIdCache.nativeCache
     val pageGoalsResponsePageStore = pageGoalsResponsePageCache.nativeCache
 
-    assertThat(cryptosIdsStore).isEmpty()
-    assertThat(goalResponseGoalIdStore).isEmpty()
-    assertThat(pageGoalsResponsePageStore).isEmpty()
+    assertTrue(cryptosIdsStore.isEmpty())
+    assertTrue(goalResponseGoalIdStore.isEmpty())
+    assertTrue(pageGoalsResponsePageStore.isEmpty())
 
     verify(exactly = 1) { cacheManagerMock.getCache(CRYPTOS_CRYPTOS_IDS_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(GOAL_RESPONSE_GOAL_ID_CACHE) }

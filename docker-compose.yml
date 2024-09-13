@@ -8,7 +8,9 @@ services:
       - crypto-db-volume:/data/db
 
   crypto-balance-tracker-kt:
-    image: 'crypto-balance-tracker-kt:latest'
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: 'crypto-balance-tracker-kt'
     depends_on:
       - mongo-crypto-db
@@ -22,7 +24,9 @@ services:
       - '8080:8080'
 
   crypto-balance-tracker-ui:
-    image: 'crypto-balance-tracker-ui:latest'
+    build:
+      context: ../crypto-balance-tracker-ui
+      dockerfile: Dockerfile
     container_name: 'crypto-balance-tracker-ui'
     depends_on:
       - crypto-balance-tracker-kt
