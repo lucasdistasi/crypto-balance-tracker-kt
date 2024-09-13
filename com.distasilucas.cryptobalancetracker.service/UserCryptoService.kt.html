@@ -114,7 +114,7 @@ import java.util.*
 <span class="fc" id="L114">    cryptoService.saveCryptoIfNotExists(coingeckoCrypto.id)</span>
 <span class="fc" id="L115">    userCryptoRepository.save(userCrypto)</span>
 <span class="fc" id="L116">    logger.info { &quot;Saved user crypto $userCrypto&quot; }</span>
-<span class="fc" id="L117">    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES)</span>
+<span class="fc" id="L117">    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)</span>
 
 <span class="fc" id="L119">    return userCrypto.toUserCryptoResponse(</span>
 <span class="fc" id="L120">      cryptoName = coingeckoCrypto.name,</span>
@@ -146,7 +146,7 @@ import java.util.*
     )
 
 <span class="fc" id="L148">    userCryptoRepository.save(updatedUserCrypto)</span>
-<span class="fc" id="L149">    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.INSIGHTS_CACHES, CacheType.GOALS_CACHES)</span>
+<span class="fc" id="L149">    cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)</span>
 <span class="fc" id="L150">    logger.info { &quot;Updated user crypto. Before: $userCrypto | After: $updatedUserCrypto&quot; }</span>
 
 <span class="fc" id="L152">    return updatedUserCrypto.toUserCryptoResponse(</span>
