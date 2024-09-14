@@ -35,7 +35,7 @@ class UserCryptoControllerTest {
     )
 
     every {
-      userCryptoServiceMock.retrieveUserCryptoById("123e4567-e89b-12d3-a456-426614174000")
+      userCryptoServiceMock.retrieveUserCryptoResponseById("123e4567-e89b-12d3-a456-426614174000")
     } returns userCryptoResponse
 
     val responseEntity = userCryptoController.retrieveUserCrypto("123e4567-e89b-12d3-a456-426614174000")
@@ -123,13 +123,13 @@ class UserCryptoControllerTest {
   }
 
   @Test
-  fun `should delete user crypto with status 200`() {
+  fun `should delete user crypto`() {
     justRun { userCryptoServiceMock.deleteUserCrypto("123e4567-e89b-12d3-a456-426614174000") }
 
     val responseEntity = userCryptoController.deleteUserCrypto("123e4567-e89b-12d3-a456-426614174000")
 
     assertThat(responseEntity)
-      .isEqualTo(ResponseEntity.ok().build<Unit>())
+      .isEqualTo(ResponseEntity.noContent().build<Unit>())
   }
 
   @Test

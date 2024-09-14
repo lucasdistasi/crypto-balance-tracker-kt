@@ -18,14 +18,6 @@ springdoc:
   swagger-ui:
     defaultModelsExpandDepth: -1
 
-logging:
-  charset:
-    console: UTF-8
-  level:
-    root: INFO
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %cyan([ %thread ]) %green(%logger) - %boldCyan(%msg%n)"
-
 crypto:
   insights:
     max-single-items-count: 15

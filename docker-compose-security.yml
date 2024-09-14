@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   mongo-crypto-db:
     image: 'mongo:latest'
@@ -16,7 +14,9 @@ services:
       - mongo-crypto-db
 
   crypto-balance-tracker-login:
-    image: 'crypto-balance-tracker-login:latest'
+    build:
+      context: ../crypto-balance-tracker-login
+      dockerfile: Dockerfile
     container_name: 'crypto-balance-tracker-login'
     depends_on:
       - mongo-crypto-db
@@ -28,7 +28,9 @@ services:
       - '8081:8081'
 
   crypto-balance-tracker-kt:
-    image: 'crypto-balance-tracker-kt:latest'
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: 'crypto-balance-tracker-kt'
     depends_on:
       - mongo-crypto-db
@@ -43,7 +45,9 @@ services:
       - '8080:8080'
 
   crypto-balance-tracker-ui:
-    image: 'crypto-balance-tracker-ui:latest'
+    build:
+      context: ../crypto-balance-tracker-ui
+      dockerfile: Dockerfile
     container_name: 'crypto-balance-tracker-ui'
     depends_on:
       - crypto-balance-tracker-kt

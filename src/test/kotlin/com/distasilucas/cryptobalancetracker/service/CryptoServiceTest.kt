@@ -86,7 +86,7 @@ class CryptoServiceTest {
     every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns zonedDateTime.zone
     every { cryptoRepositoryMock.save(cryptoEntity) } returns cryptoEntity
-    justRun { cacheServiceMock.invalidateCryptosCache() }
+    justRun { cacheServiceMock.invalidate(CacheType.CRYPTOS_CACHES) }
 
     val crypto = cryptoService.retrieveCryptoInfoById("bitcoin")
 
@@ -132,7 +132,7 @@ class CryptoServiceTest {
     every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns zonedDateTime.zone
     every { cryptoRepositoryMock.save(cryptoEntity) } returns cryptoEntity
-    justRun { cacheServiceMock.invalidateCryptosCache() }
+    justRun { cacheServiceMock.invalidate(CacheType.CRYPTOS_CACHES) }
 
     val crypto = cryptoService.retrieveCryptoInfoById("bitcoin")
 
@@ -243,7 +243,7 @@ class CryptoServiceTest {
     every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns zonedDateTime.zone
     every { cryptoRepositoryMock.save(capture(slot)) } answers { slot.captured }
-    justRun { cacheServiceMock.invalidateCryptosCache() }
+    justRun { cacheServiceMock.invalidate(CacheType.CRYPTOS_CACHES) }
 
     cryptoService.saveCryptoIfNotExists("bitcoin")
 
@@ -285,7 +285,7 @@ class CryptoServiceTest {
     every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns zonedDateTime.zone
     every { cryptoRepositoryMock.save(capture(slot)) } answers { slot.captured }
-    justRun { cacheServiceMock.invalidateCryptosCache() }
+    justRun { cacheServiceMock.invalidate(CacheType.CRYPTOS_CACHES) }
 
     cryptoService.saveCryptoIfNotExists("bitcoin")
 
@@ -329,11 +329,33 @@ class CryptoServiceTest {
   fun `should delete crypto if it is not being used`() {
     every { orphanCryptoService.isCryptoOrphan("bitcoin") } returns true
     justRun { cryptoRepositoryMock.deleteById("bitcoin") }
-    justRun { cacheServiceMock.invalidateCryptosCache() }
+    justRun { cacheServiceMock.invalidate(CacheType.CRYPTOS_CACHES) }
 
     cryptoService.deleteCryptoIfNotUsed("bitcoin")
 
     verify(exactly = 1) { cryptoRepositoryMock.deleteById("bitcoin") }
+  }
+
+  @Test
+  fun `should delete cryptos if it is not being used`() {
+    every { orphanCryptoService.getOrphanCryptos(listOf("bitcoin", "ethereum")) } returns listOf("ethereum")
+    justRun { cryptoRepositoryMock.deleteAllById(listOf("ethereum")) }
+    justRun { cacheServiceMock.invalidate(CacheType.CRYPTOS_CACHES) }
+
+    cryptoService.deleteCryptosIfNotUsed(listOf("bitcoin", "ethereum"))
+
+    verify(exactly = 1) { cryptoRepositoryMock.deleteAllById(listOf("ethereum")) }
+    verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.CRYPTOS_CACHES) }
+  }
+
+  @Test
+  fun `should not delete cryptos if list it's empty`() {
+    every { orphanCryptoService.getOrphanCryptos(listOf("bitcoin", "ethereum")) } returns emptyList()
+
+    cryptoService.deleteCryptosIfNotUsed(listOf("bitcoin", "ethereum"))
+
+    verify(exactly = 0) { cryptoRepositoryMock.deleteAllById(any()) }
+    verify(exactly = 0) { cacheServiceMock.invalidate(any()) }
   }
 
   @Test

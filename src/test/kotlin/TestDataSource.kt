@@ -1,4 +1,5 @@
 import com.distasilucas.cryptobalancetracker.entity.Crypto
+import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
@@ -10,7 +11,6 @@ import com.distasilucas.cryptobalancetracker.model.response.coingecko.MarketCap
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -246,11 +246,11 @@ fun getUserCryptoRequest(
   )
 }
 
-fun getPlatformResponse(
+fun getPlatformEntity(
   id: String = "123e4567-e89b-12d3-a456-426614174111",
   name: String = "BINANCE"
-): PlatformResponse {
-  return PlatformResponse(
+): Platform {
+  return Platform(
     id = id,
     name = name.uppercase()
   )

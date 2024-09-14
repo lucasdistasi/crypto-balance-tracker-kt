@@ -8,6 +8,8 @@ import com.distasilucas.cryptobalancetracker.repository.PriceTargetRepository
 import com.distasilucas.cryptobalancetracker.repository.UserCryptoRepository
 import io.mockk.every
 import io.mockk.mockk
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -78,6 +80,25 @@ class OrphanCryptoServiceTest {
     val result = orphanCryptoService.isCryptoOrphan("bitcoin")
 
     assertFalse(result)
+  }
+
+  @Test
+  fun `should return not used cryptos`() {
+    val userCrypto = UserCrypto(
+      coingeckoCryptoId = "bitcoin",
+      quantity = BigDecimal("1"),
+      platformId = UUID.randomUUID().toString()
+    )
+
+    every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns listOf(userCrypto)
+    every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("ethereum") } returns emptyList()
+    every { goalRepositoryMock.findByCoingeckoCryptoId("ethereum") } returns Optional.empty()
+    every { priceTargetRepositoryMock.findAllByCoingeckoCryptoId("ethereum") } returns emptyList()
+
+    val orphanCryptos = orphanCryptoService.getOrphanCryptos(listOf("bitcoin", "ethereum"))
+
+    assertThat(orphanCryptos.size).isEqualTo(1)
+    assertEquals(listOf("ethereum"), orphanCryptos)
   }
 
 }

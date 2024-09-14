@@ -35,16 +35,15 @@ class InsightsController(private val insightsService: InsightsService) : Insight
   @GetMapping("/balances")
   override fun retrieveTotalBalances(): ResponseEntity<BalancesResponse> {
     val totalBalances = insightsService.retrieveTotalBalances()
-    val response = if (totalBalances.isEmpty) BalancesResponse("0", "0", "0") else totalBalances.get()
 
-    return ResponseEntity.ok(response)
+    return ResponseEntity.ok(totalBalances)
   }
 
   @GetMapping("/dates-balances")
   override fun retrieveDatesBalances(@RequestParam dateRange: DateRange): ResponseEntity<DatesBalanceResponse> {
     val dateBalances = insightsService.retrieveDatesBalances(dateRange)
 
-    return okOrNoContent(dateBalances)
+    return ResponseEntity.ok(dateBalances)
   }
 
   @GetMapping("/cryptos")
@@ -83,21 +82,21 @@ class InsightsController(private val insightsService: InsightsService) : Insight
   override fun retrieveCryptosBalancesInsights(): ResponseEntity<CryptosBalancesInsightsResponse> {
     val cryptosBalancesInsights = insightsService.retrieveCryptosBalancesInsights()
 
-    return okOrNoContent(cryptosBalancesInsights)
+    return ResponseEntity.ok(cryptosBalancesInsights)
   }
 
   @GetMapping("/platforms/balances")
   override fun retrievePlatformsBalancesInsights(): ResponseEntity<PlatformsBalancesInsightsResponse> {
     val platformsBalancesInsights = insightsService.retrievePlatformsBalancesInsights()
 
-    return okOrNoContent(platformsBalancesInsights)
+    return ResponseEntity.ok(platformsBalancesInsights)
   }
 
   @GetMapping("/cryptos/{coingeckoCryptoId}")
   override fun retrieveCryptoInsights(@PathVariable coingeckoCryptoId: String): ResponseEntity<CryptoInsightResponse> {
     val cryptoInsights = insightsService.retrieveCryptoInsights(coingeckoCryptoId)
 
-    return okOrNoContent(cryptoInsights)
+    return ResponseEntity.ok(cryptoInsights)
   }
 
   @GetMapping("/platforms/{platformId}")
@@ -108,7 +107,7 @@ class InsightsController(private val insightsService: InsightsService) : Insight
   ): ResponseEntity<PlatformInsightsResponse> {
     val platformsInsights = insightsService.retrievePlatformInsights(platformId)
 
-    return okOrNoContent(platformsInsights)
+    return ResponseEntity.ok(platformsInsights)
   }
 
   private fun <T> okOrNoContent(body: Optional<T>): ResponseEntity<T> {

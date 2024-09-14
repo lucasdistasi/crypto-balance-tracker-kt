@@ -30,8 +30,9 @@ class GoalServiceTest {
   private val goalRepositoryMock = mockk<GoalRepository>()
   private val cryptoServiceMock = mockk<CryptoService>()
   private val userCryptoServiceMock = mockk<UserCryptoService>()
+  private val cacheServiceMock = mockk<CacheService>()
 
-  private val goalService = GoalService(goalRepositoryMock, cryptoServiceMock, userCryptoServiceMock)
+  private val goalService = GoalService(goalRepositoryMock, cryptoServiceMock, userCryptoServiceMock, cacheServiceMock)
 
   @Test
   fun `should retrieve goal by id`() {
@@ -232,6 +233,7 @@ class GoalServiceTest {
     every { goalRepositoryMock.save(capture(slot)) } answers { slot.captured }
     every { cryptoServiceMock.retrieveCryptoInfoById("bitcoin") } returns cryptoEntity
     every { userCryptoServiceMock.findAllByCoingeckoCryptoId("bitcoin") } returns listOf(userCrypto)
+    justRun { cacheServiceMock.invalidate(CacheType.GOALS_CACHES) }
 
     val goalResponse = goalService.saveGoal(goalRequest)
 
@@ -295,6 +297,7 @@ class GoalServiceTest {
     every { cryptoServiceMock.retrieveCryptoInfoById("bitcoin") } returns cryptoEntity
     every { userCryptoServiceMock.findAllByCoingeckoCryptoId("bitcoin") } returns listOf(userCrypto)
     every { goalRepositoryMock.save(updatedGoal) } returns updatedGoal
+    justRun { cacheServiceMock.invalidate(CacheType.GOALS_CACHES) }
 
     val goalResponse = goalService.updateGoal("123e4567-e89b-12d3-a456-426614174111", goalRequest)
 
@@ -340,6 +343,7 @@ class GoalServiceTest {
     every { goalRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174111") } returns Optional.of(goal)
     justRun { goalRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174111") }
     justRun { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
+    justRun { cacheServiceMock.invalidate(CacheType.GOALS_CACHES) }
 
     goalService.deleteGoal("123e4567-e89b-12d3-a456-426614174111")
 

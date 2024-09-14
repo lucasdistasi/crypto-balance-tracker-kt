@@ -2,14 +2,14 @@ package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_CRYPTO_PLATFORM
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
+import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
-import com.distasilucas.cryptobalancetracker.model.response.platform.PlatformResponse
 import com.distasilucas.cryptobalancetracker.repository.UserCryptoRepository
 import getCoingeckoCrypto
 import getCryptoEntity
-import getPlatformResponse
+import getPlatformEntity
 import getUserCrypto
 import getUserCryptoRequest
 import io.mockk.every
@@ -32,19 +32,21 @@ class UserCryptoServiceTest {
   private val platformServiceMock = mockk<PlatformService>()
   private val cryptoServiceMock = mockk<CryptoService>()
   private val cacheServiceMock = mockk<CacheService>()
+  private val _userCryptoServiceMock = mockk<UserCryptoService>()
 
   private val userCryptoService = UserCryptoService(
     userCryptoRepositoryMock,
     platformServiceMock,
     cryptoServiceMock,
-    cacheServiceMock
+    cacheServiceMock,
+    _userCryptoServiceMock
   )
 
   @Test
   fun `should retrieve user crypto`() {
     val userCrypto = getUserCrypto()
     val crypto = getCryptoEntity()
-    val platform = getPlatformResponse()
+    val platform = getPlatformEntity()
 
     every {
       userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
@@ -54,7 +56,7 @@ class UserCryptoServiceTest {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
     } returns platform
 
-    val userCryptoResponse = userCryptoService.retrieveUserCryptoById("123e4567-e89b-12d3-a456-426614174000")
+    val userCryptoResponse = userCryptoService.retrieveUserCryptoResponseById("123e4567-e89b-12d3-a456-426614174000")
 
     assertThat(userCryptoResponse)
       .usingRecursiveComparison()
@@ -73,7 +75,7 @@ class UserCryptoServiceTest {
     every { userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000") } returns Optional.empty()
 
     val exception = assertThrows<UserCryptoNotFoundException> {
-      userCryptoService.retrieveUserCryptoById("123e4567-e89b-12d3-a456-426614174000")
+      userCryptoService.retrieveUserCryptoResponseById("123e4567-e89b-12d3-a456-426614174000")
     }
 
     assertThat(exception.message).isEqualTo(USER_CRYPTO_ID_NOT_FOUND.format("123e4567-e89b-12d3-a456-426614174000"))
@@ -82,13 +84,13 @@ class UserCryptoServiceTest {
   @Test
   fun `should retrieve user cryptos by page`() {
     val userCrypto = getUserCrypto()
-    val platformResponse = getPlatformResponse()
+    val platform = getPlatformEntity()
     val crypto = getCryptoEntity()
 
     every { userCryptoRepositoryMock.findAll(PageRequest.of(0, 10)) } returns PageImpl(listOf(userCrypto))
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
-    } returns platformResponse
+    } returns platform
     every { cryptoServiceMock.retrieveCryptoInfoById("bitcoin") } returns crypto
 
     val pageUserCryptoResponse = userCryptoService.retrieveUserCryptosByPage(0)
@@ -113,7 +115,7 @@ class UserCryptoServiceTest {
   @Test
   fun `should retrieve user cryptos by page with next page`() {
     val userCrypto = getUserCrypto()
-    val platformResponse = getPlatformResponse()
+    val platform = getPlatformEntity()
     val crypto = getCryptoEntity()
     val userCryptosPage = List(2) { userCrypto }
     val pageImpl = PageImpl(userCryptosPage, PageRequest.of(0, 2), 10L)
@@ -121,7 +123,7 @@ class UserCryptoServiceTest {
     every { userCryptoRepositoryMock.findAll(PageRequest.of(0, 10)) } returns pageImpl
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
-    } returns platformResponse
+    } returns platform
     every { cryptoServiceMock.retrieveCryptoInfoById("bitcoin") } returns crypto
 
     val pageUserCryptoResponse = userCryptoService.retrieveUserCryptosByPage(0)
@@ -169,13 +171,13 @@ class UserCryptoServiceTest {
   fun `should save user crypto`() {
     val userCryptoRequest = getUserCryptoRequest()
     val coingeckoCrypto = getCoingeckoCrypto()
-    val platformResponse = getPlatformResponse()
+    val platform = getPlatformEntity()
 
     val slot = slot<UserCrypto>()
     every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
-    } returns platformResponse
+    } returns platform
     every {
       userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
         "bitcoin",
@@ -184,12 +186,14 @@ class UserCryptoServiceTest {
     } returns Optional.empty()
     every { userCryptoRepositoryMock.save(capture(slot)) } answers { slot.captured }
     justRun { cryptoServiceMock.saveCryptoIfNotExists("bitcoin") }
-    justRun { cacheServiceMock.invalidateUserCryptosCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
 
     val userCryptoResponse = userCryptoService.saveUserCrypto(userCryptoRequest)
 
     verify(exactly = 1) { userCryptoRepositoryMock.save(slot.captured) }
-    verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosCaches() }
+    verify(exactly = 1) {
+      cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
+    }
 
     assertThat(userCryptoResponse)
       .usingRecursiveComparison()
@@ -207,7 +211,7 @@ class UserCryptoServiceTest {
   fun `should throw DuplicatedCryptoPlatFormException when saving user crypto`() {
     val userCryptoRequest = getUserCryptoRequest()
     val coingeckoCrypto = getCoingeckoCrypto()
-    val platformResponse = getPlatformResponse()
+    val platform = getPlatformEntity()
     val userCrypto = getUserCrypto(
       id = "123e4567-e89b-12d3-a456-426614174312"
     )
@@ -215,7 +219,7 @@ class UserCryptoServiceTest {
     every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
-    } returns platformResponse
+    } returns platform
     every {
       userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
         "bitcoin",
@@ -241,15 +245,15 @@ class UserCryptoServiceTest {
     val updatedUserCrypto = getUserCrypto(
       quantity = BigDecimal("1.25")
     )
-    val platformResponse = getPlatformResponse()
+    val platform = getPlatformEntity()
     val coingeckoCrypto = getCoingeckoCrypto()
 
     every {
-      userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
-    } returns Optional.of(userCrypto)
+      _userCryptoServiceMock.findByUserCryptoId("123e4567-e89b-12d3-a456-426614174000")
+    } returns userCrypto
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
-    } returns platformResponse
+    } returns platform
     every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
     every {
       userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -258,13 +262,13 @@ class UserCryptoServiceTest {
       )
     } returns Optional.empty()
     every { userCryptoRepositoryMock.save(updatedUserCrypto) } returns updatedUserCrypto
-    justRun { cacheServiceMock.invalidateUserCryptosCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
 
     val userCryptoResponse =
       userCryptoService.updateUserCrypto("123e4567-e89b-12d3-a456-426614174000", userCryptoRequest)
 
     verify(exactly = 1) { userCryptoRepositoryMock.save(updatedUserCrypto) }
-    verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosCaches() }
+    verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
 
     assertThat(userCryptoResponse)
       .usingRecursiveComparison()
@@ -289,18 +293,18 @@ class UserCryptoServiceTest {
       quantity = BigDecimal("1.25"),
       platformId = "123e4567-e89b-12d3-a456-426614174333"
     )
-    val platformResponse = PlatformResponse(
+    val platform = Platform(
       id = "123e4567-e89b-12d3-a456-426614174333",
       name = "COINBASE"
     )
     val coingeckoCrypto = getCoingeckoCrypto()
 
     every {
-      userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
-    } returns Optional.of(userCrypto)
+      _userCryptoServiceMock.findByUserCryptoId("123e4567-e89b-12d3-a456-426614174000")
+    } returns userCrypto
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174333")
-    } returns platformResponse
+    } returns platform
     every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
     every {
       userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -309,13 +313,13 @@ class UserCryptoServiceTest {
       )
     } returns Optional.empty()
     every { userCryptoRepositoryMock.save(updatedUserCrypto) } returns updatedUserCrypto
-    justRun { cacheServiceMock.invalidateUserCryptosCaches() }
+    justRun { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
 
     val userCryptoResponse =
       userCryptoService.updateUserCrypto("123e4567-e89b-12d3-a456-426614174000", userCryptoRequest)
 
     verify(exactly = 1) { userCryptoRepositoryMock.save(updatedUserCrypto) }
-    verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosCaches() }
+    verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
 
     assertThat(userCryptoResponse)
       .usingRecursiveComparison()
@@ -334,10 +338,11 @@ class UserCryptoServiceTest {
     val userCryptoRequest = getUserCryptoRequest(
       quantity = BigDecimal("1.25")
     )
+    val exceptionMessage = USER_CRYPTO_ID_NOT_FOUND.format("123e4567-e89b-12d3-a456-426614174000")
 
     every {
-      userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
-    } returns Optional.empty()
+      _userCryptoServiceMock.findByUserCryptoId("123e4567-e89b-12d3-a456-426614174000")
+    } throws UserCryptoNotFoundException(exceptionMessage)
 
     val exception = assertThrows<UserCryptoNotFoundException> {
       userCryptoService.updateUserCrypto("123e4567-e89b-12d3-a456-426614174000", userCryptoRequest)
@@ -345,7 +350,7 @@ class UserCryptoServiceTest {
 
     verify(exactly = 0) { userCryptoRepositoryMock.save(any()) }
 
-    assertThat(exception.message).isEqualTo(USER_CRYPTO_ID_NOT_FOUND.format("123e4567-e89b-12d3-a456-426614174000"))
+    assertThat(exception.message).isEqualTo(exceptionMessage)
   }
 
   @Test
@@ -356,18 +361,18 @@ class UserCryptoServiceTest {
     )
     val userCrypto = getUserCrypto()
     val duplicatedUserCrypto = getUserCrypto()
-    val platformResponse = PlatformResponse(
+    val platform = Platform(
       id = "123e4567-e89b-12d3-a456-426614174333",
       name = "COINBASE"
     )
     val coingeckoCrypto = getCoingeckoCrypto()
 
     every {
-      userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
-    } returns Optional.of(userCrypto)
+      _userCryptoServiceMock.findByUserCryptoId("123e4567-e89b-12d3-a456-426614174000")
+    } returns userCrypto
     every {
       platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174333")
-    } returns platformResponse
+    } returns platform
     every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
     every {
       userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
@@ -387,20 +392,22 @@ class UserCryptoServiceTest {
 
   @Test
   fun `should delete user crypto`() {
-    val userCrypto = getUserCrypto()
-
     every {
-      userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000")
-    } returns Optional.of(userCrypto)
+      _userCryptoServiceMock.findByUserCryptoId("123e4567-e89b-12d3-a456-426614174000")
+    } returns getUserCrypto()
     justRun { userCryptoRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174000") }
     justRun { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
-    justRun { cacheServiceMock.invalidateUserCryptosCaches() }
+    justRun {
+      cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
+    }
 
     userCryptoService.deleteUserCrypto("123e4567-e89b-12d3-a456-426614174000")
 
     verify(exactly = 1) { userCryptoRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174000") }
     verify(exactly = 1) { cryptoServiceMock.deleteCryptoIfNotUsed("bitcoin") }
-    verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosCaches() }
+    verify(exactly = 1) {
+      cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
+    }
   }
 
   @Test
@@ -412,18 +419,33 @@ class UserCryptoServiceTest {
       platformId = "123e4567-e89b-12d3-a456-426614174444"
     )
 
-    justRun { cacheServiceMock.invalidateUserCryptosCaches() }
-    justRun { userCryptoRepositoryMock.deleteAllById(listOf("123e4567-e89b-12d3-a456-426614174000")) }
+    justRun { userCryptoRepositoryMock.deleteAll(listOf(userCryptos)) }
+    justRun { cryptoServiceMock.deleteCryptosIfNotUsed(listOf("bitcoin")) }
+    justRun { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
 
     userCryptoService.deleteUserCryptos(listOf(userCryptos))
 
-    verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosCaches() }
-    verify(exactly = 1) { userCryptoRepositoryMock.deleteAllById(listOf("123e4567-e89b-12d3-a456-426614174000")) }
+    verify(exactly = 1) { userCryptoRepositoryMock.deleteAll(listOf(userCryptos)) }
+    verify(exactly = 1) { cryptoServiceMock.deleteCryptosIfNotUsed(listOf("bitcoin")) }
+    verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
+  }
+
+  @Test
+  fun `should not delete user cryptos if list it's empty`() {
+    userCryptoService.deleteUserCryptos(emptyList())
+
+    verify(exactly = 0) { userCryptoRepositoryMock.deleteAll(any()) }
+    verify(exactly = 0) { cryptoServiceMock.deleteCryptosIfNotUsed(any()) }
+    verify(exactly = 0) { cacheServiceMock.invalidate(any()) }
   }
 
   @Test
   fun `should throw UserCryptoNotFoundException when deleting user crypto`() {
-    every { userCryptoRepositoryMock.findById("123e4567-e89b-12d3-a456-426614174000") } returns Optional.empty()
+    val exceptionMessage = USER_CRYPTO_ID_NOT_FOUND.format("123e4567-e89b-12d3-a456-426614174000")
+
+    every {
+      _userCryptoServiceMock.findByUserCryptoId("123e4567-e89b-12d3-a456-426614174000")
+    } throws UserCryptoNotFoundException(exceptionMessage)
 
     val exception = assertThrows<UserCryptoNotFoundException> {
       userCryptoService.deleteUserCrypto("123e4567-e89b-12d3-a456-426614174000")
@@ -432,7 +454,7 @@ class UserCryptoServiceTest {
     verify(exactly = 0) { userCryptoRepositoryMock.deleteById("123e4567-e89b-12d3-a456-426614174000") }
 
     assertThat(exception.message)
-      .isEqualTo(USER_CRYPTO_ID_NOT_FOUND.format("123e4567-e89b-12d3-a456-426614174000"))
+      .isEqualTo(exceptionMessage)
   }
 
   @Test
@@ -526,12 +548,16 @@ class UserCryptoServiceTest {
     val userCryptos = listOf(getUserCrypto())
 
     every { userCryptoRepositoryMock.saveAll(userCryptos) } returns userCryptos
-    justRun { cacheServiceMock.invalidateUserCryptosCaches() }
+    justRun {
+      cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
+    }
 
     userCryptoService.saveOrUpdateAll(userCryptos)
 
     verify(exactly = 1) { userCryptoRepositoryMock.saveAll(userCryptos) }
-    verify(exactly = 1) { cacheServiceMock.invalidateUserCryptosCaches() }
+    verify(exactly = 1) {
+      cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES)
+    }
   }
 
   @Test
