@@ -8,7 +8,10 @@ import com.distasilucas.cryptobalancetracker.model.response.transaction.PageTran
 import com.distasilucas.cryptobalancetracker.model.response.transaction.TransactionResponse
 import com.distasilucas.cryptobalancetracker.service.TransactionService
 import jakarta.validation.constraints.Min
+import org.hibernate.validator.constraints.UUID
 import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -36,7 +39,7 @@ class TransactionController(private val transactionService: TransactionService):
     val transactions = transactionService.retrieveLastSixMonthsTransactions(page)
     val pageTransactions = PageTransactionsResponse(page, transactions.totalPages, transactions.content.map { it.toTransactionResponse() })
 
-    return ResponseEntity.ok(pageTransactions)
+    return if (pageTransactions.transactions.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(pageTransactions)
   }
 
   @GetMapping
@@ -50,7 +53,7 @@ class TransactionController(private val transactionService: TransactionService):
     val transactionFilters = TransactionFilters(dateFrom, dateTo, cryptoTicker, transactionType, platform)
     val transactions = transactionService.retrieveFilteredTransactions(transactionFilters)
 
-    return if (transactions.isEmpty()) ResponseEntity.notFound().build() else ResponseEntity.ok(transactions.map { it.toTransactionResponse() })
+    return if (transactions.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(transactions.map { it.toTransactionResponse() })
   }
 
   @PostMapping
@@ -58,13 +61,15 @@ class TransactionController(private val transactionService: TransactionService):
     val transactionEntity = transactionRequest.toTransactionEntity()
     transactionService.saveTransaction(transactionEntity)
 
-    return ResponseEntity.ok(transactionEntity.toTransactionResponse())
+    return ResponseEntity.status(HttpStatus.CREATED)
+      .header(HttpHeaders.LOCATION, "/api/v1/transactions/${transactionEntity.id}")
+      .body(transactionEntity.toTransactionResponse())
   }
 
   @PutMapping("/{transactionId}")
   override fun updateTransaction(
-    @RequestBody transactionRequest: TransactionRequest,
-    @PathVariable transactionId: String
+    @PathVariable @UUID transactionId: String,
+    @RequestBody transactionRequest: TransactionRequest
   ): ResponseEntity<TransactionResponse> {
     val transaction = transactionRequest.toTransactionEntity(transactionId)
     transactionService.updateTransaction(transaction)

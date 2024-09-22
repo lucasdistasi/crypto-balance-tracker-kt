@@ -24,7 +24,7 @@ class TransactionService(
 
   private val logger = KotlinLogging.logger { }
 
-  fun retrieveLastSixMonthsTransactions(page: Int): Page<Transaction> {
+  fun retrieveLastSixMonthsTransactions(page: Int = 0): Page<Transaction> {
     val now = LocalDate.now(clock)
     val to = now.plusDays(1).toString()
     val from = now.minusMonths(6).minusDays(1).toString()

@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.constraints.Min
+import org.hibernate.validator.constraints.UUID
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import java.time.LocalDate
@@ -88,7 +89,7 @@ interface TransactionControllerAPI {
     ]
   )
   fun retrieveLatestTransactions(
-    @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int
+    @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int = 0
   ): ResponseEntity<PageTransactionsResponse>
 
   @Operation(summary = "Retrieve transactions for the given filters")
@@ -161,11 +162,11 @@ interface TransactionControllerAPI {
     ]
   )
   fun retrieveFilteredTransactions(
-    dateFrom: LocalDate,
-    dateTo: LocalDate,
-    cryptoTicker: String?,
-    transactionType: TransactionType?,
-    platform: String?
+    @Schema(example = "2024-01-01", pattern = "yyyy-MM-dd", required = true) dateFrom: LocalDate,
+    @Schema(example = "2024-05-01", pattern = "yyyy-MM-dd", required = true) dateTo: LocalDate,
+    @Schema(example = "BTC") cryptoTicker: String? = null,
+    @Schema(example = "BUY") transactionType: TransactionType? = null,
+    @Schema(example = "BINANCE") platform: String? = null
   ): ResponseEntity<List<TransactionResponse>>
 
   @Operation(summary = "Save transaction")
@@ -296,7 +297,7 @@ interface TransactionControllerAPI {
       )
     ]
   )
-  fun updateTransaction(transactionRequest: TransactionRequest, transactionId: String): ResponseEntity<TransactionResponse>
+  fun updateTransaction(@UUID transactionId: String, transactionRequest: TransactionRequest): ResponseEntity<TransactionResponse>
 
   @Operation(summary = "Delete transaction")
   @ApiResponses(

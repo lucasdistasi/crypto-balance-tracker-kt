@@ -10,6 +10,7 @@ import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_PLATFORM_NOT_
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_TYPE_NOT_NULL
 import com.distasilucas.cryptobalancetracker.entity.Transaction
 import com.distasilucas.cryptobalancetracker.entity.TransactionType
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Constraint
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
@@ -65,6 +66,7 @@ data class TransactionRequest(
 
   @field: NotNull(message = TRANSACTION_DATE_NOT_NULL)
   @field: PastOrPresent(message = TRANSACTION_DATE_NOT_FUTURE)
+  @field: Schema(example = "2024-05-13", pattern = "yyyy-MM-dd", required = true)
   val date: LocalDate?
 ) {
 
