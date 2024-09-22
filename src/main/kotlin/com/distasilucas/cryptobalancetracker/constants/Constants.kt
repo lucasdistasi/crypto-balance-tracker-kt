@@ -50,6 +50,12 @@ const val CRYPTO_QUANTITY_NOT_NULL = "Crypto quantity can not be null"
 const val CRYPTO_QUANTITY_DIGITS = "Crypto quantity must have up to {integer} digits in the integer part and up to {fraction} digits in the decimal part"
 const val CRYPTO_QUANTITY_DECIMAL_MAX = "Crypto quantity must be less than or equal to 9999999999999999.999999999999"
 const val CRYPTO_QUANTITY_POSITIVE = "Crypto quantity must be greater than 0"
+const val TRANSACTION_TYPE_NOT_NULL = "Transaction type can not be null"
+const val TRANSACTION_PLATFORM_NOT_BLANK = "Platform must not be null nor blank"
+const val TRANSACTION_DATE_NOT_NULL = "Date must not be null"
+const val TRANSACTION_DATE_NOT_FUTURE = "Date must not be a future date"
+const val TRANSACTION_DATE_RANGE_EXCEEDED = "Date range must not exceed six months"
+const val TRANSACTION_CRYPTO_TICKER_NOT_EXISTS = "Crypto ticker does not exist"
 
 // Exceptions
 const val UNKNOWN_ERROR = "Unknown error"
