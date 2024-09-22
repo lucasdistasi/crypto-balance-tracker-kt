@@ -33,14 +33,14 @@ import java.time.format.DateTimeFormatter
 ) {
 
   fun toTransactionResponse() =
-<span class="nc" id="L36">    TransactionResponse(</span>
-<span class="nc" id="L37">      id,</span>
-<span class="nc" id="L38">      cryptoTicker, quantity.toPlainString(),</span>
-<span class="nc" id="L39">      price.toPlainString(),</span>
-<span class="nc" id="L40">      transactionType,</span>
-<span class="nc" id="L41">      platform,</span>
-<span class="nc" id="L42">      LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE).format(DateTimeFormatter.ofPattern(&quot;MMMM d, yyyy&quot;)),</span>
-<span class="nc" id="L43">    )</span>
+<span class="fc" id="L36">    TransactionResponse(</span>
+<span class="fc" id="L37">      id,</span>
+<span class="fc" id="L38">      cryptoTicker, quantity.toPlainString(),</span>
+<span class="fc" id="L39">      price.toPlainString(),</span>
+<span class="fc" id="L40">      transactionType,</span>
+<span class="fc" id="L41">      platform,</span>
+<span class="fc" id="L42">      LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE).format(DateTimeFormatter.ofPattern(&quot;MMMM d, yyyy&quot;)),</span>
+<span class="fc" id="L43">    )</span>
 }
 
 enum class TransactionType {

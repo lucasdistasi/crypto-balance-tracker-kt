@@ -24,7 +24,7 @@ import java.time.LocalDate
 
 <span class="pc" id="L25">  private val logger = KotlinLogging.logger { }</span>
 
-  fun retrieveLastSixMonthsTransactions(page: Int): Page&lt;Transaction&gt; {
+<span class="fc" id="L27">  fun retrieveLastSixMonthsTransactions(page: Int = 0): Page&lt;Transaction&gt; {</span>
 <span class="fc" id="L28">    val now = LocalDate.now(clock)</span>
 <span class="fc" id="L29">    val to = now.plusDays(1).toString()</span>
 <span class="fc" id="L30">    val from = now.minusMonths(6).minusDays(1).toString()</span>

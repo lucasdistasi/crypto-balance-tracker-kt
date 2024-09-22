@@ -10,6 +10,7 @@ import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_PLATFORM_NOT_
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_TYPE_NOT_NULL
 import com.distasilucas.cryptobalancetracker.entity.Transaction
 import com.distasilucas.cryptobalancetracker.entity.TransactionType
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Constraint
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
@@ -25,12 +26,12 @@ import java.time.LocalDate
 import java.util.*
 import kotlin.reflect.KClass
 
-<span class="nc" id="L28">data class TransactionRequest(</span>
+<span class="fc" id="L29">data class TransactionRequest(</span>
 
-<span class="nc" id="L30">  @field: ValidTicker</span>
+<span class="pc" id="L31">  @field: ValidTicker</span>
   val ticker: String?,
 
-<span class="nc" id="L33">  @field: NotNull(message = CRYPTO_QUANTITY_NOT_NULL)</span>
+<span class="pc" id="L34">  @field: NotNull(message = CRYPTO_QUANTITY_NOT_NULL)</span>
   @field: Digits(
     integer = 16,
     fraction = 12,
@@ -43,7 +44,7 @@ import kotlin.reflect.KClass
   @field: Positive(message = CRYPTO_QUANTITY_POSITIVE)
   val quantity: BigDecimal?,
 
-<span class="nc" id="L46">  @field: NotNull(message = &quot;Price can not be null&quot;)</span>
+<span class="pc" id="L47">  @field: NotNull(message = &quot;Price can not be null&quot;)</span>
   @field: Digits(
     integer = 16,
     fraction = 12,
@@ -56,27 +57,28 @@ import kotlin.reflect.KClass
   @field: Positive(message = &quot;Price must be greater than 0&quot;)
   val price: BigDecimal?,
 
-<span class="nc" id="L59">  @field: NotNull(message = TRANSACTION_TYPE_NOT_NULL)</span>
+<span class="pc" id="L60">  @field: NotNull(message = TRANSACTION_TYPE_NOT_NULL)</span>
   val transactionType: TransactionType?,
 
-<span class="nc" id="L62">  @field: NotBlank(message = TRANSACTION_PLATFORM_NOT_BLANK)</span>
+<span class="pc" id="L63">  @field: NotBlank(message = TRANSACTION_PLATFORM_NOT_BLANK)</span>
   @field: Size(min = 1, max = 100, message = &quot;Platform must be between {min} and {max} characters&quot;)
   val platform: String?,
 
-<span class="nc" id="L66">  @field: NotNull(message = TRANSACTION_DATE_NOT_NULL)</span>
+<span class="pc" id="L67">  @field: NotNull(message = TRANSACTION_DATE_NOT_NULL)</span>
   @field: PastOrPresent(message = TRANSACTION_DATE_NOT_FUTURE)
+  @field: Schema(example = &quot;2024-05-13&quot;, pattern = &quot;yyyy-MM-dd&quot;, required = true)
   val date: LocalDate?
 ) {
 
-<span class="nc" id="L71">  fun toTransactionEntity(transactionId: String = UUID.randomUUID().toString()): Transaction {</span>
-<span class="nc" id="L72">    return Transaction(</span>
-<span class="nc" id="L73">      id = transactionId,</span>
-<span class="nc" id="L74">      cryptoTicker = ticker!!.uppercase(),</span>
-<span class="nc" id="L75">      quantity = quantity!!,</span>
-<span class="nc" id="L76">      price = price!!,</span>
-<span class="nc" id="L77">      transactionType = transactionType!!,</span>
-<span class="nc" id="L78">      platform = platform!!.uppercase(),</span>
-<span class="nc" id="L79">      date = date.toString(),</span>
+<span class="fc" id="L73">  fun toTransactionEntity(transactionId: String = UUID.randomUUID().toString()): Transaction {</span>
+<span class="fc" id="L74">    return Transaction(</span>
+<span class="fc" id="L75">      id = transactionId,</span>
+<span class="fc" id="L76">      cryptoTicker = ticker!!.uppercase(),</span>
+<span class="fc" id="L77">      quantity = quantity!!,</span>
+<span class="fc" id="L78">      price = price!!,</span>
+<span class="fc" id="L79">      transactionType = transactionType!!,</span>
+<span class="fc" id="L80">      platform = platform!!.uppercase(),</span>
+<span class="fc" id="L81">      date = date.toString(),</span>
     )
   }
 }
@@ -90,10 +92,10 @@ annotation class ValidTicker(
   val payload: Array&lt;KClass&lt;out Any&gt;&gt; = []
 )
 
-<span class="fc" id="L93">class CryptoTickerValidator : ConstraintValidator&lt;ValidTicker, String&gt; {</span>
+<span class="fc" id="L95">class CryptoTickerValidator : ConstraintValidator&lt;ValidTicker, String&gt; {</span>
 
   override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
-<span class="pc bpc" id="L96" title="1 of 12 branches missed.">    return value?.let { value.isNotBlank() &amp;&amp; value.length in 1..15 } ?: false</span>
+<span class="pc bpc" id="L98" title="1 of 12 branches missed.">    return value?.let { value.isNotBlank() &amp;&amp; value.length in 1..15 } ?: false</span>
   }
 }
 
