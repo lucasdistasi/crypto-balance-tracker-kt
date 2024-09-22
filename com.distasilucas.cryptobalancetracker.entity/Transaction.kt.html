@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Transaction.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.entity</a> &gt; <span class="el_source">Transaction.kt</span></div><h1>Transaction.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.entity
+
+import com.distasilucas.cryptobalancetracker.model.response.transaction.TransactionResponse
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.data.mongodb.core.mapping.Field
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+@Document(&quot;Transactions&quot;)
+<span class="fc" id="L12">data class Transaction(</span>
+<span class="fc" id="L13">  @Id</span>
+  val id: String,
+
+<span class="fc" id="L16">  @Field(&quot;crypto_ticker&quot;)</span>
+  val cryptoTicker: String,
+
+<span class="pc" id="L19">  @Field(&quot;quantity&quot;)</span>
+  val quantity: BigDecimal,
+
+<span class="pc" id="L22">  @Field(&quot;price&quot;)</span>
+  val price: BigDecimal,
+
+<span class="pc" id="L25">  @Field(&quot;transaction_type&quot;)</span>
+  val transactionType: TransactionType,
+
+<span class="pc" id="L28">  @Field(&quot;platform&quot;)</span>
+  val platform: String,
+
+<span class="pc" id="L31">  @Field(&quot;date&quot;)</span>
+  val date: String,
+) {
+
+  fun toTransactionResponse() =
+<span class="nc" id="L36">    TransactionResponse(</span>
+<span class="nc" id="L37">      id,</span>
+<span class="nc" id="L38">      cryptoTicker, quantity.toPlainString(),</span>
+<span class="nc" id="L39">      price.toPlainString(),</span>
+<span class="nc" id="L40">      transactionType,</span>
+<span class="nc" id="L41">      platform,</span>
+<span class="nc" id="L42">      LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE).format(DateTimeFormatter.ofPattern(&quot;MMMM d, yyyy&quot;)),</span>
+<span class="nc" id="L43">    )</span>
+}
+
+enum class TransactionType {
+<span class="fc" id="L47">  BUY,</span>
+<span class="fc" id="L48">  SELL</span>
+<span class="nc" id="L49">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

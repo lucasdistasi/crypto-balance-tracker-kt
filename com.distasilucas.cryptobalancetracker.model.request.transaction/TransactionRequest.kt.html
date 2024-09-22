@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionRequest.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.model.request.transaction</a> &gt; <span class="el_source">TransactionRequest.kt</span></div><h1>TransactionRequest.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.model.request.transaction
+
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_DECIMAL_MAX
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_DIGITS
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_POSITIVE
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_DATE_NOT_FUTURE
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_DATE_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_PLATFORM_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_TYPE_NOT_NULL
+import com.distasilucas.cryptobalancetracker.entity.Transaction
+import com.distasilucas.cryptobalancetracker.entity.TransactionType
+import jakarta.validation.Constraint
+import jakarta.validation.ConstraintValidator
+import jakarta.validation.ConstraintValidatorContext
+import jakarta.validation.constraints.DecimalMax
+import jakarta.validation.constraints.Digits
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.PastOrPresent
+import jakarta.validation.constraints.Positive
+import jakarta.validation.constraints.Size
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.util.*
+import kotlin.reflect.KClass
+
+<span class="nc" id="L28">data class TransactionRequest(</span>
+
+<span class="nc" id="L30">  @field: ValidTicker</span>
+  val ticker: String?,
+
+<span class="nc" id="L33">  @field: NotNull(message = CRYPTO_QUANTITY_NOT_NULL)</span>
+  @field: Digits(
+    integer = 16,
+    fraction = 12,
+    message = CRYPTO_QUANTITY_DIGITS
+  )
+  @field: DecimalMax(
+    value = &quot;9999999999999999.999999999999&quot;,
+    message = CRYPTO_QUANTITY_DECIMAL_MAX
+  )
+  @field: Positive(message = CRYPTO_QUANTITY_POSITIVE)
+  val quantity: BigDecimal?,
+
+<span class="nc" id="L46">  @field: NotNull(message = &quot;Price can not be null&quot;)</span>
+  @field: Digits(
+    integer = 16,
+    fraction = 12,
+    message = &quot;Price must have up to {integer} digits in the integer part and up to {fraction} digits in the decimal part&quot;
+  )
+  @field: DecimalMax(
+    value = &quot;9999999999999999.999999999999&quot;,
+    message = &quot;Price must be less than or equal to 9999999999999999.999999999999&quot;
+  )
+  @field: Positive(message = &quot;Price must be greater than 0&quot;)
+  val price: BigDecimal?,
+
+<span class="nc" id="L59">  @field: NotNull(message = TRANSACTION_TYPE_NOT_NULL)</span>
+  val transactionType: TransactionType?,
+
+<span class="nc" id="L62">  @field: NotBlank(message = TRANSACTION_PLATFORM_NOT_BLANK)</span>
+  @field: Size(min = 1, max = 100, message = &quot;Platform must be between {min} and {max} characters&quot;)
+  val platform: String?,
+
+<span class="nc" id="L66">  @field: NotNull(message = TRANSACTION_DATE_NOT_NULL)</span>
+  @field: PastOrPresent(message = TRANSACTION_DATE_NOT_FUTURE)
+  val date: LocalDate?
+) {
+
+<span class="nc" id="L71">  fun toTransactionEntity(transactionId: String = UUID.randomUUID().toString()): Transaction {</span>
+<span class="nc" id="L72">    return Transaction(</span>
+<span class="nc" id="L73">      id = transactionId,</span>
+<span class="nc" id="L74">      cryptoTicker = ticker!!.uppercase(),</span>
+<span class="nc" id="L75">      quantity = quantity!!,</span>
+<span class="nc" id="L76">      price = price!!,</span>
+<span class="nc" id="L77">      transactionType = transactionType!!,</span>
+<span class="nc" id="L78">      platform = platform!!.uppercase(),</span>
+<span class="nc" id="L79">      date = date.toString(),</span>
+    )
+  }
+}
+
+@Constraint(validatedBy = [CryptoTickerValidator::class])
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ValidTicker(
+  val message: String = &quot;Crypto ticker must have at least 1 character and no more than 15&quot;,
+  val groups: Array&lt;KClass&lt;*&gt;&gt; = [],
+  val payload: Array&lt;KClass&lt;out Any&gt;&gt; = []
+)
+
+<span class="fc" id="L93">class CryptoTickerValidator : ConstraintValidator&lt;ValidTicker, String&gt; {</span>
+
+  override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
+<span class="pc bpc" id="L96" title="1 of 12 branches missed.">    return value?.let { value.isNotBlank() &amp;&amp; value.length in 1..15 } ?: false</span>
+  }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
