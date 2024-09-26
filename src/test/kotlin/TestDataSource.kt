@@ -1,5 +1,6 @@
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.Platform
+import com.distasilucas.cryptobalancetracker.entity.TransactionType
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
@@ -15,6 +16,9 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import java.math.BigDecimal
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 private const val BASE_PATH = "/api/v1"
@@ -23,6 +27,7 @@ private const val USER_CRYPTOS_ENDPOINT = "$BASE_PATH/cryptos"
 private const val GOALS_ENDPOINT = "$BASE_PATH/goals"
 private const val INSIGHTS_ENDPOINT = "$BASE_PATH/insights"
 private const val PRICE_TARGET_ENDPOINT = "$BASE_PATH/price-targets"
+private const val TRANSACTIONS_ENDPOINT = "$BASE_PATH/transactions"
 
 fun MockMvc.countPlatforms() = this.perform(
   MockMvcRequestBuilders.get("$PLATFORMS_ENDPOINT/count")
@@ -184,6 +189,46 @@ fun MockMvc.deletePriceTarget(priceTargetId: String) = this.perform(
     .contentType(APPLICATION_JSON)
 )
 
+fun MockMvc.retrieveLatestTransactions(page: Int = 0) = this.perform(
+  MockMvcRequestBuilders.get("$TRANSACTIONS_ENDPOINT/latest?page=$page")
+    .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.retrieveFilteredTransactions(
+  dateFrom: String,
+  dateTo: String,
+  cryptoTicker: String? = null,
+  transactionType: String? = null,
+  platform: String? = null
+) = this.perform(
+  MockMvcRequestBuilders.get(TRANSACTIONS_ENDPOINT)
+    .contentType(APPLICATION_JSON)
+    .param("dateFrom", dateFrom)
+    .param("dateTo", dateTo)
+    .apply {
+      cryptoTicker?.let { param("cryptoTicker", it) }
+      transactionType?.let { param("transactionType", it) }
+      platform?.let { param("platform", it) }
+    }
+)
+
+fun MockMvc.saveTransaction(payload: String) = this.perform(
+  MockMvcRequestBuilders.post(TRANSACTIONS_ENDPOINT)
+    .content(payload)
+    .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.updateTransaction(transactionId: String, payload: String) = this.perform(
+  MockMvcRequestBuilders.put("$TRANSACTIONS_ENDPOINT/$transactionId")
+    .content(payload)
+    .contentType(APPLICATION_JSON)
+)
+
+fun MockMvc.deleteTransaction(transactionId: String) = this.perform(
+  MockMvcRequestBuilders.delete("$TRANSACTIONS_ENDPOINT/$transactionId")
+    .contentType(APPLICATION_JSON)
+)
+
 fun getCryptoEntity(
   id: String = "bitcoin",
   name: String = "Bitcoin",
@@ -339,3 +384,8 @@ fun balances() = BalancesResponse(
   totalBTCBalance = "0.1",
   totalEURBalance = "70"
 )
+
+fun readJsonFileAsString(filePath: String): String {
+  val path = Paths.get(filePath)
+  return String(Files.readAllBytes(path))
+}

@@ -1,6 +1,7 @@
 package com.distasilucas.cryptobalancetracker.controller.swagger
 
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
+import com.distasilucas.cryptobalancetracker.constants.INVALID_TRANSACTION_UUID
 import com.distasilucas.cryptobalancetracker.entity.TransactionType
 import com.distasilucas.cryptobalancetracker.model.request.transaction.TransactionRequest
 import com.distasilucas.cryptobalancetracker.model.response.transaction.PageTransactionsResponse
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import org.hibernate.validator.constraints.UUID
 import org.springframework.http.ProblemDetail
@@ -162,8 +164,8 @@ interface TransactionControllerAPI {
     ]
   )
   fun retrieveFilteredTransactions(
-    @Schema(example = "2024-01-01", pattern = "yyyy-MM-dd", required = true) dateFrom: LocalDate,
-    @Schema(example = "2024-05-01", pattern = "yyyy-MM-dd", required = true) dateTo: LocalDate,
+    @Schema(example = "2024-01-01", /*pattern = "yyyy-MM-dd",*/ required = true) dateFrom: LocalDate,
+    @Schema(example = "2024-05-01", /*pattern = "yyyy-MM-dd",*/ required = true) dateTo: LocalDate,
     @Schema(example = "BTC") cryptoTicker: String? = null,
     @Schema(example = "BUY") transactionType: TransactionType? = null,
     @Schema(example = "BINANCE") platform: String? = null
@@ -227,7 +229,7 @@ interface TransactionControllerAPI {
       )
     ]
   )
-  fun saveTransaction(transactionRequest: TransactionRequest): ResponseEntity<TransactionResponse>
+  fun saveTransaction(@Valid transactionRequest: TransactionRequest): ResponseEntity<TransactionResponse>
 
   @Operation(summary = "Update transaction")
   @ApiResponses(
@@ -297,7 +299,10 @@ interface TransactionControllerAPI {
       )
     ]
   )
-  fun updateTransaction(@UUID transactionId: String, transactionRequest: TransactionRequest): ResponseEntity<TransactionResponse>
+  fun updateTransaction(
+    @UUID(message = INVALID_TRANSACTION_UUID) transactionId: String,
+    @Valid transactionRequest: TransactionRequest
+  ): ResponseEntity<TransactionResponse>
 
   @Operation(summary = "Delete transaction")
   @ApiResponses(
@@ -367,5 +372,5 @@ interface TransactionControllerAPI {
       )
     ]
   )
-  fun deleteTransaction(transactionId: String): ResponseEntity<Unit>
+  fun deleteTransaction(@UUID(message = INVALID_TRANSACTION_UUID) transactionId: String): ResponseEntity<Unit>
 }

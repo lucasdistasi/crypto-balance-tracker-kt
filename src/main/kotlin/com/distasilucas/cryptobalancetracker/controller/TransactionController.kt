@@ -1,12 +1,14 @@
 package com.distasilucas.cryptobalancetracker.controller
 
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
+import com.distasilucas.cryptobalancetracker.constants.INVALID_TRANSACTION_UUID
 import com.distasilucas.cryptobalancetracker.controller.swagger.TransactionControllerAPI
 import com.distasilucas.cryptobalancetracker.entity.TransactionType
 import com.distasilucas.cryptobalancetracker.model.request.transaction.TransactionRequest
 import com.distasilucas.cryptobalancetracker.model.response.transaction.PageTransactionsResponse
 import com.distasilucas.cryptobalancetracker.model.response.transaction.TransactionResponse
 import com.distasilucas.cryptobalancetracker.service.TransactionService
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import org.hibernate.validator.constraints.UUID
 import org.springframework.format.annotation.DateTimeFormat
@@ -57,7 +59,9 @@ class TransactionController(private val transactionService: TransactionService):
   }
 
   @PostMapping
-  override fun saveTransaction(@RequestBody transactionRequest: TransactionRequest): ResponseEntity<TransactionResponse> {
+  override fun saveTransaction(
+    @RequestBody @Valid transactionRequest: TransactionRequest
+  ): ResponseEntity<TransactionResponse> {
     val transactionEntity = transactionRequest.toTransactionEntity()
     transactionService.saveTransaction(transactionEntity)
 
@@ -68,8 +72,8 @@ class TransactionController(private val transactionService: TransactionService):
 
   @PutMapping("/{transactionId}")
   override fun updateTransaction(
-    @PathVariable @UUID transactionId: String,
-    @RequestBody transactionRequest: TransactionRequest
+    @PathVariable @UUID(message = INVALID_TRANSACTION_UUID) transactionId: String,
+    @RequestBody @Valid transactionRequest: TransactionRequest
   ): ResponseEntity<TransactionResponse> {
     val transaction = transactionRequest.toTransactionEntity(transactionId)
     transactionService.updateTransaction(transaction)
@@ -78,7 +82,9 @@ class TransactionController(private val transactionService: TransactionService):
   }
 
   @DeleteMapping("/{transactionId}")
-  override fun deleteTransaction(@PathVariable transactionId: String): ResponseEntity<Unit> {
+  override fun deleteTransaction(
+    @PathVariable @UUID(message = INVALID_TRANSACTION_UUID) transactionId: String
+  ): ResponseEntity<Unit> {
     transactionService.deleteTransaction(transactionId)
 
     return ResponseEntity.noContent().build()

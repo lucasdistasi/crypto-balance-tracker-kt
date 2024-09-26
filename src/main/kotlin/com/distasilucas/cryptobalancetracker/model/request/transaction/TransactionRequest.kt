@@ -22,6 +22,7 @@ import jakarta.validation.constraints.PastOrPresent
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.util.*
 import kotlin.reflect.KClass
@@ -76,10 +77,16 @@ data class TransactionRequest(
       cryptoTicker = ticker!!.uppercase(),
       quantity = quantity!!,
       price = price!!,
+      total = calculateTotal(),
       transactionType = transactionType!!,
       platform = platform!!.uppercase(),
       date = date.toString(),
     )
+  }
+
+  private fun calculateTotal(): BigDecimal {
+    return quantity!!.multiply(price)
+      .setScale(2, RoundingMode.HALF_UP)
   }
 }
 

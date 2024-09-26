@@ -7,6 +7,7 @@ data class TransactionResponse(
   val ticker: String,
   val quantity: String,
   val price: String,
+  val total: String,
   val transactionType: TransactionType,
   val platform: String,
   val date: String

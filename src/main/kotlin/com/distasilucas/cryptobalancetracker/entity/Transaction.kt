@@ -22,6 +22,9 @@ data class Transaction(
   @Field("price")
   val price: BigDecimal,
 
+  @Field("total")
+  val total: BigDecimal,
+
   @Field("transaction_type")
   val transactionType: TransactionType,
 
@@ -37,6 +40,7 @@ data class Transaction(
       id,
       cryptoTicker, quantity.toPlainString(),
       price.toPlainString(),
+      total.toPlainString(),
       transactionType,
       platform,
       LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE).format(DateTimeFormatter.ofPattern("MMMM d, yyyy")),

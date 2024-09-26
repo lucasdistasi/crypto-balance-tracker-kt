@@ -35,6 +35,7 @@ class TransactionControllerTest {
         cryptoTicker = "BTC",
         quantity = BigDecimal("1"),
         price = BigDecimal("60000"),
+        total = BigDecimal("6000.00"),
         transactionType = TransactionType.BUY,
         platform = "BINANCE",
         date = "2024-02-14"
@@ -44,6 +45,7 @@ class TransactionControllerTest {
         cryptoTicker = "ETH",
         quantity = BigDecimal("0.5"),
         price = BigDecimal("2360"),
+        total = BigDecimal("1180.00"),
         transactionType = TransactionType.SELL,
         platform = "BINANCE",
         date = "2024-03-15"
@@ -86,6 +88,7 @@ class TransactionControllerTest {
         cryptoTicker = "BTC",
         quantity = BigDecimal("1"),
         price = BigDecimal("60000"),
+        total = BigDecimal("60000.00"),
         transactionType = TransactionType.BUY,
         platform = "BINANCE",
         date = "2024-02-14"
@@ -95,6 +98,7 @@ class TransactionControllerTest {
         cryptoTicker = "ETH",
         quantity = BigDecimal("0.5"),
         price = BigDecimal("2360"),
+        total = BigDecimal("1180.00"),
         transactionType = TransactionType.SELL,
         platform = "BINANCE",
         date = "2024-03-15"

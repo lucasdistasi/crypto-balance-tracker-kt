@@ -44,22 +44,24 @@ class TransactionServiceTest {
     val pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "date"))
     val transactions = listOf(
       Transaction(
-        id = "e460cbd3-f6a2-464a-80d9-843e28f01d73",
-        cryptoTicker = "BTC",
-        quantity = BigDecimal("1"),
-        price = BigDecimal("60000"),
-        transactionType = TransactionType.BUY,
-        platform = "BINANCE",
-        date = "2024-09-15"
+        "e460cbd3-f6a2-464a-80d9-843e28f01d73",
+        "BTC",
+        BigDecimal("1"),
+        BigDecimal("60000"),
+        BigDecimal("60000.00"),
+        TransactionType.BUY,
+        "BINANCE",
+        "2024-09-15"
       ),
       Transaction(
-        id = "12de547d-714c-4942-bbf5-2947e53dc8c0",
-        cryptoTicker = "ETH",
-        quantity = BigDecimal("0.5"),
-        price = BigDecimal("2360"),
-        transactionType = TransactionType.SELL,
-        platform = "BINANCE",
-        date = "2024-09-15"
+        "12de547d-714c-4942-bbf5-2947e53dc8c0",
+        "ETH",
+        BigDecimal("0.5"),
+        BigDecimal("2360"),
+        BigDecimal("1180.00"),
+        TransactionType.SELL,
+        "BINANCE",
+        "2024-09-15"
       )
     )
     val pageTransaction = PageImpl(transactions, pageRequest, 2)
@@ -88,22 +90,24 @@ class TransactionServiceTest {
     )
     val entityTransactions = listOf(
       Transaction(
-        id = "e460cbd3-f6a2-464a-80d9-843e28f01d73",
-        cryptoTicker = "BTC",
-        quantity = BigDecimal("1"),
-        price = BigDecimal("60000"),
-        transactionType = TransactionType.BUY,
-        platform = "BINANCE",
-        date = "2024-02-14"
+        "e460cbd3-f6a2-464a-80d9-843e28f01d73",
+        "BTC",
+        BigDecimal("1"),
+        BigDecimal("60000"),
+        BigDecimal("60000.00"),
+        TransactionType.BUY,
+        "BINANCE",
+        "2024-02-14"
       ),
       Transaction(
-        id = "12de547d-714c-4942-bbf5-2947e53dc8c0",
-        cryptoTicker = "ETH",
-        quantity = BigDecimal("0.5"),
-        price = BigDecimal("2360"),
-        transactionType = TransactionType.SELL,
-        platform = "BINANCE",
-        date = "2024-03-15"
+        "12de547d-714c-4942-bbf5-2947e53dc8c0",
+        "ETH",
+        BigDecimal("0.5"),
+        BigDecimal("2360"),
+        BigDecimal("1180.00"),
+        TransactionType.SELL,
+        "BINANCE",
+        "2024-03-15"
       )
     )
     every {
@@ -142,6 +146,7 @@ class TransactionServiceTest {
       "btc",
       BigDecimal("0.5"),
       BigDecimal("60000"),
+      BigDecimal("30000.00"),
       TransactionType.SELL,
       "Binance",
       LocalDate.of(2024, 9, 22).toString()
@@ -167,6 +172,7 @@ class TransactionServiceTest {
       "xyz",
       BigDecimal("0.5"),
       BigDecimal("60000"),
+      BigDecimal("30000.00"),
       TransactionType.SELL,
       "Binance",
       LocalDate.of(2024, 9, 22).toString()
@@ -195,6 +201,7 @@ class TransactionServiceTest {
       "btc",
       BigDecimal("0.5"),
       BigDecimal("60000"),
+      BigDecimal("30000.00"),
       TransactionType.SELL,
       "Binance",
       LocalDate.of(2024, 9, 22).toString()
@@ -224,6 +231,7 @@ class TransactionServiceTest {
       "btc",
       BigDecimal("0.5"),
       BigDecimal("60000"),
+      BigDecimal("30000.00"),
       TransactionType.SELL,
       "Binance",
       LocalDate.of(2024, 9, 22).toString()
@@ -257,6 +265,7 @@ class TransactionServiceTest {
       "btc",
       BigDecimal("0.5"),
       BigDecimal("60000"),
+      BigDecimal("30000.00"),
       TransactionType.SELL,
       "Binance",
       LocalDate.of(2024, 9, 22).toString()
@@ -289,6 +298,7 @@ class TransactionServiceTest {
       "btc",
       BigDecimal("0.5"),
       BigDecimal("60000"),
+      BigDecimal("30000.00"),
       TransactionType.SELL,
       "Binance",
       LocalDate.of(2024, 9, 22).toString()

@@ -15,9 +15,9 @@ interface TransactionRepository : MongoRepository<Transaction, String> {
     pipeline = [
       "{ '\$match': { '\$and': [" +
         "{ 'date': { '\$gte': ?0, '\$lte': ?1 } }," +
-        "{ '\$expr': { '\$cond': [ { '\$ne': [?2, null] }, { '\$eq': ['\$crypto_ticker', ?2] }, true ] } }," +
+        "{ '\$expr': { '\$cond': [ { '\$ne': [?2, null] }, { '\$regexMatch': { 'input': '\$crypto_ticker', 'regex': ?2, 'options': 'i' } }, true ] } }," +
         "{ '\$expr': { '\$cond': [ { '\$ne': [?3, null] }, { '\$eq': ['\$transaction_type', ?3] }, true ] } }," +
-        "{ '\$expr': { '\$cond': [ { '\$ne': [?4, null] }, { '\$eq': ['\$platform', ?4] }, true ] } }" +
+        "{ '\$expr': { '\$cond': [ { '\$ne': [?4, null] }, { '\$regexMatch': { 'input': '\$platform', 'regex': ?4, 'options': 'i' } }, true ] } }" +
         "] } }",
       "{ '\$sort': { 'date': -1 } }",
     ]
