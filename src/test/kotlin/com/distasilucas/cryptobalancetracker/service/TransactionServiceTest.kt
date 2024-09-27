@@ -33,9 +33,10 @@ class TransactionServiceTest {
 
   private val transactionRepositoryMock = mockk<TransactionRepository>()
   private val coingeckoServiceMock = mockk<CoingeckoService>()
+  private val cacheServiceMock = mockk<CacheService>()
   private val clockMock = mockk<Clock>()
 
-  private val transactionService: TransactionService = TransactionService(transactionRepositoryMock, coingeckoServiceMock, clockMock)
+  private val transactionService: TransactionService = TransactionService(transactionRepositoryMock, coingeckoServiceMock, cacheServiceMock, clockMock)
 
   @Test
   fun `should retrieve last six months transaction`() {
@@ -159,10 +160,12 @@ class TransactionServiceTest {
       CoingeckoCrypto("ethereum", "ETH", "Ethereum")
     )
     every { transactionRepositoryMock.save(transaction) } returns transaction
+    justRun { cacheServiceMock.invalidate(CacheType.TRANSACTION_CACHES) }
 
     transactionService.saveTransaction(transaction)
 
     verify(exactly = 1) { transactionRepositoryMock.save(transaction) }
+    verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.TRANSACTION_CACHES) }
   }
 
   @Test
@@ -218,10 +221,12 @@ class TransactionServiceTest {
       transactionRepositoryMock.findById("99a430c9-9af8-494e-b5dc-64ef27d0a8ac")
     } returns Optional.of(transaction)
     every { transactionRepositoryMock.save(newTransaction) } returns newTransaction
+    justRun { cacheServiceMock.invalidate(CacheType.TRANSACTION_CACHES) }
 
     transactionService.updateTransaction(newTransaction)
 
     verify(exactly = 1) { transactionRepositoryMock.save(newTransaction) }
+    verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.TRANSACTION_CACHES) }
   }
 
   @Test
@@ -308,10 +313,12 @@ class TransactionServiceTest {
       transactionRepositoryMock.findById("99a430c9-9af8-494e-b5dc-64ef27d0a8ac")
     } returns Optional.of(transaction)
     justRun { transactionRepositoryMock.delete(transaction) }
+    justRun { cacheServiceMock.invalidate(CacheType.TRANSACTION_CACHES) }
 
     transactionService.deleteTransaction("99a430c9-9af8-494e-b5dc-64ef27d0a8ac")
 
     verify(timeout = 1) { transactionRepositoryMock.delete(transaction) }
+    verify(timeout = 1) { cacheServiceMock.invalidate(CacheType.TRANSACTION_CACHES) }
   }
 
   @Test

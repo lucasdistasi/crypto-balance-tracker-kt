@@ -1,5 +1,6 @@
 package com.distasilucas.cryptobalancetracker.service
 
+import com.distasilucas.cryptobalancetracker.constants.LATEST_TRANSACTIONS_CACHES
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_CRYPTO_TICKER_NOT_EXISTS
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_DATE_RANGE_EXCEEDED
 import com.distasilucas.cryptobalancetracker.controller.TransactionFilters
@@ -7,6 +8,7 @@ import com.distasilucas.cryptobalancetracker.entity.Transaction
 import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.repository.TransactionRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -19,11 +21,13 @@ import java.time.LocalDate
 class TransactionService(
   private val transactionRepository: TransactionRepository,
   private val coingeckoService: CoingeckoService,
+  private val cacheService: CacheService,
   private val clock: Clock
 ) {
 
   private val logger = KotlinLogging.logger { }
 
+  @Cacheable(cacheNames = [LATEST_TRANSACTIONS_CACHES], key = "#page")
   fun retrieveLastSixMonthsTransactions(page: Int = 0): Page<Transaction> {
     val now = LocalDate.now(clock)
     val to = now.plusDays(1).toString()
@@ -57,6 +61,7 @@ class TransactionService(
     validateCryptoTickerExists(transaction.cryptoTicker)
 
     transactionRepository.save(transaction)
+    cacheService.invalidate(CacheType.TRANSACTION_CACHES)
   }
 
   fun updateTransaction(transaction: Transaction) {
@@ -67,6 +72,7 @@ class TransactionService(
       .ifPresentOrElse({
         val updatedTransaction = transactionRepository.save(transaction)
         logger.info { "Updated transaction $updatedTransaction" }
+        cacheService.invalidate(CacheType.TRANSACTION_CACHES)
       }, {
         throw ApiException(HttpStatus.NOT_FOUND, "Transaction ${transaction.id} does not exists")
       })
@@ -79,6 +85,7 @@ class TransactionService(
       .ifPresentOrElse({
         transactionRepository.delete(it)
         logger.info { "Deleted transaction $it" }
+        cacheService.invalidate(CacheType.TRANSACTION_CACHES)
       }, {
         throw ApiException(HttpStatus.NOT_FOUND, "Transaction $transactionId does not exists")
       })
