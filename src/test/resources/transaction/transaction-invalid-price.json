@@ -1,0 +1,8 @@
+{
+  "ticker": "BTC",
+  "quantity": "0.5",
+  "price": "%s",
+  "transactionType": "BUY",
+  "platform": "BINANCE",
+  "date": "2024-09-23"
+}

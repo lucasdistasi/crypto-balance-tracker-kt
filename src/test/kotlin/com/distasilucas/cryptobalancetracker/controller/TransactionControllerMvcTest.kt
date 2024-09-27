@@ -1,7 +1,15 @@
 package com.distasilucas.cryptobalancetracker.controller
 
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_POSITIVE
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
 import com.distasilucas.cryptobalancetracker.constants.INVALID_TRANSACTION_UUID
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_DATE_NOT_FUTURE
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_DATE_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_PLATFORM_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_PRICE_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_PRICE_POSITIVE
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_TYPE_NOT_NULL
 import com.distasilucas.cryptobalancetracker.entity.Transaction
 import com.distasilucas.cryptobalancetracker.entity.TransactionType
 import com.distasilucas.cryptobalancetracker.service.TransactionService
@@ -10,6 +18,8 @@ import deleteTransaction
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockkStatic
+import org.hamcrest.Matchers.containsInAnyOrder
+import org.hamcrest.Matchers.everyItem
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`is`
 import org.junit.jupiter.api.Test
@@ -32,6 +42,7 @@ import saveTransaction
 import updateTransaction
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -225,6 +236,283 @@ class TransactionControllerMvcTest(
       .andExpect(jsonPath("$[0].detail", `is`("Crypto ticker must have at least 1 character and no more than 15")))
   }
 
+  @Test
+  fun `should return 400 when saving transaction with null quantity`() {
+    val payload = """
+      {
+        "ticker": "BTC",
+        "price": "62500",
+        "transactionType": "BUY",
+        "platform": "BINANCE",
+        "date": "2024-09-23"
+      }
+    """
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`(CRYPTO_QUANTITY_NOT_NULL)))
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = ["99999999999999999.999999999999", "9999999999999999.9999999999999"])
+  fun `should return 400 when saving transaction with invalid digits quantity`(quantity: String) {
+    val payload = readJsonFileAsString("$basePath/transaction-invalid-quantity.json")
+      .format(quantity)
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(2)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
+      .andExpect(
+        jsonPath("$[*].detail")
+          .value(
+            containsInAnyOrder(
+              "Crypto quantity must be less than or equal to 9999999999999999.999999999999",
+              "Crypto quantity must have up to 16 digits in the integer part and up to 12 digits in the decimal part"
+            )
+          )
+      )
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = ["0", "-1"])
+  fun `should return 400 when saving transaction with non positive quantity`(quantity: String) {
+    val payload = readJsonFileAsString("$basePath/transaction-invalid-quantity.json")
+      .format(quantity)
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`(CRYPTO_QUANTITY_POSITIVE)))
+  }
+
+  @Test
+  fun `should return 400 when saving transaction with null price`() {
+    val payload = """
+      {
+        "ticker": "BTC",
+        "quantity": "0.5",
+        "transactionType": "BUY",
+        "platform": "BINANCE",
+        "date": "2024-09-23"
+      }
+    """
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`(TRANSACTION_PRICE_NOT_NULL)))
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = ["99999999999999999.999999999999", "9999999999999999.9999999999999"])
+  fun `should return 400 when saving transaction with invalid price`(price: String) {
+    val payload = readJsonFileAsString("$basePath/transaction-invalid-price.json")
+      .format(price)
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(2)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
+      .andExpect(
+        jsonPath("$[*].detail")
+          .value(
+            containsInAnyOrder(
+              "Price must be less than or equal to 9999999999999999.999999999999",
+              "Price must have up to 16 digits in the integer part and up to 12 digits in the decimal part"
+            )
+          )
+      )
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = ["0", "-1"])
+  fun `should return 400 when saving transaction with non positive price`(price: String) {
+    val payload = readJsonFileAsString("$basePath/transaction-invalid-price.json")
+      .format(price)
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`(TRANSACTION_PRICE_POSITIVE)))
+  }
+
+  @Test
+  fun `should return 400 when saving transaction with null transaction type`() {
+    val payload = """
+      {
+        "ticker": "BTC",
+        "quantity": "0.5",
+        "price": "60000",
+        "platform": "BINANCE",
+        "date": "2024-09-23"
+      }
+    """
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`(TRANSACTION_TYPE_NOT_NULL)))
+  }
+
+  @Test
+  fun `should return 400 when saving transaction with invalid transaction type`() {
+    val payload = """
+      {
+        "ticker": "BTC",
+        "quantity": "0.5",
+        "price": "60000",
+        "transactionType": "IDK",
+        "platform": "BINANCE",
+        "date": "2024-09-23"
+      }
+    """
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail").doesNotExist())
+  }
+
+  @Test
+  fun `should return 400 when saving transaction with null platform`() {
+    val payload = """
+      {
+        "ticker": "BTC",
+        "quantity": "0.5",
+        "price": "65000",
+        "transactionType": "SELL",
+        "date": "2024-09-23"
+      }
+    """
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`(TRANSACTION_PLATFORM_NOT_BLANK)))
+  }
+
+  @Test
+  fun `should return 400 when saving transaction with blank platform`() {
+    val payload = readJsonFileAsString("$basePath/transaction-invalid-platform.json")
+      .format(" ")
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`(TRANSACTION_PLATFORM_NOT_BLANK)))
+  }
+
+  @Test
+  fun `should return 400 when saving transaction with empty platform`() {
+    val payload = readJsonFileAsString("$basePath/transaction-invalid-platform.json")
+      .format("")
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(2)))
+      .andExpect(jsonPath("$[*].title").value(everyItem(`is`("Bad Request"))))
+      .andExpect(jsonPath("$[*].status").value(everyItem(`is`(400))))
+      .andExpect(
+        jsonPath("$[*].detail")
+          .value(
+            containsInAnyOrder(
+              TRANSACTION_PLATFORM_NOT_BLANK,
+              "Platform must be between 1 and 24 characters"
+            )
+          )
+      )
+  }
+
+  @Test
+  fun `should return 400 when saving transaction with invalid size platform`() {
+    val payload = readJsonFileAsString("$basePath/transaction-invalid-platform.json")
+      .format("ABCDEFGHIJKLMNOPQRSTUVWXY")
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`("Platform must be between 1 and 24 characters")))
+  }
+
+  @Test
+  fun `should return 400 when saving transaction with null date`() {
+    val payload = """
+      {
+        "ticker": "BTC",
+        "quantity": "0.5",
+        "price": "65000",
+        "transactionType": "SELL",
+        "platform": "BINANCE"
+      }
+    """
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`(TRANSACTION_DATE_NOT_NULL)))
+  }
+
+  @Test
+  fun `should return 400 when saving transaction with future date`() {
+    val tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+    val payload = """
+      {
+        "ticker": "BTC",
+        "quantity": "0.5",
+        "price": "65000",
+        "transactionType": "SELL",
+        "platform": "BINANCE",
+        "date": "$tomorrow"
+      }
+    """
+
+    mockMvc.saveTransaction(payload)
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$", hasSize<Int>(1)))
+      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
+      .andExpect(jsonPath("$[0].status", `is`(400)))
+      .andExpect(jsonPath("$[0].detail", `is`(TRANSACTION_DATE_NOT_FUTURE)))
+  }
+
   /////////
 
   // update
@@ -323,7 +611,7 @@ class TransactionControllerMvcTest(
       "BTC",
       BigDecimal("1"),
       BigDecimal("60000"),
-      BigDecimal("30000.00"),
+      BigDecimal("60000.00"),
       TransactionType.BUY,
       "BINANCE",
       "2024-09-15"

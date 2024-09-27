@@ -7,6 +7,8 @@ import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_POSITIVE
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_DATE_NOT_FUTURE
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_DATE_NOT_NULL
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_PLATFORM_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_PRICE_NOT_NULL
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_PRICE_POSITIVE
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_TYPE_NOT_NULL
 import com.distasilucas.cryptobalancetracker.entity.Transaction
 import com.distasilucas.cryptobalancetracker.entity.TransactionType
@@ -45,7 +47,7 @@ data class TransactionRequest(
   @field: Positive(message = CRYPTO_QUANTITY_POSITIVE)
   val quantity: BigDecimal?,
 
-  @field: NotNull(message = "Price can not be null")
+  @field: NotNull(message = TRANSACTION_PRICE_NOT_NULL)
   @field: Digits(
     integer = 16,
     fraction = 12,
@@ -55,14 +57,14 @@ data class TransactionRequest(
     value = "9999999999999999.999999999999",
     message = "Price must be less than or equal to 9999999999999999.999999999999"
   )
-  @field: Positive(message = "Price must be greater than 0")
+  @field: Positive(message = TRANSACTION_PRICE_POSITIVE)
   val price: BigDecimal?,
 
   @field: NotNull(message = TRANSACTION_TYPE_NOT_NULL)
   val transactionType: TransactionType?,
 
   @field: NotBlank(message = TRANSACTION_PLATFORM_NOT_BLANK)
-  @field: Size(min = 1, max = 100, message = "Platform must be between {min} and {max} characters")
+  @field: Size(min = 1, max = 24, message = "Platform must be between {min} and {max} characters")
   val platform: String?,
 
   @field: NotNull(message = TRANSACTION_DATE_NOT_NULL)
