@@ -6,6 +6,7 @@ import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_CRYPTOS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTO_INSIGHTS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.DATES_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.constants.GOAL_RESPONSE_GOAL_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.LATEST_TRANSACTIONS_CACHES
 import com.distasilucas.cryptobalancetracker.constants.PAGE_GOALS_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_BALANCES_INSIGHTS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
@@ -23,6 +24,7 @@ import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.CacheManager
+import org.springframework.cache.get
 import org.springframework.stereotype.Service
 
 @Service
@@ -43,6 +45,7 @@ class CacheService(private val cacheManager: CacheManager) {
       CacheType.GOALS_CACHES -> invalidateGoalsCaches()
       CacheType.PRICE_TARGETS_CACHES -> invalidatePriceTargetCaches()
       CacheType.INSIGHTS_CACHES -> invalidateInsightsCache()
+      CacheType.TRANSACTION_CACHES -> invalidateTransactionsCache()
     }
   }
 
@@ -96,6 +99,12 @@ class CacheService(private val cacheManager: CacheManager) {
     cacheManager.getCache(PLATFORMS_BALANCES_INSIGHTS_CACHE)!!.invalidate()
     cacheManager.getCache(CRYPTOS_BALANCES_INSIGHTS_CACHE)!!.invalidate()
   }
+
+  private fun invalidateTransactionsCache() {
+    logger.info { "Invalidating transactions caches" }
+
+    cacheManager.getCache(LATEST_TRANSACTIONS_CACHES)!!.invalidate()
+  }
 }
 
 enum class CacheType {
@@ -104,5 +113,6 @@ enum class CacheType {
   PLATFORMS_CACHES,
   GOALS_CACHES,
   PRICE_TARGETS_CACHES,
-  INSIGHTS_CACHES
+  INSIGHTS_CACHES,
+  TRANSACTION_CACHES
 }
