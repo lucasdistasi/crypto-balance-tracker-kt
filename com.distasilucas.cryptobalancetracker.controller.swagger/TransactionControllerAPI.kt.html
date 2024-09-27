@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionControllerAPI.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.controller.swagger</a> &gt; <span class="el_source">TransactionControllerAPI.kt</span></div><h1>TransactionControllerAPI.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.controller.swagger
 
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
+import com.distasilucas.cryptobalancetracker.constants.INVALID_TRANSACTION_UUID
 import com.distasilucas.cryptobalancetracker.entity.TransactionType
 import com.distasilucas.cryptobalancetracker.model.request.transaction.TransactionRequest
 import com.distasilucas.cryptobalancetracker.model.response.transaction.PageTransactionsResponse
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import org.hibernate.validator.constraints.UUID
 import org.springframework.http.ProblemDetail
@@ -21,7 +23,7 @@ import java.time.LocalDate
 @Tag(name = &quot;Transactions Controller&quot;, description = &quot;API endpoints for transactions management&quot;)
 interface TransactionControllerAPI {
 
-<span class="fc" id="L24">  @Operation(summary = &quot;Retrieve last six months transactions&quot;)</span>
+<span class="fc" id="L26">  @Operation(summary = &quot;Retrieve last six months transactions&quot;)</span>
   @ApiResponses(
     value = [
       ApiResponse(
@@ -89,10 +91,10 @@ interface TransactionControllerAPI {
     ]
   )
   fun retrieveLatestTransactions(
-<span class="fc" id="L92">    @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int = 0</span>
+<span class="fc" id="L94">    @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int = 0</span>
   ): ResponseEntity&lt;PageTransactionsResponse&gt;
 
-<span class="fc" id="L95">  @Operation(summary = &quot;Retrieve transactions for the given filters&quot;)</span>
+<span class="fc" id="L97">  @Operation(summary = &quot;Retrieve transactions for the given filters&quot;)</span>
   @ApiResponses(
     value = [
       ApiResponse(
@@ -162,11 +164,11 @@ interface TransactionControllerAPI {
     ]
   )
   fun retrieveFilteredTransactions(
-    @Schema(example = &quot;2024-01-01&quot;, pattern = &quot;yyyy-MM-dd&quot;, required = true) dateFrom: LocalDate,
-    @Schema(example = &quot;2024-05-01&quot;, pattern = &quot;yyyy-MM-dd&quot;, required = true) dateTo: LocalDate,
-<span class="fc" id="L167">    @Schema(example = &quot;BTC&quot;) cryptoTicker: String? = null,</span>
-<span class="fc" id="L168">    @Schema(example = &quot;BUY&quot;) transactionType: TransactionType? = null,</span>
-<span class="fc" id="L169">    @Schema(example = &quot;BINANCE&quot;) platform: String? = null</span>
+    @Schema(example = &quot;2024-01-01&quot;, /*pattern = &quot;yyyy-MM-dd&quot;,*/ required = true) dateFrom: LocalDate,
+    @Schema(example = &quot;2024-05-01&quot;, /*pattern = &quot;yyyy-MM-dd&quot;,*/ required = true) dateTo: LocalDate,
+<span class="fc" id="L169">    @Schema(example = &quot;BTC&quot;) cryptoTicker: String? = null,</span>
+<span class="fc" id="L170">    @Schema(example = &quot;BUY&quot;) transactionType: TransactionType? = null,</span>
+<span class="fc" id="L171">    @Schema(example = &quot;BINANCE&quot;) platform: String? = null</span>
   ): ResponseEntity&lt;List&lt;TransactionResponse&gt;&gt;
 
   @Operation(summary = &quot;Save transaction&quot;)
@@ -227,7 +229,7 @@ interface TransactionControllerAPI {
       )
     ]
   )
-  fun saveTransaction(transactionRequest: TransactionRequest): ResponseEntity&lt;TransactionResponse&gt;
+  fun saveTransaction(@Valid transactionRequest: TransactionRequest): ResponseEntity&lt;TransactionResponse&gt;
 
   @Operation(summary = &quot;Update transaction&quot;)
   @ApiResponses(
@@ -297,7 +299,10 @@ interface TransactionControllerAPI {
       )
     ]
   )
-  fun updateTransaction(@UUID transactionId: String, transactionRequest: TransactionRequest): ResponseEntity&lt;TransactionResponse&gt;
+  fun updateTransaction(
+    @UUID(message = INVALID_TRANSACTION_UUID) transactionId: String,
+    @Valid transactionRequest: TransactionRequest
+  ): ResponseEntity&lt;TransactionResponse&gt;
 
   @Operation(summary = &quot;Delete transaction&quot;)
   @ApiResponses(
@@ -367,6 +372,6 @@ interface TransactionControllerAPI {
       )
     ]
   )
-  fun deleteTransaction(transactionId: String): ResponseEntity&lt;Unit&gt;
+  fun deleteTransaction(@UUID(message = INVALID_TRANSACTION_UUID) transactionId: String): ResponseEntity&lt;Unit&gt;
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

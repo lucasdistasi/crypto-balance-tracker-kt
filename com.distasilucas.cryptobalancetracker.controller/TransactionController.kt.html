@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionController.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.controller</a> &gt; <span class="el_source">TransactionController.kt</span></div><h1>TransactionController.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.controller
 
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
+import com.distasilucas.cryptobalancetracker.constants.INVALID_TRANSACTION_UUID
 import com.distasilucas.cryptobalancetracker.controller.swagger.TransactionControllerAPI
 import com.distasilucas.cryptobalancetracker.entity.TransactionType
 import com.distasilucas.cryptobalancetracker.model.request.transaction.TransactionRequest
 import com.distasilucas.cryptobalancetracker.model.response.transaction.PageTransactionsResponse
 import com.distasilucas.cryptobalancetracker.model.response.transaction.TransactionResponse
 import com.distasilucas.cryptobalancetracker.service.TransactionService
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import org.hibernate.validator.constraints.UUID
 import org.springframework.format.annotation.DateTimeFormat
@@ -30,16 +32,16 @@ import java.time.LocalDate
 @RestController
 @RequestMapping(&quot;/api/v1/transactions&quot;)
 @CrossOrigin(origins = [&quot;\${allowed-origins}&quot;])
-<span class="fc" id="L33">class TransactionController(private val transactionService: TransactionService): TransactionControllerAPI {</span>
+<span class="fc" id="L35">class TransactionController(private val transactionService: TransactionService): TransactionControllerAPI {</span>
 
   @GetMapping(&quot;/latest&quot;)
   override fun retrieveLatestTransactions(
     @RequestParam @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int
   ): ResponseEntity&lt;PageTransactionsResponse&gt; {
-<span class="fc" id="L39">    val transactions = transactionService.retrieveLastSixMonthsTransactions(page)</span>
-<span class="fc" id="L40">    val pageTransactions = PageTransactionsResponse(page, transactions.totalPages, transactions.content.map { it.toTransactionResponse() })</span>
+<span class="fc" id="L41">    val transactions = transactionService.retrieveLastSixMonthsTransactions(page)</span>
+<span class="fc" id="L42">    val pageTransactions = PageTransactionsResponse(page, transactions.totalPages, transactions.content.map { it.toTransactionResponse() })</span>
 
-<span class="fc bfc" id="L42" title="All 2 branches covered.">    return if (pageTransactions.transactions.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(pageTransactions)</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">    return if (pageTransactions.transactions.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(pageTransactions)</span>
   }
 
   @GetMapping
@@ -50,46 +52,50 @@ import java.time.LocalDate
     @RequestParam(required = false) transactionType: TransactionType?,
     @RequestParam(required = false) platform: String?
   ): ResponseEntity&lt;List&lt;TransactionResponse&gt;&gt; {
-<span class="fc" id="L53">    val transactionFilters = TransactionFilters(dateFrom, dateTo, cryptoTicker, transactionType, platform)</span>
-<span class="fc" id="L54">    val transactions = transactionService.retrieveFilteredTransactions(transactionFilters)</span>
+<span class="fc" id="L55">    val transactionFilters = TransactionFilters(dateFrom, dateTo, cryptoTicker, transactionType, platform)</span>
+<span class="fc" id="L56">    val transactions = transactionService.retrieveFilteredTransactions(transactionFilters)</span>
 
-<span class="fc bfc" id="L56" title="All 2 branches covered.">    return if (transactions.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(transactions.map { it.toTransactionResponse() })</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">    return if (transactions.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(transactions.map { it.toTransactionResponse() })</span>
   }
 
   @PostMapping
-  override fun saveTransaction(@RequestBody transactionRequest: TransactionRequest): ResponseEntity&lt;TransactionResponse&gt; {
-<span class="fc" id="L61">    val transactionEntity = transactionRequest.toTransactionEntity()</span>
-<span class="fc" id="L62">    transactionService.saveTransaction(transactionEntity)</span>
+  override fun saveTransaction(
+    @RequestBody @Valid transactionRequest: TransactionRequest
+  ): ResponseEntity&lt;TransactionResponse&gt; {
+<span class="fc" id="L65">    val transactionEntity = transactionRequest.toTransactionEntity()</span>
+<span class="fc" id="L66">    transactionService.saveTransaction(transactionEntity)</span>
 
-<span class="fc" id="L64">    return ResponseEntity.status(HttpStatus.CREATED)</span>
-<span class="fc" id="L65">      .header(HttpHeaders.LOCATION, &quot;/api/v1/transactions/${transactionEntity.id}&quot;)</span>
-<span class="fc" id="L66">      .body(transactionEntity.toTransactionResponse())</span>
+<span class="fc" id="L68">    return ResponseEntity.status(HttpStatus.CREATED)</span>
+<span class="fc" id="L69">      .header(HttpHeaders.LOCATION, &quot;/api/v1/transactions/${transactionEntity.id}&quot;)</span>
+<span class="fc" id="L70">      .body(transactionEntity.toTransactionResponse())</span>
   }
 
   @PutMapping(&quot;/{transactionId}&quot;)
   override fun updateTransaction(
-    @PathVariable @UUID transactionId: String,
-    @RequestBody transactionRequest: TransactionRequest
+    @PathVariable @UUID(message = INVALID_TRANSACTION_UUID) transactionId: String,
+    @RequestBody @Valid transactionRequest: TransactionRequest
   ): ResponseEntity&lt;TransactionResponse&gt; {
-<span class="fc" id="L74">    val transaction = transactionRequest.toTransactionEntity(transactionId)</span>
-<span class="fc" id="L75">    transactionService.updateTransaction(transaction)</span>
+<span class="fc" id="L78">    val transaction = transactionRequest.toTransactionEntity(transactionId)</span>
+<span class="fc" id="L79">    transactionService.updateTransaction(transaction)</span>
 
-<span class="fc" id="L77">    return ResponseEntity.ok(transaction.toTransactionResponse())</span>
+<span class="fc" id="L81">    return ResponseEntity.ok(transaction.toTransactionResponse())</span>
   }
 
   @DeleteMapping(&quot;/{transactionId}&quot;)
-  override fun deleteTransaction(@PathVariable transactionId: String): ResponseEntity&lt;Unit&gt; {
-<span class="fc" id="L82">    transactionService.deleteTransaction(transactionId)</span>
+  override fun deleteTransaction(
+    @PathVariable @UUID(message = INVALID_TRANSACTION_UUID) transactionId: String
+  ): ResponseEntity&lt;Unit&gt; {
+<span class="fc" id="L88">    transactionService.deleteTransaction(transactionId)</span>
 
-<span class="fc" id="L84">    return ResponseEntity.noContent().build()</span>
+<span class="fc" id="L90">    return ResponseEntity.noContent().build()</span>
   }
 }
 
-<span class="fc" id="L88">data class TransactionFilters(</span>
-<span class="fc" id="L89">  val dateFrom: LocalDate,</span>
-<span class="fc" id="L90">  val dateTo: LocalDate,</span>
-<span class="fc" id="L91">  val cryptoTicker: String? = null,</span>
-<span class="fc" id="L92">  val transactionType: TransactionType? = null,</span>
-<span class="fc" id="L93">  val platform: String? = null</span>
-<span class="fc" id="L94">)</span>
+<span class="fc" id="L94">data class TransactionFilters(</span>
+<span class="fc" id="L95">  val dateFrom: LocalDate,</span>
+<span class="fc" id="L96">  val dateTo: LocalDate,</span>
+<span class="fc" id="L97">  val cryptoTicker: String? = null,</span>
+<span class="fc" id="L98">  val transactionType: TransactionType? = null,</span>
+<span class="fc" id="L99">  val platform: String? = null</span>
+<span class="fc" id="L100">)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
