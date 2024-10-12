@@ -1,5 +1,5 @@
 {
-  "ticker": "%s",
+  "cryptoNameOrId": "%s",
   "quantity": "0.5",
   "price": "62500",
   "transactionType": "BUY",

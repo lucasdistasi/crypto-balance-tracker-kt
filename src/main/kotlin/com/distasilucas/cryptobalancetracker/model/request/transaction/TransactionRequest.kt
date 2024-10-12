@@ -12,10 +12,9 @@ import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_PRICE_POSITIV
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_TYPE_NOT_NULL
 import com.distasilucas.cryptobalancetracker.entity.Transaction
 import com.distasilucas.cryptobalancetracker.entity.TransactionType
+import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
+import com.distasilucas.cryptobalancetracker.validation.ValidCryptoNameOrId
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.validation.Constraint
-import jakarta.validation.ConstraintValidator
-import jakarta.validation.ConstraintValidatorContext
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.NotBlank
@@ -24,15 +23,13 @@ import jakarta.validation.constraints.PastOrPresent
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.LocalDate
-import java.util.*
-import kotlin.reflect.KClass
+import java.util.UUID
 
 data class TransactionRequest(
 
-  @field: ValidTicker
-  val ticker: String?,
+  @field: ValidCryptoNameOrId
+  val cryptoNameOrId: String?,
 
   @field: NotNull(message = CRYPTO_QUANTITY_NOT_NULL)
   @field: Digits(
@@ -73,38 +70,17 @@ data class TransactionRequest(
   val date: LocalDate?
 ) {
 
-  fun toTransactionEntity(transactionId: String = UUID.randomUUID().toString()): Transaction {
-    return Transaction(
-      id = transactionId,
-      cryptoTicker = ticker!!.uppercase(),
-      quantity = quantity!!,
-      price = price!!,
-      total = calculateTotal(),
-      transactionType = transactionType!!,
-      platform = platform!!.uppercase(),
-      date = date.toString(),
-    )
-  }
-
-  private fun calculateTotal(): BigDecimal {
-    return quantity!!.multiply(price)
-      .setScale(2, RoundingMode.HALF_UP)
-  }
+  fun toTransactionEntity(
+    transactionId: String = UUID.randomUUID().toString(),
+    coingeckoCrypto: CoingeckoCrypto,
+  ) = Transaction(
+    id = transactionId,
+    coingeckoCryptoId = coingeckoCrypto.id,
+    cryptoTicker = coingeckoCrypto.symbol,
+    quantity = quantity!!,
+    price = price!!,
+    transactionType = transactionType!!,
+    platform = platform!!.uppercase(),
+    date = date.toString(),
+  )
 }
-
-@Constraint(validatedBy = [CryptoTickerValidator::class])
-@Target(AnnotationTarget.FIELD)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class ValidTicker(
-  val message: String = "Crypto ticker must have at least 1 character and no more than 15",
-  val groups: Array<KClass<*>> = [],
-  val payload: Array<KClass<out Any>> = []
-)
-
-class CryptoTickerValidator : ConstraintValidator<ValidTicker, String> {
-
-  override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
-    return value?.let { value.isNotBlank() && value.length in 1..15 } ?: false
-  }
-}
-

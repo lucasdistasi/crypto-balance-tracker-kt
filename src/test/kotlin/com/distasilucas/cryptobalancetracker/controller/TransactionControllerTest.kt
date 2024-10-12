@@ -6,6 +6,7 @@ import com.distasilucas.cryptobalancetracker.model.request.transaction.Transacti
 import com.distasilucas.cryptobalancetracker.model.response.transaction.PageTransactionsResponse
 import com.distasilucas.cryptobalancetracker.model.response.transaction.TransactionResponse
 import com.distasilucas.cryptobalancetracker.service.TransactionService
+import getCoingeckoCrypto
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
@@ -31,24 +32,24 @@ class TransactionControllerTest {
   fun `should return 200 when retrieving latest transactions`() {
     val transactions = listOf(
       Transaction(
-        id = "e460cbd3-f6a2-464a-80d9-843e28f01d73",
-        cryptoTicker = "BTC",
-        quantity = BigDecimal("1"),
-        price = BigDecimal("60000"),
-        total = BigDecimal("6000.00"),
-        transactionType = TransactionType.BUY,
-        platform = "BINANCE",
-        date = "2024-02-14"
+        "e460cbd3-f6a2-464a-80d9-843e28f01d73",
+        "bitcoin",
+        "btc",
+        BigDecimal("1"),
+        BigDecimal("60000"),
+        TransactionType.BUY,
+        "BINANCE",
+        "2024-02-14"
       ),
       Transaction(
-        id = "12de547d-714c-4942-bbf5-2947e53dc8c0",
-        cryptoTicker = "ETH",
-        quantity = BigDecimal("0.5"),
-        price = BigDecimal("2360"),
-        total = BigDecimal("1180.00"),
-        transactionType = TransactionType.SELL,
-        platform = "BINANCE",
-        date = "2024-03-15"
+        "12de547d-714c-4942-bbf5-2947e53dc8c0",
+        "eth",
+        "ethereum",
+        BigDecimal("0.5"),
+        BigDecimal("2360"),
+        TransactionType.SELL,
+        "BINANCE",
+        "2024-03-15"
       )
     )
     val transactionsPage = PageImpl(transactions, PageRequest.of(0, 10), 2)
@@ -84,24 +85,24 @@ class TransactionControllerTest {
     val transactionFilters = TransactionFilters(dateFrom, dateTo, "BTC")
     val transactions = listOf(
       Transaction(
-        id = "e460cbd3-f6a2-464a-80d9-843e28f01d73",
-        cryptoTicker = "BTC",
-        quantity = BigDecimal("1"),
-        price = BigDecimal("60000"),
-        total = BigDecimal("60000.00"),
-        transactionType = TransactionType.BUY,
-        platform = "BINANCE",
-        date = "2024-02-14"
+        "e460cbd3-f6a2-464a-80d9-843e28f01d73",
+        "btc",
+        "bitcoin",
+        BigDecimal("1"),
+        BigDecimal("60000"),
+        TransactionType.BUY,
+        "BINANCE",
+        "2024-02-14"
       ),
       Transaction(
-        id = "12de547d-714c-4942-bbf5-2947e53dc8c0",
-        cryptoTicker = "ETH",
-        quantity = BigDecimal("0.5"),
-        price = BigDecimal("2360"),
-        total = BigDecimal("1180.00"),
-        transactionType = TransactionType.SELL,
-        platform = "BINANCE",
-        date = "2024-03-15"
+        "12de547d-714c-4942-bbf5-2947e53dc8c0",
+        "eth",
+        "ethereum",
+        BigDecimal("0.5"),
+        BigDecimal("2360"),
+        TransactionType.SELL,
+        "BINANCE",
+        "2024-03-15"
       )
     )
     val transactionsResponse = transactions.map { it.toTransactionResponse() }
@@ -151,11 +152,11 @@ class TransactionControllerTest {
       "BINANCE",
       LocalDate.of(2024, 9, 22),
     )
-    val transaction = transactionRequest.toTransactionEntity("e460cbd3-f6a2-464a-80d9-843e28f01d73")
+    val transaction = transactionRequest.toTransactionEntity("e460cbd3-f6a2-464a-80d9-843e28f01d73", getCoingeckoCrypto())
 
     mockkStatic(UUID::class)
     every { UUID.randomUUID().toString() } returns "e460cbd3-f6a2-464a-80d9-843e28f01d73"
-    justRun { transactionServiceMock.saveTransaction(transaction) }
+    every { transactionServiceMock.saveTransaction(transactionRequest) } returns transaction
 
     val responseEntity = transactionController.saveTransaction(transactionRequest)
 
@@ -178,9 +179,11 @@ class TransactionControllerTest {
       "BINANCE",
       LocalDate.of(2024, 9, 22),
     )
-    val transaction = transactionRequest.toTransactionEntity("e460cbd3-f6a2-464a-80d9-843e28f01d73")
+    val transaction = transactionRequest.toTransactionEntity("e460cbd3-f6a2-464a-80d9-843e28f01d73", getCoingeckoCrypto())
 
-    justRun { transactionServiceMock.updateTransaction(transaction) }
+    every {
+      transactionServiceMock.updateTransaction("e460cbd3-f6a2-464a-80d9-843e28f01d73", transactionRequest)
+    } returns transaction
 
     val responseEntity = transactionController.updateTransaction(
       "e460cbd3-f6a2-464a-80d9-843e28f01d73",

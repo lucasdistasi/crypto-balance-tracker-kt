@@ -12,7 +12,7 @@ data class CryptoInsights(
   val quantity: String?,
   val balances: BalancesResponse,
   val percentage: Float
-): Serializable {
+) : Serializable {
   constructor(cryptoName: String, balances: BalancesResponse, percentage: Float) : this(
     null,
     cryptoName,
@@ -22,7 +22,13 @@ data class CryptoInsights(
     percentage
   )
 
-  constructor(cryptoName: String, cryptoId: String, quantity: String, balances: BalancesResponse, percentage: Float) : this(
+  constructor(
+    cryptoName: String,
+    cryptoId: String,
+    quantity: String,
+    balances: BalancesResponse,
+    percentage: Float
+  ) : this(
     null,
     cryptoName,
     cryptoId,

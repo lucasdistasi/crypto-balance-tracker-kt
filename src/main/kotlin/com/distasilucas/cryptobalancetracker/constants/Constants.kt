@@ -58,7 +58,6 @@ const val TRANSACTION_PLATFORM_NOT_BLANK = "Platform must not be null nor blank"
 const val TRANSACTION_DATE_NOT_NULL = "Date must not be null"
 const val TRANSACTION_DATE_NOT_FUTURE = "Date must not be a future date"
 const val TRANSACTION_DATE_RANGE_EXCEEDED = "Date range must not exceed six months"
-const val TRANSACTION_CRYPTO_TICKER_NOT_EXISTS = "Crypto ticker does not exist"
 const val INVALID_TRANSACTION_UUID = "Transaction id must be a valid UUID"
 
 // Exceptions

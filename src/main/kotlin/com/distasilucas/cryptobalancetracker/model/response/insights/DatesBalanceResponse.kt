@@ -6,21 +6,21 @@ data class DatesBalanceResponse(
   val datesBalances: List<DateBalances>,
   val change: BalanceChanges,
   val priceDifference: DifferencesChanges
-): Serializable
+) : Serializable
 
 data class DateBalances(
   val date: String,
   val balances: BalancesResponse
-): Serializable
+) : Serializable
 
 data class BalanceChanges(
   val usdChange: Float,
   val eurChange: Float,
   val btcChange: Float,
-): Serializable
+) : Serializable
 
 data class DifferencesChanges(
   val usdDifference: String,
   val eurDifference: String,
   val btcDifference: String,
-): Serializable
+) : Serializable

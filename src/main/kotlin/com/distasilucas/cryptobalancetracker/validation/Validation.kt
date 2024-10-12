@@ -23,3 +23,19 @@ class CryptoNameValidator : ConstraintValidator<ValidCryptoName, String> {
     return value?.let { value.matches(regex) } ?: false
   }
 }
+
+@Constraint(validatedBy = [ValidCryptoNameOrIdValidator::class])
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ValidCryptoNameOrId(
+  val message: String = "Invalid crypto name or id. Must contain at least 1 not blank character and no more than 64",
+  val groups: Array<KClass<*>> = [],
+  val payload: Array<KClass<out Any>> = []
+)
+
+class ValidCryptoNameOrIdValidator : ConstraintValidator<ValidCryptoNameOrId, String> {
+
+  override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
+    return value?.let { value.isNotBlank() && value.length in 1..64 } ?: false
+  }
+}

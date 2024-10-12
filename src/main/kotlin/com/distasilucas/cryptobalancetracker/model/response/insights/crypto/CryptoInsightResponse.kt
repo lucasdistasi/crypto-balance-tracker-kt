@@ -7,11 +7,11 @@ data class CryptoInsightResponse(
   val cryptoName: String?,
   val balances: BalancesResponse,
   val platforms: List<PlatformInsight>
-): Serializable
+) : Serializable
 
 data class PlatformInsight(
   val quantity: String,
   val balances: BalancesResponse,
   val percentage: Float,
   val platformName: String
-): Serializable
+) : Serializable

@@ -12,6 +12,7 @@ import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_PRICE_POSITIV
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_TYPE_NOT_NULL
 import com.distasilucas.cryptobalancetracker.entity.Transaction
 import com.distasilucas.cryptobalancetracker.entity.TransactionType
+import com.distasilucas.cryptobalancetracker.model.request.transaction.TransactionRequest
 import com.distasilucas.cryptobalancetracker.service.TransactionService
 import com.ninjasquad.springmockk.MockkBean
 import deleteTransaction
@@ -191,12 +192,20 @@ class TransactionControllerMvcTest(
   @Test
   fun `should return 201 and save transaction`() {
     val payload = readJsonFileAsString("$basePath/save-transaction.json")
-    val transaction = Transaction(
-      "e460cbd3-f6a2-464a-80d9-843e28f01d73",
-      "BTC",
+    val transactionRequest = TransactionRequest(
+      "bitcoin",
       BigDecimal("0.5"),
       BigDecimal("62500"),
-      BigDecimal("31250.00"),
+      TransactionType.BUY,
+      "BINANCE",
+      LocalDate.of(2024, 9, 23)
+    )
+    val transaction = Transaction(
+      "e460cbd3-f6a2-464a-80d9-843e28f01d73",
+      "bitcoin",
+      "btc",
+      BigDecimal("0.5"),
+      BigDecimal("62500"),
       TransactionType.BUY,
       "BINANCE",
       "2024-09-23"
@@ -204,12 +213,12 @@ class TransactionControllerMvcTest(
 
     mockkStatic(UUID::class)
     every { UUID.randomUUID().toString() } returns "e460cbd3-f6a2-464a-80d9-843e28f01d73"
-    justRun { transactionServiceMock.saveTransaction(transaction) }
+    every { transactionServiceMock.saveTransaction(transactionRequest) } returns transaction
 
     mockMvc.saveTransaction(payload)
       .andExpect(status().isCreated)
       .andExpect(jsonPath("$.id", `is`("e460cbd3-f6a2-464a-80d9-843e28f01d73")))
-      .andExpect(jsonPath("$.ticker", `is`("BTC")))
+      .andExpect(jsonPath("$.ticker", `is`("btc")))
       .andExpect(jsonPath("$.quantity", `is`("0.5")))
       .andExpect(jsonPath("$.price", `is`("62500")))
       .andExpect(jsonPath("$.total", `is`("31250.00")))
@@ -219,10 +228,10 @@ class TransactionControllerMvcTest(
   }
 
   @ParameterizedTest
-  @ValueSource(strings = ["", " ", "ABCDEFGHIJKLMNOP"])
-  fun `should return 400 when saving transaction with invalid crypto ticker`(cryptoTicker: String) {
-    val payload = readJsonFileAsString("$basePath/transaction-invalid-crypto-ticker.json")
-      .format(cryptoTicker)
+  @ValueSource(strings = ["", " ", "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLM"])
+  fun `should return 400 when saving transaction with invalid cryptoNameOrId`(cryptoNameOrId: String) {
+    val payload = readJsonFileAsString("$basePath/transaction-invalid-cryptoNameOrId.json")
+      .format(cryptoNameOrId)
 
     mockMvc.saveTransaction(payload)
       .andExpect(status().isBadRequest)
@@ -230,14 +239,14 @@ class TransactionControllerMvcTest(
       .andExpect(jsonPath("$", hasSize<Int>(1)))
       .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
       .andExpect(jsonPath("$[0].status", `is`(400)))
-      .andExpect(jsonPath("$[0].detail", `is`("Crypto ticker must have at least 1 character and no more than 15")))
+      .andExpect(jsonPath("$[0].detail", `is`("Invalid crypto name or id. Must contain at least 1 not blank character and no more than 64")))
   }
 
   @Test
   fun `should return 400 when saving transaction with null quantity`() {
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "price": "62500",
         "transactionType": "BUY",
         "platform": "BINANCE",
@@ -296,7 +305,7 @@ class TransactionControllerMvcTest(
   fun `should return 400 when saving transaction with null price`() {
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "quantity": "0.5",
         "transactionType": "BUY",
         "platform": "BINANCE",
@@ -355,7 +364,7 @@ class TransactionControllerMvcTest(
   fun `should return 400 when saving transaction with null transaction type`() {
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "quantity": "0.5",
         "price": "60000",
         "platform": "BINANCE",
@@ -376,7 +385,7 @@ class TransactionControllerMvcTest(
   fun `should return 400 when saving transaction with invalid transaction type`() {
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "quantity": "0.5",
         "price": "60000",
         "transactionType": "IDK",
@@ -398,7 +407,7 @@ class TransactionControllerMvcTest(
   fun `should return 400 when saving transaction with null platform`() {
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "quantity": "0.5",
         "price": "65000",
         "transactionType": "SELL",
@@ -469,7 +478,7 @@ class TransactionControllerMvcTest(
   fun `should return 400 when saving transaction with null date`() {
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "quantity": "0.5",
         "price": "65000",
         "transactionType": "SELL",
@@ -492,7 +501,7 @@ class TransactionControllerMvcTest(
 
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "quantity": "0.5",
         "price": "65000",
         "transactionType": "SELL",
@@ -513,23 +522,33 @@ class TransactionControllerMvcTest(
   @Test
   fun `should return 200 and update transaction`() {
     val payload = readJsonFileAsString("$basePath/update-transaction.json")
-    val transaction = Transaction(
-      "e460cbd3-f6a2-464a-80d9-843e28f01d73",
-      "BTC",
+    val transactionRequest = TransactionRequest(
+      "bitcoin",
       BigDecimal("0.5"),
       BigDecimal("62750"),
-      BigDecimal("31375.00"),
+      TransactionType.BUY,
+      "BINANCE",
+      LocalDate.of(2024, 9, 23)
+    )
+    val transaction = Transaction(
+      "e460cbd3-f6a2-464a-80d9-843e28f01d73",
+      "bitcoin",
+      "btc",
+      BigDecimal("0.5"),
+      BigDecimal("62750"),
       TransactionType.BUY,
       "BINANCE",
       "2024-09-23"
     )
 
-    justRun { transactionServiceMock.updateTransaction(transaction) }
+    every {
+      transactionServiceMock.updateTransaction("e460cbd3-f6a2-464a-80d9-843e28f01d73", transactionRequest)
+    } returns transaction
 
     mockMvc.updateTransaction("e460cbd3-f6a2-464a-80d9-843e28f01d73", payload)
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id", `is`("e460cbd3-f6a2-464a-80d9-843e28f01d73")))
-      .andExpect(jsonPath("$.ticker", `is`("BTC")))
+      .andExpect(jsonPath("$.ticker", `is`("btc")))
       .andExpect(jsonPath("$.quantity", `is`("0.5")))
       .andExpect(jsonPath("$.price", `is`("62750")))
       .andExpect(jsonPath("$.total", `is`("31375.00")))
@@ -558,10 +577,10 @@ class TransactionControllerMvcTest(
   }
 
   @ParameterizedTest
-  @ValueSource(strings = ["", " ", "ABCDEFGHIJKLMNOP"])
-  fun `should return 400 when updating transaction with invalid crypto ticker`(cryptoTicker: String) {
-    val payload = readJsonFileAsString("$basePath/transaction-invalid-crypto-ticker.json")
-      .format(cryptoTicker)
+  @ValueSource(strings = ["", " ", "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLM"])
+  fun `should return 400 when updating transaction with invalid cryptoNameOrId`(cryptoNameOrId: String) {
+    val payload = readJsonFileAsString("$basePath/transaction-invalid-cryptoNameOrId.json")
+      .format(cryptoNameOrId)
 
     mockMvc.updateTransaction("e460cbd3-f6a2-464a-80d9-843e28f01d73", payload)
       .andExpect(status().isBadRequest)
@@ -569,14 +588,14 @@ class TransactionControllerMvcTest(
       .andExpect(jsonPath("$", hasSize<Int>(1)))
       .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
       .andExpect(jsonPath("$[0].status", `is`(400)))
-      .andExpect(jsonPath("$[0].detail", `is`("Crypto ticker must have at least 1 character and no more than 15")))
+      .andExpect(jsonPath("$[0].detail", `is`("Invalid crypto name or id. Must contain at least 1 not blank character and no more than 64")))
   }
 
   @Test
   fun `should return 400 when updating transaction with null quantity`() {
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "price": "62500",
         "transactionType": "BUY",
         "platform": "BINANCE",
@@ -635,7 +654,7 @@ class TransactionControllerMvcTest(
   fun `should return 400 when updating transaction with null price`() {
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "quantity": "0.5",
         "transactionType": "BUY",
         "platform": "BINANCE",
@@ -694,7 +713,7 @@ class TransactionControllerMvcTest(
   fun `should return 400 when updating transaction with null transaction type`() {
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "quantity": "0.5",
         "price": "60000",
         "platform": "BINANCE",
@@ -715,7 +734,7 @@ class TransactionControllerMvcTest(
   fun `should return 400 when updating transaction with invalid transaction type`() {
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "quantity": "0.5",
         "price": "60000",
         "transactionType": "IDK",
@@ -737,7 +756,7 @@ class TransactionControllerMvcTest(
   fun `should return 400 when updating transaction with null platform`() {
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "quantity": "0.5",
         "price": "65000",
         "transactionType": "SELL",
@@ -808,7 +827,7 @@ class TransactionControllerMvcTest(
   fun `should return 400 when updating transaction with null date`() {
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "quantity": "0.5",
         "price": "65000",
         "transactionType": "SELL",
@@ -831,7 +850,7 @@ class TransactionControllerMvcTest(
 
     val payload = """
       {
-        "ticker": "BTC",
+        "cryptoNameOrId": "bitcoin",
         "quantity": "0.5",
         "price": "65000",
         "transactionType": "SELL",
@@ -877,20 +896,20 @@ class TransactionControllerMvcTest(
   private fun transactions() = listOf(
     Transaction(
       "e460cbd3-f6a2-464a-80d9-843e28f01d73",
+      "bitcoin",
       "BTC",
       BigDecimal("1"),
       BigDecimal("60000"),
-      BigDecimal("60000.00"),
       TransactionType.BUY,
       "BINANCE",
       "2024-09-15"
     ),
     Transaction(
       "12de547d-714c-4942-bbf5-2947e53dc8c0",
+      "ethereum",
       "ETH",
       BigDecimal("0.5"),
       BigDecimal("2360"),
-      BigDecimal("1180.00"),
       TransactionType.SELL,
       "BINANCE",
       "2024-09-15"

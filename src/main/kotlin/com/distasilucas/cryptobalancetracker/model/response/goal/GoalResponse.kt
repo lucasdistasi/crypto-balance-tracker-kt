@@ -10,4 +10,4 @@ data class GoalResponse(
   val remainingQuantity: String,
   val goalQuantity: String,
   val moneyNeeded: String
-): Serializable
+) : Serializable

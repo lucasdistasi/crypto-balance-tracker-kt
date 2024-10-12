@@ -4,6 +4,7 @@ import com.distasilucas.cryptobalancetracker.entity.TransactionType
 
 data class TransactionResponse(
   val id: String,
+  val cryptoId: String,
   val ticker: String,
   val quantity: String,
   val price: String,

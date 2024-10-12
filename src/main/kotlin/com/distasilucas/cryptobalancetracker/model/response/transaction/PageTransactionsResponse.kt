@@ -7,7 +7,7 @@ data class PageTransactionsResponse(
   val totalPages: Int,
   val hasNextPage: Boolean,
   val transactions: List<TransactionResponse>
-): Serializable {
+) : Serializable {
 
   constructor(page: Int, totalPages: Int, transactions: List<TransactionResponse>) : this(
     page + 1,

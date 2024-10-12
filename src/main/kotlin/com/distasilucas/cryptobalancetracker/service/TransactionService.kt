@@ -1,17 +1,16 @@
 package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.constants.LATEST_TRANSACTIONS_CACHES
-import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_CRYPTO_TICKER_NOT_EXISTS
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_DATE_RANGE_EXCEEDED
 import com.distasilucas.cryptobalancetracker.controller.TransactionFilters
 import com.distasilucas.cryptobalancetracker.entity.Transaction
 import com.distasilucas.cryptobalancetracker.exception.ApiException
+import com.distasilucas.cryptobalancetracker.model.request.transaction.TransactionRequest
 import com.distasilucas.cryptobalancetracker.repository.TransactionRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.time.Clock
@@ -20,7 +19,7 @@ import java.time.LocalDate
 @Service
 class TransactionService(
   private val transactionRepository: TransactionRepository,
-  private val coingeckoService: CoingeckoService,
+  private val cryptoService: CryptoService,
   private val cacheService: CacheService,
   private val clock: Clock
 ) {
@@ -32,11 +31,11 @@ class TransactionService(
     val now = LocalDate.now(clock)
     val to = now.plusDays(1).toString()
     val from = now.minusMonths(6).minusDays(1).toString()
-    val pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "date"))
+    val pageRequest = PageRequest.of(page, 10)
 
     logger.info { "Retrieving transactions from $from to $to with page $pageRequest" }
 
-    return transactionRepository.findAllByDateBetween(from, to, pageRequest)
+    return transactionRepository.findAllByDateBetweenOrderByDateDescIdDesc(from, to, pageRequest)
   }
 
   fun retrieveFilteredTransactions(transactionFilters: TransactionFilters): List<Transaction> {
@@ -56,26 +55,32 @@ class TransactionService(
     return transactions
   }
 
-  fun saveTransaction(transaction: Transaction) {
-    logger.info { "Saving transaction $transaction" }
-    validateCryptoTickerExists(transaction.cryptoTicker)
+  fun saveTransaction(transactionRequest: TransactionRequest): Transaction {
+    logger.info { "Saving transaction $transactionRequest" }
+    val crypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(transactionRequest.cryptoNameOrId!!)
+    val transaction = transactionRequest.toTransactionEntity(coingeckoCrypto = crypto)
 
     transactionRepository.save(transaction)
     cacheService.invalidate(CacheType.TRANSACTION_CACHES)
+
+    return transaction
   }
 
-  fun updateTransaction(transaction: Transaction) {
-    logger.info { "Updating transaction $transaction" }
-    validateCryptoTickerExists(transaction.cryptoTicker)
+  fun updateTransaction(transactionId: String, transactionRequest: TransactionRequest): Transaction {
+    logger.info { "Updating transaction $transactionRequest" }
+    val crypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(transactionRequest.cryptoNameOrId!!)
+    val optionalTransaction = transactionRepository.findById(transactionId)
 
-    transactionRepository.findById(transaction.id)
-      .ifPresentOrElse({
-        val updatedTransaction = transactionRepository.save(transaction)
-        logger.info { "Updated transaction $updatedTransaction" }
-        cacheService.invalidate(CacheType.TRANSACTION_CACHES)
-      }, {
-        throw ApiException(HttpStatus.NOT_FOUND, "Transaction ${transaction.id} does not exists")
-      })
+    if (optionalTransaction.isEmpty)
+      throw ApiException(HttpStatus.NOT_FOUND, "Transaction $transactionId does not exists")
+
+    val transaction = transactionRequest.toTransactionEntity(transactionId, crypto)
+    val updatedTransaction = transactionRepository.save(transaction)
+
+    logger.info { "Updated transaction $transaction" }
+    cacheService.invalidate(CacheType.TRANSACTION_CACHES)
+
+    return updatedTransaction
   }
 
   fun deleteTransaction(transactionId: String) {
@@ -94,13 +99,5 @@ class TransactionService(
   private fun validateSixMonthsRange(dateFrom: LocalDate, dateTo: LocalDate) {
     if (dateFrom.plusMonths(6) < dateTo)
       throw ApiException(HttpStatus.BAD_REQUEST, TRANSACTION_DATE_RANGE_EXCEEDED)
-  }
-
-  private fun validateCryptoTickerExists(cryptoTicker: String) {
-    val crypto = coingeckoService.retrieveAllCryptos()
-      .firstOrNull { it.symbol.equals(cryptoTicker, true) }
-
-    if (crypto == null)
-      throw ApiException(HttpStatus.BAD_REQUEST, TRANSACTION_CRYPTO_TICKER_NOT_EXISTS)
   }
 }

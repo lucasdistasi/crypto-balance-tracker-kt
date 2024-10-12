@@ -32,7 +32,9 @@ import java.time.LocalDate
 @RestController
 @RequestMapping("/api/v1/transactions")
 @CrossOrigin(origins = ["\${allowed-origins}"])
-class TransactionController(private val transactionService: TransactionService): TransactionControllerAPI {
+class TransactionController(
+  private val transactionService: TransactionService
+): TransactionControllerAPI {
 
   @GetMapping("/latest")
   override fun retrieveLatestTransactions(
@@ -62,12 +64,11 @@ class TransactionController(private val transactionService: TransactionService):
   override fun saveTransaction(
     @RequestBody @Valid transactionRequest: TransactionRequest
   ): ResponseEntity<TransactionResponse> {
-    val transactionEntity = transactionRequest.toTransactionEntity()
-    transactionService.saveTransaction(transactionEntity)
+    val transaction = transactionService.saveTransaction(transactionRequest)
 
     return ResponseEntity.status(HttpStatus.CREATED)
-      .header(HttpHeaders.LOCATION, "/api/v1/transactions/${transactionEntity.id}")
-      .body(transactionEntity.toTransactionResponse())
+      .header(HttpHeaders.LOCATION, "/api/v1/transactions/${transaction.id}")
+      .body(transaction.toTransactionResponse())
   }
 
   @PutMapping("/{transactionId}")
@@ -75,8 +76,7 @@ class TransactionController(private val transactionService: TransactionService):
     @PathVariable @UUID(message = INVALID_TRANSACTION_UUID) transactionId: String,
     @RequestBody @Valid transactionRequest: TransactionRequest
   ): ResponseEntity<TransactionResponse> {
-    val transaction = transactionRequest.toTransactionEntity(transactionId)
-    transactionService.updateTransaction(transaction)
+    val transaction = transactionService.updateTransaction(transactionId, transactionRequest)
 
     return ResponseEntity.ok(transaction.toTransactionResponse())
   }

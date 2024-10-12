@@ -24,7 +24,6 @@ import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.CacheManager
-import org.springframework.cache.get
 import org.springframework.stereotype.Service
 
 @Service

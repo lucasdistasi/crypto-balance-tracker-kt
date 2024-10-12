@@ -8,4 +8,4 @@ data class PriceTargetResponse(
   val currentPrice: String,
   val priceTarget: String,
   val change: Float
-): Serializable
+) : Serializable

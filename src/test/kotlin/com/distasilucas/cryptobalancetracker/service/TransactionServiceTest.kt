@@ -1,16 +1,18 @@
 package com.distasilucas.cryptobalancetracker.service
 
-import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_CRYPTO_TICKER_NOT_EXISTS
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_DATE_RANGE_EXCEEDED
 import com.distasilucas.cryptobalancetracker.controller.TransactionFilters
 import com.distasilucas.cryptobalancetracker.entity.Transaction
 import com.distasilucas.cryptobalancetracker.entity.TransactionType
 import com.distasilucas.cryptobalancetracker.exception.ApiException
+import com.distasilucas.cryptobalancetracker.model.request.transaction.TransactionRequest
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
 import com.distasilucas.cryptobalancetracker.repository.TransactionRepository
+import getCoingeckoCrypto
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -32,34 +34,39 @@ import java.util.*
 class TransactionServiceTest {
 
   private val transactionRepositoryMock = mockk<TransactionRepository>()
-  private val coingeckoServiceMock = mockk<CoingeckoService>()
+  private val cryptoServiceMock = mockk<CryptoService>()
   private val cacheServiceMock = mockk<CacheService>()
   private val clockMock = mockk<Clock>()
 
-  private val transactionService: TransactionService = TransactionService(transactionRepositoryMock, coingeckoServiceMock, cacheServiceMock, clockMock)
+  private val transactionService: TransactionService = TransactionService(
+    transactionRepositoryMock,
+    cryptoServiceMock,
+    cacheServiceMock,
+    clockMock
+  )
 
   @Test
   fun `should retrieve last six months transaction`() {
     val localDateTime = LocalDateTime.of(2024, 9, 15, 18, 55, 0)
     val zonedDateTime = ZonedDateTime.of(2024, 9, 15, 19, 0, 0, 0, ZoneId.of("UTC"))
-    val pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "date"))
+    val pageRequest = PageRequest.of(0, 10)
     val transactions = listOf(
       Transaction(
         "e460cbd3-f6a2-464a-80d9-843e28f01d73",
-        "BTC",
+        "bitcoin",
+        "btc",
         BigDecimal("1"),
         BigDecimal("60000"),
-        BigDecimal("60000.00"),
         TransactionType.BUY,
         "BINANCE",
         "2024-09-15"
       ),
       Transaction(
         "12de547d-714c-4942-bbf5-2947e53dc8c0",
-        "ETH",
+        "ethereum",
+        "eth",
         BigDecimal("0.5"),
         BigDecimal("2360"),
-        BigDecimal("1180.00"),
         TransactionType.SELL,
         "BINANCE",
         "2024-09-15"
@@ -72,7 +79,7 @@ class TransactionServiceTest {
     every { clockMock.instant() } returns localDateTime.toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns zonedDateTime.zone
     every {
-      transactionRepositoryMock.findAllByDateBetween(from.toString(), to.toString(), pageRequest)
+      transactionRepositoryMock.findAllByDateBetweenOrderByDateDescIdDesc(from.toString(), to.toString(), pageRequest)
     } returns pageTransaction
 
     val transaction = transactionService.retrieveLastSixMonthsTransactions(0)
@@ -92,20 +99,20 @@ class TransactionServiceTest {
     val entityTransactions = listOf(
       Transaction(
         "e460cbd3-f6a2-464a-80d9-843e28f01d73",
-        "BTC",
+        "bitcoin",
+        "btc",
         BigDecimal("1"),
         BigDecimal("60000"),
-        BigDecimal("60000.00"),
         TransactionType.BUY,
         "BINANCE",
         "2024-02-14"
       ),
       Transaction(
         "12de547d-714c-4942-bbf5-2947e53dc8c0",
-        "ETH",
+        "ethereum",
+        "eth",
         BigDecimal("0.5"),
         BigDecimal("2360"),
-        BigDecimal("1180.00"),
         TransactionType.SELL,
         "BINANCE",
         "2024-03-15"
@@ -144,151 +151,97 @@ class TransactionServiceTest {
   fun `should save transaction`() {
     val transaction = Transaction(
       "99a430c9-9af8-494e-b5dc-64ef27d0a8ac",
+      "bitcoin",
       "btc",
       BigDecimal("0.5"),
       BigDecimal("60000"),
-      BigDecimal("30000.00"),
+      TransactionType.SELL,
+      "BINANCE",
+      "2024-09-22"
+    )
+    val transactionRequest = TransactionRequest(
+      "bitcoin",
+      BigDecimal("0.5"),
+      BigDecimal("60000"),
       TransactionType.SELL,
       "Binance",
-      LocalDate.of(2024, 9, 22).toString()
+      LocalDate.of(2024, 9, 22)
     )
 
+    mockkStatic(UUID::class)
     every {
-      coingeckoServiceMock.retrieveAllCryptos()
-    } returns listOf(
-      CoingeckoCrypto("bitcoin", "BTC", "Bitcoin"),
-      CoingeckoCrypto("ethereum", "ETH", "Ethereum")
-    )
+      cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin")
+    } returns getCoingeckoCrypto()
+    every { UUID.randomUUID().toString() } returns "99a430c9-9af8-494e-b5dc-64ef27d0a8ac"
     every { transactionRepositoryMock.save(transaction) } returns transaction
     justRun { cacheServiceMock.invalidate(CacheType.TRANSACTION_CACHES) }
 
-    transactionService.saveTransaction(transaction)
+    transactionService.saveTransaction(transactionRequest)
 
     verify(exactly = 1) { transactionRepositoryMock.save(transaction) }
     verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.TRANSACTION_CACHES) }
   }
 
   @Test
-  fun `should throw ApiException when saving transaction`() {
-    val transaction = Transaction(
-      "99a430c9-9af8-494e-b5dc-64ef27d0a8ac",
-      "xyz",
-      BigDecimal("0.5"),
-      BigDecimal("60000"),
-      BigDecimal("30000.00"),
-      TransactionType.SELL,
-      "Binance",
-      LocalDate.of(2024, 9, 22).toString()
-    )
-
-    every {
-      coingeckoServiceMock.retrieveAllCryptos()
-    } returns listOf(
-      CoingeckoCrypto("bitcoin", "BTC", "Bitcoin"),
-      CoingeckoCrypto("ethereum", "ETH", "Ethereum")
-    )
-
-    val exception = assertThrows<ApiException> {
-      transactionService.saveTransaction(transaction)
-    }
-
-    verify(exactly = 0) { transactionRepositoryMock.save(any()) }
-    assertEquals(TRANSACTION_CRYPTO_TICKER_NOT_EXISTS, exception.message)
-    assertEquals(HttpStatus.BAD_REQUEST, exception.httpStatusCode)
-  }
-
-  @Test
   fun `should update transaction`() {
     val transaction = Transaction(
       "99a430c9-9af8-494e-b5dc-64ef27d0a8ac",
+      "bitcoin",
       "btc",
       BigDecimal("0.5"),
       BigDecimal("60000"),
-      BigDecimal("30000.00"),
       TransactionType.SELL,
-      "Binance",
-      LocalDate.of(2024, 9, 22).toString()
+      "BINANCE",
+      "2024-09-22"
     )
     val newTransaction = transaction.copy(price = BigDecimal("60500"))
-
-    every {
-      coingeckoServiceMock.retrieveAllCryptos()
-    } returns listOf(
-      CoingeckoCrypto("bitcoin", "BTC", "Bitcoin"),
-      CoingeckoCrypto("ethereum", "ETH", "Ethereum")
+    val transactionRequest = TransactionRequest(
+      "bitcoin",
+      BigDecimal("0.5"),
+      BigDecimal("60500"),
+      TransactionType.SELL,
+      "Binance",
+        LocalDate.of(2024, 9, 22)
     )
+
+    mockkStatic(UUID::class)
+    every {
+      cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin")
+    } returns getCoingeckoCrypto()
+    every { UUID.randomUUID().toString() } returns "99a430c9-9af8-494e-b5dc-64ef27d0a8ac"
     every {
       transactionRepositoryMock.findById("99a430c9-9af8-494e-b5dc-64ef27d0a8ac")
     } returns Optional.of(transaction)
     every { transactionRepositoryMock.save(newTransaction) } returns newTransaction
     justRun { cacheServiceMock.invalidate(CacheType.TRANSACTION_CACHES) }
 
-    transactionService.updateTransaction(newTransaction)
+    transactionService.updateTransaction("99a430c9-9af8-494e-b5dc-64ef27d0a8ac", transactionRequest)
 
     verify(exactly = 1) { transactionRepositoryMock.save(newTransaction) }
     verify(exactly = 1) { cacheServiceMock.invalidate(CacheType.TRANSACTION_CACHES) }
   }
 
   @Test
-  fun `should throw ApiException with Bad Request when updating transaction`() {
-    val transaction = Transaction(
-      "99a430c9-9af8-494e-b5dc-64ef27d0a8ac",
-      "btc",
-      BigDecimal("0.5"),
-      BigDecimal("60000"),
-      BigDecimal("30000.00"),
-      TransactionType.SELL,
-      "Binance",
-      LocalDate.of(2024, 9, 22).toString()
-    )
-    val newTransaction = transaction.copy(cryptoTicker = "xyz")
-
-    every {
-      coingeckoServiceMock.retrieveAllCryptos()
-    } returns listOf(
-      CoingeckoCrypto("bitcoin", "BTC", "Bitcoin"),
-      CoingeckoCrypto("ethereum", "ETH", "Ethereum")
-    )
-    every {
-      transactionRepositoryMock.findById("99a430c9-9af8-494e-b5dc-64ef27d0a8ac")
-    } returns Optional.of(transaction)
-
-    val exception = assertThrows<ApiException> {
-      transactionService.updateTransaction(newTransaction)
-    }
-
-    verify(exactly = 0) { transactionRepositoryMock.save(any()) }
-    assertEquals(TRANSACTION_CRYPTO_TICKER_NOT_EXISTS, exception.message)
-    assertEquals(HttpStatus.BAD_REQUEST, exception.httpStatusCode)
-  }
-
-  @Test
   fun `should throw ApiException with Not Found when updating transaction`() {
     val transactionId = "99a430c9-9af8-494e-b5dc-64ef27d0a8ac"
-    val transaction = Transaction(
-      transactionId,
-      "btc",
+    val transactionRequest = TransactionRequest(
+      "bitcoin",
       BigDecimal("0.5"),
       BigDecimal("60000"),
-      BigDecimal("30000.00"),
       TransactionType.SELL,
       "Binance",
-      LocalDate.of(2024, 9, 22).toString()
+        LocalDate.of(2024, 9, 22)
     )
-    val newTransaction = transaction.copy(price = BigDecimal("60250"))
 
     every {
-      coingeckoServiceMock.retrieveAllCryptos()
-    } returns listOf(
-      CoingeckoCrypto("bitcoin", "BTC", "Bitcoin"),
-      CoingeckoCrypto("ethereum", "ETH", "Ethereum")
-    )
+      cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin")
+    } returns getCoingeckoCrypto()
     every {
       transactionRepositoryMock.findById(transactionId)
     } returns Optional.empty()
 
     val exception = assertThrows<ApiException> {
-      transactionService.updateTransaction(newTransaction)
+      transactionService.updateTransaction(transactionId, transactionRequest)
     }
 
     verify(exactly = 0) { transactionRepositoryMock.save(any()) }
@@ -300,13 +253,13 @@ class TransactionServiceTest {
   fun `should delete transaction`() {
     val transaction = Transaction(
       "99a430c9-9af8-494e-b5dc-64ef27d0a8ac",
+      "bitcoin",
       "btc",
       BigDecimal("0.5"),
       BigDecimal("60000"),
-      BigDecimal("30000.00"),
       TransactionType.SELL,
       "Binance",
-      LocalDate.of(2024, 9, 22).toString()
+      "2024-09-22"
     )
 
     every {
