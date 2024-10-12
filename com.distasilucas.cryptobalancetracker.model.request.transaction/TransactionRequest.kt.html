@@ -12,10 +12,9 @@ import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_PRICE_POSITIV
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_TYPE_NOT_NULL
 import com.distasilucas.cryptobalancetracker.entity.Transaction
 import com.distasilucas.cryptobalancetracker.entity.TransactionType
+import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
+import com.distasilucas.cryptobalancetracker.validation.ValidCryptoNameOrId
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.validation.Constraint
-import jakarta.validation.ConstraintValidator
-import jakarta.validation.ConstraintValidatorContext
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.NotBlank
@@ -24,17 +23,15 @@ import jakarta.validation.constraints.PastOrPresent
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.LocalDate
-import java.util.*
-import kotlin.reflect.KClass
+import java.util.UUID
 
-<span class="fc" id="L32">data class TransactionRequest(</span>
+<span class="fc" id="L29">data class TransactionRequest(</span>
 
-<span class="pc" id="L34">  @field: ValidTicker</span>
-  val ticker: String?,
+<span class="fc" id="L31">  @field: ValidCryptoNameOrId</span>
+  val cryptoNameOrId: String?,
 
-<span class="pc" id="L37">  @field: NotNull(message = CRYPTO_QUANTITY_NOT_NULL)</span>
+<span class="pc" id="L34">  @field: NotNull(message = CRYPTO_QUANTITY_NOT_NULL)</span>
   @field: Digits(
     integer = 16,
     fraction = 12,
@@ -47,7 +44,7 @@ import kotlin.reflect.KClass
   @field: Positive(message = CRYPTO_QUANTITY_POSITIVE)
   val quantity: BigDecimal?,
 
-<span class="pc" id="L50">  @field: NotNull(message = TRANSACTION_PRICE_NOT_NULL)</span>
+<span class="pc" id="L47">  @field: NotNull(message = TRANSACTION_PRICE_NOT_NULL)</span>
   @field: Digits(
     integer = 16,
     fraction = 12,
@@ -60,52 +57,31 @@ import kotlin.reflect.KClass
   @field: Positive(message = TRANSACTION_PRICE_POSITIVE)
   val price: BigDecimal?,
 
-<span class="pc" id="L63">  @field: NotNull(message = TRANSACTION_TYPE_NOT_NULL)</span>
+<span class="pc" id="L60">  @field: NotNull(message = TRANSACTION_TYPE_NOT_NULL)</span>
   val transactionType: TransactionType?,
 
-<span class="pc" id="L66">  @field: NotBlank(message = TRANSACTION_PLATFORM_NOT_BLANK)</span>
+<span class="pc" id="L63">  @field: NotBlank(message = TRANSACTION_PLATFORM_NOT_BLANK)</span>
   @field: Size(min = 1, max = 24, message = &quot;Platform must be between {min} and {max} characters&quot;)
   val platform: String?,
 
-<span class="pc" id="L70">  @field: NotNull(message = TRANSACTION_DATE_NOT_NULL)</span>
+<span class="pc" id="L67">  @field: NotNull(message = TRANSACTION_DATE_NOT_NULL)</span>
   @field: PastOrPresent(message = TRANSACTION_DATE_NOT_FUTURE)
   @field: Schema(example = &quot;2024-05-13&quot;, pattern = &quot;yyyy-MM-dd&quot;, required = true)
   val date: LocalDate?
 ) {
 
-<span class="fc" id="L76">  fun toTransactionEntity(transactionId: String = UUID.randomUUID().toString()): Transaction {</span>
-<span class="fc" id="L77">    return Transaction(</span>
-<span class="fc" id="L78">      id = transactionId,</span>
-<span class="fc" id="L79">      cryptoTicker = ticker!!.uppercase(),</span>
-<span class="fc" id="L80">      quantity = quantity!!,</span>
-<span class="fc" id="L81">      price = price!!,</span>
-<span class="fc" id="L82">      total = calculateTotal(),</span>
-<span class="fc" id="L83">      transactionType = transactionType!!,</span>
-<span class="fc" id="L84">      platform = platform!!.uppercase(),</span>
-<span class="fc" id="L85">      date = date.toString(),</span>
-    )
-  }
-
-  private fun calculateTotal(): BigDecimal {
-<span class="fc" id="L90">    return quantity!!.multiply(price)</span>
-<span class="fc" id="L91">      .setScale(2, RoundingMode.HALF_UP)</span>
-  }
+<span class="fc" id="L73">  fun toTransactionEntity(</span>
+<span class="fc" id="L74">    transactionId: String = UUID.randomUUID().toString(),</span>
+    coingeckoCrypto: CoingeckoCrypto,
+<span class="fc" id="L76">  ) = Transaction(</span>
+<span class="fc" id="L77">    id = transactionId,</span>
+<span class="fc" id="L78">    coingeckoCryptoId = coingeckoCrypto.id,</span>
+<span class="fc" id="L79">    cryptoTicker = coingeckoCrypto.symbol,</span>
+<span class="fc" id="L80">    quantity = quantity!!,</span>
+<span class="fc" id="L81">    price = price!!,</span>
+<span class="fc" id="L82">    transactionType = transactionType!!,</span>
+<span class="fc" id="L83">    platform = platform!!.uppercase(),</span>
+<span class="fc" id="L84">    date = date.toString(),</span>
+<span class="fc" id="L85">  )</span>
 }
-
-@Constraint(validatedBy = [CryptoTickerValidator::class])
-@Target(AnnotationTarget.FIELD)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class ValidTicker(
-  val message: String = &quot;Crypto ticker must have at least 1 character and no more than 15&quot;,
-  val groups: Array&lt;KClass&lt;*&gt;&gt; = [],
-  val payload: Array&lt;KClass&lt;out Any&gt;&gt; = []
-)
-
-<span class="fc" id="L104">class CryptoTickerValidator : ConstraintValidator&lt;ValidTicker, String&gt; {</span>
-
-  override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
-<span class="pc bpc" id="L107" title="1 of 12 branches missed.">    return value?.let { value.isNotBlank() &amp;&amp; value.length in 1..15 } ?: false</span>
-  }
-}
-
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

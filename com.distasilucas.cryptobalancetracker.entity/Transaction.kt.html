@@ -4,51 +4,57 @@ import com.distasilucas.cryptobalancetracker.model.response.transaction.Transact
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
+import java.io.Serializable
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Document(&quot;Transactions&quot;)
-<span class="fc" id="L12">data class Transaction(</span>
-<span class="fc" id="L13">  @Id</span>
+<span class="fc" id="L14">data class Transaction(</span>
+<span class="fc" id="L15">  @Id</span>
   val id: String,
 
-<span class="fc" id="L16">  @Field(&quot;crypto_ticker&quot;)</span>
+<span class="pc" id="L18">  @Field(&quot;crypto_id&quot;)</span>
+  val coingeckoCryptoId: String,
+
+<span class="pc" id="L21">  @Field(&quot;crypto_ticker&quot;)</span>
   val cryptoTicker: String,
 
-<span class="pc" id="L19">  @Field(&quot;quantity&quot;)</span>
+<span class="pc" id="L24">  @Field(&quot;quantity&quot;)</span>
   val quantity: BigDecimal,
 
-<span class="pc" id="L22">  @Field(&quot;price&quot;)</span>
+<span class="pc" id="L27">  @Field(&quot;price&quot;)</span>
   val price: BigDecimal,
 
-<span class="pc" id="L25">  @Field(&quot;total&quot;)</span>
-  val total: BigDecimal,
-
-<span class="pc" id="L28">  @Field(&quot;transaction_type&quot;)</span>
+<span class="pc" id="L30">  @Field(&quot;transaction_type&quot;)</span>
   val transactionType: TransactionType,
 
-<span class="pc" id="L31">  @Field(&quot;platform&quot;)</span>
+<span class="pc" id="L33">  @Field(&quot;platform&quot;)</span>
   val platform: String,
 
-<span class="pc" id="L34">  @Field(&quot;date&quot;)</span>
+<span class="pc" id="L36">  @Field(&quot;date&quot;)</span>
   val date: String,
-) {
+) : Serializable {
 
   fun toTransactionResponse() =
-<span class="fc" id="L39">    TransactionResponse(</span>
-<span class="fc" id="L40">      id,</span>
-<span class="fc" id="L41">      cryptoTicker, quantity.toPlainString(),</span>
-<span class="fc" id="L42">      price.toPlainString(),</span>
-<span class="fc" id="L43">      total.toPlainString(),</span>
-<span class="fc" id="L44">      transactionType,</span>
-<span class="fc" id="L45">      platform,</span>
-<span class="fc" id="L46">      LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE).format(DateTimeFormatter.ofPattern(&quot;MMMM d, yyyy&quot;)),</span>
-<span class="fc" id="L47">    )</span>
+<span class="fc" id="L41">    TransactionResponse(</span>
+<span class="fc" id="L42">      id,</span>
+<span class="fc" id="L43">      coingeckoCryptoId,</span>
+<span class="fc" id="L44">      cryptoTicker,</span>
+<span class="fc" id="L45">      quantity.toPlainString(),</span>
+<span class="fc" id="L46">      price.toPlainString(),</span>
+<span class="fc" id="L47">      calculateTotal().toPlainString(),</span>
+<span class="fc" id="L48">      transactionType,</span>
+<span class="fc" id="L49">      platform,</span>
+<span class="fc" id="L50">      LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE).format(DateTimeFormatter.ofPattern(&quot;MMMM d, yyyy&quot;)),</span>
+<span class="fc" id="L51">    )</span>
+
+<span class="fc" id="L53">  private fun calculateTotal() = quantity.multiply(price).setScale(2, RoundingMode.HALF_UP)</span>
 }
 
 enum class TransactionType {
-<span class="fc" id="L51">  BUY,</span>
-<span class="fc" id="L52">  SELL</span>
-<span class="nc" id="L53">}</span>
+<span class="fc" id="L57">  BUY,</span>
+<span class="fc" id="L58">  SELL</span>
+<span class="nc" id="L59">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

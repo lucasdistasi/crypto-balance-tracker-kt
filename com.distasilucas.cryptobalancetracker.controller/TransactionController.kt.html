@@ -32,16 +32,18 @@ import java.time.LocalDate
 @RestController
 @RequestMapping(&quot;/api/v1/transactions&quot;)
 @CrossOrigin(origins = [&quot;\${allowed-origins}&quot;])
-<span class="fc" id="L35">class TransactionController(private val transactionService: TransactionService): TransactionControllerAPI {</span>
+<span class="fc" id="L35">class TransactionController(</span>
+<span class="fc" id="L36">  private val transactionService: TransactionService</span>
+): TransactionControllerAPI {
 
   @GetMapping(&quot;/latest&quot;)
   override fun retrieveLatestTransactions(
     @RequestParam @Min(value = 0, message = INVALID_PAGE_NUMBER) page: Int
   ): ResponseEntity&lt;PageTransactionsResponse&gt; {
-<span class="fc" id="L41">    val transactions = transactionService.retrieveLastSixMonthsTransactions(page)</span>
-<span class="fc" id="L42">    val pageTransactions = PageTransactionsResponse(page, transactions.totalPages, transactions.content.map { it.toTransactionResponse() })</span>
+<span class="fc" id="L43">    val transactions = transactionService.retrieveLastSixMonthsTransactions(page)</span>
+<span class="fc" id="L44">    val pageTransactions = PageTransactionsResponse(page, transactions.totalPages, transactions.content.map { it.toTransactionResponse() })</span>
 
-<span class="fc bfc" id="L44" title="All 2 branches covered.">    return if (pageTransactions.transactions.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(pageTransactions)</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">    return if (pageTransactions.transactions.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(pageTransactions)</span>
   }
 
   @GetMapping
@@ -52,22 +54,21 @@ import java.time.LocalDate
     @RequestParam(required = false) transactionType: TransactionType?,
     @RequestParam(required = false) platform: String?
   ): ResponseEntity&lt;List&lt;TransactionResponse&gt;&gt; {
-<span class="fc" id="L55">    val transactionFilters = TransactionFilters(dateFrom, dateTo, cryptoTicker, transactionType, platform)</span>
-<span class="fc" id="L56">    val transactions = transactionService.retrieveFilteredTransactions(transactionFilters)</span>
+<span class="fc" id="L57">    val transactionFilters = TransactionFilters(dateFrom, dateTo, cryptoTicker, transactionType, platform)</span>
+<span class="fc" id="L58">    val transactions = transactionService.retrieveFilteredTransactions(transactionFilters)</span>
 
-<span class="fc bfc" id="L58" title="All 2 branches covered.">    return if (transactions.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(transactions.map { it.toTransactionResponse() })</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">    return if (transactions.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(transactions.map { it.toTransactionResponse() })</span>
   }
 
   @PostMapping
   override fun saveTransaction(
     @RequestBody @Valid transactionRequest: TransactionRequest
   ): ResponseEntity&lt;TransactionResponse&gt; {
-<span class="fc" id="L65">    val transactionEntity = transactionRequest.toTransactionEntity()</span>
-<span class="fc" id="L66">    transactionService.saveTransaction(transactionEntity)</span>
+<span class="fc" id="L67">    val transaction = transactionService.saveTransaction(transactionRequest)</span>
 
-<span class="fc" id="L68">    return ResponseEntity.status(HttpStatus.CREATED)</span>
-<span class="fc" id="L69">      .header(HttpHeaders.LOCATION, &quot;/api/v1/transactions/${transactionEntity.id}&quot;)</span>
-<span class="fc" id="L70">      .body(transactionEntity.toTransactionResponse())</span>
+<span class="fc" id="L69">    return ResponseEntity.status(HttpStatus.CREATED)</span>
+<span class="fc" id="L70">      .header(HttpHeaders.LOCATION, &quot;/api/v1/transactions/${transaction.id}&quot;)</span>
+<span class="fc" id="L71">      .body(transaction.toTransactionResponse())</span>
   }
 
   @PutMapping(&quot;/{transactionId}&quot;)
@@ -75,8 +76,7 @@ import java.time.LocalDate
     @PathVariable @UUID(message = INVALID_TRANSACTION_UUID) transactionId: String,
     @RequestBody @Valid transactionRequest: TransactionRequest
   ): ResponseEntity&lt;TransactionResponse&gt; {
-<span class="fc" id="L78">    val transaction = transactionRequest.toTransactionEntity(transactionId)</span>
-<span class="fc" id="L79">    transactionService.updateTransaction(transaction)</span>
+<span class="fc" id="L79">    val transaction = transactionService.updateTransaction(transactionId, transactionRequest)</span>
 
 <span class="fc" id="L81">    return ResponseEntity.ok(transaction.toTransactionResponse())</span>
   }

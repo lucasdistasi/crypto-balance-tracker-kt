@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.repository.MongoRepository
 
 interface TransactionRepository : MongoRepository&lt;Transaction, String&gt; {
 
-  fun findAllByDateBetween(dateFrom: String, dateTo: String, pageable: Pageable): Page&lt;Transaction&gt;
+  fun findAllByDateBetweenOrderByDateDescIdDesc(dateFrom: String, dateTo: String, pageable: Pageable): Page&lt;Transaction&gt;
 
 <span class="fc" id="L14">  @Aggregation(</span>
     pipeline = [
