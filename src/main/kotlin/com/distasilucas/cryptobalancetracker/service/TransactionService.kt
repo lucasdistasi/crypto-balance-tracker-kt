@@ -1,11 +1,13 @@
 package com.distasilucas.cryptobalancetracker.service
 
-import com.distasilucas.cryptobalancetracker.constants.LATEST_TRANSACTIONS_CACHES
+import com.distasilucas.cryptobalancetracker.constants.LATEST_TRANSACTIONS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTIONS_INFO_CACHE
 import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_DATE_RANGE_EXCEEDED
 import com.distasilucas.cryptobalancetracker.controller.TransactionFilters
 import com.distasilucas.cryptobalancetracker.entity.Transaction
 import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.model.request.transaction.TransactionRequest
+import com.distasilucas.cryptobalancetracker.model.response.insights.TransactionsInfo
 import com.distasilucas.cryptobalancetracker.repository.TransactionRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.annotation.Cacheable
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import java.math.RoundingMode
 import java.time.Clock
 import java.time.LocalDate
 
@@ -26,7 +29,7 @@ class TransactionService(
 
   private val logger = KotlinLogging.logger { }
 
-  @Cacheable(cacheNames = [LATEST_TRANSACTIONS_CACHES], key = "#page")
+  @Cacheable(cacheNames = [LATEST_TRANSACTIONS_CACHE], key = "#page")
   fun retrieveLastSixMonthsTransactions(page: Int = 0): Page<Transaction> {
     val now = LocalDate.now(clock)
     val to = now.plusDays(1).toString()
@@ -94,6 +97,21 @@ class TransactionService(
       }, {
         throw ApiException(HttpStatus.NOT_FOUND, "Transaction $transactionId does not exists")
       })
+  }
+
+  @Cacheable(cacheNames = [TRANSACTIONS_INFO_CACHE], key = "#coingeckoCryptoId")
+  fun retrieveTransactionsInfo(coingeckoCryptoId: String): TransactionsInfo? {
+    val transactions = transactionRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)
+
+    if (transactions.isEmpty()) return null
+
+    val totalBought = transactions.sumOf { it.quantity }
+    val totalSpent = transactions.sumOf { it.quantity.multiply(it.price) }.setScale(2, RoundingMode.HALF_UP)
+    //val sellTransactions = transactions.filter { TransactionType.SELL == it.transactionType }
+    //val buyTransactions = transactions.filter { TransactionType.BUY == it.transactionType }
+    val averageBuyPrice = totalSpent.divide(totalBought, RoundingMode.HALF_UP)
+
+    return TransactionsInfo(averageBuyPrice)
   }
 
   private fun validateSixMonthsRange(dateFrom: LocalDate, dateTo: LocalDate) {

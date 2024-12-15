@@ -29,4 +29,6 @@ interface TransactionRepository : MongoRepository<Transaction, String> {
     transactionType: TransactionType? = null,
     platform: String? = null
   ): List<Transaction>
+
+  fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List<Transaction>
 }

@@ -14,6 +14,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalance
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
+import com.distasilucas.cryptobalancetracker.model.response.insights.TransactionsInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
@@ -271,6 +272,7 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("4500.00")))
       .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
       .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
+      .andExpect(jsonPath("$.transactionsInfo.averageBuyPrice", `is`(30000)))
       .andExpect(jsonPath("$.platforms[0].quantity", `is`("0.15")))
       .andExpect(jsonPath("$.platforms[0].balances.totalUSDBalance", `is`("4500.00")))
       .andExpect(jsonPath("$.platforms[0].balances.totalBTCBalance", `is`("0.15")))
@@ -418,6 +420,9 @@ class InsightsControllerMvcTest(
       totalUSDBalance = "4500.00",
       totalBTCBalance = "0.15",
       totalEURBalance = "4050.00"
+    ),
+    transactionsInfo = TransactionsInfo(
+      averageBuyPrice = BigDecimal("30000")
     ),
     platforms = listOf(
       PlatformInsight(

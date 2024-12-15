@@ -31,6 +31,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsig
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.TransactionsInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
@@ -403,6 +404,9 @@ class CacheServiceTest {
       totalUSDBalance = "7500.00",
       totalBTCBalance = "0.25",
       totalEURBalance = "6750.00"
+    ),
+    transactionsInfo = TransactionsInfo(
+      averageBuyPrice = BigDecimal("30000")
     ),
     platforms = listOf(
       PlatformInsight(

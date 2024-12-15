@@ -19,8 +19,8 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesRes
 import com.distasilucas.cryptobalancetracker.model.response.insights.CirculatingSupply
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
-import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
@@ -55,6 +55,7 @@ class InsightsService(
   private val platformService: PlatformService,
   private val userCryptoService: UserCryptoService,
   private val cryptoService: CryptoService,
+  private val transactionService: TransactionService,
   private val dateBalanceRepository: DateBalanceRepository,
   private val clock: Clock
 ) {
@@ -158,7 +159,7 @@ class InsightsService(
     if (userCryptos.isEmpty()) {
       val emptyBalancesResponse = BalancesResponse("0", "0", "0")
 
-      return CryptoInsightResponse(null, emptyBalancesResponse, emptyList())
+      return CryptoInsightResponse(null, emptyBalancesResponse, null, emptyList())
     }
 
     val platformsIds = userCryptos.map { it.platformId }
@@ -183,7 +184,9 @@ class InsightsService(
       platformInsight
     }.sortedByDescending { it.percentage }
 
-    return CryptoInsightResponse(crypto.name, totalBalances, platformInsights)
+    val transactionsInfo = transactionService.retrieveTransactionsInfo(coingeckoCryptoId)
+
+    return CryptoInsightResponse(crypto.name, totalBalances, transactionsInfo, platformInsights)
   }
 
   @Cacheable(cacheNames = [PLATFORMS_BALANCES_INSIGHTS_CACHE])
@@ -202,7 +205,7 @@ class InsightsService(
     val platforms = platformService.findAllByIds(platformsIds)
     val userCryptoQuantity = getUserCryptoQuantity(userCryptos)
     val platformsUserCryptos = getPlatformsUserCryptos(userCryptos, platforms)
-    val cryptosIds = platformsUserCryptos.values.flatMap { it.map { it.coingeckoCryptoId } }.toSet()
+    val cryptosIds = platformsUserCryptos.values.flatMap { it.map { userCrypto -> userCrypto.coingeckoCryptoId } }.toSet()
     val cryptos = cryptoService.findAllByIds(cryptosIds)
     val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)
 

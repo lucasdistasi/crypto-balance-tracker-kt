@@ -6,7 +6,7 @@ import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_CRYPTOS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTO_INSIGHTS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.DATES_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.constants.GOAL_RESPONSE_GOAL_ID_CACHE
-import com.distasilucas.cryptobalancetracker.constants.LATEST_TRANSACTIONS_CACHES
+import com.distasilucas.cryptobalancetracker.constants.LATEST_TRANSACTIONS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PAGE_GOALS_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_BALANCES_INSIGHTS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
@@ -16,6 +16,7 @@ import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_RESPONSE_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.TOTAL_BALANCES_CACHE
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTIONS_INFO_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
@@ -102,7 +103,8 @@ class CacheService(private val cacheManager: CacheManager) {
   private fun invalidateTransactionsCache() {
     logger.info { "Invalidating transactions caches" }
 
-    cacheManager.getCache(LATEST_TRANSACTIONS_CACHES)!!.invalidate()
+    cacheManager.getCache(LATEST_TRANSACTIONS_CACHE)!!.invalidate()
+    cacheManager.getCache(TRANSACTIONS_INFO_CACHE)!!.invalidate()
   }
 }
 

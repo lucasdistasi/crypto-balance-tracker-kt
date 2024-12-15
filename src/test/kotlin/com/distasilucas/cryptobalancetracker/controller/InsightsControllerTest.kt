@@ -173,8 +173,9 @@ class InsightsControllerTest {
   @Test
   fun `should retrieve crypto insights with status 200`() {
     val cryptoInsightResponse = CryptoInsightResponse(
-      balances = balances(),
       cryptoName = "Bitcoin",
+      balances = balances(),
+      transactionsInfo = null,
       platforms = emptyList()
     )
 
