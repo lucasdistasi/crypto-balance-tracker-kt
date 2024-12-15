@@ -8,6 +8,7 @@ import com.distasilucas.cryptobalancetracker.model.SortParams
 import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -31,6 +32,13 @@ import java.util.Optional
 @RequestMapping("/api/v1/insights")
 @CrossOrigin(origins = ["\${allowed-origins}"])
 class InsightsController(private val insightsService: InsightsService) : InsightsControllerAPI {
+
+  @GetMapping("/total-balances")
+  override fun retrieveTotal(): ResponseEntity<TotalBalancesResponse> {
+    val totalBalances = insightsService.retrieveTotal()
+
+    return ResponseEntity.ok(totalBalances)
+  }
 
   @GetMapping("/balances")
   override fun retrieveTotalBalances(): ResponseEntity<BalancesResponse> {
