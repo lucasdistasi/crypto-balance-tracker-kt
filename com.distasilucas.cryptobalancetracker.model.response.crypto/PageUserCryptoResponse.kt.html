@@ -7,7 +7,7 @@ import java.io.Serializable
 <span class="fc" id="L7">  val totalPages: Int,</span>
 <span class="fc" id="L8">  val hasNextPage: Boolean,</span>
 <span class="fc" id="L9">  val cryptos: List&lt;UserCryptoResponse&gt;</span>
-): Serializable {
+) : Serializable {
 
 <span class="fc" id="L12">  constructor(page: Int, totalPages: Int, cryptos: List&lt;UserCryptoResponse&gt;) : this(</span>
 <span class="fc" id="L13">    page + 1,</span>

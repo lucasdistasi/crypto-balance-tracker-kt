@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionService.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.service</a> &gt; <span class="el_source">TransactionService.kt</span></div><h1>TransactionService.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.service
+
+import com.distasilucas.cryptobalancetracker.constants.LATEST_TRANSACTIONS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTIONS_INFO_CACHE
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTION_DATE_RANGE_EXCEEDED
+import com.distasilucas.cryptobalancetracker.controller.TransactionFilters
+import com.distasilucas.cryptobalancetracker.entity.Transaction
+import com.distasilucas.cryptobalancetracker.exception.ApiException
+import com.distasilucas.cryptobalancetracker.model.request.transaction.TransactionRequest
+import com.distasilucas.cryptobalancetracker.model.response.insights.TransactionsInfo
+import com.distasilucas.cryptobalancetracker.repository.TransactionRepository
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Service
+import java.math.RoundingMode
+import java.time.Clock
+import java.time.LocalDate
+
+@Service
+<span class="fc" id="L23">class TransactionService(</span>
+<span class="fc" id="L24">  private val transactionRepository: TransactionRepository,</span>
+<span class="fc" id="L25">  private val cryptoService: CryptoService,</span>
+<span class="fc" id="L26">  private val cacheService: CacheService,</span>
+<span class="fc" id="L27">  private val clock: Clock</span>
+) {
+
+<span class="pc" id="L30">  private val logger = KotlinLogging.logger { }</span>
+
+<span class="fc" id="L32">  @Cacheable(cacheNames = [LATEST_TRANSACTIONS_CACHE], key = &quot;#page&quot;)</span>
+<span class="fc" id="L33">  fun retrieveLastSixMonthsTransactions(page: Int = 0): Page&lt;Transaction&gt; {</span>
+<span class="fc" id="L34">    val now = LocalDate.now(clock)</span>
+<span class="fc" id="L35">    val to = now.plusDays(1).toString()</span>
+<span class="fc" id="L36">    val from = now.minusMonths(6).minusDays(1).toString()</span>
+<span class="fc" id="L37">    val pageRequest = PageRequest.of(page, 10)</span>
+
+<span class="fc" id="L39">    logger.info { &quot;Retrieving transactions from $from to $to with page $pageRequest&quot; }</span>
+
+<span class="fc" id="L41">    return transactionRepository.findAllByDateBetweenOrderByDateDescIdDesc(from, to, pageRequest)</span>
+  }
+
+  fun retrieveFilteredTransactions(transactionFilters: TransactionFilters): List&lt;Transaction&gt; {
+<span class="fc" id="L45">    logger.info { &quot;Retrieving filtered transactions&quot; }</span>
+<span class="fc" id="L46">    validateSixMonthsRange(transactionFilters.dateFrom, transactionFilters.dateTo)</span>
+
+<span class="fc" id="L48">    val transactions = transactionRepository.findTransactions(</span>
+<span class="fc" id="L49">      dateFrom = transactionFilters.dateFrom.toString(),</span>
+<span class="fc" id="L50">      dateTo = transactionFilters.dateTo.toString(),</span>
+<span class="fc" id="L51">      cryptoTicker = transactionFilters.cryptoTicker,</span>
+<span class="fc" id="L52">      transactionType = transactionFilters.transactionType,</span>
+<span class="fc" id="L53">      platform = transactionFilters.platform</span>
+    )
+
+<span class="fc" id="L56">    logger.info { &quot;Found ${transactions.size} transactions with filters $transactionFilters&quot; }</span>
+
+<span class="fc" id="L58">    return transactions</span>
+  }
+
+  fun saveTransaction(transactionRequest: TransactionRequest): Transaction {
+<span class="fc" id="L62">    logger.info { &quot;Saving transaction $transactionRequest&quot; }</span>
+<span class="fc" id="L63">    val crypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(transactionRequest.cryptoNameOrId!!)</span>
+<span class="fc" id="L64">    val transaction = transactionRequest.toTransactionEntity(coingeckoCrypto = crypto)</span>
+
+<span class="fc" id="L66">    transactionRepository.save(transaction)</span>
+<span class="fc" id="L67">    cacheService.invalidate(CacheType.TRANSACTION_CACHES)</span>
+
+<span class="fc" id="L69">    return transaction</span>
+  }
+
+  fun updateTransaction(transactionId: String, transactionRequest: TransactionRequest): Transaction {
+<span class="fc" id="L73">    logger.info { &quot;Updating transaction $transactionRequest&quot; }</span>
+<span class="fc" id="L74">    val crypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(transactionRequest.cryptoNameOrId!!)</span>
+<span class="fc" id="L75">    val optionalTransaction = transactionRepository.findById(transactionId)</span>
+
+<span class="fc bfc" id="L77" title="All 2 branches covered.">    if (optionalTransaction.isEmpty)</span>
+<span class="fc" id="L78">      throw ApiException(HttpStatus.NOT_FOUND, &quot;Transaction $transactionId does not exists&quot;)</span>
+
+<span class="fc" id="L80">    val transaction = transactionRequest.toTransactionEntity(transactionId, crypto)</span>
+<span class="fc" id="L81">    val updatedTransaction = transactionRepository.save(transaction)</span>
+
+<span class="fc" id="L83">    logger.info { &quot;Updated transaction $transaction&quot; }</span>
+<span class="fc" id="L84">    cacheService.invalidate(CacheType.TRANSACTION_CACHES)</span>
+
+<span class="fc" id="L86">    return updatedTransaction</span>
+  }
+
+  fun deleteTransaction(transactionId: String) {
+<span class="fc" id="L90">    logger.info { &quot;Deleting transaction $transactionId&quot; }</span>
+
+<span class="fc" id="L92">    transactionRepository.findById(transactionId)</span>
+<span class="fc" id="L93">      .ifPresentOrElse({</span>
+<span class="fc" id="L94">        transactionRepository.delete(it)</span>
+<span class="fc" id="L95">        logger.info { &quot;Deleted transaction $it&quot; }</span>
+<span class="fc" id="L96">        cacheService.invalidate(CacheType.TRANSACTION_CACHES)</span>
+<span class="fc" id="L97">      }, {</span>
+<span class="fc" id="L98">        throw ApiException(HttpStatus.NOT_FOUND, &quot;Transaction $transactionId does not exists&quot;)</span>
+      })
+<span class="fc" id="L100">  }</span>
+
+  @Cacheable(cacheNames = [TRANSACTIONS_INFO_CACHE], key = &quot;#coingeckoCryptoId&quot;)
+  fun retrieveTransactionsInfo(coingeckoCryptoId: String): TransactionsInfo? {
+<span class="nc" id="L104">    val transactions = transactionRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
+
+<span class="nc bnc" id="L106" title="All 2 branches missed.">    if (transactions.isEmpty()) return null</span>
+
+<span class="nc bnc" id="L108" title="All 2 branches missed.">    val totalBought = transactions.sumOf { it.quantity }</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">    val totalSpent = transactions.sumOf { it.quantity.multiply(it.price) }.setScale(2, RoundingMode.HALF_UP)</span>
+    //val sellTransactions = transactions.filter { TransactionType.SELL == it.transactionType }
+    //val buyTransactions = transactions.filter { TransactionType.BUY == it.transactionType }
+<span class="nc" id="L112">    val averageBuyPrice = totalSpent.divide(totalBought, RoundingMode.HALF_UP)</span>
+
+<span class="nc" id="L114">    return TransactionsInfo(averageBuyPrice)</span>
+  }
+
+  private fun validateSixMonthsRange(dateFrom: LocalDate, dateTo: LocalDate) {
+<span class="fc bfc" id="L118" title="All 2 branches covered.">    if (dateFrom.plusMonths(6) &lt; dateTo)</span>
+<span class="fc" id="L119">      throw ApiException(HttpStatus.BAD_REQUEST, TRANSACTION_DATE_RANGE_EXCEEDED)</span>
+<span class="fc" id="L120">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

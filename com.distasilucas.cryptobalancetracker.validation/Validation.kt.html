@@ -23,4 +23,20 @@ annotation class ValidCryptoName(
 <span class="fc bfc" id="L23" title="All 2 branches covered.">    return value?.let { value.matches(regex) } ?: false</span>
   }
 }
+
+@Constraint(validatedBy = [ValidCryptoNameOrIdValidator::class])
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ValidCryptoNameOrId(
+  val message: String = &quot;Invalid crypto name or id. Must contain at least 1 not blank character and no more than 64&quot;,
+  val groups: Array&lt;KClass&lt;*&gt;&gt; = [],
+  val payload: Array&lt;KClass&lt;out Any&gt;&gt; = []
+)
+
+<span class="fc" id="L36">class ValidCryptoNameOrIdValidator : ConstraintValidator&lt;ValidCryptoNameOrId, String&gt; {</span>
+
+  override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
+<span class="pc bpc" id="L39" title="1 of 12 branches missed.">    return value?.let { value.isNotBlank() &amp;&amp; value.length in 1..64 } ?: false</span>
+  }
+}
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

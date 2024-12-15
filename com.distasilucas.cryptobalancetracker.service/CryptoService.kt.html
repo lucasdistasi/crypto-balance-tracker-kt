@@ -50,7 +50,7 @@ import java.time.LocalDateTime
 <span class="fc" id="L50">    logger.info { &quot;Retrieving info for coingecko crypto $cryptoNameOrId&quot; }</span>
 
 <span class="fc bfc" id="L52" title="All 2 branches covered.">    return coingeckoService.retrieveAllCryptos()</span>
-<span class="fc bfc" id="L53" title="All 8 branches covered.">      .find { it.name.equals(cryptoNameOrId, true) || it.id.equals(cryptoNameOrId, true) }</span>
+<span class="pc bpc" id="L53" title="1 of 8 branches missed.">      .find { it.id.equals(cryptoNameOrId, true) || it.name.equals(cryptoNameOrId, true) }</span>
 <span class="fc" id="L54">      ?: throw CoingeckoCryptoNotFoundException(COINGECKO_CRYPTO_NOT_FOUND.format(cryptoNameOrId))</span>
   }
 
