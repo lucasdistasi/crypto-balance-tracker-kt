@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Field
 import java.io.Serializable
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.*
+import java.util.UUID
 
 @Document(&quot;PriceTargets&quot;)
 <span class="fc" id="L13">data class PriceTarget(</span>
@@ -17,7 +17,7 @@ import java.util.*
 <span class="fc" id="L17">  @Field(&quot;crypto_id&quot;)</span>
   val coingeckoCryptoId: String,
 <span class="pc" id="L19">  val target: BigDecimal</span>
-<span class="fc" id="L20">) : Serializable {</span>
+<span class="fc" id="L20">): Serializable {</span>
 
   fun toPriceTargetResponse(cryptoName: String, currentPrice: BigDecimal, change: Float) =
 <span class="fc" id="L23">    PriceTargetResponse(id, cryptoName, currentPrice.toPlainString(), target.toPlainString(), change)</span>

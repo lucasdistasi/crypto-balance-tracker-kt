@@ -6,22 +6,22 @@ import java.io.Serializable
 <span class="fc" id="L6">  val datesBalances: List&lt;DateBalances&gt;,</span>
 <span class="fc" id="L7">  val change: BalanceChanges,</span>
 <span class="fc" id="L8">  val priceDifference: DifferencesChanges</span>
-) : Serializable
+): Serializable
 
 <span class="fc" id="L11">data class DateBalances(</span>
 <span class="fc" id="L12">  val date: String,</span>
 <span class="fc" id="L13">  val balances: BalancesResponse</span>
-) : Serializable
+): Serializable
 
 <span class="fc" id="L16">data class BalanceChanges(</span>
 <span class="fc" id="L17">  val usdChange: Float,</span>
 <span class="fc" id="L18">  val eurChange: Float,</span>
 <span class="fc" id="L19">  val btcChange: Float,</span>
-) : Serializable
+): Serializable
 
 <span class="fc" id="L22">data class DifferencesChanges(</span>
 <span class="fc" id="L23">  val usdDifference: String,</span>
 <span class="fc" id="L24">  val eurDifference: String,</span>
 <span class="fc" id="L25">  val btcDifference: String,</span>
-) : Serializable
+): Serializable
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
