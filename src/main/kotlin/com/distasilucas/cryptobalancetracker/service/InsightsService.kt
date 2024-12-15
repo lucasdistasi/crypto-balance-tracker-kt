@@ -23,6 +23,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanc
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
+import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
@@ -60,6 +61,32 @@ class InsightsService(
 ) {
 
   private val logger = KotlinLogging.logger { }
+
+  // TODO - Retrieve from Coingecko API
+  private val stableCoinsIds = listOf("tether", "usd-coin", "ethena-usde", "dai", "first-digital-usd")
+
+  fun retrieveTotal(): TotalBalancesResponse {
+    logger.info { "Retrieving total balances" }
+
+    val userCryptos = userCryptoService.findAll()
+
+    if (userCryptos.isEmpty()) {
+      return TotalBalancesResponse("0", "0", "0", "0", "0")
+    }
+
+    val userCryptoQuantity = getUserCryptoQuantity(userCryptos)
+    val cryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet()
+    val cryptos = cryptoService.findAllByIds(cryptosIds)
+    val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)
+
+    return TotalBalancesResponse(
+      totalBalances.totalUSDBalance,
+      totalBalances.totalEURBalance,
+      totalBalances.totalBTCBalance,
+      retrieveStableCoinsBalance(userCryptos),
+      retrieveTotalNonBtcBalance(userCryptos),
+    )
+  }
 
   @Cacheable(cacheNames = [TOTAL_BALANCES_CACHE])
   fun retrieveTotalBalances(): BalancesResponse {
@@ -515,6 +542,26 @@ class InsightsService(
       totalBTCBalance = totalBTCBalance.setScale(10, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
       totalEURBalance = totalEURBalance.toPlainString()
     )
+  }
+
+  private fun retrieveStableCoinsBalance(allUserCryptos: List<UserCrypto>): String {
+    val stableCoins = allUserCryptos.filter { stableCoinsIds.contains(it.coingeckoCryptoId) }
+    val userCryptoQuantity = getUserCryptoQuantity(stableCoins)
+    val cryptosIds = stableCoins.map { it.coingeckoCryptoId }.toSet()
+    val cryptos = cryptoService.findAllByIds(cryptosIds)
+    val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)
+
+    return totalBalances.totalUSDBalance
+  }
+
+  private fun retrieveTotalNonBtcBalance(allUserCryptos: List<UserCrypto>): String {
+    val nonBtcCryptos = allUserCryptos.filter { it.coingeckoCryptoId != "bitcoin" }
+    val userCryptoQuantity = getUserCryptoQuantity(nonBtcCryptos)
+    val cryptosIds = nonBtcCryptos.map { it.coingeckoCryptoId }.toSet()
+    val cryptos = cryptoService.findAllByIds(cryptosIds)
+    val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)
+
+    return totalBalances.totalUSDBalance
   }
 
   private fun getCryptoTotalBalances(crypto: Crypto, quantity: BigDecimal): BalancesResponse {
