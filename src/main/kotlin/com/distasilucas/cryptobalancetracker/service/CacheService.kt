@@ -6,6 +6,7 @@ import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_CRYPTOS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTO_INSIGHTS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.DATES_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.constants.GOAL_RESPONSE_GOAL_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.LATEST_TRANSACTIONS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PAGE_GOALS_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_BALANCES_INSIGHTS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
@@ -15,6 +16,7 @@ import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_RESPONSE_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.TOTAL_BALANCES_CACHE
+import com.distasilucas.cryptobalancetracker.constants.TRANSACTIONS_INFO_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
@@ -43,6 +45,7 @@ class CacheService(private val cacheManager: CacheManager) {
       CacheType.GOALS_CACHES -> invalidateGoalsCaches()
       CacheType.PRICE_TARGETS_CACHES -> invalidatePriceTargetCaches()
       CacheType.INSIGHTS_CACHES -> invalidateInsightsCache()
+      CacheType.TRANSACTION_CACHES -> invalidateTransactionsCache()
     }
   }
 
@@ -96,6 +99,13 @@ class CacheService(private val cacheManager: CacheManager) {
     cacheManager.getCache(PLATFORMS_BALANCES_INSIGHTS_CACHE)!!.invalidate()
     cacheManager.getCache(CRYPTOS_BALANCES_INSIGHTS_CACHE)!!.invalidate()
   }
+
+  private fun invalidateTransactionsCache() {
+    logger.info { "Invalidating transactions caches" }
+
+    cacheManager.getCache(LATEST_TRANSACTIONS_CACHE)!!.invalidate()
+    cacheManager.getCache(TRANSACTIONS_INFO_CACHE)!!.invalidate()
+  }
 }
 
 enum class CacheType {
@@ -104,5 +114,6 @@ enum class CacheType {
   PLATFORMS_CACHES,
   GOALS_CACHES,
   PRICE_TARGETS_CACHES,
-  INSIGHTS_CACHES
+  INSIGHTS_CACHES,
+  TRANSACTION_CACHES
 }

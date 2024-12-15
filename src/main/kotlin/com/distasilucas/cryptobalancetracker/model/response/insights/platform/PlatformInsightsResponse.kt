@@ -8,4 +8,4 @@ data class PlatformInsightsResponse(
   val platformName: String?,
   val balances: BalancesResponse,
   val cryptos: List<CryptoInsights>,
-): Serializable
+) : Serializable

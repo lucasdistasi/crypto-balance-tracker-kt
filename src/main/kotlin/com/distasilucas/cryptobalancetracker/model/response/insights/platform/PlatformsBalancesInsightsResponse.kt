@@ -6,11 +6,11 @@ import java.io.Serializable
 data class PlatformsBalancesInsightsResponse(
   val balances: BalancesResponse,
   val platforms: List<PlatformsInsights>
-): Serializable
+) : Serializable
 
 data class PlatformsInsights(
   val platformName: String,
   val balances: BalancesResponse,
   val percentage: Float
-): Serializable
+) : Serializable
 

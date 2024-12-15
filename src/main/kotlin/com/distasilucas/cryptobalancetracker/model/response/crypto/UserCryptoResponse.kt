@@ -7,4 +7,4 @@ data class UserCryptoResponse(
   val cryptoName: String,
   val quantity: String,
   val platform: String
-): Serializable
+) : Serializable

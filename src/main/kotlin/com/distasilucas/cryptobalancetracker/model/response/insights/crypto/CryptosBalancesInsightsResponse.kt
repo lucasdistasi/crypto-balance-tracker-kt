@@ -7,4 +7,4 @@ import java.io.Serializable
 data class CryptosBalancesInsightsResponse(
   val balances: BalancesResponse,
   val cryptos: List<CryptoInsights>
-): Serializable
+) : Serializable

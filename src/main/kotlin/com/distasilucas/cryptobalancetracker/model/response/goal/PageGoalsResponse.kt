@@ -7,7 +7,7 @@ data class PageGoalResponse(
   val totalPages: Int,
   val hasNextPage: Boolean,
   val goals: List<GoalResponse>
-): Serializable {
+) : Serializable {
 
   constructor(page: Int, totalPages: Int, goals: List<GoalResponse>) : this(
     page + 1,

@@ -19,6 +19,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanc
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
+import com.distasilucas.cryptobalancetracker.model.response.insights.TransactionsInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
@@ -53,11 +54,12 @@ class InsightsServiceTest {
   private val platformServiceMock = mockk<PlatformService>()
   private val userCryptoServiceMock = mockk<UserCryptoService>()
   private val cryptoServiceMock = mockk<CryptoService>()
+  private val transactionServiceMock = mockk<TransactionService>()
   private val dateBalanceRepositoryMock = mockk<DateBalanceRepository>()
   private val clockMock = mockk<Clock>()
 
   private val insightsService = InsightsService(12, platformServiceMock, userCryptoServiceMock, cryptoServiceMock,
-    dateBalanceRepositoryMock, clockMock)
+    transactionServiceMock, dateBalanceRepositoryMock, clockMock)
 
   @Test
   fun `should retrieve total balances insights`() {
@@ -562,6 +564,9 @@ class InsightsServiceTest {
     every {
       cryptoServiceMock.retrieveCryptoInfoById("bitcoin")
     } returns bitcoinCryptoEntity
+    every {
+      transactionServiceMock.retrieveTransactionsInfo("bitcoin")
+    } returns TransactionsInfo(BigDecimal("30000"))
 
     val cryptoInsightsResponse = insightsService.retrieveCryptoInsights("bitcoin")
 
@@ -574,6 +579,9 @@ class InsightsServiceTest {
             totalUSDBalance = "7500.00",
             totalBTCBalance = "0.25",
             totalEURBalance = "6750.00"
+          ),
+          transactionsInfo = TransactionsInfo(
+            averageBuyPrice = BigDecimal("30000")
           ),
           platforms = listOf(
             PlatformInsight(
@@ -625,6 +633,9 @@ class InsightsServiceTest {
     every {
       cryptoServiceMock.retrieveCryptoInfoById("bitcoin")
     } returns bitcoinCryptoEntity
+    every {
+      transactionServiceMock.retrieveTransactionsInfo("bitcoin")
+    } returns TransactionsInfo(BigDecimal("30000"))
 
     val cryptoInsightResponse = insightsService.retrieveCryptoInsights("bitcoin")
 
@@ -637,6 +648,9 @@ class InsightsServiceTest {
             totalUSDBalance = "8536.50",
             totalBTCBalance = "0.28455",
             totalEURBalance = "7682.85"
+          ),
+          transactionsInfo = TransactionsInfo(
+            averageBuyPrice = BigDecimal("30000"),
           ),
           platforms = listOf(
             PlatformInsight(
@@ -677,6 +691,7 @@ class InsightsServiceTest {
         CryptoInsightResponse(
           null,
           BalancesResponse("0", "0", "0"),
+          null,
           emptyList()
         )
       )

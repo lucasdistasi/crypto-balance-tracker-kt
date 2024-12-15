@@ -7,7 +7,7 @@ data class PageUserCryptoResponse(
   val totalPages: Int,
   val hasNextPage: Boolean,
   val cryptos: List<UserCryptoResponse>
-): Serializable {
+) : Serializable {
 
   constructor(page: Int, totalPages: Int, cryptos: List<UserCryptoResponse>) : this(
     page + 1,

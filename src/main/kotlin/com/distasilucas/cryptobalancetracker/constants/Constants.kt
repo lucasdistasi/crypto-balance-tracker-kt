@@ -26,6 +26,8 @@ const val PLATFORM_INSIGHTS_CACHE = "PLATFORM_INSIGHTS_CACHE"
 const val CRYPTO_INSIGHTS_CACHE = "CRYPTO_INSIGHTS_CACHE"
 const val PLATFORMS_BALANCES_INSIGHTS_CACHE = "PLATFORMS_BALANCES_INSIGHTS_CACHE"
 const val CRYPTOS_BALANCES_INSIGHTS_CACHE = "CRYPTOS_BALANCES_INSIGHTS_CACHE"
+const val LATEST_TRANSACTIONS_CACHE = "LATEST_TRANSACTIONS_CACHE"
+const val TRANSACTIONS_INFO_CACHE = "TRANSACTIONS_INFO_CACHE"
 
 // Validations
 const val PLATFORM_ID_UUID = "Platform id must be a valid UUID"
@@ -50,6 +52,14 @@ const val CRYPTO_QUANTITY_NOT_NULL = "Crypto quantity can not be null"
 const val CRYPTO_QUANTITY_DIGITS = "Crypto quantity must have up to {integer} digits in the integer part and up to {fraction} digits in the decimal part"
 const val CRYPTO_QUANTITY_DECIMAL_MAX = "Crypto quantity must be less than or equal to 9999999999999999.999999999999"
 const val CRYPTO_QUANTITY_POSITIVE = "Crypto quantity must be greater than 0"
+const val TRANSACTION_TYPE_NOT_NULL = "Transaction type can not be null"
+const val TRANSACTION_PRICE_NOT_NULL = "Price can not be null"
+const val TRANSACTION_PRICE_POSITIVE = "Price must be greater than 0"
+const val TRANSACTION_PLATFORM_NOT_BLANK = "Platform must not be null nor blank"
+const val TRANSACTION_DATE_NOT_NULL = "Date must not be null"
+const val TRANSACTION_DATE_NOT_FUTURE = "Date must not be a future date"
+const val TRANSACTION_DATE_RANGE_EXCEEDED = "Date range must not exceed six months"
+const val INVALID_TRANSACTION_UUID = "Transaction id must be a valid UUID"
 
 // Exceptions
 const val UNKNOWN_ERROR = "Unknown error"
