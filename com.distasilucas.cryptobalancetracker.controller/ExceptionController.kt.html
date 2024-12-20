@@ -292,7 +292,7 @@ class ExceptionController {
 
 <span class="fc" id="L293">    val request = (webRequest as ServletWebRequest).request</span>
 <span class="fc" id="L294">    val name = exception.name</span>
-<span class="fc bfc" id="L295" title="All 4 branches covered.">    val availableValues = exception.requiredType?.enumConstants?.contentToString()</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">    val availableValues = exception.requiredType?.let { it.enumConstants.contentToString() }</span>
 <span class="fc bfc" id="L296" title="All 2 branches covered.">    val message = if (availableValues != null) {</span>
 <span class="fc" id="L297">      INVALID_VALUE_FOR.format(exception.value, name, availableValues)</span>
     } else {
