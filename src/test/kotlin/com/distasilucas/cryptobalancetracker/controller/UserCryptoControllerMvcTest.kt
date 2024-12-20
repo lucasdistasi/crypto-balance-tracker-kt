@@ -5,8 +5,6 @@ import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NAME_SIZE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_DECIMAL_MAX
 import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_NOT_NULL
 import com.distasilucas.cryptobalancetracker.constants.CRYPTO_QUANTITY_POSITIVE
-import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
-import com.distasilucas.cryptobalancetracker.constants.TO_PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.constants.NETWORK_FEE_MIN
 import com.distasilucas.cryptobalancetracker.constants.NETWORK_FEE_NOT_NULL
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_NOT_BLANK
@@ -15,13 +13,13 @@ import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_DECI
 import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_NOT_NULL
 import com.distasilucas.cryptobalancetracker.constants.QUANTITY_TO_TRANSFER_POSITIVE
 import com.distasilucas.cryptobalancetracker.constants.TO_PLATFORM_ID_NOT_BLANK
-import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_UUID
+import com.distasilucas.cryptobalancetracker.constants.TO_PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_BLANK
+import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_UUID
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.request.crypto.TransferCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.crypto.FromPlatform
-import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.ToPlatform
 import com.distasilucas.cryptobalancetracker.model.response.crypto.TransferCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
@@ -44,12 +42,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import retrieveUserCrypto
-import retrieveUserCryptosForPage
 import saveUserCrypto
 import transferUserCrypto
 import updateUserCrypto
 import java.math.BigDecimal
-import java.util.UUID
 
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(SpringExtension::class)
@@ -135,69 +131,6 @@ class UserCryptoControllerMvcTest(
         MockMvcResultMatchers.jsonPath(
           "$[0].detail",
           Matchers.`is`("User crypto id must be a valid UUID")
-        )
-      )
-  }
-
-  @Test
-  fun `should retrieve user cryptos for page with status 200`() {
-    val id = UUID.randomUUID().toString()
-
-    val userCryptoResponse = UserCryptoResponse(
-      id = id,
-      cryptoName = "Bitcoin",
-      platform = "Binance",
-      quantity = "0.5"
-    )
-
-    val pageUserCryptoResponse = PageUserCryptoResponse(
-      page = 1,
-      totalPages = 1,
-      hasNextPage = false,
-      cryptos = listOf(userCryptoResponse)
-    )
-
-    every { userCryptoServiceMock.retrieveUserCryptosByPage(0) } returns pageUserCryptoResponse
-
-    mockMvc.retrieveUserCryptosForPage(0)
-      .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(MockMvcResultMatchers.jsonPath("$.page", Matchers.`is`(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages", Matchers.`is`(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.hasNextPage", Matchers.`is`(false)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos").isArray)
-      .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos.[0].id", Matchers.`is`(id)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos.[0].cryptoName", Matchers.`is`("Bitcoin")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos.[0].platform", Matchers.`is`("Binance")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.cryptos.[0].quantity", Matchers.`is`("0.5")))
-  }
-
-  @Test
-  fun `should return empty user cryptos for page with status 204`() {
-    val pageUserCryptoResponse = PageUserCryptoResponse(
-      page = 5,
-      totalPages = 5,
-      cryptos = emptyList()
-    )
-
-    every { userCryptoServiceMock.retrieveUserCryptosByPage(5) } returns pageUserCryptoResponse
-
-    mockMvc.retrieveUserCryptosForPage(5)
-      .andExpect(MockMvcResultMatchers.status().isNoContent)
-  }
-
-  @Test
-  fun `should fail with status 400 with 1 message when retrieving user cryptos with invalid page`() {
-    mockMvc.retrieveUserCryptosForPage(-1)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-      .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.`is`("Bad Request")))
-      .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.`is`(400)))
-      .andExpect(
-        MockMvcResultMatchers.jsonPath(
-          "$[0].detail",
-          Matchers.`is`(INVALID_PAGE_NUMBER)
         )
       )
   }

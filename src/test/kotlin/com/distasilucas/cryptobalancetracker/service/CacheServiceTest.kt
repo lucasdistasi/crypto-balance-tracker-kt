@@ -18,7 +18,6 @@ import com.distasilucas.cryptobalancetracker.constants.TOTAL_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
-import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.entity.Platform
@@ -69,21 +68,18 @@ class CacheServiceTest {
     val userCryptosCoingeckoCryptoIdMap = mapOf("bitcoin" to listOf(userCrypto))
     val userCryptoIdMap = mapOf("bc7a8ee5-13f9-4405-a7fb-887458c21bed" to listOf(userCrypto))
     val userCryptoResponseUserCryptoIdMap = mapOf("bc7a8ee5-13f9-4405-a7fb-887458c21bed" to listOf(userCryptoResponse))
-    val userCryptosResponsePageMap = mapOf(0 to listOf(userCryptoResponse))
 
     val userCryptosCache = getMapCache(USER_CRYPTOS_CACHE, userCryptosCacheMap)
     val userCryptosPlatformIdCache = getMapCache(USER_CRYPTOS_PLATFORM_ID_CACHE, userCryptosPlatformIdMap)
     val userCryptosCoingeckoCryptoIdCache = getMapCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE, userCryptosCoingeckoCryptoIdMap)
     val userCryptoIdCache = getMapCache(USER_CRYPTO_ID_CACHE, userCryptoIdMap)
     val userCryptoResponseUserCryptoIdCache = getMapCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE, userCryptoResponseUserCryptoIdMap)
-    val userCryptosResponsePageCache = getMapCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE, userCryptosResponsePageMap)
 
     every { cacheManagerMock.getCache(USER_CRYPTOS_CACHE) } returns userCryptosCache
     every { cacheManagerMock.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE) } returns userCryptosPlatformIdCache
     every { cacheManagerMock.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE) } returns userCryptosCoingeckoCryptoIdCache
     every { cacheManagerMock.getCache(USER_CRYPTO_ID_CACHE) } returns userCryptoIdCache
     every { cacheManagerMock.getCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE) } returns userCryptoResponseUserCryptoIdCache
-    every { cacheManagerMock.getCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE) } returns userCryptosResponsePageCache
 
     cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES)
 
@@ -92,14 +88,12 @@ class CacheServiceTest {
     assertTrue(userCryptosCoingeckoCryptoIdCache.nativeCache.isEmpty())
     assertTrue(userCryptoIdCache.nativeCache.isEmpty())
     assertTrue(userCryptoResponseUserCryptoIdCache.nativeCache.isEmpty())
-    assertTrue(userCryptosResponsePageCache.nativeCache.isEmpty())
 
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTO_ID_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE) }
-    verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE) }
   }
 
   @Test

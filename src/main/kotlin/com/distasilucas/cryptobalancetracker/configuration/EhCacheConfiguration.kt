@@ -21,7 +21,6 @@ import com.distasilucas.cryptobalancetracker.constants.TOTAL_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
-import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.entity.Crypto
@@ -31,7 +30,6 @@ import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCrypto
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoCryptoInfo
-import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.goal.PageGoalResponse
@@ -84,7 +82,6 @@ class EhCacheConfiguration {
       USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE to getCacheConfig(String::class.java, userCryptoList),
       USER_CRYPTO_ID_CACHE to getCacheConfig(String::class.java, UserCrypto::class.java),
       USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE to getCacheConfig(String::class.java, UserCryptoResponse::class.java),
-      USER_CRYPTOS_RESPONSE_PAGE_CACHE to getCacheConfig(Int::class.javaObjectType, PageUserCryptoResponse::class.java),
       PLATFORMS_PLATFORMS_IDS_CACHE to getCacheConfig(stringCollection, platformList),
       CRYPTO_COINGECKO_CRYPTO_ID_CACHE to getCacheConfig(String::class.java, Crypto::class.java, Duration.ofMinutes(2)),
       CRYPTOS_CRYPTOS_IDS_CACHE to getCacheConfig(stringCollection, cryptoList, Duration.ofMinutes(2)),

@@ -61,11 +61,6 @@ fun MockMvc.retrieveUserCrypto(userCryptoId: String) = this.perform(
     .contentType(APPLICATION_JSON)
 )
 
-fun MockMvc.retrieveUserCryptosForPage(page: Int) = this.perform(
-  MockMvcRequestBuilders.get("$USER_CRYPTOS_ENDPOINT?page=$page")
-    .contentType(APPLICATION_JSON)
-)
-
 fun MockMvc.saveUserCrypto(payload: String) = this.perform(
   MockMvcRequestBuilders.post(USER_CRYPTOS_ENDPOINT)
     .content(payload)
