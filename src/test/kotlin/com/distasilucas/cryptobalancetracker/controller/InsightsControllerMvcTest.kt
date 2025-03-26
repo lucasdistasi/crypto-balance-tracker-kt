@@ -44,7 +44,6 @@ import retrieveDatesBalances
 import retrievePlatformInsights
 import retrievePlatformsBalancesInsights
 import retrieveTotalBalancesInsights
-import retrieveUserCryptosInsights
 import retrieveUserCryptosPlatformsInsights
 import java.math.BigDecimal
 import java.util.Optional
@@ -99,65 +98,6 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$.priceDifference.usdDifference", `is`("500")))
       .andExpect(jsonPath("$.priceDifference.eurDifference", `is`("459.22")))
       .andExpect(jsonPath("$.priceDifference.btcDifference", `is`("0.007194555")))
-  }
-
-  @Test
-  fun `should retrieve user cryptos insights for page with status 200`() {
-    val page = 0
-    val pageUserCryptosInsightsResponse = pageUserCryptosInsightsResponse(
-      "676fb38a-556e-11ee-b56e-325096b39f47", listOf("BINANCE")
-    )
-
-    every {
-      insightsServiceMock.retrieveUserCryptosInsights(page)
-    } returns Optional.of(pageUserCryptosInsightsResponse)
-
-    mockMvc.retrieveUserCryptosInsights(page)
-      .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(jsonPath("$.page", `is`(1)))
-      .andExpect(jsonPath("$.totalPages", `is`(1)))
-      .andExpect(jsonPath("$.hasNextPage", `is`(false)))
-      .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("4500.00")))
-      .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
-      .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
-      .andExpect(jsonPath("$.cryptos[0].marketCapRank", `is`(1)))
-      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.id", `is`("676fb38a-556e-11ee-b56e-325096b39f47")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoName", `is`("Bitcoin")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoId", `is`("bitcoin")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.symbol", `is`("btc")))
-      .andExpect(jsonPath(
-        "$.cryptos[0].cryptoInfo.image",
-        `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"))
-      )
-      .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.15")))
-      .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalUSDBalance", `is`("4500.00")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.15")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("4050.00")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.circulatingSupply.totalCirculatingSupply", `is`("19000000")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.circulatingSupply.percentage", `is`(90.48)))
-      .andExpect(jsonPath("$.cryptos[0].marketData.maxSupply", `is`("21000000")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.usd", `is`("30000")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.eur", `is`("27000")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.btc", `is`("1")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.marketCap", `is`("813208997089")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn24h", `is`(10.00)))
-      .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn7d", `is`(-5.00)))
-      .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn30d", `is`(0.00)))
-      .andExpect(jsonPath("$.cryptos[0].platforms", `is`(listOf("BINANCE"))))
-  }
-
-  @Test
-  fun `should fail with status 400 with 1 message when retrieving user cryptos insights with invalid page`() {
-    val page = -1
-
-    mockMvc.retrieveUserCryptosInsights(page)
-      .andExpect(MockMvcResultMatchers.status().isBadRequest)
-      .andExpect(jsonPath("$").isArray())
-      .andExpect(jsonPath("$", Matchers.hasSize<Int>(1)))
-      .andExpect(jsonPath("$[0].title", `is`("Bad Request")))
-      .andExpect(jsonPath("$[0].status", `is`(400)))
-      .andExpect(jsonPath("$[0].detail", `is`("Page must be greater than or equal to 0")))
   }
 
   @Test

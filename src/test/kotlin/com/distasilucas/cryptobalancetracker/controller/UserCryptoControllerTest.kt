@@ -3,7 +3,6 @@ package com.distasilucas.cryptobalancetracker.controller
 import com.distasilucas.cryptobalancetracker.model.request.crypto.TransferCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
 import com.distasilucas.cryptobalancetracker.model.response.crypto.FromPlatform
-import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.ToPlatform
 import com.distasilucas.cryptobalancetracker.model.response.crypto.TransferCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
@@ -14,7 +13,6 @@ import io.mockk.justRun
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.math.BigDecimal
 
@@ -42,46 +40,6 @@ class UserCryptoControllerTest {
 
     assertThat(responseEntity)
       .isEqualTo(ResponseEntity.ok(userCryptoResponse))
-  }
-
-  @Test
-  fun `should retrieve user cryptos for page with status 200`() {
-    val userCryptoResponse = UserCryptoResponse(
-      id = "123e4567-e89b-12d3-a456-426614174000",
-      cryptoName = "bitcoin",
-      quantity = "0.25",
-      platform = "Coinbase"
-    )
-    val pageUserCryptoResponse = PageUserCryptoResponse(
-      page = 1,
-      totalPages = 1,
-      hasNextPage = false,
-      listOf(userCryptoResponse)
-    )
-
-    every { userCryptoServiceMock.retrieveUserCryptosByPage(0) } returns pageUserCryptoResponse
-
-    val responseEntity = userCryptoController.retrieveUserCryptosForPage(0)
-
-    assertThat(responseEntity)
-      .isEqualTo(ResponseEntity.ok(pageUserCryptoResponse))
-  }
-
-  @Test
-  fun `should retrieve empty user cryptos with status 204`() {
-    val pageUserCryptoResponse = PageUserCryptoResponse(
-      page = 1,
-      totalPages = 1,
-      hasNextPage = false,
-      emptyList()
-    )
-
-    every { userCryptoServiceMock.retrieveUserCryptosByPage(0) } returns pageUserCryptoResponse
-
-    val responseEntity = userCryptoController.retrieveUserCryptosForPage(0)
-
-    assertThat(responseEntity)
-      .isEqualTo(ResponseEntity.status(HttpStatus.NO_CONTENT).build<PageUserCryptoResponse>())
   }
 
   @Test
