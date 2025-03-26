@@ -122,11 +122,6 @@ fun MockMvc.retrieveDatesBalances(dateRange: DateRange) = this.perform(
     .contentType(APPLICATION_JSON)
 )
 
-fun MockMvc.retrieveUserCryptosInsights(page: Int) = this.perform(
-  MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/cryptos?page=$page")
-    .contentType(APPLICATION_JSON)
-)
-
 fun MockMvc.retrieveUserCryptosPlatformsInsights(page: Int) = this.perform(
   MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/cryptos/platforms?page=$page")
     .contentType(APPLICATION_JSON)

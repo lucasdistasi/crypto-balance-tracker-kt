@@ -73,39 +73,6 @@ class InsightsControllerTest {
   }
 
   @Test
-  fun `should retrieve cryptos insights with status 200`() {
-    val pageUserCryptosInsightsResponse = PageUserCryptosInsightsResponse(
-      page = 1,
-      totalPages = 1,
-      balances = balances(),
-      cryptos = emptyList()
-    )
-
-    every {
-      insightsServiceMock.retrieveUserCryptosInsights(0)
-    } returns Optional.of(pageUserCryptosInsightsResponse)
-
-    val userCryptosInsights = insightsController.retrieveUserCryptosInsights(0)
-
-    assertThat(userCryptosInsights)
-      .usingRecursiveComparison()
-      .isEqualTo(ResponseEntity.ok(pageUserCryptosInsightsResponse))
-  }
-
-  @Test
-  fun `should retrieve empty for cryptos insights with status 204`() {
-    every {
-      insightsServiceMock.retrieveUserCryptosInsights(0)
-    } returns Optional.empty()
-
-    val userCryptosInsights = insightsController.retrieveUserCryptosInsights(0)
-
-    assertThat(userCryptosInsights)
-      .usingRecursiveComparison()
-      .isEqualTo(ResponseEntity.noContent().build<PageUserCryptosInsightsResponse>())
-  }
-
-  @Test
   fun `should retrieve cryptos platforms insights with status 200`() {
     val pageUserCryptosInsightsResponse = PageUserCryptosInsightsResponse(
       page = 0,

@@ -46,22 +46,6 @@ class InsightsController(private val insightsService: InsightsService) : Insight
     return ResponseEntity.ok(dateBalances)
   }
 
-  @GetMapping("/cryptos")
-  override fun retrieveUserCryptosInsights(
-    @RequestParam
-    @Min(value = 0, message = "Page must be greater than or equal to 0")
-    page: Int,
-    @RequestParam(required = false)
-    sortBy: SortBy,
-    @RequestParam(required = false)
-    sortType: SortType
-  ): ResponseEntity<PageUserCryptosInsightsResponse> {
-    val sortParams = SortParams(sortBy, sortType)
-    val serCryptosInsights = insightsService.retrieveUserCryptosInsights(page, sortParams)
-
-    return okOrNoContent(serCryptosInsights)
-  }
-
   @GetMapping("/cryptos/platforms")
   override fun retrieveUserCryptosPlatformsInsights(
     @RequestParam
