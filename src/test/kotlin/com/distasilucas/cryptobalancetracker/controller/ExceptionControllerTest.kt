@@ -360,7 +360,7 @@ class ExceptionControllerTest {
     every { exceptionMock.name } returns "idontknow_name"
     every { exceptionMock.value } returns "idontknow_value"
     every { exceptionMock.requiredType } returns null
-    every { exceptionMock.message } returns null
+    every { exceptionMock.message } returns "null"
 
     val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
     problemDetail.type = URI.create(httpServletRequest.requestURL.toString())

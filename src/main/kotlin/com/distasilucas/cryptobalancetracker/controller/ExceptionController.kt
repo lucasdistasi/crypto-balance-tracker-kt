@@ -292,7 +292,7 @@ class ExceptionController {
 
     val request = (webRequest as ServletWebRequest).request
     val name = exception.name
-    val availableValues = exception.requiredType?.let { it.enumConstants.contentToString() }
+    val availableValues = exception.requiredType?.enumConstants?.contentToString()
     val message = if (availableValues != null) {
       INVALID_VALUE_FOR.format(exception.value, name, availableValues)
     } else {
