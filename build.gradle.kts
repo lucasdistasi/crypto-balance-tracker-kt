@@ -20,7 +20,7 @@ plugins {
 	id("com.adarshr.test-logger") version "4.0.0"
 	id("jacoco")
 	kotlin("jvm") version "2.0.0"
-	kotlin("plugin.spring") version "2.0.0"
+	kotlin("plugin.spring") version "2.1.20"
 }
 
 group = "com.distasilucas"
