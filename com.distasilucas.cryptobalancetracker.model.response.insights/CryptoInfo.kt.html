@@ -2,15 +2,33 @@
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.math.BigDecimal
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-<span class="fc" id="L7">data class CryptoInfo(</span>
-<span class="fc" id="L8">  val id: String? = null,</span>
+<span class="fc" id="L8">data class CryptoInfo(</span>
 <span class="fc" id="L9">  val cryptoName: String,</span>
 
 <span class="fc" id="L11">  @JsonProperty(&quot;cryptoId&quot;)</span>
   val coingeckoCryptoId: String,
 <span class="fc" id="L13">  val symbol: String,</span>
-<span class="fc" id="L14">  val image: String</span>
-<span class="fc" id="L15">)</span>
+<span class="fc" id="L14">  val image: String,</span>
+<span class="fc" id="L15">  val currentPrice: CurrentPrice,</span>
+<span class="fc" id="L16">  val priceChange: PriceChange,</span>
+)
+
+<span class="fc" id="L19">data class CurrentPrice(</span>
+<span class="fc" id="L20">  val usd: String,</span>
+<span class="fc" id="L21">  val eur: String,</span>
+<span class="fc" id="L22">  val btc: String</span>
+) {
+<span class="fc" id="L24">  constructor(usd: BigDecimal, eur: BigDecimal, btc: BigDecimal) : this(</span>
+<span class="fc" id="L25">    usd.toPlainString(), eur.toPlainString(), btc.toPlainString()</span>
+<span class="fc" id="L26">  )</span>
+}
+
+<span class="fc" id="L29">data class PriceChange(</span>
+<span class="fc" id="L30">  val changePercentageIn24h: BigDecimal,</span>
+<span class="fc" id="L31">  val changePercentageIn7d: BigDecimal,</span>
+<span class="fc" id="L32">  val changePercentageIn30d: BigDecimal</span>
+)
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
