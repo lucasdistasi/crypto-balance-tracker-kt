@@ -17,13 +17,13 @@ import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.CirculatingSupply
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
+import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
-import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
+import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -273,24 +273,24 @@ class InsightsService(
     val userCryptosQuantityPlatforms = getUserCryptosQuantityPlatforms(userCryptos, platforms)
 
     val userCryptosInsights = userCryptosQuantityPlatforms.map {
-      val (cryptoTotalQuantity, cryptoPlatforms) = it.value
+      val (cryptoTotalQuantity, _) = it.value
       val crypto = cryptos.first { crypto -> crypto.id == it.key }
       val cryptoTotalBalances = getCryptoTotalBalances(crypto, cryptoTotalQuantity)
-      val circulatingSupply = getCirculatingSupply(crypto.maxSupply, crypto.circulatingSupply)
+      val price = CurrentPrice(crypto.lastKnownPrice, crypto.lastKnownPriceInEUR, crypto.lastKnownPriceInBTC)
+      val priceChange = PriceChange(crypto.changePercentageIn24h, crypto.changePercentageIn7d, crypto.changePercentageIn30d)
 
       UserCryptosInsights(
         cryptoInfo = CryptoInfo(
           cryptoName = crypto.name,
           coingeckoCryptoId = crypto.id,
           symbol = crypto.ticker,
-          image = crypto.image
+          image = crypto.image,
+          currentPrice = price,
+          priceChange = priceChange
         ),
         quantity = cryptoTotalQuantity.toPlainString(),
         percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),
-        balances = cryptoTotalBalances,
-        marketCapRank = crypto.marketCapRank,
-        marketData = MarketData(crypto, circulatingSupply),
-        platforms = cryptoPlatforms
+        balances = cryptoTotalBalances
       )
     }.sortedWith(sortParams.cryptosInsightsResponseComparator())
 
@@ -433,18 +433,6 @@ class InsightsService(
       totalBTCBalance = crypto.lastKnownPriceInBTC.multiply(quantity).setScale(10, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
       totalEURBalance = crypto.lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString()
     )
-  }
-
-  private fun getCirculatingSupply(maxSupply: BigDecimal, circulatingSupply: BigDecimal): CirculatingSupply {
-    var circulatingSupplyPercentage = 0f
-
-    if (BigDecimal.ZERO < maxSupply) {
-      circulatingSupplyPercentage = circulatingSupply.multiply(BigDecimal("100"))
-        .divide(maxSupply, 2, RoundingMode.HALF_UP)
-        .toFloat()
-    }
-
-    return CirculatingSupply(circulatingSupply.toPlainString(), circulatingSupplyPercentage)
   }
 
   private fun calculatePercentage(totalUSDBalance: String, cryptoBalance: String) = BigDecimal(cryptoBalance)

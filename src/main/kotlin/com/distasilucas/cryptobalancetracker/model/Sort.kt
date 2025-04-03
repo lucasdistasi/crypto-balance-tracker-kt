@@ -7,12 +7,10 @@ enum class SortBy(
   private val userCryptosInsightsComparator: Comparator<UserCryptosInsights>
 ) {
   PERCENTAGE(Comparator.comparing { it.percentage }),
-  MARKET_CAP_RANK(Comparator.comparing { it.marketCapRank }),
-  CURRENT_PRICE(Comparator.comparing { BigDecimal(it.marketData.currentPrice.usd) }),
-  MAX_SUPPLY(Comparator.comparing { BigDecimal(it.marketData.maxSupply) }),
-  CHANGE_PRICE_IN_24H(Comparator.comparing { it.marketData.priceChange.changePercentageIn24h }),
-  CHANGE_PRICE_IN_7D(Comparator.comparing { it.marketData.priceChange.changePercentageIn7d }),
-  CHANGE_PRICE_IN_30D(Comparator.comparing { it.marketData.priceChange.changePercentageIn30d });
+  CURRENT_PRICE(Comparator.comparing { BigDecimal(it.cryptoInfo.currentPrice.usd) }),
+  CHANGE_PRICE_IN_24H(Comparator.comparing { it.cryptoInfo.priceChange.changePercentageIn24h }),
+  CHANGE_PRICE_IN_7D(Comparator.comparing { it.cryptoInfo.priceChange.changePercentageIn7d }),
+  CHANGE_PRICE_IN_30D(Comparator.comparing { it.cryptoInfo.priceChange.changePercentageIn30d });
 
   fun getUserCryptosInsightsComparator(sortType: SortType): Comparator<UserCryptosInsights> {
     return if (sortType == SortType.ASC) userCryptosInsightsComparator else userCryptosInsightsComparator.reversed()

@@ -6,14 +6,12 @@ import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.CirculatingSupply
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
-import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
@@ -101,7 +99,7 @@ class InsightsControllerMvcTest(
   @Test
   fun `should retrieve user cryptos insights for page with status 200`() {
     val page = 0
-    val pageUserCryptosInsightsResponse = pageUserCryptosInsightsResponse(platforms = listOf("BINANCE", "COINBASE"))
+    val pageUserCryptosInsightsResponse = pageUserCryptosInsightsResponse()
 
     every {
       insightsServiceMock.retrieveUserCryptosInsights(page)
@@ -115,7 +113,6 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("4500.00")))
       .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
       .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
-      .andExpect(jsonPath("$.cryptos[0].marketCapRank", `is`(1)))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoName", `is`("Bitcoin")))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoId", `is`("bitcoin")))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.symbol", `is`("btc")))
@@ -123,21 +120,17 @@ class InsightsControllerMvcTest(
         "$.cryptos[0].cryptoInfo.image",
         `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"))
       )
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.currentPrice.usd", `is`("30000")))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.currentPrice.eur", `is`("27000")))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.currentPrice.btc", `is`("1")))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.priceChange.changePercentageIn24h", `is`(10.00)))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.priceChange.changePercentageIn7d", `is`(-5.00)))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.priceChange.changePercentageIn30d", `is`(0.00)))
       .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.15")))
       .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
       .andExpect(jsonPath("$.cryptos[0].balances.totalUSDBalance", `is`("4500.00")))
       .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.15")))
       .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("4050.00")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.circulatingSupply.totalCirculatingSupply", `is`("19000000")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.circulatingSupply.percentage", `is`(90.48)))
-      .andExpect(jsonPath("$.cryptos[0].marketData.maxSupply", `is`("21000000")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.usd", `is`("30000")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.eur", `is`("27000")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.btc", `is`("1")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn24h", `is`(10.00)))
-      .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn7d", `is`(-5.00)))
-      .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn30d", `is`(0.00)))
-      .andExpect(jsonPath("$.cryptos[0].platforms", `is`(listOf("BINANCE", "COINBASE"))))
   }
 
   @Test
@@ -241,10 +234,7 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$[0].detail", `is`(PLATFORM_ID_UUID)))
   }
 
-  private fun pageUserCryptosInsightsResponse(
-    id: String? = null,
-    platforms: List<String>
-  ) = PageUserCryptosInsightsResponse(
+  private fun pageUserCryptosInsightsResponse() = PageUserCryptosInsightsResponse(
     page = 0,
     totalPages = 1,
     balances = BalancesResponse(
@@ -255,27 +245,10 @@ class InsightsControllerMvcTest(
     cryptos = listOf(
       UserCryptosInsights(
         cryptoInfo = CryptoInfo(
-          id = id,
           cryptoName = "Bitcoin",
           coingeckoCryptoId = "bitcoin",
           symbol = "btc",
-          image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
-        ),
-        quantity = "0.15",
-        percentage = 100f,
-        balances = BalancesResponse(
-          totalUSDBalance = "4500.00",
-          totalBTCBalance = "0.15",
-          totalEURBalance = "4050.00"
-        ),
-        marketCapRank = 1,
-        marketData = MarketData(
-          CirculatingSupply(
-            totalCirculatingSupply = "19000000",
-            percentage = 90.48f
-          ),
-          maxSupply = "21000000",
-          marketCap = "813208997089",
+          image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
           currentPrice = CurrentPrice(
             usd = "30000",
             eur = "27000",
@@ -287,7 +260,13 @@ class InsightsControllerMvcTest(
             changePercentageIn30d = BigDecimal("0.00")
           )
         ),
-        platforms = platforms
+        quantity = "0.15",
+        percentage = 100f,
+        balances = BalancesResponse(
+          totalUSDBalance = "4500.00",
+          totalBTCBalance = "0.15",
+          totalEURBalance = "4050.00"
+        ),
       )
     )
   )

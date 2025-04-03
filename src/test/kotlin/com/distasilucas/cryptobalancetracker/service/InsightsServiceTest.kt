@@ -8,14 +8,12 @@ import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.CirculatingSupply
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
-import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
@@ -870,7 +868,17 @@ class InsightsServiceTest {
                   cryptoName = "Bitcoin",
                   coingeckoCryptoId = "bitcoin",
                   symbol = "btc",
-                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+                  currentPrice = CurrentPrice(
+                    usd = "30000",
+                    eur = "27000",
+                    btc = "1"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("0.00")
+                  )
                 ),
                 quantity = "0.15",
                 percentage = 65.04f,
@@ -879,33 +887,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.15",
                   totalEURBalance = "4050.00"
                 ),
-                marketCapRank = 1,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "19000000",
-                    percentage = 90.48f
-                  ),
-                  maxSupply = "21000000",
-                  currentPrice = CurrentPrice(
-                    usd = "30000",
-                    eur = "27000",
-                    btc = "1"
-                  ),
-                  marketCap = "813208997089",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("10.00"),
-                    changePercentageIn7d = BigDecimal("-5.00"),
-                    changePercentageIn30d = BigDecimal("0.00")
-                  )
-                ),
-                platforms = listOf("BINANCE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Ethereum",
                   coingeckoCryptoId = "ethereum",
                   symbol = "eth",
-                  image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880"
+                  image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
+                  currentPrice = CurrentPrice(
+                    usd = "1617.44",
+                    eur = "1509.37",
+                    btc = "0.06280356"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("2.00")
+                  )
                 ),
                 quantity = "1.372",
                 percentage = 32.07f,
@@ -914,32 +912,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.0861664843",
                   totalEURBalance = "2070.86"
                 ),
-                marketCapRank = 2,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "120220572"
-                  ),
-                  maxSupply = "0",
-                  currentPrice = CurrentPrice(
-                    usd = "1617.44",
-                    eur = "1509.37",
-                    btc = "0.06280356"
-                  ),
-                  marketCap = "298219864117",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("10.00"),
-                    changePercentageIn7d = BigDecimal("-5.00"),
-                    changePercentageIn30d = BigDecimal("2.00")
-                  )
-                ),
-                platforms = listOf("BINANCE", "COINBASE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Tether",
                   coingeckoCryptoId = "tether",
                   symbol = "usdt",
-                  image = "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663"
+                  image = "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663",
+                  currentPrice = CurrentPrice(
+                    usd = "0.999618",
+                    eur = "0.933095",
+                    btc = "0.0000388"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("0.00"),
+                    changePercentageIn7d = BigDecimal("0.00"),
+                    changePercentageIn30d = BigDecimal("0.00")
+                  )
                 ),
                 quantity = "200",
                 percentage = 2.89f,
@@ -948,25 +937,6 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.00776",
                   totalEURBalance = "186.62"
                 ),
-                marketCapRank = 3,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "83016246102"
-                  ),
-                  maxSupply = "0",
-                  currentPrice = CurrentPrice(
-                    usd = "0.999618",
-                    eur = "0.933095",
-                    btc = "0.0000388"
-                  ),
-                  marketCap = "95085861049",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("0.00"),
-                    changePercentageIn7d = BigDecimal("0.00"),
-                    changePercentageIn30d = BigDecimal("0.00")
-                  )
-                ),
-                platforms = listOf("BINANCE")
               )
             )
           )
@@ -1038,7 +1008,17 @@ class InsightsServiceTest {
                   cryptoName = "Bitcoin",
                   coingeckoCryptoId = "bitcoin",
                   symbol = "btc",
-                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+                  currentPrice = CurrentPrice(
+                    usd = "30000",
+                    eur = "27000",
+                    btc = "1"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("0.00")
+                  )
                 ),
                 quantity = "0.15",
                 percentage = 53.74f,
@@ -1047,33 +1027,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.15",
                   totalEURBalance = "4050.00"
                 ),
-                marketCapRank = 1,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "19000000",
-                    percentage = 90.48f
-                  ),
-                  maxSupply = "21000000",
-                  currentPrice = CurrentPrice(
-                    usd = "30000",
-                    eur = "27000",
-                    btc = "1"
-                  ),
-                  marketCap = "813208997089",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("10.00"),
-                    changePercentageIn7d = BigDecimal("-5.00"),
-                    changePercentageIn30d = BigDecimal("0.00")
-                  )
-                ),
-                platforms = listOf("BINANCE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Ethereum",
                   coingeckoCryptoId = "ethereum",
                   symbol = "eth",
-                  image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880"
+                  image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
+                  currentPrice = CurrentPrice(
+                    usd = "1617.44",
+                    eur = "1509.37",
+                    btc = "0.06280356"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("10.00"),
+                    changePercentageIn7d = BigDecimal("-5.00"),
+                    changePercentageIn30d = BigDecimal("2.00")
+                  )
                 ),
                 quantity = "1.372",
                 percentage = 26.5f,
@@ -1082,32 +1052,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.0861664843",
                   totalEURBalance = "2070.86"
                 ),
-                marketCapRank = 2,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "120220572"
-                  ),
-                  maxSupply = "0",
-                  currentPrice = CurrentPrice(
-                    usd = "1617.44",
-                    eur = "1509.37",
-                    btc = "0.06280356"
-                  ),
-                  marketCap = "298219864117",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("10.00"),
-                    changePercentageIn7d = BigDecimal("-5.00"),
-                    changePercentageIn30d = BigDecimal("2.00")
-                  )
-                ),
-                platforms = listOf("BINANCE", "COINBASE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Avalanche",
                   coingeckoCryptoId = "avalanche-2",
                   symbol = "avax",
-                  image = "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png?1670992574"
+                  image = "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png?1670992574",
+                  currentPrice = CurrentPrice(
+                    usd = "9.3",
+                    eur = "8.67",
+                    btc = "0.00035516"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("4.00"),
+                    changePercentageIn7d = BigDecimal("1.00"),
+                    changePercentageIn30d = BigDecimal("8.00")
+                  )
                 ),
                 quantity = "25",
                 percentage = 2.78f,
@@ -1116,33 +1077,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.008879",
                   totalEURBalance = "216.75"
                 ),
-                marketCapRank = 10,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "353804673",
-                    percentage = 49.14f
-                  ),
-                  maxSupply = "720000000",
-                  currentPrice = CurrentPrice(
-                    usd = "9.3",
-                    eur = "8.67",
-                    btc = "0.00035516"
-                  ),
-                  marketCap = "11953262327",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("4.00"),
-                    changePercentageIn7d = BigDecimal("1.00"),
-                    changePercentageIn30d = BigDecimal("8.00")
-                  )
-                ),
-                platforms = listOf("BINANCE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "BNB",
                   coingeckoCryptoId = "binancecoin",
                   symbol = "bnb",
-                  image = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850"
+                  image = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850",
+                  currentPrice = CurrentPrice(
+                    usd = "211.79",
+                    eur = "197.80",
+                    btc = "0.00811016"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("6.00"),
+                    changePercentageIn7d = BigDecimal("-2.00"),
+                    changePercentageIn30d = BigDecimal("12.00")
+                  )
                 ),
                 quantity = "1",
                 percentage = 2.53f,
@@ -1151,33 +1102,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.00811016",
                   totalEURBalance = "197.80"
                 ),
-                marketCapRank = 4,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "153856150",
-                    percentage = 76.93f
-                  ),
-                  maxSupply = "200000000",
-                  currentPrice = CurrentPrice(
-                    usd = "211.79",
-                    eur = "197.80",
-                    btc = "0.00811016"
-                  ),
-                  marketCap = "48318686968",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("6.00"),
-                    changePercentageIn7d = BigDecimal("-2.00"),
-                    changePercentageIn30d = BigDecimal("12.00")
-                  )
-                ),
-                platforms = listOf("BINANCE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Chainlink",
                   coingeckoCryptoId = "chainlink",
                   symbol = "link",
-                  image = "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png?1547034700"
+                  image = "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png?1547034700",
+                  currentPrice = CurrentPrice(
+                    usd = "5.99",
+                    eur = "5.58",
+                    btc = "0.00022866"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("4.00"),
+                    changePercentageIn7d = BigDecimal("-1.00"),
+                    changePercentageIn30d = BigDecimal("8.00")
+                  )
                 ),
                 quantity = "35",
                 percentage = 2.5f,
@@ -1186,33 +1127,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.0080031",
                   totalEURBalance = "195.30"
                 ),
-                marketCapRank = 16,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "538099971",
-                    percentage = 53.81f
-                  ),
-                  maxSupply = "1000000000",
-                  currentPrice = CurrentPrice(
-                    usd = "5.99",
-                    eur = "5.58",
-                    btc = "0.00022866"
-                  ),
-                  marketCap = "9021587267",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("4.00"),
-                    changePercentageIn7d = BigDecimal("-1.00"),
-                    changePercentageIn30d = BigDecimal("8.00")
-                  )
-                ),
-                platforms = listOf("BINANCE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Tether",
                   coingeckoCryptoId = "tether",
                   symbol = "usdt",
-                  image = "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663"
+                  image = "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663",
+                  currentPrice = CurrentPrice(
+                    usd = "0.999618",
+                    eur = "0.933095",
+                    btc = "0.0000388"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("0.00"),
+                    changePercentageIn7d = BigDecimal("0.00"),
+                    changePercentageIn30d = BigDecimal("0.00")
+                  )
                 ),
                 quantity = "200",
                 percentage = 2.39f,
@@ -1221,32 +1152,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.00776",
                   totalEURBalance = "186.62"
                 ),
-                marketCapRank = 3,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "83016246102"
-                  ),
-                  maxSupply = "0",
-                  currentPrice = CurrentPrice(
-                    usd = "0.999618",
-                    eur = "0.933095",
-                    btc = "0.0000388"
-                  ),
-                  marketCap = "95085861049",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("0.00"),
-                    changePercentageIn7d = BigDecimal("0.00"),
-                    changePercentageIn30d = BigDecimal("0.00")
-                  )
-                ),
-                platforms = listOf("BINANCE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Litecoin",
                   coingeckoCryptoId = "litecoin",
                   symbol = "ltc",
-                  image = "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1547033580"
+                  image = "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1547033580",
+                  currentPrice = CurrentPrice(
+                    usd = "60.59",
+                    eur = "56.56",
+                    btc = "0.00235292"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("6.00"),
+                    changePercentageIn7d = BigDecimal("-2.00"),
+                    changePercentageIn30d = BigDecimal("12.00")
+                  )
                 ),
                 quantity = "3.125",
                 percentage = 2.26f,
@@ -1255,33 +1177,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.007352875",
                   totalEURBalance = "176.75"
                 ),
-                marketCapRank = 19,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "73638701",
-                    percentage = 87.67f
-                  ),
-                  maxSupply = "84000000",
-                  currentPrice = CurrentPrice(
-                    usd = "60.59",
-                    eur = "56.56",
-                    btc = "0.00235292"
-                  ),
-                  marketCap = "5259205267",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("6.00"),
-                    changePercentageIn7d = BigDecimal("-2.00"),
-                    changePercentageIn30d = BigDecimal("12.00")
-                  )
-                ),
-                platforms = listOf("COINBASE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Solana",
                   coingeckoCryptoId = "solana",
                   symbol = "sol",
-                  image = "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422"
+                  image = "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
+                  currentPrice = CurrentPrice(
+                    usd = "18.04",
+                    eur = "16.82",
+                    btc = "0.00068809"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("4.00"),
+                    changePercentageIn7d = BigDecimal("1.00"),
+                    changePercentageIn30d = BigDecimal("-2.00")
+                  )
                 ),
                 quantity = "10",
                 percentage = 2.15f,
@@ -1290,32 +1202,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.0068809",
                   totalEURBalance = "168.20"
                 ),
-                marketCapRank = 5,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "410905807"
-                  ),
-                  maxSupply = "0",
-                  currentPrice = CurrentPrice(
-                    usd = "18.04",
-                    eur = "16.82",
-                    btc = "0.00068809"
-                  ),
-                  marketCap = "40090766907",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("4.00"),
-                    changePercentageIn7d = BigDecimal("1.00"),
-                    changePercentageIn30d = BigDecimal("-2.00")
-                  )
-                ),
-                platforms = listOf("BINANCE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Polkadot",
                   coingeckoCryptoId = "polkadot",
                   symbol = "dot",
-                  image = "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1639712644"
+                  image = "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1639712644",
+                  currentPrice = CurrentPrice(
+                    usd = "4.01",
+                    eur = "3.73",
+                    btc = "0.00015302"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("4.00"),
+                    changePercentageIn7d = BigDecimal("-1.00"),
+                    changePercentageIn30d = BigDecimal("2.00")
+                  )
                 ),
                 quantity = "40",
                 percentage = 1.92f,
@@ -1324,32 +1227,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.0061208",
                   totalEURBalance = "149.20"
                 ),
-                marketCapRank = 13,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "1274258350"
-                  ),
-                  maxSupply = "0",
-                  currentPrice = CurrentPrice(
-                    usd = "4.01",
-                    eur = "3.73",
-                    btc = "0.00015302"
-                  ),
-                  marketCap = "8993575127",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("4.00"),
-                    changePercentageIn7d = BigDecimal("-1.00"),
-                    changePercentageIn30d = BigDecimal("2.00")
-                  )
-                ),
-                platforms = listOf("COINBASE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Uniswap",
                   coingeckoCryptoId = "uniswap",
                   symbol = "uni",
-                  image = "https://assets.coingecko.com/coins/images/12504/large/uni.jpg?1687143398"
+                  image = "https://assets.coingecko.com/coins/images/12504/large/uni.jpg?1687143398",
+                  currentPrice = CurrentPrice(
+                    usd = "4.25",
+                    eur = "3.96",
+                    btc = "0.00016197"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("2.00"),
+                    changePercentageIn7d = BigDecimal("-1.00"),
+                    changePercentageIn30d = BigDecimal("3.00")
+                  )
                 ),
                 quantity = "30",
                 percentage = 1.52f,
@@ -1358,26 +1252,6 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.0048591",
                   totalEURBalance = "118.80"
                 ),
-                marketCapRank = 22,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "753766667",
-                    percentage = 75.38f
-                  ),
-                  maxSupply = "1000000000",
-                  currentPrice = CurrentPrice(
-                    usd = "4.25",
-                    eur = "3.96",
-                    btc = "0.00016197"
-                  ),
-                  marketCap = "4772322900",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("2.00"),
-                    changePercentageIn7d = BigDecimal("-1.00"),
-                    changePercentageIn30d = BigDecimal("3.00")
-                  )
-                ),
-                platforms = listOf("COINBASE")
               )
             )
           )
@@ -1447,7 +1321,17 @@ class InsightsServiceTest {
                   cryptoName = "Polygon",
                   coingeckoCryptoId = "matic-network",
                   symbol = "matic",
-                  image = "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png?1624446912"
+                  image = "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png?1624446912",
+                  currentPrice = CurrentPrice(
+                    usd = "0.509995",
+                    eur = "0.475407",
+                    btc = "0.00001947"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("14.00"),
+                    changePercentageIn7d = BigDecimal("-10.00"),
+                    changePercentageIn30d = BigDecimal("2.00")
+                  )
                 ),
                 quantity = "100",
                 percentage = 0.61f,
@@ -1456,33 +1340,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.001947",
                   totalEURBalance = "47.54"
                 ),
-                marketCapRank = 16,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "9319469069",
-                    percentage = 93.19f
-                  ),
-                  maxSupply = "10000000000",
-                  currentPrice = CurrentPrice(
-                    usd = "0.509995",
-                    eur = "0.475407",
-                    btc = "0.00001947"
-                  ),
-                  marketCap = "7001911961",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("14.00"),
-                    changePercentageIn7d = BigDecimal("-10.00"),
-                    changePercentageIn30d = BigDecimal("2.00")
-                  )
-                ),
-                platforms = listOf("COINBASE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Cardano",
                   coingeckoCryptoId = "cardano",
                   symbol = "ada",
-                  image = "https://assets.coingecko.com/coins/images/975/large/cardano.png?1547034860"
+                  image = "https://assets.coingecko.com/coins/images/975/large/cardano.png?1547034860",
+                  currentPrice = CurrentPrice(
+                    usd = "0.248915",
+                    eur = "0.231985",
+                    btc = "0.0000095"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("7.00"),
+                    changePercentageIn7d = BigDecimal("1.00"),
+                    changePercentageIn30d = BigDecimal("-2.00")
+                  )
                 ),
                 quantity = "150",
                 percentage = 0.45f,
@@ -1491,33 +1365,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.001425",
                   totalEURBalance = "34.80"
                 ),
-                marketCapRank = 9,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "35045020830",
-                    percentage = 77.88f
-                  ),
-                  maxSupply = "45000000000",
-                  currentPrice = CurrentPrice(
-                    usd = "0.248915",
-                    eur = "0.231985",
-                    btc = "0.0000095"
-                  ),
-                  marketCap = "29348197308",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("7.00"),
-                    changePercentageIn7d = BigDecimal("1.00"),
-                    changePercentageIn30d = BigDecimal("-2.00")
-                  )
-                ),
-                platforms = listOf("BINANCE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Dogecoin",
                   coingeckoCryptoId = "dogecoin",
                   symbol = "doge",
-                  image = "https://assets.coingecko.com/coins/images/5/large/dogecoin.png?1547792256"
+                  image = "https://assets.coingecko.com/coins/images/5/large/dogecoin.png?1547792256",
+                  currentPrice = CurrentPrice(
+                    usd = "0.061481",
+                    eur = "0.057319",
+                    btc = "0.00000235"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("-4.00"),
+                    changePercentageIn7d = BigDecimal("-1.00"),
+                    changePercentageIn30d = BigDecimal("-8.00")
+                  )
                 ),
                 quantity = "500",
                 percentage = 0.37f,
@@ -1526,32 +1390,23 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.001175",
                   totalEURBalance = "28.66"
                 ),
-                marketCapRank = 11,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "140978466383"
-                  ),
-                  maxSupply = "0",
-                  currentPrice = CurrentPrice(
-                    usd = "0.061481",
-                    eur = "0.057319",
-                    btc = "0.00000235"
-                  ),
-                  marketCap = "11195832359",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("-4.00"),
-                    changePercentageIn7d = BigDecimal("-1.00"),
-                    changePercentageIn30d = BigDecimal("-8.00")
-                  )
-                ),
-                platforms = listOf("COINBASE")
               ),
               UserCryptosInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "XRP",
                   coingeckoCryptoId = "ripple",
                   symbol = "xrp",
-                  image = "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1605778731"
+                  image = "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1605778731",
+                  currentPrice = CurrentPrice(
+                    usd = "0.478363",
+                    eur = "0.446699",
+                    btc = "0.00001833"
+                  ),
+                  priceChange = PriceChange(
+                    changePercentageIn24h = BigDecimal("2.00"),
+                    changePercentageIn7d = BigDecimal("3.00"),
+                    changePercentageIn30d = BigDecimal("-5.00")
+                  )
                 ),
                 quantity = "50",
                 percentage = 0.29f,
@@ -1560,26 +1415,6 @@ class InsightsServiceTest {
                   totalBTCBalance = "0.0009165",
                   totalEURBalance = "22.33"
                 ),
-                marketCapRank = 6,
-                marketData = MarketData(
-                  circulatingSupply = CirculatingSupply(
-                    totalCirculatingSupply = "53083046512",
-                    percentage = 53.08f
-                  ),
-                  maxSupply = "100000000000",
-                  currentPrice = CurrentPrice(
-                    usd = "0.478363",
-                    eur = "0.446699",
-                    btc = "0.00001833"
-                  ),
-                  marketCap = "29348197308",
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("2.00"),
-                    changePercentageIn7d = BigDecimal("3.00"),
-                    changePercentageIn30d = BigDecimal("-5.00")
-                  )
-                ),
-                platforms = listOf("COINBASE")
               )
             )
           )
