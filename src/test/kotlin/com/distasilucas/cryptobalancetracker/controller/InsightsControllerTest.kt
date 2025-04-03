@@ -3,15 +3,14 @@ package com.distasilucas.cryptobalancetracker.controller
 import balances
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.service.InsightsService
 import io.mockk.every
 import io.mockk.mockk
@@ -73,7 +72,7 @@ class InsightsControllerTest {
   }
 
   @Test
-  fun `should retrieve cryptos platforms insights with status 200`() {
+  fun `should retrieve cryptos insights with status 200`() {
     val pageUserCryptosInsightsResponse = PageUserCryptosInsightsResponse(
       page = 0,
       totalPages = 1,
@@ -82,10 +81,10 @@ class InsightsControllerTest {
     )
 
     every {
-      insightsServiceMock.retrieveUserCryptosPlatformsInsights(0)
+      insightsServiceMock.retrieveUserCryptosInsights(0)
     } returns Optional.of(pageUserCryptosInsightsResponse)
 
-    val cryptosPlatformsInsights = insightsController.retrieveUserCryptosPlatformsInsights(0)
+    val cryptosPlatformsInsights = insightsController.retrieveUserCryptosInsights(0)
 
     assertThat(cryptosPlatformsInsights)
       .usingRecursiveComparison()
@@ -93,12 +92,12 @@ class InsightsControllerTest {
   }
 
   @Test
-  fun `should retrieve empty for cryptos platforms insights with status 204`() {
+  fun `should retrieve empty for cryptos insights with status 204`() {
     every {
-      insightsServiceMock.retrieveUserCryptosPlatformsInsights(0)
+      insightsServiceMock.retrieveUserCryptosInsights(0)
     } returns Optional.empty()
 
-    val cryptosPlatformsInsights = insightsController.retrieveUserCryptosPlatformsInsights(0)
+    val cryptosPlatformsInsights = insightsController.retrieveUserCryptosInsights(0)
 
     assertThat(cryptosPlatformsInsights)
       .usingRecursiveComparison()
@@ -107,10 +106,7 @@ class InsightsControllerTest {
 
   @Test
   fun `should retrieve cryptos balances insights with status 200`() {
-    val cryptosBalancesInsightsResponse = CryptosBalancesInsightsResponse(
-      balances = balances(),
-      cryptos = emptyList()
-    )
+    val cryptosBalancesInsightsResponse = listOf(BalancesChartResponse("Bitcoin", "50000.00", 100F))
 
     every { insightsServiceMock.retrieveCryptosBalancesInsights() } returns cryptosBalancesInsightsResponse
 
@@ -123,18 +119,15 @@ class InsightsControllerTest {
 
   @Test
   fun `should retrieve platforms balances insights with status 200`() {
-    val platformsBalancesInsightsResponse = PlatformsBalancesInsightsResponse(
-      balances = balances(),
-      platforms = emptyList()
-    )
+    val platformBalancesInsightsResponse = listOf(BalancesChartResponse("BINANCE", "50000.00", 100F))
 
-    every { insightsServiceMock.retrievePlatformsBalancesInsights() } returns platformsBalancesInsightsResponse
+    every { insightsServiceMock.retrievePlatformsBalancesInsights() } returns platformBalancesInsightsResponse
 
     val platformsBalancesInsights = insightsController.retrievePlatformsBalancesInsights()
 
     assertThat(platformsBalancesInsights)
       .usingRecursiveComparison()
-      .isEqualTo(ResponseEntity.ok(platformsBalancesInsightsResponse))
+      .isEqualTo(ResponseEntity.ok(platformBalancesInsightsResponse))
   }
 
   @Test

@@ -5,10 +5,8 @@ import com.distasilucas.cryptobalancetracker.entity.DateBalance
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.DateRange
-import com.distasilucas.cryptobalancetracker.model.SortBy
-import com.distasilucas.cryptobalancetracker.model.SortParams
-import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CirculatingSupply
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
@@ -21,12 +19,9 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsBalancesInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsInsights
 import com.distasilucas.cryptobalancetracker.repository.DateBalanceRepository
 import getCryptoEntity
 import getPlatformEntity
@@ -721,32 +716,9 @@ class InsightsServiceTest {
     assertThat(platformBalancesInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        PlatformsBalancesInsightsResponse(
-          balances = BalancesResponse(
-            totalUSDBalance = "7108.39",
-            totalBTCBalance = "0.2512793593",
-            totalEURBalance = "6484.23"
-          ),
-          platforms = listOf(
-            PlatformsInsights(
-              platformName = "BINANCE",
-              balances = BalancesResponse(
-                totalUSDBalance = "5120.45",
-                totalBTCBalance = "0.1740889256",
-                totalEURBalance = "4629.06"
-              ),
-              percentage = 72.03f
-            ),
-            PlatformsInsights(
-              platformName = "COINBASE",
-              balances = BalancesResponse(
-                totalUSDBalance = "1987.93",
-                totalBTCBalance = "0.0771904337",
-                totalEURBalance = "1855.17"
-              ),
-              percentage = 27.97f
-            )
-          )
+        listOf(
+          BalancesChartResponse("BINANCE", "5120.45", 72.03F),
+          BalancesChartResponse("COINBASE", "1987.93", 27.97F),
         )
       )
   }
@@ -759,12 +731,7 @@ class InsightsServiceTest {
 
     assertThat(platformBalancesInsightsResponse)
       .usingRecursiveComparison()
-      .isEqualTo(
-        PlatformsBalancesInsightsResponse(
-          BalancesResponse("0", "0", "0"),
-          emptyList()
-        )
-      )
+      .isEqualTo(emptyList<BalancesChartResponse>())
   }
 
   @Test
@@ -790,58 +757,11 @@ class InsightsServiceTest {
     assertThat(cryptosBalancesInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        CryptosBalancesInsightsResponse(
-          balances = BalancesResponse(
-            totalUSDBalance = "7108.39",
-            totalBTCBalance = "0.2512793593",
-            totalEURBalance = "6484.23"
-          ),
-          cryptos = listOf(
-            CryptoInsights(
-              cryptoName = "Bitcoin",
-              cryptoId = "bitcoin",
-              quantity = "0.15",
-              balances = BalancesResponse(
-                totalUSDBalance = "4500.00",
-                totalBTCBalance = "0.15",
-                totalEURBalance = "4050.00"
-              ),
-              percentage = 63.31f
-            ),
-            CryptoInsights(
-              cryptoName = "Ethereum",
-              cryptoId = "ethereum",
-              quantity = "1.372",
-              balances = BalancesResponse(
-                totalUSDBalance = "2219.13",
-                totalBTCBalance = "0.0861664843",
-                totalEURBalance = "2070.86"
-              ),
-              percentage = 31.22f
-            ),
-            CryptoInsights(
-              cryptoName = "Tether",
-              cryptoId = "tether",
-              quantity = "200",
-              balances = BalancesResponse(
-                totalUSDBalance = "199.92",
-                totalBTCBalance = "0.00776",
-                totalEURBalance = "186.62"
-              ),
-              percentage = 2.81f
-            ),
-            CryptoInsights(
-              cryptoName = "Litecoin",
-              cryptoId = "litecoin",
-              quantity = "3.125",
-              balances = BalancesResponse(
-                totalUSDBalance = "189.34",
-                totalBTCBalance = "0.007352875",
-                totalEURBalance = "176.75"
-              ),
-              percentage = 2.66f
-            )
-          )
+        listOf(
+          BalancesChartResponse("Bitcoin", "4500.00", 63.31F),
+          BalancesChartResponse("Ethereum", "2219.13", 31.22F),
+          BalancesChartResponse("Tether", "199.92", 2.81F),
+          BalancesChartResponse("Litecoin", "189.34", 2.66F),
         )
       )
   }
@@ -875,155 +795,20 @@ class InsightsServiceTest {
     assertThat(cryptosBalancesInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        CryptosBalancesInsightsResponse(
-          balances = BalancesResponse(
-            totalUSDBalance = "8373.63",
-            totalBTCBalance = "0.2995959193",
-            totalEURBalance = "7663.61"
-          ),
-          cryptos = listOf(
-            CryptoInsights(
-              cryptoName = "Bitcoin",
-              cryptoId = "bitcoin",
-              quantity = "0.15",
-              balances = BalancesResponse(
-                totalUSDBalance = "4500.00",
-                totalBTCBalance = "0.15",
-                totalEURBalance = "4050.00"
-              ),
-              percentage = 53.74f
-            ),
-            CryptoInsights(
-              cryptoName = "Ethereum",
-              cryptoId = "ethereum",
-              quantity = "1.372",
-              balances = BalancesResponse(
-                totalUSDBalance = "2219.13",
-                totalBTCBalance = "0.0861664843",
-                totalEURBalance = "2070.86"
-              ),
-              percentage = 26.5f
-            ),
-            CryptoInsights(
-              cryptoName = "Avalanche",
-              cryptoId = "avalanche-2",
-              quantity = "25",
-              balances = BalancesResponse(
-                totalUSDBalance = "232.50",
-                totalBTCBalance = "0.008879",
-                totalEURBalance = "216.75"
-              ),
-              percentage = 2.78f
-            ),
-            CryptoInsights(
-              cryptoName = "BNB",
-              cryptoId = "binancecoin",
-              quantity = "1",
-              balances = BalancesResponse(
-                totalUSDBalance = "211.79",
-                totalBTCBalance = "0.00811016",
-                totalEURBalance = "197.80"
-              ),
-              percentage = 2.53f
-            ),
-            CryptoInsights(
-              cryptoName = "Chainlink",
-              cryptoId = "chainlink",
-              quantity = "35",
-              balances = BalancesResponse(
-                totalUSDBalance = "209.65",
-                totalBTCBalance = "0.0080031",
-                totalEURBalance = "195.30"
-              ),
-              percentage = 2.5f
-            ),
-            CryptoInsights(
-              cryptoName = "Tether",
-              cryptoId = "tether",
-              quantity = "200",
-              balances = BalancesResponse(
-                totalUSDBalance = "199.92",
-                totalBTCBalance = "0.00776",
-                totalEURBalance = "186.62"
-              ),
-              percentage = 2.39f
-            ),
-            CryptoInsights(
-              cryptoName = "Litecoin",
-              cryptoId = "litecoin",
-              quantity = "3.125",
-              balances = BalancesResponse(
-                totalUSDBalance = "189.34",
-                totalBTCBalance = "0.007352875",
-                totalEURBalance = "176.75"
-              ),
-              percentage = 2.26f
-            ),
-            CryptoInsights(
-              cryptoName = "Solana",
-              cryptoId = "solana",
-              quantity = "10",
-              balances = BalancesResponse(
-                totalUSDBalance = "180.40",
-                totalBTCBalance = "0.0068809",
-                totalEURBalance = "168.20"
-              ),
-              percentage = 2.15f
-            ),
-            CryptoInsights(
-              cryptoName = "Polkadot",
-              cryptoId = "polkadot",
-              quantity = "40",
-              balances = BalancesResponse(
-                totalUSDBalance = "160.40",
-                totalBTCBalance = "0.0061208",
-                totalEURBalance = "149.20"
-              ),
-              percentage = 1.92f
-            ),
-            CryptoInsights(
-              cryptoName = "Uniswap",
-              cryptoId = "uniswap",
-              quantity = "30",
-              balances = BalancesResponse(
-                totalUSDBalance = "127.50",
-                totalBTCBalance = "0.0048591",
-                totalEURBalance = "118.80"
-              ),
-              percentage = 1.52f
-            ),
-            CryptoInsights(
-              cryptoName = "Polygon",
-              cryptoId = "matic-network",
-              quantity = "100",
-              balances = BalancesResponse(
-                totalUSDBalance = "51.00",
-                totalBTCBalance = "0.001947",
-                totalEURBalance = "47.54"
-              ),
-              percentage = 0.61f
-            ),
-            CryptoInsights(
-              cryptoName = "Cardano",
-              cryptoId = "cardano",
-              quantity = "150",
-              balances = BalancesResponse(
-                totalUSDBalance = "37.34",
-                totalBTCBalance = "0.001425",
-                totalEURBalance = "34.80"
-              ),
-              percentage = 0.45f
-            ),
-            CryptoInsights(
-              cryptoName = "Others",
-              balances = BalancesResponse(
-                totalUSDBalance = "54.66",
-                totalBTCBalance = "0.0020915",
-                totalEURBalance = "50.99"
-              ),
-              percentage = 0.65f
-            )
-          )
+        listOf(
+          BalancesChartResponse("Bitcoin", "4500.00", 53.74F),
+          BalancesChartResponse("Ethereum", "2219.13", 26.5F),
+          BalancesChartResponse("Avalanche", "232.50", 2.78F),
+          BalancesChartResponse("BNB", "211.79", 2.53F),
+          BalancesChartResponse("Chainlink", "209.65", 2.5F),
+          BalancesChartResponse("Tether", "199.92", 2.39F),
+          BalancesChartResponse("Litecoin", "189.34", 2.26F),
+          BalancesChartResponse("Solana", "180.40", 2.15F),
+          BalancesChartResponse("Polkadot", "160.40", 1.92F),
+          BalancesChartResponse("Uniswap", "127.50", 1.52F),
+          BalancesChartResponse("Polygon", "51.00", 0.61F),
+          BalancesChartResponse("Cardano", "37.34", 0.45F),
+          BalancesChartResponse("Others", "54.66", 0.65F),
         )
       )
   }
@@ -1036,16 +821,11 @@ class InsightsServiceTest {
 
     assertThat(cryptosBalancesInsightsResponse)
       .usingRecursiveComparison()
-      .isEqualTo(
-        CryptosBalancesInsightsResponse(
-          BalancesResponse("0", "0", "0"),
-          emptyList()
-        )
-      )
+      .isEqualTo(emptyList<BalancesChartResponse>())
   }
 
   @Test
-  fun `should retrieve user cryptos platforms insights`() {
+  fun `should retrieve user cryptos insights`() {
     val cryptos = listOf("bitcoin", "ethereum", "tether")
     val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
     val cryptosEntities = cryptos().filter { cryptos.contains(it.id) }
@@ -1069,7 +849,7 @@ class InsightsServiceTest {
     } returns listOf(binancePlatform, coinbasePlatform)
     every { userCryptoServiceMock.findAll() } returns userCryptos
 
-    val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(0)
+    val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosInsights(0)
 
     assertThat(userCryptosPlatformsInsights)
       .usingRecursiveComparison()
@@ -1195,7 +975,7 @@ class InsightsServiceTest {
   }
 
   @Test
-  fun `should retrieve user cryptos platforms insights with next page`() {
+  fun `should retrieve user cryptos insights with next page`() {
     val binancePlatform = Platform(
       id = "163b1731-7a24-4e23-ac90-dc95ad8cb9e8",
       name = "BINANCE"
@@ -1235,7 +1015,7 @@ class InsightsServiceTest {
     } returns listOf(binancePlatform, coinbasePlatform)
     every { userCryptoServiceMock.findAll() } returns userCryptos()
 
-    val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(0)
+    val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosInsights(0)
 
     assertTrue(userCryptosPlatformsInsights.isPresent)
     assertThat(userCryptosPlatformsInsights.get().cryptos.size).isEqualTo(10)
@@ -1606,7 +1386,7 @@ class InsightsServiceTest {
   }
 
   @Test
-  fun `should retrieve user cryptos platforms insights for second page`() {
+  fun `should retrieve user cryptos insights for second page`() {
     val binancePlatform = Platform(
       id = "163b1731-7a24-4e23-ac90-dc95ad8cb9e8",
       name = "BINANCE"
@@ -1646,7 +1426,7 @@ class InsightsServiceTest {
     } returns listOf(binancePlatform, coinbasePlatform)
     every { userCryptoServiceMock.findAll() } returns userCryptos()
 
-    val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(1)
+    val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosInsights(1)
 
     assertThat(userCryptosPlatformsInsights)
       .usingRecursiveComparison()
@@ -1808,10 +1588,10 @@ class InsightsServiceTest {
   }
 
   @Test
-  fun `should retrieve empty if no user cryptos are found for retrieveUserCryptosPlatformsInsights`() {
+  fun `should retrieve empty if no user cryptos are found for retrieveUserCryptosInsights`() {
     every { userCryptoServiceMock.findAll() } returns emptyList()
 
-    val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(0)
+    val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosInsights(0)
 
     assertThat(userCryptosPlatformsInsights)
       .usingRecursiveComparison()
@@ -1819,7 +1599,7 @@ class InsightsServiceTest {
   }
 
   @Test
-  fun `should retrieve empty if no user cryptos are found for page for retrieveUserCryptosPlatformsInsights`() {
+  fun `should retrieve empty if no user cryptos are found for page for retrieveUserCryptosInsights`() {
     val cryptos = listOf("bitcoin", "ethereum", "tether")
     val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
     val cryptosEntities = cryptos().filter { cryptos.contains(it.id) }
@@ -1843,7 +1623,7 @@ class InsightsServiceTest {
     } returns listOf(binancePlatform, coinbasePlatform)
     every { userCryptoServiceMock.findAll() } returns userCryptos
 
-    val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(1)
+    val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosInsights(1)
 
     assertThat(userCryptosPlatformsInsights)
       .usingRecursiveComparison()

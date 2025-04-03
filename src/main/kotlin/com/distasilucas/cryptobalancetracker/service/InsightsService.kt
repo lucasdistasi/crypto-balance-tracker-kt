@@ -15,22 +15,20 @@ import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortParams
 import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CirculatingSupply
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
-import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsBalancesInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsInsights
 import com.distasilucas.cryptobalancetracker.repository.DateBalanceRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
@@ -187,15 +185,13 @@ class InsightsService(
   }
 
   @Cacheable(cacheNames = [PLATFORMS_BALANCES_INSIGHTS_CACHE])
-  fun retrievePlatformsBalancesInsights(): PlatformsBalancesInsightsResponse {
+  fun retrievePlatformsBalancesInsights(): List<BalancesChartResponse> {
     logger.info { "Retrieving all platforms balances insights" }
 
     val userCryptos = userCryptoService.findAll()
 
     if (userCryptos.isEmpty()) {
-      val emptyBalancesResponse = BalancesResponse("0", "0", "0")
-
-      return PlatformsBalancesInsightsResponse(emptyBalancesResponse, emptyList())
+      return emptyList()
     }
 
     val platformsIds = userCryptos.map { it.platformId }.toSet()
@@ -206,44 +202,27 @@ class InsightsService(
     val cryptos = cryptoService.findAllByIds(cryptosIds)
     val totalBalances = getTotalBalances(cryptos, userCryptoQuantity)
 
-    val platformsInsights = platformsUserCryptos.map { (platformName, userCryptos) ->
+    return platformsUserCryptos.map { (platformName, userCryptos) ->
       var totalUSDBalance = BigDecimal.ZERO
-      var totalBTCBalance = BigDecimal.ZERO
-      var totalEURBalance = BigDecimal.ZERO
 
       userCryptos.forEach { crypto ->
         val balance = getCryptoTotalBalances(cryptos.first { it.id == crypto.coingeckoCryptoId }, crypto.quantity)
         totalUSDBalance = totalUSDBalance.plus(BigDecimal(balance.totalUSDBalance))
-        totalBTCBalance = totalBTCBalance.plus(BigDecimal(balance.totalBTCBalance))
-        totalEURBalance = totalEURBalance.plus(BigDecimal(balance.totalEURBalance))
       }
+      val percentage = calculatePercentage(totalBalances.totalUSDBalance, totalUSDBalance.toPlainString())
 
-      val platformInsight = PlatformsInsights(
-        platformName = platformName,
-        balances = BalancesResponse(
-          totalUSDBalance = totalUSDBalance.toPlainString(),
-          totalBTCBalance = totalBTCBalance.toPlainString(),
-          totalEURBalance = totalEURBalance.toPlainString()
-        ),
-        percentage = calculatePercentage(totalBalances.totalUSDBalance, totalUSDBalance.toPlainString())
-      )
-
-      platformInsight
+      BalancesChartResponse(platformName, totalUSDBalance.toPlainString(), percentage)
     }.sortedByDescending { it.percentage }
-
-    return PlatformsBalancesInsightsResponse(totalBalances, platformsInsights)
   }
 
   @Cacheable(cacheNames = [CRYPTOS_BALANCES_INSIGHTS_CACHE])
-  fun retrieveCryptosBalancesInsights(): CryptosBalancesInsightsResponse {
+  fun retrieveCryptosBalancesInsights(): List<BalancesChartResponse> {
     logger.info { "Retrieving all cryptos balances insights" }
 
     val userCryptos = userCryptoService.findAll()
 
     if (userCryptos.isEmpty()) {
-      val emptyBalancesResponse = BalancesResponse("0", "0", "0")
-
-      return CryptosBalancesInsightsResponse(emptyBalancesResponse, emptyList())
+      return emptyList()
     }
 
     val userCryptoQuantity = getUserCryptoQuantity(userCryptos)
@@ -254,28 +233,23 @@ class InsightsService(
     val cryptosInsights = userCryptoQuantity.map { (coingeckoCryptoId, quantity) ->
       val crypto = cryptos.first { it.id == coingeckoCryptoId }
       val cryptoBalances = getCryptoTotalBalances(crypto, quantity)
+      val percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoBalances.totalUSDBalance)
 
-      CryptoInsights(
-        cryptoName = crypto.name,
-        cryptoId = coingeckoCryptoId,
-        quantity = quantity.toPlainString(),
-        balances = cryptoBalances,
-        percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoBalances.totalUSDBalance)
-      )
+      BalancesChartResponse(crypto.name, cryptoBalances.totalUSDBalance, percentage)
     }.sortedByDescending { it.percentage }
 
-    return CryptosBalancesInsightsResponse(
-      balances = totalBalances,
-      cryptos = if (cryptosInsights.size > maxSingleItemsCount)
-        getCryptoInsightsWithOthers(totalBalances, cryptosInsights) else cryptosInsights
-    )
+    return if (cryptosInsights.size > maxSingleItemsCount) {
+      getCryptoInsightsWithOthers(totalBalances, cryptosInsights)
+    } else {
+      cryptosInsights
+    }
   }
 
-  fun retrieveUserCryptosPlatformsInsights(
+  fun retrieveUserCryptosInsights(
     page: Int,
     sortParams: SortParams = SortParams(SortBy.PERCENTAGE, SortType.DESC)
   ): Optional<PageUserCryptosInsightsResponse> {
-    logger.info { "Retrieving user cryptos in platforms insights for page $page" }
+    logger.info { "Retrieving user cryptos insights for page $page" }
 
     // If one of the user cryptos happens to be at the end, and another of the same (i.e: bitcoin), at the start
     // using findAllByPage() will display the same crypto twice (in this example), and the idea of this insight
@@ -515,31 +489,18 @@ class InsightsService(
 
   private fun getCryptoInsightsWithOthers(
     totalBalances: BalancesResponse,
-    cryptosInsights: List<CryptoInsights>
-  ): List<CryptoInsights> {
-    var cryptosInsightsWithOthers: List<CryptoInsights> = ArrayList()
-    val topCryptos = cryptosInsights.subList(0, maxSingleItemsCount)
-    val others = cryptosInsights.subList(maxSingleItemsCount, cryptosInsights.size)
+    balances: List<BalancesChartResponse>
+  ): List<BalancesChartResponse> {
+    var cryptosInsightsWithOthers: List<BalancesChartResponse> = LinkedList()
+    val topCryptos = balances.subList(0, maxSingleItemsCount)
+    val others = balances.subList(maxSingleItemsCount, balances.size)
 
     var totalUSDBalance = BigDecimal.ZERO
-    var totalBTCBalance = BigDecimal.ZERO
-    var totalEURBalance = BigDecimal.ZERO
     others.forEach {
-      totalUSDBalance = totalUSDBalance.plus(BigDecimal(it.balances.totalUSDBalance))
-      totalBTCBalance = totalBTCBalance.plus(BigDecimal(it.balances.totalBTCBalance))
-      totalEURBalance = totalEURBalance.plus(BigDecimal(it.balances.totalEURBalance))
+      totalUSDBalance = totalUSDBalance.plus(BigDecimal(it.balance))
     }
     val othersTotalPercentage = calculatePercentage(totalBalances.totalUSDBalance, totalUSDBalance.toPlainString())
-
-    val othersCryptoInsights = CryptoInsights(
-      cryptoName = "Others",
-      balances = BalancesResponse(
-        totalUSDBalance = totalUSDBalance.toPlainString(),
-        totalBTCBalance = totalBTCBalance.toPlainString(),
-        totalEURBalance = totalEURBalance.toPlainString()
-      ),
-      percentage = othersTotalPercentage
-    )
+    val othersCryptoInsights = BalancesChartResponse("Others", totalUSDBalance.toPlainString(), othersTotalPercentage)
 
     cryptosInsightsWithOthers = cryptosInsightsWithOthers.plus(topCryptos).plus(othersCryptoInsights)
 

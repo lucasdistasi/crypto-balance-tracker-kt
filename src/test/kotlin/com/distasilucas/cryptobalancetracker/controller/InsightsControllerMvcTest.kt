@@ -4,6 +4,7 @@ import balances
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CirculatingSupply
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
@@ -16,12 +17,9 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsBalancesInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsInsights
 import com.distasilucas.cryptobalancetracker.service.InsightsService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
@@ -101,12 +99,12 @@ class InsightsControllerMvcTest(
   }
 
   @Test
-  fun `should retrieve user cryptos platforms insights for page with status 200`() {
+  fun `should retrieve user cryptos insights for page with status 200`() {
     val page = 0
     val pageUserCryptosInsightsResponse = pageUserCryptosInsightsResponse(platforms = listOf("BINANCE", "COINBASE"))
 
     every {
-      insightsServiceMock.retrieveUserCryptosPlatformsInsights(page)
+      insightsServiceMock.retrieveUserCryptosInsights(page)
     } returns Optional.of(pageUserCryptosInsightsResponse)
 
     mockMvc.retrieveUserCryptosPlatformsInsights(page)
@@ -159,25 +157,13 @@ class InsightsControllerMvcTest(
   fun `should retrieve cryptos balances insights with status 200`() {
     val cryptosBalancesInsightsResponse = cryptosBalancesInsightsResponse()
 
-    every { insightsServiceMock.retrieveCryptosBalancesInsights() } returns cryptosBalancesInsightsResponse
+    every { insightsServiceMock.retrieveCryptosBalancesInsights() } returns listOf(cryptosBalancesInsightsResponse)
 
     mockMvc.retrieveCryptosBalancesInsights()
       .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("7500.00")))
-      .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.25")))
-      .andExpect(jsonPath("$.balances.totalEURBalance", `is`("6750.00")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoName", `is`("Bitcoin")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoId", `is`("bitcoin")))
-      .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.25")))
-      .andExpect(
-        jsonPath(
-          "$.cryptos[0].balances.totalUSDBalance",
-          `is`("7500.00")
-        )
-      )
-      .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.25")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("6750.00")))
-      .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
+      .andExpect(jsonPath("$.[0].name", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.[0].balance", `is`("7500.00")))
+      .andExpect(jsonPath("$.[0].percentage", `is`(100.0)))
 
   }
 
@@ -185,18 +171,13 @@ class InsightsControllerMvcTest(
   fun `should retrieve platforms balances insights with status 200`() {
     val platformsBalancesInsightsResponse = platformsBalancesInsightsResponse()
 
-    every { insightsServiceMock.retrievePlatformsBalancesInsights() } returns platformsBalancesInsightsResponse
+    every { insightsServiceMock.retrievePlatformsBalancesInsights() } returns listOf(platformsBalancesInsightsResponse)
 
     mockMvc.retrievePlatformsBalancesInsights()
       .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("7500.00")))
-      .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.25")))
-      .andExpect(jsonPath("$.balances.totalEURBalance", `is`("6750.00")))
-      .andExpect(jsonPath("$.platforms[0].platformName", `is`("BINANCE")))
-      .andExpect(jsonPath("$.platforms[0].balances.totalUSDBalance", `is`("7500.00")))
-      .andExpect(jsonPath("$.platforms[0].balances.totalBTCBalance", `is`("0.25")))
-      .andExpect(jsonPath("$.platforms[0].balances.totalEURBalance", `is`("6750.00")))
-      .andExpect(jsonPath("$.platforms[0].percentage", `is`(100.0)))
+      .andExpect(jsonPath("$.[0].name", `is`("BINANCE")))
+      .andExpect(jsonPath("$.[0].balance", `is`("7500.00")))
+      .andExpect(jsonPath("$.[0].percentage", `is`(100.0)))
   }
 
   @Test
@@ -311,46 +292,9 @@ class InsightsControllerMvcTest(
     )
   )
 
-  private fun cryptosBalancesInsightsResponse() = CryptosBalancesInsightsResponse(
-    balances = BalancesResponse(
-      totalUSDBalance = "7500.00",
-      totalBTCBalance = "0.25",
-      totalEURBalance = "6750.00"
-    ),
-    cryptos = listOf(
-      CryptoInsights(
-        id = "1f832f95-62e3-4d1b-a1e6-982d8c22f2bb",
-        cryptoName = "Bitcoin",
-        cryptoId = "bitcoin",
-        quantity = "0.25",
-        balances = BalancesResponse(
-          totalUSDBalance = "7500.00",
-          totalBTCBalance = "0.25",
-          totalEURBalance = "6750.00"
-        ),
-        percentage = 100f
-      )
-    )
-  )
+  private fun cryptosBalancesInsightsResponse() = BalancesChartResponse("Bitcoin", "7500.00", 100F)
 
-  private fun platformsBalancesInsightsResponse() = PlatformsBalancesInsightsResponse(
-    balances = BalancesResponse(
-      totalUSDBalance = "7500.00",
-      totalBTCBalance = "0.25",
-      totalEURBalance = "6750.00"
-    ),
-    platforms = listOf(
-      PlatformsInsights(
-        platformName = "BINANCE",
-        balances = BalancesResponse(
-          totalUSDBalance = "7500.00",
-          totalBTCBalance = "0.25",
-          totalEURBalance = "6750.00"
-        ),
-        percentage = 100f
-      )
-    )
-  )
+  private fun platformsBalancesInsightsResponse() = BalancesChartResponse("BINANCE", "7500.00", 100F)
 
   private fun cryptoInsightResponse() = CryptoInsightResponse(
     cryptoName = "Bitcoin",

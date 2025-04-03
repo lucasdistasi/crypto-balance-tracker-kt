@@ -33,12 +33,11 @@ import com.distasilucas.cryptobalancetracker.model.response.coingecko.CoingeckoC
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.goal.PageGoalResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PagePriceTargetResponse
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PriceTargetResponse
 import org.ehcache.config.builders.CacheConfigurationBuilder
@@ -73,6 +72,7 @@ class EhCacheConfiguration {
     val stringCollection = CastUtils.cast<Class<Collection<String>>>(Collection::class.java)
     val platformList = CastUtils.cast<Class<List<Platform>>>(MutableList::class.java)
     val cryptoList = CastUtils.cast<Class<List<Crypto>>>(MutableList::class.java)
+    val balancesChartResponseList = CastUtils.cast<Class<List<BalancesChartResponse>>>(MutableList::class.java)
 
     return mapOf(
       COINGECKO_CRYPTOS_CACHE to getCacheConfig(SimpleKey::class.java, coingeckoCryptoList, Duration.ofDays(3)),
@@ -96,8 +96,8 @@ class EhCacheConfiguration {
       DATES_BALANCES_CACHE to getCacheConfig(DateRange::class.java, DatesBalanceResponse::class.java, Duration.ofMinutes(5)),
       PLATFORM_INSIGHTS_CACHE to getCacheConfig(String::class.java, PlatformInsightsResponse::class.java, Duration.ofMinutes(5)),
       CRYPTO_INSIGHTS_CACHE to getCacheConfig(String::class.java, CryptoInsightResponse::class.java, Duration.ofMinutes(5)),
-      PLATFORMS_BALANCES_INSIGHTS_CACHE to getCacheConfig(SimpleKey::class.java, PlatformsBalancesInsightsResponse::class.java, Duration.ofMinutes(5)),
-      CRYPTOS_BALANCES_INSIGHTS_CACHE to getCacheConfig(SimpleKey::class.java, CryptosBalancesInsightsResponse::class.java, Duration.ofMinutes(5)),
+      PLATFORMS_BALANCES_INSIGHTS_CACHE to getCacheConfig(SimpleKey::class.java, balancesChartResponseList, Duration.ofMinutes(5)),
+      CRYPTOS_BALANCES_INSIGHTS_CACHE to getCacheConfig(SimpleKey::class.java, balancesChartResponseList, Duration.ofMinutes(5)),
     )
   }
 
