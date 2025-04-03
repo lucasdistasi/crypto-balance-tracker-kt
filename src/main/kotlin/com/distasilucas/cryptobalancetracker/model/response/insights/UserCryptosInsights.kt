@@ -5,7 +5,4 @@ data class UserCryptosInsights(
   val quantity: String,
   val percentage: Float,
   val balances: BalancesResponse,
-  val marketCapRank: Int,
-  val marketData: MarketData,
-  val platforms: List<String>
 )
