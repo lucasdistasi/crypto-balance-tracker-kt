@@ -13,7 +13,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanc
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
-import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
+import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
@@ -177,7 +177,7 @@ class InsightsControllerMvcTest(
   fun `should retrieve crypto insights with status 200`() {
     val cryptoInsightResponse = cryptoInsightResponse()
 
-    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns cryptoInsightResponse
+    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns Optional.of(cryptoInsightResponse)
 
     mockMvc.retrieveCryptoInsights("bitcoin")
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -199,7 +199,7 @@ class InsightsControllerMvcTest(
 
     every {
       insightsServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
-    } returns platformInsightsResponse
+    } returns Optional.of(platformInsightsResponse)
 
     mockMvc.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -208,13 +208,15 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
       .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
       .andExpect(jsonPath("$.cryptos[0].id", `is`("1f832f95-62e3-4d1b-a1e6-982d8c22f2bb")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoName", `is`("Bitcoin")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoId", `is`("bitcoin")))
-      .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.15")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalUSDBalance", `is`("4500.00")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.15")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("4050.00")))
-      .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.cryptoInfo.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.cryptoInfo.cryptoId", `is`("bitcoin")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.cryptoInfo.symbol", `is`("btc")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.cryptoInfo.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.quantity", `is`("0.15")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.balances.totalUSDBalance", `is`("4500.00")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.balances.totalBTCBalance", `is`("0.15")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.balances.totalEURBalance", `is`("4050.00")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.percentage", `is`(100.0)))
   }
 
   @ParameterizedTest
@@ -243,7 +245,7 @@ class InsightsControllerMvcTest(
       totalEURBalance = "4050.00"
     ),
     cryptos = listOf(
-      UserCryptosInsights(
+      UserCryptoInsights(
         cryptoInfo = CryptoInfo(
           cryptoName = "Bitcoin",
           coingeckoCryptoId = "bitcoin",
@@ -306,17 +308,22 @@ class InsightsControllerMvcTest(
     cryptos = listOf(
       CryptoInsights(
         id = "1f832f95-62e3-4d1b-a1e6-982d8c22f2bb",
-        cryptoName = "Bitcoin",
-        cryptoId = "bitcoin",
-        quantity = "0.15",
-        balances = BalancesResponse(
-          totalUSDBalance = "4500.00",
-          totalBTCBalance = "0.15",
-          totalEURBalance = "4050.00"
-        ),
-        percentage = 100f
+        userCryptoInfo = UserCryptoInsights(
+          cryptoInfo = CryptoInfo(
+            cryptoName = "Bitcoin",
+            coingeckoCryptoId = "bitcoin",
+            symbol = "btc",
+            image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+          ),
+          quantity = "0.15",
+          percentage = 100f,
+          balances = BalancesResponse(
+            totalUSDBalance = "4500.00",
+            totalBTCBalance = "0.15",
+            totalEURBalance = "4050.00"
+          )
+        )
       )
     )
   )
-
 }

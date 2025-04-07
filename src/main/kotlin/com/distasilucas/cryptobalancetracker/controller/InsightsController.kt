@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.Optional
 
 @Validated
 @RestController
@@ -78,7 +79,7 @@ class InsightsController(private val insightsService: InsightsService) : Insight
   override fun retrieveCryptoInsights(@PathVariable coingeckoCryptoId: String): ResponseEntity<CryptoInsightResponse> {
     val cryptoInsights = insightsService.retrieveCryptoInsights(coingeckoCryptoId)
 
-    return ResponseEntity.ok(cryptoInsights)
+    return okOrNoContent(cryptoInsights)
   }
 
   @GetMapping("/platforms/{platformId}")
@@ -89,6 +90,10 @@ class InsightsController(private val insightsService: InsightsService) : Insight
   ): ResponseEntity<PlatformInsightsResponse> {
     val platformsInsights = insightsService.retrievePlatformInsights(platformId)
 
-    return ResponseEntity.ok(platformsInsights)
+    return okOrNoContent(platformsInsights)
+  }
+
+  private fun <T> okOrNoContent(optional: Optional<T>): ResponseEntity<T> {
+    return if (optional.isPresent) ResponseEntity.ok(optional.get()) else ResponseEntity.noContent().build()
   }
 }

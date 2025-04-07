@@ -15,7 +15,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalance
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
-import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
+import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
@@ -413,25 +413,33 @@ class InsightsServiceTest {
     assertThat(platformInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        PlatformInsightsResponse(
-          platformName = "BINANCE",
-          balances = BalancesResponse(
-            totalUSDBalance = "7500.00",
-            totalBTCBalance = "0.25",
-            totalEURBalance = "6750.00"
-          ),
-          cryptos = listOf(
-            CryptoInsights(
-              id = "123e4567-e89b-12d3-a456-426614174000",
-              cryptoName = "Bitcoin",
-              cryptoId = "bitcoin",
-              quantity = "0.25",
-              balances = BalancesResponse(
-                totalUSDBalance = "7500.00",
-                totalBTCBalance = "0.25",
-                totalEURBalance = "6750.00"
-              ),
-              percentage = 100f
+        Optional.of(
+          PlatformInsightsResponse(
+            platformName = "BINANCE",
+            balances = BalancesResponse(
+              totalUSDBalance = "7500.00",
+              totalBTCBalance = "0.25",
+              totalEURBalance = "6750.00"
+            ),
+            cryptos = listOf(
+              CryptoInsights(
+                id = "123e4567-e89b-12d3-a456-426614174000",
+                userCryptoInfo = UserCryptoInsights(
+                  cryptoInfo = CryptoInfo(
+                    cryptoName = "Bitcoin",
+                    coingeckoCryptoId = "bitcoin",
+                    symbol = "btc",
+                    image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+                  ),
+                  quantity = "0.25",
+                  percentage = 100f,
+                  balances = BalancesResponse(
+                    totalUSDBalance = "7500.00",
+                    totalBTCBalance = "0.25",
+                    totalEURBalance = "6750.00"
+                  )
+                )
+              )
             )
           )
         )
@@ -479,7 +487,8 @@ class InsightsServiceTest {
 
     val platformInsightsResponse = insightsService.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
-    assertThat(platformInsightsResponse)
+    assertTrue(platformInsightsResponse.isPresent)
+    assertThat(platformInsightsResponse.get())
       .usingRecursiveComparison()
       .isEqualTo(
         PlatformInsightsResponse(
@@ -492,27 +501,39 @@ class InsightsServiceTest {
           cryptos = listOf(
             CryptoInsights(
               id = "123e4567-e89b-12d3-a456-426614174000",
-              cryptoName = "Bitcoin",
-              cryptoId = "bitcoin",
-              quantity = "0.25",
-              balances = BalancesResponse(
-                totalUSDBalance = "7500.00",
-                totalBTCBalance = "0.25",
-                totalEURBalance = "6750.00"
-              ),
-              percentage = 94.64f
+              userCryptoInfo = UserCryptoInsights(
+                cryptoInfo = CryptoInfo(
+                  cryptoName = "Bitcoin",
+                  coingeckoCryptoId = "bitcoin",
+                  symbol = "btc",
+                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+                ),
+                quantity = "0.25",
+                percentage = 94.64f,
+                balances = BalancesResponse(
+                  totalUSDBalance = "7500.00",
+                  totalBTCBalance = "0.25",
+                  totalEURBalance = "6750.00"
+                )
+              )
             ),
             CryptoInsights(
               id = polkadotUserCrypto.id,
-              cryptoName = "Polkadot",
-              cryptoId = "polkadot",
-              quantity = "100",
-              balances = BalancesResponse(
-                totalUSDBalance = "425.00",
-                totalBTCBalance = "0.016554",
-                totalEURBalance = "397.00"
-              ),
-              percentage = 5.36f
+              userCryptoInfo = UserCryptoInsights(
+                cryptoInfo = CryptoInfo(
+                  cryptoName = "Polkadot",
+                  coingeckoCryptoId = "polkadot",
+                  symbol = "dot",
+                  image = "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1639712644",
+                ),
+                quantity = "100",
+                percentage = 5.36f,
+                balances = BalancesResponse(
+                  totalUSDBalance = "425.00",
+                  totalBTCBalance = "0.016554",
+                  totalEURBalance = "397.00"
+                )
+              )
             )
           )
         )
@@ -528,13 +549,7 @@ class InsightsServiceTest {
     val platformInsights = insightsService.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
     assertThat(platformInsights)
-      .isEqualTo(
-        PlatformInsightsResponse(
-          null,
-          BalancesResponse("0", "0", "0"),
-          emptyList()
-        )
-      )
+      .isEqualTo(Optional.empty<PlatformInsightsResponse>())
   }
 
   @Test
@@ -561,23 +576,25 @@ class InsightsServiceTest {
     assertThat(cryptoInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        CryptoInsightResponse(
-          cryptoName = "Bitcoin",
-          balances = BalancesResponse(
-            totalUSDBalance = "7500.00",
-            totalBTCBalance = "0.25",
-            totalEURBalance = "6750.00"
-          ),
-          platforms = listOf(
-            PlatformInsight(
-              quantity = "0.25",
-              balances = BalancesResponse(
-                totalUSDBalance = "7500.00",
-                totalBTCBalance = "0.25",
-                totalEURBalance = "6750.00"
-              ),
-              percentage = 100f,
-              platformName = "BINANCE"
+        Optional.of(
+          CryptoInsightResponse(
+            cryptoName = "Bitcoin",
+            balances = BalancesResponse(
+              totalUSDBalance = "7500.00",
+              totalBTCBalance = "0.25",
+              totalEURBalance = "6750.00"
+            ),
+            platforms = listOf(
+              PlatformInsight(
+                quantity = "0.25",
+                balances = BalancesResponse(
+                  totalUSDBalance = "7500.00",
+                  totalBTCBalance = "0.25",
+                  totalEURBalance = "6750.00"
+                ),
+                percentage = 100f,
+                platformName = "BINANCE"
+              )
             )
           )
         )
@@ -621,7 +638,8 @@ class InsightsServiceTest {
 
     val cryptoInsightResponse = insightsService.retrieveCryptoInsights("bitcoin")
 
-    assertThat(cryptoInsightResponse)
+    assertTrue(cryptoInsightResponse.isPresent)
+    assertThat(cryptoInsightResponse.get())
       .usingRecursiveComparison()
       .isEqualTo(
         CryptoInsightResponse(
@@ -666,13 +684,7 @@ class InsightsServiceTest {
     val cryptoInsightResponse = insightsService.retrieveCryptoInsights("bitcoin")
 
     assertThat(cryptoInsightResponse)
-      .isEqualTo(
-        CryptoInsightResponse(
-          null,
-          BalancesResponse("0", "0", "0"),
-          emptyList()
-        )
-      )
+      .isEqualTo(Optional.empty<CryptoInsightResponse>())
   }
 
   @Test
@@ -863,7 +875,7 @@ class InsightsServiceTest {
               totalEURBalance = "6307.48"
             ),
             cryptos = listOf(
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Bitcoin",
                   coingeckoCryptoId = "bitcoin",
@@ -888,7 +900,7 @@ class InsightsServiceTest {
                   totalEURBalance = "4050.00"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Ethereum",
                   coingeckoCryptoId = "ethereum",
@@ -913,7 +925,7 @@ class InsightsServiceTest {
                   totalEURBalance = "2070.86"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Tether",
                   coingeckoCryptoId = "tether",
@@ -1003,7 +1015,7 @@ class InsightsServiceTest {
               totalEURBalance = "7663.61"
             ),
             cryptos = listOf(
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Bitcoin",
                   coingeckoCryptoId = "bitcoin",
@@ -1028,7 +1040,7 @@ class InsightsServiceTest {
                   totalEURBalance = "4050.00"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Ethereum",
                   coingeckoCryptoId = "ethereum",
@@ -1053,7 +1065,7 @@ class InsightsServiceTest {
                   totalEURBalance = "2070.86"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Avalanche",
                   coingeckoCryptoId = "avalanche-2",
@@ -1078,7 +1090,7 @@ class InsightsServiceTest {
                   totalEURBalance = "216.75"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "BNB",
                   coingeckoCryptoId = "binancecoin",
@@ -1103,7 +1115,7 @@ class InsightsServiceTest {
                   totalEURBalance = "197.80"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Chainlink",
                   coingeckoCryptoId = "chainlink",
@@ -1128,7 +1140,7 @@ class InsightsServiceTest {
                   totalEURBalance = "195.30"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Tether",
                   coingeckoCryptoId = "tether",
@@ -1153,7 +1165,7 @@ class InsightsServiceTest {
                   totalEURBalance = "186.62"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Litecoin",
                   coingeckoCryptoId = "litecoin",
@@ -1178,7 +1190,7 @@ class InsightsServiceTest {
                   totalEURBalance = "176.75"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Solana",
                   coingeckoCryptoId = "solana",
@@ -1203,7 +1215,7 @@ class InsightsServiceTest {
                   totalEURBalance = "168.20"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Polkadot",
                   coingeckoCryptoId = "polkadot",
@@ -1228,7 +1240,7 @@ class InsightsServiceTest {
                   totalEURBalance = "149.20"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Uniswap",
                   coingeckoCryptoId = "uniswap",
@@ -1316,7 +1328,7 @@ class InsightsServiceTest {
               totalEURBalance = "7663.61"
             ),
             cryptos = listOf(
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Polygon",
                   coingeckoCryptoId = "matic-network",
@@ -1341,7 +1353,7 @@ class InsightsServiceTest {
                   totalEURBalance = "47.54"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Cardano",
                   coingeckoCryptoId = "cardano",
@@ -1366,7 +1378,7 @@ class InsightsServiceTest {
                   totalEURBalance = "34.80"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "Dogecoin",
                   coingeckoCryptoId = "dogecoin",
@@ -1391,7 +1403,7 @@ class InsightsServiceTest {
                   totalEURBalance = "28.66"
                 ),
               ),
-              UserCryptosInsights(
+              UserCryptoInsights(
                 cryptoInfo = CryptoInfo(
                   cryptoName = "XRP",
                   coingeckoCryptoId = "ripple",

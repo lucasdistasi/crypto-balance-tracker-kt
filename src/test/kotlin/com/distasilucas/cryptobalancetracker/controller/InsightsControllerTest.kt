@@ -138,13 +138,24 @@ class InsightsControllerTest {
       platforms = emptyList()
     )
 
-    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns cryptoInsightResponse
+    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns Optional.of(cryptoInsightResponse)
 
     val cryptoInsights = insightsController.retrieveCryptoInsights("bitcoin")
 
     assertThat(cryptoInsights)
       .usingRecursiveComparison()
       .isEqualTo(ResponseEntity.ok(cryptoInsightResponse))
+  }
+
+  @Test
+  fun `should retrieve crypto insights with status 204`() {
+    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns Optional.empty()
+
+    val cryptoInsights = insightsController.retrieveCryptoInsights("bitcoin")
+
+    assertThat(cryptoInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.noContent().build<CryptoInsightResponse>())
   }
 
   @Test
@@ -157,12 +168,25 @@ class InsightsControllerTest {
 
     every {
       insightsServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
-    } returns platformInsightsResponse
+    } returns Optional.of(platformInsightsResponse)
 
     val platformInsights = insightsController.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
     assertThat(platformInsights)
       .usingRecursiveComparison()
       .isEqualTo(ResponseEntity.ok(platformInsightsResponse))
+  }
+
+  @Test
+  fun `should retrieve platform insights with status 204`() {
+    every {
+      insightsServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
+    } returns Optional.empty()
+
+    val platformInsights = insightsController.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
+
+    assertThat(platformInsights)
+      .usingRecursiveComparison()
+      .isEqualTo(ResponseEntity.noContent().build<PlatformInsightsResponse>())
   }
 }

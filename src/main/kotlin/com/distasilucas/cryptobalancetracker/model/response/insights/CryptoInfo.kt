@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 
+// TODO - instead of using nullable fields, maybe create new class for PlatformInsightsResponse
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class CryptoInfo(
   val cryptoName: String,
@@ -12,8 +14,8 @@ data class CryptoInfo(
   val coingeckoCryptoId: String,
   val symbol: String,
   val image: String,
-  val currentPrice: CurrentPrice,
-  val priceChange: PriceChange,
+  val currentPrice: CurrentPrice? = null,
+  val priceChange: PriceChange? = null,
 )
 
 data class CurrentPrice(

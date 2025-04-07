@@ -27,10 +27,12 @@ import com.distasilucas.cryptobalancetracker.model.response.goal.PageGoalRespons
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
@@ -285,15 +287,21 @@ class CacheServiceTest {
     cryptos = listOf(
       CryptoInsights(
         id = "123e4567-e89b-12d3-a456-426614174000",
-        cryptoName = "Bitcoin",
-        cryptoId = "bitcoin",
-        quantity = "0.25",
-        balances = BalancesResponse(
-          totalUSDBalance = "7500.00",
-          totalBTCBalance = "0.25",
-          totalEURBalance = "6750.00"
-        ),
-        percentage = 100f
+        userCryptoInfo = UserCryptoInsights(
+          cryptoInfo = CryptoInfo(
+            cryptoName = "Bitcoin",
+            coingeckoCryptoId = "bitcoin",
+            symbol = "btc",
+            image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+          ),
+          quantity = "0.25",
+          percentage = 100f,
+          balances = BalancesResponse(
+            totalUSDBalance = "7500.00",
+            totalBTCBalance = "0.25",
+            totalEURBalance = "6750.00"
+          ),
+        )
       )
     )
   )
@@ -336,5 +344,4 @@ class CacheServiceTest {
       )
     )
   )
-
 }
