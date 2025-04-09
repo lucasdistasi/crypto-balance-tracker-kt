@@ -2,7 +2,7 @@ import com.adarshr.gradle.testlogger.theme.ThemeType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val ioMockkVersion = "1.13.17"
+val ioMockkVersion = "1.14.0"
 val springDocVersion = "2.8.6"
 val ioGithubOshaiVersion = "7.0.6"
 val ninjaSquadVersion = "4.0.2"
