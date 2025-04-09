@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MarketData.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.model.response.insights</a> &gt; <span class="el_source">MarketData.kt</span></div><h1>MarketData.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.model.response.insights
+
+import com.distasilucas.cryptobalancetracker.entity.Crypto
+import java.math.BigDecimal
+
+<span class="fc" id="L6">data class MarketData(</span>
+<span class="fc" id="L7">  val circulatingSupply: CirculatingSupply,</span>
+<span class="fc" id="L8">  val maxSupply: String,</span>
+<span class="fc" id="L9">  val currentPrice: CurrentPrice,</span>
+<span class="fc" id="L10">  val marketCap: String,</span>
+<span class="fc" id="L11">  val priceChange: PriceChange</span>
+) {
+
+<span class="fc" id="L14">  constructor(crypto: Crypto, circulatingSupply: CirculatingSupply): this(</span>
+<span class="fc" id="L15">      circulatingSupply,</span>
+<span class="fc" id="L16">      crypto.maxSupply.toPlainString(),</span>
+<span class="fc" id="L17">      CurrentPrice(crypto.lastKnownPrice.toPlainString(), crypto.lastKnownPriceInEUR.toPlainString(), crypto.lastKnownPriceInBTC.toPlainString()),</span>
+<span class="fc" id="L18">      crypto.marketCap.toPlainString(),</span>
+<span class="fc" id="L19">      PriceChange(crypto.changePercentageIn24h, crypto.changePercentageIn7d, crypto.changePercentageIn30d)</span>
+<span class="fc" id="L20">    )</span>
+
+}
+
+<span class="fc" id="L24">data class CurrentPrice(</span>
+<span class="fc" id="L25">  val usd: String,</span>
+<span class="fc" id="L26">  val eur: String,</span>
+<span class="fc" id="L27">  val btc: String</span>
+)
+
+<span class="fc" id="L30">data class PriceChange(</span>
+<span class="fc" id="L31">  val changePercentageIn24h: BigDecimal,</span>
+<span class="fc" id="L32">  val changePercentageIn7d: BigDecimal,</span>
+<span class="fc" id="L33">  val changePercentageIn30d: BigDecimal</span>
+)
+
+<span class="fc" id="L36">data class CirculatingSupply(</span>
+<span class="fc" id="L37">  val totalCirculatingSupply: String,</span>
+<span class="fc" id="L38">  val percentage: Float = 0F</span>
+<span class="fc" id="L39">)</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
