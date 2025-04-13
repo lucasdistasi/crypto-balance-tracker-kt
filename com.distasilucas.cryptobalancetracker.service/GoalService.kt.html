@@ -96,39 +96,33 @@ import java.math.RoundingMode
 
   private fun Goal.toGoalResponse(id: String): GoalResponse {
 <span class="fc" id="L98">    val crypto = cryptoService.retrieveCryptoInfoById(coingeckoCryptoId)</span>
-<span class="fc" id="L99">    val userCryptos = userCryptoService.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
-<span class="fc" id="L100">    val actualQuantity = userCryptos.map { it.quantity }</span>
-<span class="fc" id="L101">      .fold(BigDecimal.ZERO, BigDecimal::add)</span>
-<span class="fc" id="L102">    val progress = getProgress(goalQuantity, actualQuantity)</span>
-<span class="fc" id="L103">    val remainingQuantity = getRemainingQuantity(goalQuantity, actualQuantity)</span>
-<span class="fc" id="L104">    val moneyNeeded = crypto.getMoneyNeeded(remainingQuantity)</span>
+<span class="fc" id="L99">    val cryptoInfo = crypto.toCryptoInfo()</span>
+<span class="fc" id="L100">    val userCryptos = userCryptoService.findAllByCoingeckoCryptoId(coingeckoCryptoId)</span>
+<span class="fc" id="L101">    val actualQuantity = userCryptos.map { it.quantity }</span>
+<span class="fc" id="L102">      .fold(BigDecimal.ZERO, BigDecimal::add)</span>
+<span class="fc" id="L103">    val progress = getProgress(goalQuantity, actualQuantity)</span>
+<span class="fc" id="L104">    val remainingQuantity = getRemainingQuantity(goalQuantity, actualQuantity)</span>
+<span class="fc" id="L105">    val moneyNeeded = crypto.getMoneyNeeded(remainingQuantity)</span>
 
-<span class="fc" id="L106">    return toGoalResponse(</span>
-<span class="fc" id="L107">      id = id,</span>
-<span class="fc" id="L108">      cryptoName = crypto.name,</span>
-<span class="fc" id="L109">      actualQuantity = actualQuantity,</span>
-<span class="fc" id="L110">      progress = progress,</span>
-<span class="fc" id="L111">      remainingQuantity = remainingQuantity,</span>
-<span class="fc" id="L112">      moneyNeeded = moneyNeeded</span>
-    )
+<span class="fc" id="L107">    return toGoalResponse(id, cryptoInfo, actualQuantity, progress, remainingQuantity, moneyNeeded)</span>
   }
 
   private fun getRemainingQuantity(goalQuantity: BigDecimal, actualQuantity: BigDecimal): BigDecimal {
-<span class="fc bfc" id="L117" title="All 2 branches covered.">    return if (goalQuantity &lt;= actualQuantity) BigDecimal.ZERO else goalQuantity.minus(actualQuantity)</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">    return if (goalQuantity &lt;= actualQuantity) BigDecimal.ZERO else goalQuantity.minus(actualQuantity)</span>
   }
 
   private fun getProgress(goalQuantity: BigDecimal, actualQuantity: BigDecimal): Float {
-<span class="fc bfc" id="L121" title="All 2 branches covered.">    return if (goalQuantity &lt;= actualQuantity) 100F else actualQuantity.multiply(BigDecimal(&quot;100&quot;))</span>
-<span class="fc" id="L122">      .divide(goalQuantity, RoundingMode.HALF_UP)</span>
-<span class="fc" id="L123">      .setScale(2, RoundingMode.HALF_UP)</span>
-<span class="fc" id="L124">      .toFloat()</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">    return if (goalQuantity &lt;= actualQuantity) 100F else actualQuantity.multiply(BigDecimal(&quot;100&quot;))</span>
+<span class="fc" id="L116">      .divide(goalQuantity, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L117">      .setScale(2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L118">      .toFloat()</span>
   }
 
   private fun Crypto.getMoneyNeeded(remainingQuantity: BigDecimal): BigDecimal {
-<span class="fc" id="L128">    return lastKnownPrice.multiply(remainingQuantity).setScale(2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L122">    return lastKnownPrice.multiply(remainingQuantity).setScale(2, RoundingMode.HALF_UP)</span>
   }
 }
 
-<span class="fc" id="L132">class GoalNotFoundException(message: String) : RuntimeException(message)</span>
-<span class="fc" id="L133">class DuplicatedGoalException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L126">class GoalNotFoundException(message: String) : RuntimeException(message)</span>
+<span class="fc" id="L127">class DuplicatedGoalException(message: String) : RuntimeException(message)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

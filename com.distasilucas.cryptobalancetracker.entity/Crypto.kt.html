@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Crypto.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">crypto-balance-tracker</a> &gt; <a href="index.source.html" class="el_package">com.distasilucas.cryptobalancetracker.entity</a> &gt; <span class="el_source">Crypto.kt</span></div><h1>Crypto.kt</h1><pre class="source lang-java linenums">package com.distasilucas.cryptobalancetracker.entity
 
+import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
+import com.distasilucas.cryptobalancetracker.model.response.insights.Price
+import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
@@ -8,44 +11,50 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Document(&quot;Cryptos&quot;)
-<span class="fc" id="L11">data class Crypto(</span>
-<span class="fc" id="L12">  @Id</span>
+<span class="fc" id="L14">data class Crypto(</span>
+<span class="fc" id="L15">  @Id</span>
   val id: String,
-<span class="fc" id="L14">  val name: String,</span>
-<span class="fc" id="L15">  val ticker: String,</span>
-<span class="fc" id="L16">  val image: String,</span>
+<span class="fc" id="L17">  val name: String,</span>
+<span class="fc" id="L18">  val ticker: String,</span>
+<span class="fc" id="L19">  val image: String,</span>
 
-<span class="fc" id="L18">  @Field(&quot;last_known_price&quot;)</span>
+<span class="fc" id="L21">  @Field(&quot;last_known_price&quot;)</span>
   val lastKnownPrice: BigDecimal,
 
-<span class="fc" id="L21">  @Field(&quot;last_known_price_in_eur&quot;)</span>
+<span class="fc" id="L24">  @Field(&quot;last_known_price_in_eur&quot;)</span>
   val lastKnownPriceInEUR: BigDecimal,
 
-<span class="fc" id="L24">  @Field(&quot;last_known_price_in_btc&quot;)</span>
+<span class="fc" id="L27">  @Field(&quot;last_known_price_in_btc&quot;)</span>
   val lastKnownPriceInBTC: BigDecimal,
 
-<span class="fc" id="L27">  @Field(&quot;circulating_supply&quot;)</span>
+<span class="fc" id="L30">  @Field(&quot;circulating_supply&quot;)</span>
   val circulatingSupply: BigDecimal,
 
-<span class="fc" id="L30">  @Field(&quot;max_supply&quot;)</span>
+<span class="fc" id="L33">  @Field(&quot;max_supply&quot;)</span>
   val maxSupply: BigDecimal,
 
-<span class="fc" id="L33">  @Field(&quot;market_cap_rank&quot;)</span>
+<span class="fc" id="L36">  @Field(&quot;market_cap_rank&quot;)</span>
   val marketCapRank: Int,
 
-<span class="fc" id="L36">  @Field(&quot;market_cap&quot;)</span>
+<span class="fc" id="L39">  @Field(&quot;market_cap&quot;)</span>
   val marketCap: BigDecimal,
 
-<span class="fc" id="L39">  @Field(&quot;change_percentage_in_24h&quot;)</span>
+<span class="fc" id="L42">  @Field(&quot;change_percentage_in_24h&quot;)</span>
   val changePercentageIn24h: BigDecimal,
 
-<span class="fc" id="L42">  @Field(&quot;change_percentage_in_7d&quot;)</span>
+<span class="fc" id="L45">  @Field(&quot;change_percentage_in_7d&quot;)</span>
   val changePercentageIn7d: BigDecimal,
 
-<span class="fc" id="L45">  @Field(&quot;change_percentage_in_30d&quot;)</span>
+<span class="fc" id="L48">  @Field(&quot;change_percentage_in_30d&quot;)</span>
   val changePercentageIn30d: BigDecimal,
 
-<span class="fc" id="L48">  @Field(&quot;last_updated_at&quot;)</span>
+<span class="fc" id="L51">  @Field(&quot;last_updated_at&quot;)</span>
   val lastUpdatedAt: LocalDateTime
-) : Serializable
+) : Serializable {
+
+<span class="fc" id="L55">  fun toCryptoInfo(</span>
+<span class="fc" id="L56">    price: Price? = null,</span>
+<span class="fc" id="L57">    priceChange: PriceChange? = null</span>
+<span class="fc" id="L58">  ) = CryptoInfo(name, id, ticker, image, price, priceChange)</span>
+}
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

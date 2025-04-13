@@ -2,15 +2,36 @@
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.io.Serializable
+import java.math.BigDecimal
+
+// TODO - instead of using nullable fields, maybe create new class for PlatformInsightsResponse, GoalResponse
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-<span class="fc" id="L7">data class CryptoInfo(</span>
-<span class="fc" id="L8">  val id: String? = null,</span>
-<span class="fc" id="L9">  val cryptoName: String,</span>
+<span class="fc" id="L11">data class CryptoInfo(</span>
+<span class="fc" id="L12">  val cryptoName: String,</span>
 
-<span class="fc" id="L11">  @JsonProperty(&quot;cryptoId&quot;)</span>
+<span class="fc" id="L14">  @JsonProperty(&quot;cryptoId&quot;)</span>
   val coingeckoCryptoId: String,
-<span class="fc" id="L13">  val symbol: String,</span>
-<span class="fc" id="L14">  val image: String</span>
-<span class="fc" id="L15">)</span>
+<span class="fc" id="L16">  val symbol: String,</span>
+<span class="fc" id="L17">  val image: String,</span>
+<span class="fc" id="L18">  val price: Price? = null,</span>
+<span class="fc" id="L19">  val priceChange: PriceChange? = null,</span>
+<span class="fc" id="L20">): Serializable</span>
+
+<span class="fc" id="L22">data class Price(</span>
+<span class="fc" id="L23">  val usd: String,</span>
+<span class="fc" id="L24">  val eur: String,</span>
+<span class="fc" id="L25">  val btc: String</span>
+): Serializable {
+<span class="fc" id="L27">  constructor(usd: BigDecimal, eur: BigDecimal, btc: BigDecimal) : this(</span>
+<span class="fc" id="L28">    usd.toPlainString(), eur.toPlainString(), btc.toPlainString()</span>
+<span class="fc" id="L29">  )</span>
+}
+
+<span class="fc" id="L32">data class PriceChange(</span>
+<span class="fc" id="L33">  val changePercentageIn24h: BigDecimal,</span>
+<span class="fc" id="L34">  val changePercentageIn7d: BigDecimal,</span>
+<span class="fc" id="L35">  val changePercentageIn30d: BigDecimal</span>
+): Serializable
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
