@@ -4,24 +4,20 @@ import balances
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.CirculatingSupply
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
-import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
+import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
-import com.distasilucas.cryptobalancetracker.model.response.insights.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
-import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
+import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsBalancesInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsInsights
 import com.distasilucas.cryptobalancetracker.service.InsightsService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
@@ -101,12 +97,12 @@ class InsightsControllerMvcTest(
   }
 
   @Test
-  fun `should retrieve user cryptos platforms insights for page with status 200`() {
+  fun `should retrieve user cryptos insights for page with status 200`() {
     val page = 0
-    val pageUserCryptosInsightsResponse = pageUserCryptosInsightsResponse(platforms = listOf("BINANCE", "COINBASE"))
+    val pageUserCryptosInsightsResponse = pageUserCryptosInsightsResponse()
 
     every {
-      insightsServiceMock.retrieveUserCryptosPlatformsInsights(page)
+      insightsServiceMock.retrieveUserCryptosInsights(page)
     } returns Optional.of(pageUserCryptosInsightsResponse)
 
     mockMvc.retrieveUserCryptosPlatformsInsights(page)
@@ -117,7 +113,6 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("4500.00")))
       .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
       .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
-      .andExpect(jsonPath("$.cryptos[0].marketCapRank", `is`(1)))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoName", `is`("Bitcoin")))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoId", `is`("bitcoin")))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.symbol", `is`("btc")))
@@ -125,21 +120,17 @@ class InsightsControllerMvcTest(
         "$.cryptos[0].cryptoInfo.image",
         `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"))
       )
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.price.usd", `is`("30000")))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.price.eur", `is`("27000")))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.price.btc", `is`("1")))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.priceChange.changePercentageIn24h", `is`(10.00)))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.priceChange.changePercentageIn7d", `is`(-5.00)))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.priceChange.changePercentageIn30d", `is`(0.00)))
       .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.15")))
       .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
       .andExpect(jsonPath("$.cryptos[0].balances.totalUSDBalance", `is`("4500.00")))
       .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.15")))
       .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("4050.00")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.circulatingSupply.totalCirculatingSupply", `is`("19000000")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.circulatingSupply.percentage", `is`(90.48)))
-      .andExpect(jsonPath("$.cryptos[0].marketData.maxSupply", `is`("21000000")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.usd", `is`("30000")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.eur", `is`("27000")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.currentPrice.btc", `is`("1")))
-      .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn24h", `is`(10.00)))
-      .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn7d", `is`(-5.00)))
-      .andExpect(jsonPath("$.cryptos[0].marketData.priceChange.changePercentageIn30d", `is`(0.00)))
-      .andExpect(jsonPath("$.cryptos[0].platforms", `is`(listOf("BINANCE", "COINBASE"))))
   }
 
   @Test
@@ -159,25 +150,13 @@ class InsightsControllerMvcTest(
   fun `should retrieve cryptos balances insights with status 200`() {
     val cryptosBalancesInsightsResponse = cryptosBalancesInsightsResponse()
 
-    every { insightsServiceMock.retrieveCryptosBalancesInsights() } returns cryptosBalancesInsightsResponse
+    every { insightsServiceMock.retrieveCryptosBalancesInsights() } returns listOf(cryptosBalancesInsightsResponse)
 
     mockMvc.retrieveCryptosBalancesInsights()
       .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("7500.00")))
-      .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.25")))
-      .andExpect(jsonPath("$.balances.totalEURBalance", `is`("6750.00")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoName", `is`("Bitcoin")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoId", `is`("bitcoin")))
-      .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.25")))
-      .andExpect(
-        jsonPath(
-          "$.cryptos[0].balances.totalUSDBalance",
-          `is`("7500.00")
-        )
-      )
-      .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.25")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("6750.00")))
-      .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
+      .andExpect(jsonPath("$.[0].name", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.[0].balance", `is`("7500.00")))
+      .andExpect(jsonPath("$.[0].percentage", `is`(100.0)))
 
   }
 
@@ -185,25 +164,20 @@ class InsightsControllerMvcTest(
   fun `should retrieve platforms balances insights with status 200`() {
     val platformsBalancesInsightsResponse = platformsBalancesInsightsResponse()
 
-    every { insightsServiceMock.retrievePlatformsBalancesInsights() } returns platformsBalancesInsightsResponse
+    every { insightsServiceMock.retrievePlatformsBalancesInsights() } returns listOf(platformsBalancesInsightsResponse)
 
     mockMvc.retrievePlatformsBalancesInsights()
       .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("7500.00")))
-      .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.25")))
-      .andExpect(jsonPath("$.balances.totalEURBalance", `is`("6750.00")))
-      .andExpect(jsonPath("$.platforms[0].platformName", `is`("BINANCE")))
-      .andExpect(jsonPath("$.platforms[0].balances.totalUSDBalance", `is`("7500.00")))
-      .andExpect(jsonPath("$.platforms[0].balances.totalBTCBalance", `is`("0.25")))
-      .andExpect(jsonPath("$.platforms[0].balances.totalEURBalance", `is`("6750.00")))
-      .andExpect(jsonPath("$.platforms[0].percentage", `is`(100.0)))
+      .andExpect(jsonPath("$.[0].name", `is`("BINANCE")))
+      .andExpect(jsonPath("$.[0].balance", `is`("7500.00")))
+      .andExpect(jsonPath("$.[0].percentage", `is`(100.0)))
   }
 
   @Test
   fun `should retrieve crypto insights with status 200`() {
     val cryptoInsightResponse = cryptoInsightResponse()
 
-    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns cryptoInsightResponse
+    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns Optional.of(cryptoInsightResponse)
 
     mockMvc.retrieveCryptoInsights("bitcoin")
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -225,7 +199,7 @@ class InsightsControllerMvcTest(
 
     every {
       insightsServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
-    } returns platformInsightsResponse
+    } returns Optional.of(platformInsightsResponse)
 
     mockMvc.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -234,13 +208,15 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
       .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
       .andExpect(jsonPath("$.cryptos[0].id", `is`("1f832f95-62e3-4d1b-a1e6-982d8c22f2bb")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoName", `is`("Bitcoin")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoId", `is`("bitcoin")))
-      .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.15")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalUSDBalance", `is`("4500.00")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.15")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("4050.00")))
-      .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.cryptoInfo.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.cryptoInfo.cryptoId", `is`("bitcoin")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.cryptoInfo.symbol", `is`("btc")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.cryptoInfo.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.quantity", `is`("0.15")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.balances.totalUSDBalance", `is`("4500.00")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.balances.totalBTCBalance", `is`("0.15")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.balances.totalEURBalance", `is`("4050.00")))
+      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.percentage", `is`(100.0)))
   }
 
   @ParameterizedTest
@@ -260,10 +236,7 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$[0].detail", `is`(PLATFORM_ID_UUID)))
   }
 
-  private fun pageUserCryptosInsightsResponse(
-    id: String? = null,
-    platforms: List<String>
-  ) = PageUserCryptosInsightsResponse(
+  private fun pageUserCryptosInsightsResponse() = PageUserCryptosInsightsResponse(
     page = 0,
     totalPages = 1,
     balances = BalancesResponse(
@@ -272,30 +245,13 @@ class InsightsControllerMvcTest(
       totalEURBalance = "4050.00"
     ),
     cryptos = listOf(
-      UserCryptosInsights(
+      UserCryptoInsights(
         cryptoInfo = CryptoInfo(
-          id = id,
           cryptoName = "Bitcoin",
           coingeckoCryptoId = "bitcoin",
           symbol = "btc",
-          image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
-        ),
-        quantity = "0.15",
-        percentage = 100f,
-        balances = BalancesResponse(
-          totalUSDBalance = "4500.00",
-          totalBTCBalance = "0.15",
-          totalEURBalance = "4050.00"
-        ),
-        marketCapRank = 1,
-        marketData = MarketData(
-          CirculatingSupply(
-            totalCirculatingSupply = "19000000",
-            percentage = 90.48f
-          ),
-          maxSupply = "21000000",
-          marketCap = "813208997089",
-          currentPrice = CurrentPrice(
+          image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+          price = Price(
             usd = "30000",
             eur = "27000",
             btc = "1"
@@ -306,51 +262,20 @@ class InsightsControllerMvcTest(
             changePercentageIn30d = BigDecimal("0.00")
           )
         ),
-        platforms = platforms
+        quantity = "0.15",
+        percentage = 100f,
+        balances = BalancesResponse(
+          totalUSDBalance = "4500.00",
+          totalBTCBalance = "0.15",
+          totalEURBalance = "4050.00"
+        ),
       )
     )
   )
 
-  private fun cryptosBalancesInsightsResponse() = CryptosBalancesInsightsResponse(
-    balances = BalancesResponse(
-      totalUSDBalance = "7500.00",
-      totalBTCBalance = "0.25",
-      totalEURBalance = "6750.00"
-    ),
-    cryptos = listOf(
-      CryptoInsights(
-        id = "1f832f95-62e3-4d1b-a1e6-982d8c22f2bb",
-        cryptoName = "Bitcoin",
-        cryptoId = "bitcoin",
-        quantity = "0.25",
-        balances = BalancesResponse(
-          totalUSDBalance = "7500.00",
-          totalBTCBalance = "0.25",
-          totalEURBalance = "6750.00"
-        ),
-        percentage = 100f
-      )
-    )
-  )
+  private fun cryptosBalancesInsightsResponse() = BalancesChartResponse("Bitcoin", "7500.00", 100F)
 
-  private fun platformsBalancesInsightsResponse() = PlatformsBalancesInsightsResponse(
-    balances = BalancesResponse(
-      totalUSDBalance = "7500.00",
-      totalBTCBalance = "0.25",
-      totalEURBalance = "6750.00"
-    ),
-    platforms = listOf(
-      PlatformsInsights(
-        platformName = "BINANCE",
-        balances = BalancesResponse(
-          totalUSDBalance = "7500.00",
-          totalBTCBalance = "0.25",
-          totalEURBalance = "6750.00"
-        ),
-        percentage = 100f
-      )
-    )
-  )
+  private fun platformsBalancesInsightsResponse() = BalancesChartResponse("BINANCE", "7500.00", 100F)
 
   private fun cryptoInsightResponse() = CryptoInsightResponse(
     cryptoName = "Bitcoin",
@@ -383,17 +308,22 @@ class InsightsControllerMvcTest(
     cryptos = listOf(
       CryptoInsights(
         id = "1f832f95-62e3-4d1b-a1e6-982d8c22f2bb",
-        cryptoName = "Bitcoin",
-        cryptoId = "bitcoin",
-        quantity = "0.15",
-        balances = BalancesResponse(
-          totalUSDBalance = "4500.00",
-          totalBTCBalance = "0.15",
-          totalEURBalance = "4050.00"
-        ),
-        percentage = 100f
+        userCryptoInfo = UserCryptoInsights(
+          cryptoInfo = CryptoInfo(
+            cryptoName = "Bitcoin",
+            coingeckoCryptoId = "bitcoin",
+            symbol = "btc",
+            image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+          ),
+          quantity = "0.15",
+          percentage = 100f,
+          balances = BalancesResponse(
+            totalUSDBalance = "4500.00",
+            totalBTCBalance = "0.15",
+            totalEURBalance = "4050.00"
+          )
+        )
       )
     )
   )
-
 }

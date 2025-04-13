@@ -1,17 +1,17 @@
 package com.distasilucas.cryptobalancetracker.model.response.insights.crypto
 
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptosInsights
+import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 
 data class PageUserCryptosInsightsResponse(
   val page: Int,
   val totalPages: Int,
   val hasNextPage: Boolean,
   val balances: BalancesResponse,
-  val cryptos: List<UserCryptosInsights>
+  val cryptos: List<UserCryptoInsights>
 ) {
 
-  constructor(page: Int, totalPages: Int, balances: BalancesResponse, cryptos: List<UserCryptosInsights>) : this(
+  constructor(page: Int, totalPages: Int, balances: BalancesResponse, cryptos: List<UserCryptoInsights>) : this(
     page = page + 1,
     totalPages = totalPages,
     hasNextPage = totalPages - 1 > page,

@@ -6,13 +6,12 @@ import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortParams
 import com.distasilucas.cryptobalancetracker.model.SortType
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.service.InsightsService
 import jakarta.validation.constraints.Min
 import org.hibernate.validator.constraints.UUID
@@ -46,8 +45,8 @@ class InsightsController(private val insightsService: InsightsService) : Insight
     return ResponseEntity.ok(dateBalances)
   }
 
-  @GetMapping("/cryptos/platforms")
-  override fun retrieveUserCryptosPlatformsInsights(
+  @GetMapping("/cryptos")
+  override fun retrieveUserCryptosInsights(
     @RequestParam
     @Min(value = 0, message = "Page must be greater than or equal to 0")
     page: Int,
@@ -57,30 +56,30 @@ class InsightsController(private val insightsService: InsightsService) : Insight
     sortType: SortType
   ): ResponseEntity<PageUserCryptosInsightsResponse> {
     val sortParams = SortParams(sortBy, sortType)
-    val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosPlatformsInsights(page, sortParams)
+    val userCryptosInsights = insightsService.retrieveUserCryptosInsights(page, sortParams)
 
-    return okOrNoContent(userCryptosPlatformsInsights)
+    return if (userCryptosInsights.isEmpty) ResponseEntity.noContent().build() else ResponseEntity.ok(userCryptosInsights.get())
   }
 
   @GetMapping("/cryptos/balances")
-  override fun retrieveCryptosBalancesInsights(): ResponseEntity<CryptosBalancesInsightsResponse> {
+  override fun retrieveCryptosBalancesInsights(): ResponseEntity<List<BalancesChartResponse>> {
     val cryptosBalancesInsights = insightsService.retrieveCryptosBalancesInsights()
 
-    return ResponseEntity.ok(cryptosBalancesInsights)
+    return if (cryptosBalancesInsights.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(cryptosBalancesInsights)
   }
 
   @GetMapping("/platforms/balances")
-  override fun retrievePlatformsBalancesInsights(): ResponseEntity<PlatformsBalancesInsightsResponse> {
+  override fun retrievePlatformsBalancesInsights(): ResponseEntity<List<BalancesChartResponse>> {
     val platformsBalancesInsights = insightsService.retrievePlatformsBalancesInsights()
 
-    return ResponseEntity.ok(platformsBalancesInsights)
+    return if (platformsBalancesInsights.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(platformsBalancesInsights)
   }
 
   @GetMapping("/cryptos/{coingeckoCryptoId}")
   override fun retrieveCryptoInsights(@PathVariable coingeckoCryptoId: String): ResponseEntity<CryptoInsightResponse> {
     val cryptoInsights = insightsService.retrieveCryptoInsights(coingeckoCryptoId)
 
-    return ResponseEntity.ok(cryptoInsights)
+    return okOrNoContent(cryptoInsights)
   }
 
   @GetMapping("/platforms/{platformId}")
@@ -91,10 +90,10 @@ class InsightsController(private val insightsService: InsightsService) : Insight
   ): ResponseEntity<PlatformInsightsResponse> {
     val platformsInsights = insightsService.retrievePlatformInsights(platformId)
 
-    return ResponseEntity.ok(platformsInsights)
+    return okOrNoContent(platformsInsights)
   }
 
-  private fun <T> okOrNoContent(body: Optional<T>): ResponseEntity<T> {
-    return if (body.isEmpty) ResponseEntity.noContent().build() else ResponseEntity.ok(body.get())
+  private fun <T> okOrNoContent(optional: Optional<T>): ResponseEntity<T> {
+    return if (optional.isPresent) ResponseEntity.ok(optional.get()) else ResponseEntity.noContent().build()
   }
 }

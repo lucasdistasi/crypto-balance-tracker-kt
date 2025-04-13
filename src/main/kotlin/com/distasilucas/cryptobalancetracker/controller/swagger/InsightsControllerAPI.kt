@@ -4,13 +4,12 @@ import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortType
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsBalancesInsightsResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
@@ -178,7 +177,7 @@ interface InsightsControllerAPI {
       )
     ]
   )
-  fun retrieveUserCryptosPlatformsInsights(
+  fun retrieveUserCryptosInsights(
     @Min(value = 0, message = "Page must be greater than or equal to 0")
     page: Int,
     sortBy: SortBy = SortBy.PERCENTAGE,
@@ -193,8 +192,10 @@ interface InsightsControllerAPI {
         description = "User cryptos balances insights",
         content = [Content(
           mediaType = "application/json",
-          schema = Schema(
-            implementation = CryptosBalancesInsightsResponse::class
+          array = ArraySchema(
+            schema = Schema(
+              implementation = BalancesChartResponse::class
+            )
           )
         )]
       ),
@@ -241,7 +242,7 @@ interface InsightsControllerAPI {
       )
     ]
   )
-  fun retrieveCryptosBalancesInsights(): ResponseEntity<CryptosBalancesInsightsResponse>
+  fun retrieveCryptosBalancesInsights(): ResponseEntity<List<BalancesChartResponse>>
 
   @Operation(summary = "Retrieve insights balances for all platforms")
   @ApiResponses(
@@ -251,8 +252,10 @@ interface InsightsControllerAPI {
         description = "Platforms balances insights",
         content = [Content(
           mediaType = "application/json",
-          schema = Schema(
-            implementation = PlatformsBalancesInsightsResponse::class
+          array = ArraySchema(
+            schema = Schema(
+              implementation = BalancesChartResponse::class
+            )
           )
         )]
       ),
@@ -299,7 +302,7 @@ interface InsightsControllerAPI {
       )
     ]
   )
-  fun retrievePlatformsBalancesInsights(): ResponseEntity<PlatformsBalancesInsightsResponse>
+  fun retrievePlatformsBalancesInsights(): ResponseEntity<List<BalancesChartResponse>>
 
   @Operation(summary = "Retrieve user cryptos insights for the given coingecko crypto id")
   @ApiResponses(

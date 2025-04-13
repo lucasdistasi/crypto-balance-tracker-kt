@@ -4,6 +4,7 @@ import com.distasilucas.cryptobalancetracker.model.request.pricetarget.PriceTarg
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PagePriceTargetResponse
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PriceTargetResponse
 import com.distasilucas.cryptobalancetracker.service.PriceTargetService
+import getCryptoInfo
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
@@ -17,12 +18,13 @@ class PriceTargetControllerTest {
 
   private val priceTargetServiceMock = mockk<PriceTargetService>()
   private val priceTargetController = PriceTargetController(priceTargetServiceMock)
+  private val cryptoInfo = getCryptoInfo()
 
   @Test
   fun `should retrieve price target with status 200`() {
     val priceTargetResponse = PriceTargetResponse(
       "f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08",
-      "Bitcoin",
+      cryptoInfo,
       "60000",
       "100000",
       35.30F
@@ -45,7 +47,7 @@ class PriceTargetControllerTest {
       listOf(
         PriceTargetResponse(
           "f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08",
-          "Bitcoin",
+          cryptoInfo,
           "60000",
           "100000",
           35.30F
@@ -70,7 +72,7 @@ class PriceTargetControllerTest {
       listOf(
         PriceTargetResponse(
           "f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08",
-          "Bitcoin",
+          cryptoInfo,
           "60000",
           "100000",
           35.30F
@@ -103,7 +105,7 @@ class PriceTargetControllerTest {
   @Test
   fun `should save price target with status 201`() {
     val priceTargetRequest = PriceTargetRequest("Bitcoin", BigDecimal("120000"))
-    val priceTargetResponse = PriceTargetResponse("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", "Bitcoin", "60000", "120000", 35F)
+    val priceTargetResponse = PriceTargetResponse("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", cryptoInfo, "60000", "120000", 35F)
 
     every { priceTargetServiceMock.savePriceTarget(priceTargetRequest) } returns priceTargetResponse
 
@@ -117,7 +119,7 @@ class PriceTargetControllerTest {
   @Test
   fun `should update price target with status 200`() {
     val priceTargetRequest = PriceTargetRequest("Bitcoin", BigDecimal("150000"))
-    val priceTargetResponse = PriceTargetResponse("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", "Bitcoin", "60000", "150000", 40F)
+    val priceTargetResponse = PriceTargetResponse("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", cryptoInfo, "60000", "150000", 40F)
 
     every {
       priceTargetServiceMock.updatePriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", priceTargetRequest)

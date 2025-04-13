@@ -5,7 +5,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsig
 import java.io.Serializable
 
 data class PlatformInsightsResponse(
-  val platformName: String?,
+  val platformName: String,
   val balances: BalancesResponse,
   val cryptos: List<CryptoInsights>,
 ): Serializable

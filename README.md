@@ -39,8 +39,8 @@ Do your own research before investing money you are not willing to loss.
 
 ## Technologies and stuff used :sparkles:
 
-- Java 17
-- Kotlin 1.8.22
+- Java 21
+- Kotlin 2.1.20
 - Spring 6 & Spring Boot 3.2.2
     - Spring WebFlux
     - Hibernate
@@ -53,7 +53,11 @@ Do your own research before investing money you are not willing to loss.
 
 ## Features
 
-- Add/Update/Delete Platforms, Cryptos, Goals.
+- Add/Update/Delete:
+  - Platforms
+  - Goals
+  - Price Targets
+  - Cryptos
 - Transfer crypto and automatically calculate new quantities.
 - View crypto/s and platform/s insights.
 
@@ -152,120 +156,86 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 
 ```json
 {
-  "platformName": "BINANCE",
-  "balances": {
-    "totalUSDBalance": "4462.45",
-    "totalEURBalance": "4177.32",
-    "totalBTCBalance": "0.121175776909"
-  },
-  "cryptos": [
-    {
-      "id": "3f64cb0b-844a-4f7e-b19d-7a158ecd7f05",
-      "cryptoName": "Bitcoin",
-      "cryptoId": "bitcoin",
-      "quantity": "0.112371283",
-      "balances": {
-        "totalUSDBalance": "4138.07",
-        "totalEURBalance": "3873.66",
-        "totalBTCBalance": "0.112371283"
+   "platformName": "BINGX",
+   "balances": {
+      "totalUSDBalance": "790.73",
+      "totalEURBalance": "700.18",
+      "totalBTCBalance": "0.00940208"
+   },
+   "cryptos": [
+      {
+         "id": "37919ee8-e3cb-42f7-ade2-0af669501a9c",
+         "userCryptoInfo": {
+            "cryptoInfo": {
+               "cryptoName": "XRP",
+               "cryptoId": "ripple",
+               "symbol": "xrp",
+               "image": "https://coin-images.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1696501442"
+            },
+            "quantity": "150",
+            "percentage": 40.22,
+            "balances": {
+               "totalUSDBalance": "318.00",
+               "totalEURBalance": "282.00",
+               "totalBTCBalance": "0.003783"
+            }
+         }
       },
-      "percentage": 92.73
-    },
-    {
-      "id": "412e2361-a650-468b-b21e-b26053be6dcf", 
-      "cryptoName": "Ethereum",
-      "cryptoId": "ethereum",
-      "quantity": "0.12349",
-      "balances": {
-        "totalUSDBalance": "258.62",
-        "totalEURBalance": "242.10",
-        "totalBTCBalance": "0.007019493909"
+      {
+         "id": "32c94337-0e16-4860-ad74-acce50ca1285",
+         "userCryptoInfo": {
+            "cryptoInfo": {
+               "cryptoName": "Solana",
+               "cryptoId": "solana",
+               "symbol": "sol",
+               "image": "https://coin-images.coingecko.com/coins/images/4128/large/solana.png?1718769756"
+            },
+            "quantity": "2",
+            "percentage": 32.5,
+            "balances": {
+               "totalUSDBalance": "256.96",
+               "totalEURBalance": "227.24",
+               "totalBTCBalance": "0.00305408"
+            }
+         }
       },
-      "percentage": 5.8
-    },
-    {
-      "id": "42241c9c-eda8-45c1-a603-7ad815ffed7b",
-      "cryptoName": "XRP",
-      "cryptoId": "ripple",
-      "quantity": "100",
-      "balances": {
-        "totalUSDBalance": "65.76",
-        "totalEURBalance": "61.56",
-        "totalBTCBalance": "0.001785"
+      {
+         "id": "b1b94355-1f09-4bbe-ba8e-f087c2465c2d",
+         "userCryptoInfo": {
+            "cryptoInfo": {
+               "cryptoName": "Chainlink",
+               "cryptoId": "chainlink",
+               "symbol": "link",
+               "image": "https://coin-images.coingecko.com/coins/images/877/large/chainlink-new-logo.png?1696502009"
+            },
+            "quantity": "15",
+            "percentage": 24.09,
+            "balances": {
+               "totalUSDBalance": "190.50",
+               "totalEURBalance": "168.60",
+               "totalBTCBalance": "0.002265"
+            }
+         }
       },
-      "percentage": 1.47
-    }
-  ]
-}
-```
-
-### Retrieve balances insights for all platforms
-
-`/api/v1/insights/platforms/balances`
-
-```json
-{
-  "balances": {
-    "totalUSDBalance": "6088.78",
-    "totalEURBalance": "5699.70",
-    "totalBTCBalance": "0.165316546142"
-  },
-  "platforms": [
-    {
-      "platformName": "BINANCE",
-      "balances": {
-        "totalUSDBalance": "4462.45",
-        "totalEURBalance": "4177.32",
-        "totalBTCBalance": "0.121175776909"
-      },
-      "percentage": 73.29
-    },
-    {
-      "platformName": "COINBASE",
-      "balances": {
-        "totalUSDBalance": "735.00",
-        "totalEURBalance": "688.04",
-        "totalBTCBalance": "0.019950989232"
-      },
-      "percentage": 12.07
-    },
-    {
-      "platformName": "KRAKEN",
-      "balances": {
-        "totalUSDBalance": "324.88",
-        "totalEURBalance": "304.12",
-        "totalBTCBalance": "0.00881654"
-      },
-      "percentage": 5.34
-    },
-    {
-      "platformName": "OKX",
-      "balances": {
-        "totalUSDBalance": "268.88",
-        "totalEURBalance": "251.70",
-        "totalBTCBalance": "0.0072971"
-      },
-      "percentage": 4.42
-    },
-    {
-      "platformName": "BYBIT",
-      "balances": {
-        "totalUSDBalance": "189.50",
-        "totalEURBalance": "177.40",
-        "totalBTCBalance": "0.0051435"
-      },
-      "percentage": 3.11
-    },
-    {
-      "platformName": "TREZOR",
-      "balances": {
-        "totalUSDBalance": "108.06",
-        "totalEURBalance": "101.14",
-        "totalBTCBalance": "0.00293264"
-      },
-      "percentage": 1.77
-    }
-  ]
+      {
+         "id": "e9aeaa72-d9db-4a5d-aa66-e2c1540e9900",
+         "userCryptoInfo": {
+            "cryptoInfo": {
+               "cryptoName": "TRON",
+               "cryptoId": "tron",
+               "symbol": "trx",
+               "image": "https://coin-images.coingecko.com/coins/images/1094/large/tron-logo.png?1696502193"
+            },
+            "quantity": "100",
+            "percentage": 3.2,
+            "balances": {
+               "totalUSDBalance": "25.27",
+               "totalEURBalance": "22.34",
+               "totalBTCBalance": "0.0003"
+            }
+         }
+      }
+   ]
 }
 ```
 
@@ -306,733 +276,272 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 }
 ```
 
-### Retrieve user cryptos insights by page
+### Retrieve user cryptos insights in all platforms by page
 
 `/api/v1/insights/cryptos?page={page}&sortBy={sortBy}&sortType={sortType}`
 
 ```json
 {
-  "page": 1,
-  "totalPages": 2,
-  "hasNextPage": true,
-  "balances": {
-    "totalUSDBalance": "6088.78",
-    "totalEURBalance": "5699.70",
-    "totalBTCBalance": "0.165316546142"
-  },
-  "cryptos": [
-    {
-      "cryptoInfo": {
-        "id": "597ee816-416e-4b78-b9ce-ed16313a6e8a",
-        "cryptoName": "Bitcoin",
-        "cryptoId": "bitcoin",
-        "symbol": "btc",
-        "image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1696501400"
+   "page": 1,
+   "totalPages": 2,
+   "hasNextPage": true,
+   "balances": {
+      "totalUSDBalance": "11318.38",
+      "totalEURBalance": "10250.32",
+      "totalBTCBalance": "0.1380989847"
+   },
+   "cryptos": [
+      {
+         "cryptoInfo": {
+            "cryptoName": "Bitcoin",
+            "cryptoId": "bitcoin",
+            "symbol": "btc",
+            "image": "https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png?1696501400",
+            "currentPrice": {
+               "usd": "81935",
+               "eur": "74199",
+               "btc": "1.0"
+            },
+            "priceChange": {
+               "changePercentageIn24h": -5.75,
+               "changePercentageIn7d": -5.77,
+               "changePercentageIn30d": -1.19
+            }
+         },
+         "quantity": "0.1001",
+         "percentage": 72.46,
+         "balances": {
+            "totalUSDBalance": "8201.69",
+            "totalEURBalance": "7427.32",
+            "totalBTCBalance": "0.1001"
+         }
       },
-      "quantity": "0.112371283",
-      "percentage": 67.96,
-      "balances": {
-        "totalUSDBalance": "4138.07",
-        "totalEURBalance": "3873.66",
-        "totalBTCBalance": "0.112371283"
+      {
+         "cryptoInfo": {
+            "cryptoName": "Ethereum",
+            "cryptoId": "ethereum",
+            "symbol": "eth",
+            "image": "https://coin-images.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
+            "currentPrice": {
+               "usd": "1780.46",
+               "eur": "1612.37",
+               "btc": "0.02172093"
+            },
+            "priceChange": {
+               "changePercentageIn24h": -6.45,
+               "changePercentageIn7d": -11.23,
+               "changePercentageIn30d": -13.36
+            }
+         },
+         "quantity": "1",
+         "percentage": 15.73,
+         "balances": {
+            "totalUSDBalance": "1780.46",
+            "totalEURBalance": "1612.37",
+            "totalBTCBalance": "0.02172093"
+         }
       },
-      "marketCapRank": 1,
-      "marketData": {
-        "circulatingSupply": "19538343.0",
-        "maxSupply": "21000000.0",
-        "currentPrice": {
-          "usd": "36825",
-          "eur": "34472",
-          "btc": "1.0"
-        },
-        "marketCap": "819249388691",
-        "priceChange": {
-           "changePercentageIn24h": 1.04,
-           "changePercentageIn7d": 0.53,
-           "changePercentageIn30d": -2.99
-        }
+      {
+         "cryptoInfo": {
+            "cryptoName": "Solana",
+            "cryptoId": "solana",
+            "symbol": "sol",
+            "image": "https://coin-images.coingecko.com/coins/images/4128/large/solana.png?1718769756",
+            "currentPrice": {
+               "usd": "114.24",
+               "eur": "103.45",
+               "btc": "0.00139363"
+            },
+            "priceChange": {
+               "changePercentageIn24h": -12.66,
+               "changePercentageIn7d": -17.22,
+               "changePercentageIn30d": -17.32
+            }
+         },
+         "quantity": "7",
+         "percentage": 7.07,
+         "balances": {
+            "totalUSDBalance": "799.68",
+            "totalEURBalance": "724.15",
+            "totalBTCBalance": "0.00975541"
+         }
       },
-      "platforms": [
-        "BINANCE"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "0d40df86-5d39-42af-8762-cdf90d2753ad",
-        "cryptoName": "Ethereum",
-        "cryptoId": "ethereum",
-        "symbol": "eth",
-        "image": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628"
+      {
+         "cryptoInfo": {
+            "cryptoName": "XRP",
+            "cryptoId": "ripple",
+            "symbol": "xrp",
+            "image": "https://coin-images.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1696501442",
+            "currentPrice": {
+               "usd": "2.01",
+               "eur": "1.82",
+               "btc": "0.00002447"
+            },
+            "priceChange": {
+               "changePercentageIn24h": -7.55,
+               "changePercentageIn7d": -14.45,
+               "changePercentageIn30d": -16.33
+            }
+         },
+         "quantity": "150",
+         "percentage": 2.66,
+         "balances": {
+            "totalUSDBalance": "301.50",
+            "totalEURBalance": "273.00",
+            "totalBTCBalance": "0.0036705"
+         }
       },
-      "quantity": "0.2581273123",
-      "percentage": 8.88,
-      "balances": {
-        "totalUSDBalance": "540.59",
-        "totalEURBalance": "506.05",
-        "totalBTCBalance": "0.014672630143"
+      {
+         "cryptoInfo": {
+            "cryptoName": "Chainlink",
+            "cryptoId": "chainlink",
+            "symbol": "link",
+            "image": "https://coin-images.coingecko.com/coins/images/877/large/chainlink-new-logo.png?1696502009",
+            "currentPrice": {
+               "usd": "12.51",
+               "eur": "11.33",
+               "btc": "0.00015262"
+            },
+            "priceChange": {
+               "changePercentageIn24h": -11.1,
+               "changePercentageIn7d": -19.72,
+               "changePercentageIn30d": -8.91
+            }
+         },
+         "quantity": "15",
+         "percentage": 1.66,
+         "balances": {
+            "totalUSDBalance": "187.65",
+            "totalEURBalance": "169.95",
+            "totalBTCBalance": "0.0022893"
+         }
       },
-      "marketCapRank": 2,
-      "marketData": {
-        "circulatingSupply": "120263563.630836",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "2094.27",
-          "eur": "1960.45",
-          "btc": "0.05684261"
-        },
-        "marketCap": "272316630944",
-        "priceChange": {
-           "changePercentageIn24h": 0.55,
-           "changePercentageIn7d": -8.24,
-           "changePercentageIn30d": -5.64
-        }
+      {
+         "cryptoInfo": {
+            "cryptoName": "TRON",
+            "cryptoId": "tron",
+            "symbol": "trx",
+            "image": "https://coin-images.coingecko.com/coins/images/1094/large/tron-logo.png?1696502193",
+            "currentPrice": {
+               "usd": "0.230106",
+               "eur": "0.212638",
+               "btc": "0.0000027"
+            },
+            "priceChange": {
+               "changePercentageIn24h": -3.23,
+               "changePercentageIn7d": 8.08,
+               "changePercentageIn30d": -2.91
+            }
+         },
+         "quantity": "100",
+         "percentage": 0.2,
+         "balances": {
+            "totalUSDBalance": "23.01",
+            "totalEURBalance": "21.26",
+            "totalBTCBalance": "0.00027"
+         }
       },
-      "platforms": [
-        "COINBASE"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "e7fac4a2-9424-4635-a716-d3fc1b673ad9",
-        "cryptoName": "Ethereum",
-        "cryptoId": "ethereum",
-        "symbol": "eth",
-        "image": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628"
+      {
+         "cryptoInfo": {
+            "cryptoName": "USDC",
+            "cryptoId": "usd-coin",
+            "symbol": "usdc",
+            "image": "https://coin-images.coingecko.com/coins/images/6319/large/usdc.png?1696506694",
+            "currentPrice": {
+               "usd": "0.999944",
+               "eur": "0.905541",
+               "btc": "0.0000122"
+            },
+            "priceChange": {
+               "changePercentageIn24h": 0,
+               "changePercentageIn7d": 0.01,
+               "changePercentageIn30d": 0.01
+            }
+         },
+         "quantity": "12",
+         "percentage": 0.11,
+         "balances": {
+            "totalUSDBalance": "12.00",
+            "totalEURBalance": "10.87",
+            "totalBTCBalance": "0.0001464"
+         }
       },
-      "quantity": "0.12349",
-      "percentage": 4.25,
-      "balances": {
-        "totalUSDBalance": "258.62",
-        "totalEURBalance": "242.10",
-        "totalBTCBalance": "0.007019493909"
+      {
+         "cryptoInfo": {
+            "cryptoName": "Illuvium",
+            "cryptoId": "illuvium",
+            "symbol": "ilv",
+            "image": "https://coin-images.coingecko.com/coins/images/14468/large/logo-200x200.png?1696514154",
+            "currentPrice": {
+               "usd": "14.78",
+               "eur": "13.65",
+               "btc": "0.00017312"
+            },
+            "priceChange": {
+               "changePercentageIn24h": 0.48,
+               "changePercentageIn7d": 7.55,
+               "changePercentageIn30d": -18.26
+            }
+         },
+         "quantity": "0.66",
+         "percentage": 0.09,
+         "balances": {
+            "totalUSDBalance": "9.75",
+            "totalEURBalance": "9.01",
+            "totalBTCBalance": "0.0001142592"
+         }
       },
-      "marketCapRank": 2,
-      "marketData": {
-        "circulatingSupply": "120263563.630836",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "2094.27",
-          "eur": "1960.45",
-          "btc": "0.05684261"
-        },
-        "marketCap": "272316630944",
-        "priceChange": {
-           "changePercentageIn24h": 0.55,
-           "changePercentageIn7d": -8.24,
-           "changePercentageIn30d": -5.64
-        }
+      {
+         "cryptoInfo": {
+            "cryptoName": "Polygon",
+            "cryptoId": "matic-network",
+            "symbol": "matic",
+            "image": "https://coin-images.coingecko.com/coins/images/4713/large/polygon.png?1698233745",
+            "currentPrice": {
+               "usd": "0.184599",
+               "eur": "0.167171",
+               "btc": "0.00000225"
+            },
+            "priceChange": {
+               "changePercentageIn24h": -7.12,
+               "changePercentageIn7d": -21.35,
+               "changePercentageIn30d": -23.7
+            }
+         },
+         "quantity": "10",
+         "percentage": 0.02,
+         "balances": {
+            "totalUSDBalance": "1.85",
+            "totalEURBalance": "1.67",
+            "totalBTCBalance": "0.0000225"
+         }
       },
-      "platforms": [
-        "BINANCE"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "2e206c40-4453-4a51-9146-926100c1e7cd",
-        "cryptoName": "Tether",
-        "cryptoId": "tether",
-        "symbol": "usdt",
-        "image": "https://assets.coingecko.com/coins/images/325/large/Tether.png?1696501661"
-      },
-      "quantity": "200",
-      "percentage": 3.28,
-      "balances": {
-        "totalUSDBalance": "199.88",
-        "totalEURBalance": "187.10",
-        "totalBTCBalance": "0.005424"
-      },
-      "marketCapRank": 3,
-      "marketData": {
-        "circulatingSupply": "86517250035.3132",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "0.999419",
-          "eur": "0.935491",
-          "btc": "0.00002712"
-        },
-        "marketCap": "96022661565",
-        "priceChange": {
-           "changePercentageIn24h": 0.01,
-           "changePercentageIn7d": 0.01,
-           "changePercentageIn30d": 0.00
-        }
-      },
-      "platforms": [
-        "OKX"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "5bf2dd37-bcc6-4d15-8468-fcdada3d838a",
-        "cryptoName": "BNB",
-        "cryptoId": "binancecoin",
-        "symbol": "bnb",
-        "image": "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1696501970"
-      },
-      "quantity": "0.75",
-      "percentage": 3.11,
-      "balances": {
-        "totalUSDBalance": "189.50",
-        "totalEURBalance": "177.40",
-        "totalBTCBalance": "0.0051435"
-      },
-      "marketCapRank": 4,
-      "marketData": {
-        "circulatingSupply": "153856150.0",
-        "maxSupply": "200000000.0",
-        "currentPrice": {
-          "usd": "252.67",
-          "eur": "236.53",
-          "btc": "0.006858"
-        },
-        "marketCap": "46704503158",
-        "priceChange": {
-           "changePercentageIn24h": 0.95,
-           "changePercentageIn7d": -3.65,
-           "changePercentageIn30d": -9.73
-        }
-      },
-      "platforms": [
-        "BYBIT"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "772ad3f1-0256-4dfc-bff7-82bd655206fb",
-        "cryptoName": "Tether",
-        "cryptoId": "tether",
-        "symbol": "usdt",
-        "image": "https://assets.coingecko.com/coins/images/325/large/Tether.png?1696501661"
-      },
-      "quantity": "185",
-      "percentage": 3.04,
-      "balances": {
-        "totalUSDBalance": "184.89",
-        "totalEURBalance": "173.07",
-        "totalBTCBalance": "0.0050172"
-      },
-      "marketCapRank": 3,
-      "marketData": {
-        "circulatingSupply": "86517250035.3132",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "0.999419",
-          "eur": "0.935491",
-          "btc": "0.00002712"
-        },
-        "marketCap": "96022661565",
-        "priceChange": {
-           "changePercentageIn24h": 0.01,
-           "changePercentageIn7d": 0.01,
-           "changePercentageIn30d": 0.00
-        }
-      },
-      "platforms": [
-        "KRAKEN"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "19b6efa6-31d9-4d63-82c8-c252a7c33bba",
-        "cryptoName": "Solana",
-        "cryptoId": "solana",
-        "symbol": "sol",
-        "image": "https://assets.coingecko.com/coins/images/4128/large/solana.png?1696504756"
-      },
-      "quantity": "2",
-      "percentage": 1.61,
-      "balances": {
-        "totalUSDBalance": "98.10",
-        "totalEURBalance": "91.84",
-        "totalBTCBalance": "0.00266284"
-      },
-      "marketCapRank": 5,
-      "marketData": {
-        "circulatingSupply": "421017098.503324",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "49.05",
-          "eur": "45.92",
-          "btc": "0.00133142"
-        },
-        "marketCap": "39892642944",
-        "priceChange": {
-           "changePercentageIn24h": 1.26,
-           "changePercentageIn7d": 0.17,
-           "changePercentageIn30d": -9.40
-        }
-      },
-      "platforms": [
-        "KRAKEN"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "62977251-9571-4069-aaed-5ab4ea5c4d4f",
-        "cryptoName": "Litecoin",
-        "cryptoId": "litecoin",
-        "symbol": "ltc",
-        "image": "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1696501400"
-      },
-      "quantity": "1.123891239",
-      "percentage": 1.35,
-      "balances": {
-        "totalUSDBalance": "82.26",
-        "totalEURBalance": "77.01",
-        "totalBTCBalance": "0.002231811983"
-      },
-      "marketCapRank": 21,
-      "marketData": {
-        "circulatingSupply": "73857601.9834713",
-        "maxSupply": "84000000.0",
-        "currentPrice": {
-          "usd": "73.19",
-          "eur": "68.52",
-          "btc": "0.00198579"
-        },
-        "marketCap": "4973877592",
-        "priceChange": {
-           "changePercentageIn24h": 0.59,
-           "changePercentageIn7d": -5.55,
-           "changePercentageIn30d": -6.22
-        }
-      },
-      "platforms": [
-        "COINBASE"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "14c60428-8761-4859-a8fb-485505f3dbd0",
-        "cryptoName": "Polkadot",
-        "cryptoId": "polkadot",
-        "symbol": "dot",
-        "image": "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1696512008"
-      },
-      "quantity": "15",
-      "percentage": 1.27,
-      "balances": {
-        "totalUSDBalance": "77.25",
-        "totalEURBalance": "72.30",
-        "totalBTCBalance": "0.0020943"
-      },
-      "marketCapRank": 13,
-      "marketData": {
-        "circulatingSupply": "1294982120.91743",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "5.15",
-          "eur": "4.82",
-          "btc": "0.00013962"
-        },
-        "marketCap": "8816873309",
-        "priceChange": {
-           "changePercentageIn24h": 1.43,
-           "changePercentageIn7d": -2.87,
-           "changePercentageIn30d": -21.80
-        }
-      },
-      "platforms": [
-        "TREZOR"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "id": "a7297b23-68b5-46aa-b91c-ff6d022be59e",
-        "cryptoName": "Dogecoin",
-        "cryptoId": "dogecoin",
-        "symbol": "doge",
-        "image": "https://assets.coingecko.com/coins/images/5/large/dogecoin.png?1696501409"
-      },
-      "quantity": "1000.21381",
-      "percentage": 1.22,
-      "balances": {
-        "totalUSDBalance": "74.32",
-        "totalEURBalance": "69.57",
-        "totalBTCBalance": "0.002020431896"
-      },
-      "marketCapRank": 11,
-      "marketData": {
-        "circulatingSupply": "141771566383.705",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "0.0743",
-          "eur": "0.069553",
-          "btc": "0.00000202"
-        },
-        "marketCap": "11390548620",
-        "priceChange": {
-           "changePercentageIn24h": 0.62,
-           "changePercentageIn7d": 0.57,
-           "changePercentageIn30d": -13.80
-        }
-      },
-      "platforms": [
-        "COINBASE"
-      ]
-    }
-  ]
-}
-```
-
-### Retrieve user cryptos insights in all platforms by page
-
-`/api/v1/insights/cryptos/platforms?page={page}&sortBy={sortBy}&sortType={sortType}`
-
-```json
-{
-  "page": 1,
-  "totalPages": 2,
-  "hasNextPage": true,
-  "balances": {
-    "totalUSDBalance": "6088.78",
-    "totalEURBalance": "5699.70",
-    "totalBTCBalance": "0.165316546142"
-  },
-  "cryptos": [
-    {
-      "cryptoInfo": {
-        "cryptoName": "Bitcoin",
-        "cryptoId": "bitcoin",
-        "symbol": "btc",
-        "image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1696501400"
-      },
-      "quantity": "0.112371283",
-      "percentage": 67.96,
-      "balances": {
-        "totalUSDBalance": "4138.07",
-        "totalEURBalance": "3873.66",
-        "totalBTCBalance": "0.112371283"
-      },
-      "marketCapRank": 1,
-      "marketData": {
-        "circulatingSupply": "19538343.0",
-        "maxSupply": "21000000.0",
-        "currentPrice": {
-          "usd": "36825",
-          "eur": "34472",
-          "btc": "1.0"
-        },
-        "marketCap": "819249388691",
-        "priceChange": {
-           "changePercentageIn24h": 1.04,
-           "changePercentageIn7d": 0.53,
-           "changePercentageIn30d": -2.99
-        }
-      },
-      "platforms": [
-        "BINANCE"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "cryptoName": "Ethereum",
-        "cryptoId": "ethereum",
-        "symbol": "eth",
-        "image": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628"
-      },
-      "quantity": "0.3816173123",
-      "percentage": 13.13,
-      "balances": {
-        "totalUSDBalance": "799.21",
-        "totalEURBalance": "748.14",
-        "totalBTCBalance": "0.021692124052"
-      },
-      "marketCapRank": 2,
-      "marketData": {
-        "circulatingSupply": "120263563.630836",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "2094.27",
-          "eur": "1960.45",
-          "btc": "0.05684261"
-        },
-        "marketCap": "272316630944",
-        "priceChange": {
-           "changePercentageIn24h": 0.55,
-           "changePercentageIn7d": -8.24,
-           "changePercentageIn30d": -5.64
-        }
-      },
-      "platforms": [
-        "COINBASE",
-        "BINANCE"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "cryptoName": "Tether",
-        "cryptoId": "tether",
-        "symbol": "usdt",
-        "image": "https://assets.coingecko.com/coins/images/325/large/Tether.png?1696501661"
-      },
-      "quantity": "385",
-      "percentage": 6.32,
-      "balances": {
-        "totalUSDBalance": "384.78",
-        "totalEURBalance": "360.16",
-        "totalBTCBalance": "0.0104412"
-      },
-      "marketCapRank": 3,
-      "marketData": {
-        "circulatingSupply": "86517250035.3132",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "0.999419",
-          "eur": "0.935491",
-          "btc": "0.00002712"
-        },
-        "marketCap": "96022661565",
-        "priceChange": {
-           "changePercentageIn24h": 0.01,
-           "changePercentageIn7d": 0.01,
-           "changePercentageIn30d": 0.00
-        }
-      },
-      "platforms": [
-        "OKX",
-        "KRAKEN"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "cryptoName": "BNB",
-        "cryptoId": "binancecoin",
-        "symbol": "bnb",
-        "image": "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1696501970"
-      },
-      "quantity": "0.75",
-      "percentage": 3.11,
-      "balances": {
-        "totalUSDBalance": "189.50",
-        "totalEURBalance": "177.40",
-        "totalBTCBalance": "0.0051435"
-      },
-      "marketCapRank": 4,
-      "marketData": {
-        "circulatingSupply": "153856150.0",
-        "maxSupply": "200000000.0",
-        "currentPrice": {
-          "usd": "252.67",
-          "eur": "236.53",
-          "btc": "0.006858"
-        },
-        "marketCap": "46704503158",
-        "priceChange": {
-           "changePercentageIn24h": 0.95,
-           "changePercentageIn7d": -3.65,
-           "changePercentageIn30d": -9.73
-        }
-      },
-      "platforms": [
-        "BYBIT"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "cryptoName": "Solana",
-        "cryptoId": "solana",
-        "symbol": "sol",
-        "image": "https://assets.coingecko.com/coins/images/4128/large/solana.png?1696504756"
-      },
-      "quantity": "2",
-      "percentage": 1.61,
-      "balances": {
-        "totalUSDBalance": "98.10",
-        "totalEURBalance": "91.84",
-        "totalBTCBalance": "0.00266284"
-      },
-      "marketCapRank": 5,
-      "marketData": {
-        "circulatingSupply": "421017098.503324",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "49.05",
-          "eur": "45.92",
-          "btc": "0.00133142"
-        },
-        "marketCap": "39892642944",
-        "priceChange": {
-           "changePercentageIn24h": 1.26,
-           "changePercentageIn7d": 0.17,
-           "changePercentageIn30d": -9.40
-        }
-      },
-      "platforms": [
-        "KRAKEN"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "cryptoName": "Litecoin",
-        "cryptoId": "litecoin",
-        "symbol": "ltc",
-        "image": "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1696501400"
-      },
-      "quantity": "1.123891239",
-      "percentage": 1.35,
-      "balances": {
-        "totalUSDBalance": "82.26",
-        "totalEURBalance": "77.01",
-        "totalBTCBalance": "0.002231811983"
-      },
-      "marketCapRank": 21,
-      "marketData": {
-        "circulatingSupply": "73857601.9834713",
-        "maxSupply": "84000000.0",
-        "currentPrice": {
-          "usd": "73.19",
-          "eur": "68.52",
-          "btc": "0.00198579"
-        },
-        "marketCap": "4973877592",
-        "priceChange": {
-           "changePercentageIn24h": 0.59,
-           "changePercentageIn7d": -5.55,
-           "changePercentageIn30d": -6.22
-        }
-      },
-      "platforms": [
-        "COINBASE"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "cryptoName": "Polkadot",
-        "cryptoId": "polkadot",
-        "symbol": "dot",
-        "image": "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1696512008"
-      },
-      "quantity": "15",
-      "percentage": 1.27,
-      "balances": {
-        "totalUSDBalance": "77.25",
-        "totalEURBalance": "72.30",
-        "totalBTCBalance": "0.0020943"
-      },
-      "marketCapRank": 13,
-      "marketData": {
-        "circulatingSupply": "1294982120.91743",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "5.15",
-          "eur": "4.82",
-          "btc": "0.00013962"
-        },
-        "marketCap": "8816873309",
-        "priceChange": {
-           "changePercentageIn24h": 1.43,
-           "changePercentageIn7d": -2.87,
-           "changePercentageIn30d": -21.80
-        }
-      },
-      "platforms": [
-        "TREZOR"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "cryptoName": "Dogecoin",
-        "cryptoId": "dogecoin",
-        "symbol": "doge",
-        "image": "https://assets.coingecko.com/coins/images/5/large/dogecoin.png?1696501409"
-      },
-      "quantity": "1000.21381",
-      "percentage": 1.22,
-      "balances": {
-        "totalUSDBalance": "74.32",
-        "totalEURBalance": "69.57",
-        "totalBTCBalance": "0.002020431896"
-      },
-      "marketCapRank": 11,
-      "marketData": {
-        "circulatingSupply": "141771566383.705",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "0.0743",
-          "eur": "0.069553",
-          "btc": "0.00000202"
-        },
-        "marketCap": "11390548620",
-        "priceChange": {
-           "changePercentageIn24h": 0.62,
-           "changePercentageIn7d": 0.57,
-           "changePercentageIn30d": -13.80
-        }
-      },
-      "platforms": [
-        "COINBASE"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "cryptoName": "NEO",
-        "cryptoId": "neo",
-        "symbol": "neo",
-        "image": "https://assets.coingecko.com/coins/images/480/large/NEO_512_512.png?1696501735"
-      },
-      "quantity": "5",
-      "percentage": 1.13,
-      "balances": {
-        "totalUSDBalance": "69.00",
-        "totalEURBalance": "64.60",
-        "totalBTCBalance": "0.0018731"
-      },
-      "marketCapRank": 91,
-      "marketData": {
-        "circulatingSupply": "70530000.0",
-        "maxSupply": "0",
-        "currentPrice": {
-          "usd": "13.8",
-          "eur": "12.92",
-          "btc": "0.00037462"
-        },
-        "marketCap": "773235131",
-        "priceChange": {
-           "changePercentageIn24h": 1.66,
-           "changePercentageIn7d": -4.16,
-           "changePercentageIn30d": -20.91
-        }
-      },
-      "platforms": [
-        "OKX"
-      ]
-    },
-    {
-      "cryptoInfo": {
-        "cryptoName": "XRP",
-        "cryptoId": "ripple",
-        "symbol": "xrp",
-        "image": "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1696501442"
-      },
-      "quantity": "100",
-      "percentage": 1.08,
-      "balances": {
-        "totalUSDBalance": "65.76",
-        "totalEURBalance": "61.56",
-        "totalBTCBalance": "0.001785"
-      },
-      "marketCapRank": 6,
-      "marketData": {
-        "circulatingSupply": "53652766196.0",
-        "maxSupply": "100000000000.0",
-        "currentPrice": {
-          "usd": "0.657608",
-          "eur": "0.615587",
-          "btc": "0.00001785"
-        },
-        "marketCap": "28823399406",
-        "priceChange": {
-           "changePercentageIn24h": 2.02,
-           "changePercentageIn7d": -3.52,
-           "changePercentageIn30d": -16.65
-        }
-      },
-      "platforms": [
-        "BINANCE"
-      ]
-    }
-  ]
+      {
+         "cryptoInfo": {
+            "cryptoName": "Dogecoin",
+            "cryptoId": "dogecoin",
+            "symbol": "doge",
+            "image": "https://coin-images.coingecko.com/coins/images/5/large/dogecoin.png?1696501409",
+            "currentPrice": {
+               "usd": "0.158201",
+               "eur": "0.143266",
+               "btc": "0.00000193"
+            },
+            "priceChange": {
+               "changePercentageIn24h": -9.58,
+               "changePercentageIn7d": -17.7,
+               "changePercentageIn30d": -17.7
+            }
+         },
+         "quantity": "5",
+         "percentage": 0.01,
+         "balances": {
+            "totalUSDBalance": "0.79",
+            "totalEURBalance": "0.72",
+            "totalBTCBalance": "0.00000965"
+         }
+      }
+   ]
 }
 ```
 
@@ -1041,233 +550,90 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 `/api/v1/insights/cryptos/balances`
 
 ```json
-{
-  "balances": {
-    "totalUSDBalance": "6127.00",
-    "totalEURBalance": "5737.71",
-    "totalBTCBalance": "0.165174680229"
+[
+   {
+      "name": "Bitcoin",
+      "balance": "8535.23",
+      "percentage": 70.69
+   },
+   {
+      "name": "Ethereum",
+      "balance": "1996.03",
+      "percentage": 16.53
+   },
+   {
+      "name": "Solana",
+      "balance": "918.47",
+      "percentage": 7.61
+   },
+   {
+      "name": "XRP",
+      "balance": "361.50",
+      "percentage": 2.99
+   },
+   {
+      "name": "Chainlink",
+      "balance": "215.70",
+      "percentage": 1.79
+   },
+   {
+      "name": "TRON",
+      "balance": "23.01",
+      "percentage": 0.19
+   },
+   {
+      "name": "USDC",
+      "balance": "12.00",
+      "percentage": 0.1
+   },
+   {
+      "name": "Illuvium",
+      "balance": "9.75",
+      "percentage": 0.08
+   },
+   {
+      "name": "Polygon",
+      "balance": "2.12",
+      "percentage": 0.02
+   },
+   {
+      "name": "Dogecoin",
+      "balance": "0.86",
+      "percentage": 0.01
+   }
+]
+```
+
+### Retrieve balances insights for all platforms
+
+`/api/v1/insights/platforms/balances`
+
+```json
+[
+  {
+    "name": "BINANCE",
+    "balance": "8526.70",
+    "percentage": 70.62
   },
-  "cryptos": [
-    {
-      "cryptoName": "Bitcoin",
-      "cryptoId": "bitcoin",
-      "quantity": "0.112371283",
-      "balances": {
-        "totalUSDBalance": "4169.76",
-        "totalEURBalance": "3904.90",
-        "totalBTCBalance": "0.112371283"
-      },
-      "percentage": 68.06
-    },
-    {
-      "cryptoName": "Ethereum",
-      "cryptoId": "ethereum",
-      "quantity": "0.3816173123",
-      "balances": {
-        "totalUSDBalance": "804.05",
-        "totalEURBalance": "752.99",
-        "totalBTCBalance": "0.02165948814"
-      },
-      "percentage": 13.12
-    },
-    {
-      "cryptoName": "Tether",
-      "cryptoId": "tether",
-      "quantity": "385",
-      "balances": {
-        "totalUSDBalance": "385.00",
-        "totalEURBalance": "360.56",
-        "totalBTCBalance": "0.0103873"
-      },
-      "percentage": 6.28
-    },
-    {
-      "cryptoName": "BNB",
-      "cryptoId": "binancecoin",
-      "quantity": "0.75",
-      "balances": {
-        "totalUSDBalance": "189.94",
-        "totalEURBalance": "177.88",
-        "totalBTCBalance": "0.00511719"
-      },
-      "percentage": 3.1
-    },
-    {
-      "cryptoName": "Solana",
-      "cryptoId": "solana",
-      "quantity": "2",
-      "balances": {
-        "totalUSDBalance": "98.88",
-        "totalEURBalance": "92.60",
-        "totalBTCBalance": "0.00266384"
-      },
-      "percentage": 1.61
-    },
-    {
-      "cryptoName": "Litecoin",
-      "cryptoId": "litecoin",
-      "quantity": "1.123891239",
-      "balances": {
-        "totalUSDBalance": "82.26",
-        "totalEURBalance": "77.01",
-        "totalBTCBalance": "0.002231811983"
-      },
-      "percentage": 1.34
-    },
-    {
-      "cryptoName": "Polkadot",
-      "cryptoId": "polkadot",
-      "quantity": "15",
-      "balances": {
-        "totalUSDBalance": "77.25",
-        "totalEURBalance": "72.30",
-        "totalBTCBalance": "0.0020943"
-      },
-      "percentage": 1.26
-    },
-    {
-      "cryptoName": "Dogecoin",
-      "cryptoId": "dogecoin",
-      "quantity": "1000.21381",
-      "balances": {
-        "totalUSDBalance": "74.32",
-        "totalEURBalance": "69.57",
-        "totalBTCBalance": "0.002020431896"
-      },
-      "percentage": 1.21
-    },
-    {
-      "cryptoName": "NEO",
-      "cryptoId": "neo",
-      "quantity": "5",
-      "balances": {
-        "totalUSDBalance": "69.05",
-        "totalEURBalance": "64.65",
-        "totalBTCBalance": "0.0018601"
-      },
-      "percentage": 1.13
-    },
-    {
-      "cryptoName": "XRP",
-      "cryptoId": "ripple",
-      "quantity": "100",
-      "balances": {
-        "totalUSDBalance": "65.81",
-        "totalEURBalance": "61.63",
-        "totalBTCBalance": "0.001773"
-      },
-      "percentage": 1.07
-    },
-    {
-      "cryptoName": "Polygon",
-      "cryptoId": "matic-network",
-      "quantity": "50",
-      "balances": {
-        "totalUSDBalance": "41.89",
-        "totalEURBalance": "39.21",
-        "totalBTCBalance": "0.0011365"
-      },
-      "percentage": 0.68
-    },
-    {
-      "cryptoName": "Cardano",
-      "cryptoId": "cardano",
-      "quantity": "100.501",
-      "balances": {
-        "totalUSDBalance": "37.83",
-        "totalEURBalance": "35.41",
-        "totalBTCBalance": "0.00102611521"
-      },
-      "percentage": 0.62
-    },
-    {
-      "cryptoName": "Others",
-      "balances": {
-        "totalUSDBalance": "30.96",
-        "totalEURBalance": "29.00",
-        "totalBTCBalance": "0.00083332"
-      },
-      "percentage": 0.51
-    }
-  ]
-}
+  {
+    "name": "MEXC",
+    "balance": "1996.03",
+    "percentage": 16.53
+  },
+  {
+    "name": "BINGX",
+    "balance": "862.63",
+    "percentage": 7.14
+  },
+  {
+    "name": "TEST",
+    "balance": "689.31",
+    "percentage": 5.71
+  }
+]
 ```
 
 ## User Cryptos
-
-### Retrieve user cryptos by page
-
-`/api/v1/cryptos?page={page}`
-
-```json
-{
-  "page": 1,
-  "totalPages": 2,
-  "hasNextPage": true,
-  "cryptos": [
-    {
-      "id": "597ee816-416e-4b78-b9ce-ed16313a6e8a",
-      "cryptoName": "Bitcoin",
-      "quantity": "0.112371283",
-      "platform": "BINANCE"
-    },
-    {
-      "id": "0d40df86-5d39-42af-8762-cdf90d2753ad",
-      "cryptoName": "Ethereum",
-      "quantity": "0.2581273123",
-      "platform": "COINBASE"
-    },
-    {
-      "id": "2e206c40-4453-4a51-9146-926100c1e7cd",
-      "cryptoName": "Tether",
-      "quantity": "200",
-      "platform": "OKX"
-    },
-    {
-      "id": "5bf2dd37-bcc6-4d15-8468-fcdada3d838a",
-      "cryptoName": "BNB",
-      "quantity": "0.75",
-      "platform": "BYBIT"
-    },
-    {
-      "id": "597735e5-4ee9-4d07-bb93-04308381db5e",
-      "cryptoName": "XRP",
-      "quantity": "100",
-      "platform": "BINANCE"
-    },
-    {
-      "id": "19b6efa6-31d9-4d63-82c8-c252a7c33bba",
-      "cryptoName": "Solana",
-      "quantity": "2",
-      "platform": "KRAKEN"
-    },
-    {
-      "id": "efea34ce-eca4-4b76-8357-7190ffe2cae6",
-      "cryptoName": "Cardano",
-      "quantity": "100.501",
-      "platform": "COINBASE"
-    },
-    {
-      "id": "a7297b23-68b5-46aa-b91c-ff6d022be59e",
-      "cryptoName": "Dogecoin",
-      "quantity": "1000.21381",
-      "platform": "COINBASE"
-    },
-    {
-      "id": "34eb45cb-1bd4-4a42-827f-69022c5ebdd2",
-      "cryptoName": "Polygon",
-      "quantity": "50",
-      "platform": "KRAKEN"
-    },
-    {
-      "id": "14c60428-8761-4859-a8fb-485505f3dbd0",
-      "cryptoName": "Polkadot",
-      "quantity": "15",
-      "platform": "TREZOR"
-    }
-  ]
-}
-```
 
 ### Retrieve user crypto by userCryptoId
 
@@ -1290,38 +656,39 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 
 ```json
 {
-  "page": 1,
-  "totalPages": 1,
-  "hasNextPage": false,
-  "goals": [
-    {
-      "id": "bd0b9c6f-305e-45bb-9536-3fe9dd1a9a2f",
-      "cryptoName": "Bitcoin",
-      "actualQuantity": "0.112371283",
-      "progress": 100.0,
-      "remainingQuantity": "0",
-      "goalQuantity": "0.1",
-      "moneyNeeded": "0.00"
-    },
-    {
-      "id": "0a8a0416-0392-4a07-91cb-80a7bde1acdf",
-      "cryptoName": "Ethereum",
-      "actualQuantity": "0.3816173123",
-      "progress": 38.16,
-      "remainingQuantity": "0.6183826877",
-      "goalQuantity": "1",
-      "moneyNeeded": "1298.57"
-    },
-    {
-      "id": "eab99e1f-ac21-45ea-8c85-200087b0c081",
-      "cryptoName": "Bitcoin Cash",
-      "actualQuantity": "0",
-      "progress": 0.0,
-      "remainingQuantity": "4",
-      "goalQuantity": "4",
-      "moneyNeeded": "965.36"
-    }
-  ]
+   "page": 1,
+   "totalPages": 1,
+   "hasNextPage": false,
+   "goals": [
+      {
+         "id": "4eb38add-cb71-4bbc-8c0b-c8097d8ad55b",
+         "cryptoInfo": {
+            "cryptoName": "TRON",
+            "cryptoId": "tron",
+            "symbol": "trx",
+            "image": "https://coin-images.coingecko.com/coins/images/1094/large/tron-logo.png?1696502193"
+         },
+         "actualQuantity": "100",
+         "progress": 100,
+         "remainingQuantity": "0",
+         "goalQuantity": "1",
+         "moneyNeeded": "0.00"
+      },
+      {
+         "id": "8f290e74-4eee-49f5-b02a-b983a4328c3c",
+         "cryptoInfo": {
+            "cryptoName": "Bitcoin",
+            "cryptoId": "bitcoin",
+            "symbol": "btc",
+            "image": "https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png?1696501400"
+         },
+         "actualQuantity": "0.0751",
+         "progress": 15.02,
+         "remainingQuantity": "0.4249",
+         "goalQuantity": "0.5",
+         "moneyNeeded": "35749.81"
+      }
+   ]
 }
 ```
 
@@ -1331,13 +698,18 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 
 ```json
 {
-  "id": "bd0b9c6f-305e-45bb-9536-3fe9dd1a9a2f",
-  "cryptoName": "Bitcoin",
-  "actualQuantity": "0.112371283",
-  "progress": 100.0,
-  "remainingQuantity": "0",
-  "goalQuantity": "0.1",
-  "moneyNeeded": "0.00"
+   "id": "4eb38add-cb71-4bbc-8c0b-c8097d8ad55b",
+   "cryptoInfo": {
+      "cryptoName": "TRON",
+      "cryptoId": "tron",
+      "symbol": "trx",
+      "image": "https://coin-images.coingecko.com/coins/images/1094/large/tron-logo.png?1696502193"
+   },
+   "actualQuantity": "100",
+   "progress": 100,
+   "remainingQuantity": "0",
+   "goalQuantity": "1",
+   "moneyNeeded": "0.00"
 }
 ```
 
