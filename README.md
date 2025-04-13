@@ -53,7 +53,11 @@ Do your own research before investing money you are not willing to loss.
 
 ## Features
 
-- Add/Update/Delete Platforms, Cryptos, Goals.
+- Add/Update/Delete:
+  - Platforms
+  - Goals
+  - Price Targets
+  - Cryptos
 - Transfer crypto and automatically calculate new quantities.
 - View crypto/s and platform/s insights.
 
@@ -152,50 +156,86 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 
 ```json
 {
-  "platformName": "BINANCE",
-  "balances": {
-    "totalUSDBalance": "4462.45",
-    "totalEURBalance": "4177.32",
-    "totalBTCBalance": "0.121175776909"
-  },
-  "cryptos": [
-    {
-      "id": "3f64cb0b-844a-4f7e-b19d-7a158ecd7f05",
-      "cryptoName": "Bitcoin",
-      "cryptoId": "bitcoin",
-      "quantity": "0.112371283",
-      "balances": {
-        "totalUSDBalance": "4138.07",
-        "totalEURBalance": "3873.66",
-        "totalBTCBalance": "0.112371283"
+   "platformName": "BINGX",
+   "balances": {
+      "totalUSDBalance": "790.73",
+      "totalEURBalance": "700.18",
+      "totalBTCBalance": "0.00940208"
+   },
+   "cryptos": [
+      {
+         "id": "37919ee8-e3cb-42f7-ade2-0af669501a9c",
+         "userCryptoInfo": {
+            "cryptoInfo": {
+               "cryptoName": "XRP",
+               "cryptoId": "ripple",
+               "symbol": "xrp",
+               "image": "https://coin-images.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1696501442"
+            },
+            "quantity": "150",
+            "percentage": 40.22,
+            "balances": {
+               "totalUSDBalance": "318.00",
+               "totalEURBalance": "282.00",
+               "totalBTCBalance": "0.003783"
+            }
+         }
       },
-      "percentage": 92.73
-    },
-    {
-      "id": "412e2361-a650-468b-b21e-b26053be6dcf", 
-      "cryptoName": "Ethereum",
-      "cryptoId": "ethereum",
-      "quantity": "0.12349",
-      "balances": {
-        "totalUSDBalance": "258.62",
-        "totalEURBalance": "242.10",
-        "totalBTCBalance": "0.007019493909"
+      {
+         "id": "32c94337-0e16-4860-ad74-acce50ca1285",
+         "userCryptoInfo": {
+            "cryptoInfo": {
+               "cryptoName": "Solana",
+               "cryptoId": "solana",
+               "symbol": "sol",
+               "image": "https://coin-images.coingecko.com/coins/images/4128/large/solana.png?1718769756"
+            },
+            "quantity": "2",
+            "percentage": 32.5,
+            "balances": {
+               "totalUSDBalance": "256.96",
+               "totalEURBalance": "227.24",
+               "totalBTCBalance": "0.00305408"
+            }
+         }
       },
-      "percentage": 5.8
-    },
-    {
-      "id": "42241c9c-eda8-45c1-a603-7ad815ffed7b",
-      "cryptoName": "XRP",
-      "cryptoId": "ripple",
-      "quantity": "100",
-      "balances": {
-        "totalUSDBalance": "65.76",
-        "totalEURBalance": "61.56",
-        "totalBTCBalance": "0.001785"
+      {
+         "id": "b1b94355-1f09-4bbe-ba8e-f087c2465c2d",
+         "userCryptoInfo": {
+            "cryptoInfo": {
+               "cryptoName": "Chainlink",
+               "cryptoId": "chainlink",
+               "symbol": "link",
+               "image": "https://coin-images.coingecko.com/coins/images/877/large/chainlink-new-logo.png?1696502009"
+            },
+            "quantity": "15",
+            "percentage": 24.09,
+            "balances": {
+               "totalUSDBalance": "190.50",
+               "totalEURBalance": "168.60",
+               "totalBTCBalance": "0.002265"
+            }
+         }
       },
-      "percentage": 1.47
-    }
-  ]
+      {
+         "id": "e9aeaa72-d9db-4a5d-aa66-e2c1540e9900",
+         "userCryptoInfo": {
+            "cryptoInfo": {
+               "cryptoName": "TRON",
+               "cryptoId": "tron",
+               "symbol": "trx",
+               "image": "https://coin-images.coingecko.com/coins/images/1094/large/tron-logo.png?1696502193"
+            },
+            "quantity": "100",
+            "percentage": 3.2,
+            "balances": {
+               "totalUSDBalance": "25.27",
+               "totalEURBalance": "22.34",
+               "totalBTCBalance": "0.0003"
+            }
+         }
+      }
+   ]
 }
 ```
 
@@ -616,38 +656,39 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 
 ```json
 {
-  "page": 1,
-  "totalPages": 1,
-  "hasNextPage": false,
-  "goals": [
-    {
-      "id": "bd0b9c6f-305e-45bb-9536-3fe9dd1a9a2f",
-      "cryptoName": "Bitcoin",
-      "actualQuantity": "0.112371283",
-      "progress": 100.0,
-      "remainingQuantity": "0",
-      "goalQuantity": "0.1",
-      "moneyNeeded": "0.00"
-    },
-    {
-      "id": "0a8a0416-0392-4a07-91cb-80a7bde1acdf",
-      "cryptoName": "Ethereum",
-      "actualQuantity": "0.3816173123",
-      "progress": 38.16,
-      "remainingQuantity": "0.6183826877",
-      "goalQuantity": "1",
-      "moneyNeeded": "1298.57"
-    },
-    {
-      "id": "eab99e1f-ac21-45ea-8c85-200087b0c081",
-      "cryptoName": "Bitcoin Cash",
-      "actualQuantity": "0",
-      "progress": 0.0,
-      "remainingQuantity": "4",
-      "goalQuantity": "4",
-      "moneyNeeded": "965.36"
-    }
-  ]
+   "page": 1,
+   "totalPages": 1,
+   "hasNextPage": false,
+   "goals": [
+      {
+         "id": "4eb38add-cb71-4bbc-8c0b-c8097d8ad55b",
+         "cryptoInfo": {
+            "cryptoName": "TRON",
+            "cryptoId": "tron",
+            "symbol": "trx",
+            "image": "https://coin-images.coingecko.com/coins/images/1094/large/tron-logo.png?1696502193"
+         },
+         "actualQuantity": "100",
+         "progress": 100,
+         "remainingQuantity": "0",
+         "goalQuantity": "1",
+         "moneyNeeded": "0.00"
+      },
+      {
+         "id": "8f290e74-4eee-49f5-b02a-b983a4328c3c",
+         "cryptoInfo": {
+            "cryptoName": "Bitcoin",
+            "cryptoId": "bitcoin",
+            "symbol": "btc",
+            "image": "https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png?1696501400"
+         },
+         "actualQuantity": "0.0751",
+         "progress": 15.02,
+         "remainingQuantity": "0.4249",
+         "goalQuantity": "0.5",
+         "moneyNeeded": "35749.81"
+      }
+   ]
 }
 ```
 
@@ -657,13 +698,18 @@ You can check [this repository](https://github.com/lucasdistasi/postman-collecti
 
 ```json
 {
-  "id": "bd0b9c6f-305e-45bb-9536-3fe9dd1a9a2f",
-  "cryptoName": "Bitcoin",
-  "actualQuantity": "0.112371283",
-  "progress": 100.0,
-  "remainingQuantity": "0",
-  "goalQuantity": "0.1",
-  "moneyNeeded": "0.00"
+   "id": "4eb38add-cb71-4bbc-8c0b-c8097d8ad55b",
+   "cryptoInfo": {
+      "cryptoName": "TRON",
+      "cryptoId": "tron",
+      "symbol": "trx",
+      "image": "https://coin-images.coingecko.com/coins/images/1094/large/tron-logo.png?1696502193"
+   },
+   "actualQuantity": "100",
+   "progress": 100,
+   "remainingQuantity": "0",
+   "goalQuantity": "1",
+   "moneyNeeded": "0.00"
 }
 ```
 
