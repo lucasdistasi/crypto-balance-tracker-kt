@@ -5,11 +5,13 @@ import com.distasilucas.cryptobalancetracker.constants.CRYPTO_NAME_SIZE
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PAGE_NUMBER
 import com.distasilucas.cryptobalancetracker.constants.INVALID_PRICE_TARGET_UUID
 import com.distasilucas.cryptobalancetracker.model.request.pricetarget.PriceTargetRequest
+import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PagePriceTargetResponse
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PriceTargetResponse
 import com.distasilucas.cryptobalancetracker.service.PriceTargetService
 import com.ninjasquad.springmockk.MockkBean
 import deletePriceTarget
+import getCryptoInfo
 import io.mockk.every
 import io.mockk.justRun
 import org.hamcrest.Matchers.containsInAnyOrder
@@ -54,7 +56,10 @@ class PriceTargetControllerMvcTest(
     mockMvc.retrievePriceTarget("2ca0a475-bf4b-4733-9f13-6be497ad6fe5")
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.priceTargetId", `is`("2ca0a475-bf4b-4733-9f13-6be497ad6fe5")))
-      .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.cryptoId", `is`("bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.symbol", `is`("btc")))
+      .andExpect(jsonPath("$.cryptoInfo.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
       .andExpect(jsonPath("$.currentPrice", `is`("60000")))
       .andExpect(jsonPath("$.priceTarget", `is`("100000")))
       .andExpect(jsonPath("$.change", `is`(35.30)))
@@ -95,7 +100,10 @@ class PriceTargetControllerMvcTest(
       .andExpect(jsonPath("$.targets").isArray())
       .andExpect(jsonPath("$.targets", hasSize<Int>(1)))
       .andExpect(jsonPath("$.targets[0].priceTargetId", `is`("2ca0a475-bf4b-4733-9f13-6be497ad6fe5")))
-      .andExpect(jsonPath("$.targets[0].cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.targets[0].cryptoInfo.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.targets[0].cryptoInfo.cryptoId", `is`("bitcoin")))
+      .andExpect(jsonPath("$.targets[0].cryptoInfo.symbol", `is`("btc")))
+      .andExpect(jsonPath("$.targets[0].cryptoInfo.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
       .andExpect(jsonPath("$.targets[0].currentPrice", `is`("60000")))
       .andExpect(jsonPath("$.targets[0].priceTarget", `is`("100000")))
       .andExpect(jsonPath("$.targets[0].change", `is`(35.30)))
@@ -128,7 +136,10 @@ class PriceTargetControllerMvcTest(
     mockMvc.savePriceTarget(payload)
       .andExpect(status().isCreated)
       .andExpect(jsonPath("$.priceTargetId", `is`("2ca0a475-bf4b-4733-9f13-6be497ad6fe5")))
-      .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.cryptoId", `is`("bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.symbol", `is`("btc")))
+      .andExpect(jsonPath("$.cryptoInfo.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
       .andExpect(jsonPath("$.currentPrice", `is`("60000")))
       .andExpect(jsonPath("$.priceTarget", `is`("100000")))
       .andExpect(jsonPath("$.change", `is`(35.30)))
@@ -150,7 +161,10 @@ class PriceTargetControllerMvcTest(
     mockMvc.savePriceTarget(payload)
       .andExpect(status().isCreated)
       .andExpect(jsonPath("$.priceTargetId", `is`("2ca0a475-bf4b-4733-9f13-6be497ad6fe5")))
-      .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.cryptoId", `is`("bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.symbol", `is`("btc")))
+      .andExpect(jsonPath("$.cryptoInfo.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
       .andExpect(jsonPath("$.currentPrice", `is`("60000")))
       .andExpect(jsonPath("$.priceTarget", `is`("9999999999999999.999999999999")))
       .andExpect(jsonPath("$.change", `is`(35.30)))
@@ -361,7 +375,10 @@ class PriceTargetControllerMvcTest(
     mockMvc.updatePriceTarget("2ca0a475-bf4b-4733-9f13-6be497ad6fe5", payload)
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.priceTargetId", `is`("2ca0a475-bf4b-4733-9f13-6be497ad6fe5")))
-      .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.cryptoId", `is`("bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.symbol", `is`("btc")))
+      .andExpect(jsonPath("$.cryptoInfo.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
       .andExpect(jsonPath("$.currentPrice", `is`("60000")))
       .andExpect(jsonPath("$.priceTarget", `is`("120000")))
       .andExpect(jsonPath("$.change", `is`(35.30)))
@@ -385,7 +402,10 @@ class PriceTargetControllerMvcTest(
     mockMvc.updatePriceTarget("2ca0a475-bf4b-4733-9f13-6be497ad6fe5", payload)
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.priceTargetId", `is`("2ca0a475-bf4b-4733-9f13-6be497ad6fe5")))
-      .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.cryptoId", `is`("bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.symbol", `is`("btc")))
+      .andExpect(jsonPath("$.cryptoInfo.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
       .andExpect(jsonPath("$.currentPrice", `is`("60000")))
       .andExpect(jsonPath("$.priceTarget", `is`("9999999999999999.999999999999")))
       .andExpect(jsonPath("$.change", `is`(35.30)))
@@ -629,17 +649,9 @@ class PriceTargetControllerMvcTest(
 
   private fun getPriceTargetResponse(
     priceTargetId: String = "2ca0a475-bf4b-4733-9f13-6be497ad6fe5",
-    cryptoName: String = "Bitcoin",
+    cryptoInfo: CryptoInfo = getCryptoInfo(),
     currentPrice: String = "60000",
     priceTarget: String = "100000",
     change: Float = 35.30F
-  ): PriceTargetResponse {
-    return PriceTargetResponse(
-      priceTargetId,
-      cryptoName,
-      currentPrice,
-      priceTarget,
-      change
-    )
-  }
+  ) = PriceTargetResponse(priceTargetId, cryptoInfo, currentPrice, priceTarget, change)
 }

@@ -39,6 +39,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.platform.Pl
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PagePriceTargetResponse
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PriceTargetResponse
 import getCryptoEntity
+import getCryptoInfo
 import getGoalResponse
 import getUserCrypto
 import io.mockk.every
@@ -174,7 +175,7 @@ class CacheServiceTest {
     val priceTarget = PriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", "bitcoin", BigDecimal("120000"))
     val priceTargetResponse = PriceTargetResponse(
       "f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08",
-      "Bitcoin",
+      getCryptoInfo(),
       "58000",
       "120000",
       50F

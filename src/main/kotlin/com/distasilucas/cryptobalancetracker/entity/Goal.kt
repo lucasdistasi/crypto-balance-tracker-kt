@@ -1,6 +1,7 @@
 package com.distasilucas.cryptobalancetracker.entity
 
 import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
@@ -21,20 +22,18 @@ data class Goal(
 
   fun toGoalResponse(
     id: String,
-    cryptoName: String,
+    cryptoInfo: CryptoInfo,
     actualQuantity: BigDecimal,
     progress: Float,
     remainingQuantity: BigDecimal,
     moneyNeeded: BigDecimal
-  ): GoalResponse {
-    return GoalResponse(
-      id = id,
-      cryptoName = cryptoName,
-      actualQuantity = actualQuantity.toPlainString(),
-      progress = progress,
-      remainingQuantity = remainingQuantity.toPlainString(),
-      goalQuantity = goalQuantity.toPlainString(),
-      moneyNeeded = moneyNeeded.toPlainString()
-    )
-  }
+  ) = GoalResponse(
+    id,
+    cryptoInfo,
+    actualQuantity.toPlainString(),
+    progress,
+    remainingQuantity.toPlainString(),
+    goalQuantity.toPlainString(),
+    moneyNeeded.toPlainString()
+  )
 }

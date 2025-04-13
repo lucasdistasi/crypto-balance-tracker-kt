@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.Serializable
 import java.math.BigDecimal
 
-// TODO - instead of using nullable fields, maybe create new class for PlatformInsightsResponse
+// TODO - instead of using nullable fields, maybe create new class for PlatformInsightsResponse, GoalResponse
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class CryptoInfo(
@@ -15,11 +15,11 @@ data class CryptoInfo(
   val coingeckoCryptoId: String,
   val symbol: String,
   val image: String,
-  val currentPrice: CurrentPrice? = null,
+  val price: Price? = null,
   val priceChange: PriceChange? = null,
 ): Serializable
 
-data class CurrentPrice(
+data class Price(
   val usd: String,
   val eur: String,
   val btc: String

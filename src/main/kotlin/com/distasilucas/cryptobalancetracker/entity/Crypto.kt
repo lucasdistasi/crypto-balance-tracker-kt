@@ -1,5 +1,8 @@
 package com.distasilucas.cryptobalancetracker.entity
 
+import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
+import com.distasilucas.cryptobalancetracker.model.response.insights.Price
+import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
@@ -47,4 +50,10 @@ data class Crypto(
 
   @Field("last_updated_at")
   val lastUpdatedAt: LocalDateTime
-) : Serializable
+) : Serializable {
+
+  fun toCryptoInfo(
+    price: Price? = null,
+    priceChange: PriceChange? = null
+  ) = CryptoInfo(name, id, ticker, image, price, priceChange)
+}

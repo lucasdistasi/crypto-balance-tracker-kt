@@ -10,7 +10,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesCha
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
-import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
+import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
@@ -881,7 +881,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "bitcoin",
                   symbol = "btc",
                   image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "30000",
                     eur = "27000",
                     btc = "1"
@@ -906,7 +906,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "ethereum",
                   symbol = "eth",
                   image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "1617.44",
                     eur = "1509.37",
                     btc = "0.06280356"
@@ -931,7 +931,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "tether",
                   symbol = "usdt",
                   image = "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "0.999618",
                     eur = "0.933095",
                     btc = "0.0000388"
@@ -1021,7 +1021,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "bitcoin",
                   symbol = "btc",
                   image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "30000",
                     eur = "27000",
                     btc = "1"
@@ -1046,7 +1046,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "ethereum",
                   symbol = "eth",
                   image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "1617.44",
                     eur = "1509.37",
                     btc = "0.06280356"
@@ -1071,7 +1071,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "avalanche-2",
                   symbol = "avax",
                   image = "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png?1670992574",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "9.3",
                     eur = "8.67",
                     btc = "0.00035516"
@@ -1096,7 +1096,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "binancecoin",
                   symbol = "bnb",
                   image = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "211.79",
                     eur = "197.80",
                     btc = "0.00811016"
@@ -1121,7 +1121,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "chainlink",
                   symbol = "link",
                   image = "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png?1547034700",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "5.99",
                     eur = "5.58",
                     btc = "0.00022866"
@@ -1146,7 +1146,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "tether",
                   symbol = "usdt",
                   image = "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "0.999618",
                     eur = "0.933095",
                     btc = "0.0000388"
@@ -1171,7 +1171,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "litecoin",
                   symbol = "ltc",
                   image = "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1547033580",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "60.59",
                     eur = "56.56",
                     btc = "0.00235292"
@@ -1196,7 +1196,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "solana",
                   symbol = "sol",
                   image = "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "18.04",
                     eur = "16.82",
                     btc = "0.00068809"
@@ -1221,7 +1221,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "polkadot",
                   symbol = "dot",
                   image = "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1639712644",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "4.01",
                     eur = "3.73",
                     btc = "0.00015302"
@@ -1246,7 +1246,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "uniswap",
                   symbol = "uni",
                   image = "https://assets.coingecko.com/coins/images/12504/large/uni.jpg?1687143398",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "4.25",
                     eur = "3.96",
                     btc = "0.00016197"
@@ -1334,7 +1334,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "matic-network",
                   symbol = "matic",
                   image = "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png?1624446912",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "0.509995",
                     eur = "0.475407",
                     btc = "0.00001947"
@@ -1359,7 +1359,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "cardano",
                   symbol = "ada",
                   image = "https://assets.coingecko.com/coins/images/975/large/cardano.png?1547034860",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "0.248915",
                     eur = "0.231985",
                     btc = "0.0000095"
@@ -1384,7 +1384,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "dogecoin",
                   symbol = "doge",
                   image = "https://assets.coingecko.com/coins/images/5/large/dogecoin.png?1547792256",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "0.061481",
                     eur = "0.057319",
                     btc = "0.00000235"
@@ -1409,7 +1409,7 @@ class InsightsServiceTest {
                   coingeckoCryptoId = "ripple",
                   symbol = "xrp",
                   image = "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1605778731",
-                  currentPrice = CurrentPrice(
+                  price = Price(
                     usd = "0.478363",
                     eur = "0.446699",
                     btc = "0.00001833"

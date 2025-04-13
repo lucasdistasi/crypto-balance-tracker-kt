@@ -17,9 +17,8 @@ import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
-import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
+import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
@@ -129,16 +128,12 @@ class InsightsService(
       val crypto = cryptos.first { userCrypto.coingeckoCryptoId == it.id }
       val quantity = userCryptosQuantity[userCrypto.coingeckoCryptoId]
       val cryptoTotalBalances = getCryptoTotalBalances(crypto, quantity!!)
+      val cryptoInfo = crypto.toCryptoInfo()
 
       CryptoInsights(
         id = userCrypto.id,
         userCryptoInfo = UserCryptoInsights(
-          cryptoInfo = CryptoInfo(
-            cryptoName = crypto.name,
-            coingeckoCryptoId = crypto.id,
-            symbol = crypto.ticker,
-            image = crypto.image
-          ),
+          cryptoInfo = cryptoInfo,
           quantity = quantity.toPlainString(),
           percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),
           balances = cryptoTotalBalances
@@ -270,18 +265,12 @@ class InsightsService(
       val (cryptoTotalQuantity, _) = it.value
       val crypto = cryptos.first { crypto -> crypto.id == it.key }
       val cryptoTotalBalances = getCryptoTotalBalances(crypto, cryptoTotalQuantity)
-      val price = CurrentPrice(crypto.lastKnownPrice, crypto.lastKnownPriceInEUR, crypto.lastKnownPriceInBTC)
+      val price = Price(crypto.lastKnownPrice, crypto.lastKnownPriceInEUR, crypto.lastKnownPriceInBTC)
       val priceChange = PriceChange(crypto.changePercentageIn24h, crypto.changePercentageIn7d, crypto.changePercentageIn30d)
+      val cryptoInfo = crypto.toCryptoInfo(price, priceChange)
 
       UserCryptoInsights(
-        cryptoInfo = CryptoInfo(
-          cryptoName = crypto.name,
-          coingeckoCryptoId = crypto.id,
-          symbol = crypto.ticker,
-          image = crypto.image,
-          currentPrice = price,
-          priceChange = priceChange
-        ),
+        cryptoInfo = cryptoInfo,
         quantity = cryptoTotalQuantity.toPlainString(),
         percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),
         balances = cryptoTotalBalances

@@ -96,6 +96,7 @@ class GoalService(
 
   private fun Goal.toGoalResponse(id: String): GoalResponse {
     val crypto = cryptoService.retrieveCryptoInfoById(coingeckoCryptoId)
+    val cryptoInfo = crypto.toCryptoInfo()
     val userCryptos = userCryptoService.findAllByCoingeckoCryptoId(coingeckoCryptoId)
     val actualQuantity = userCryptos.map { it.quantity }
       .fold(BigDecimal.ZERO, BigDecimal::add)
@@ -103,14 +104,7 @@ class GoalService(
     val remainingQuantity = getRemainingQuantity(goalQuantity, actualQuantity)
     val moneyNeeded = crypto.getMoneyNeeded(remainingQuantity)
 
-    return toGoalResponse(
-      id = id,
-      cryptoName = crypto.name,
-      actualQuantity = actualQuantity,
-      progress = progress,
-      remainingQuantity = remainingQuantity,
-      moneyNeeded = moneyNeeded
-    )
+    return toGoalResponse(id, cryptoInfo, actualQuantity, progress, remainingQuantity, moneyNeeded)
   }
 
   private fun getRemainingQuantity(goalQuantity: BigDecimal, actualQuantity: BigDecimal): BigDecimal {

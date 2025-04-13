@@ -8,7 +8,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesCha
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
-import com.distasilucas.cryptobalancetracker.model.response.insights.CurrentPrice
+import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
@@ -120,9 +120,9 @@ class InsightsControllerMvcTest(
         "$.cryptos[0].cryptoInfo.image",
         `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"))
       )
-      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.currentPrice.usd", `is`("30000")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.currentPrice.eur", `is`("27000")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.currentPrice.btc", `is`("1")))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.price.usd", `is`("30000")))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.price.eur", `is`("27000")))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.price.btc", `is`("1")))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.priceChange.changePercentageIn24h", `is`(10.00)))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.priceChange.changePercentageIn7d", `is`(-5.00)))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.priceChange.changePercentageIn30d", `is`(0.00)))
@@ -251,7 +251,7 @@ class InsightsControllerMvcTest(
           coingeckoCryptoId = "bitcoin",
           symbol = "btc",
           image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-          currentPrice = CurrentPrice(
+          price = Price(
             usd = "30000",
             eur = "27000",
             btc = "1"
