@@ -109,7 +109,7 @@ class OrphanCryptoService(
 
   fun isCryptoOrphan(coingeckoCryptoId: String): Boolean {
     return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId).isEmpty() &&
-      goalRepository.findByCoingeckoCryptoId(coingeckoCryptoId).isEmpty &&
+      goalRepository.findByCoingeckoCryptoId(coingeckoCryptoId) == null &&
       priceTargetRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId).isEmpty()
   }
 

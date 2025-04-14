@@ -98,9 +98,9 @@ class PriceTargetService(
   }
 
   private fun validatePriceTargetIsNotDuplicated(coingeckoCryptoId: String, priceTarget: BigDecimal) {
-    val optionalPriceTarget = priceTargetRepository.findByCoingeckoCryptoIdAndTarget(coingeckoCryptoId, priceTarget)
+    val optionalPriceTarget: PriceTarget? = priceTargetRepository.findByCoingeckoCryptoIdAndTarget(coingeckoCryptoId, priceTarget)
 
-    if (optionalPriceTarget.isPresent)
+    if (optionalPriceTarget != null)
       throw DuplicatedPriceTargetException("You already have a price target for $coingeckoCryptoId at that price")
   }
 }

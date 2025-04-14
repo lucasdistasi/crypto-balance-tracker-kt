@@ -10,10 +10,10 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesCha
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
-import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
@@ -28,7 +28,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -136,7 +135,7 @@ class InsightsServiceTest {
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.THREE_DAYS)
 
-    assertEquals(3, datesBalances.datesBalances.size)
+    assertEquals(3, datesBalances!!.datesBalances.size)
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
@@ -372,7 +371,7 @@ class InsightsServiceTest {
   }
 
   @Test
-  fun `should retrieve empty dates balances`() {
+  fun `should retrieve null for dates balances`() {
     val now = LocalDate.of(2024, 3, 17)
     val from = now.minusDays(6).toString()
     val to = now.toString()
@@ -384,12 +383,7 @@ class InsightsServiceTest {
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.ONE_WEEK)
 
     assertThat(datesBalances)
-      .usingRecursiveComparison()
-      .isEqualTo(DatesBalanceResponse(
-        emptyList(),
-        BalanceChanges(0F, 0F, 0F),
-        DifferencesChanges("0", "0", "0")
-      ))
+      .isNull()
   }
 
   @Test
@@ -413,31 +407,29 @@ class InsightsServiceTest {
     assertThat(platformInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          PlatformInsightsResponse(
-            platformName = "BINANCE",
-            balances = BalancesResponse(
-              totalUSDBalance = "7500.00",
-              totalBTCBalance = "0.25",
-              totalEURBalance = "6750.00"
-            ),
-            cryptos = listOf(
-              CryptoInsights(
-                id = "123e4567-e89b-12d3-a456-426614174000",
-                userCryptoInfo = UserCryptoInsights(
-                  cryptoInfo = CryptoInfo(
-                    cryptoName = "Bitcoin",
-                    coingeckoCryptoId = "bitcoin",
-                    symbol = "btc",
-                    image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-                  ),
-                  quantity = "0.25",
-                  percentage = 100f,
-                  balances = BalancesResponse(
-                    totalUSDBalance = "7500.00",
-                    totalBTCBalance = "0.25",
-                    totalEURBalance = "6750.00"
-                  )
+        PlatformInsightsResponse(
+          platformName = "BINANCE",
+          balances = BalancesResponse(
+            totalUSDBalance = "7500.00",
+            totalBTCBalance = "0.25",
+            totalEURBalance = "6750.00"
+          ),
+          cryptos = listOf(
+            CryptoInsights(
+              id = "123e4567-e89b-12d3-a456-426614174000",
+              userCryptoInfo = UserCryptoInsights(
+                cryptoInfo = CryptoInfo(
+                  cryptoName = "Bitcoin",
+                  coingeckoCryptoId = "bitcoin",
+                  symbol = "btc",
+                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+                ),
+                quantity = "0.25",
+                percentage = 100f,
+                balances = BalancesResponse(
+                  totalUSDBalance = "7500.00",
+                  totalBTCBalance = "0.25",
+                  totalEURBalance = "6750.00"
                 )
               )
             )
@@ -487,8 +479,7 @@ class InsightsServiceTest {
 
     val platformInsightsResponse = insightsService.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
-    assertTrue(platformInsightsResponse.isPresent)
-    assertThat(platformInsightsResponse.get())
+    assertThat(platformInsightsResponse!!)
       .usingRecursiveComparison()
       .isEqualTo(
         PlatformInsightsResponse(
@@ -541,7 +532,7 @@ class InsightsServiceTest {
   }
 
   @Test
-  fun `should retrieve empty if no cryptos are found for retrievePlatformInsights`() {
+  fun `should retrieve null if no cryptos are found for retrievePlatformInsights`() {
     every {
       userCryptoServiceMock.findAllByPlatformId("123e4567-e89b-12d3-a456-426614174111")
     } returns emptyList()
@@ -549,7 +540,7 @@ class InsightsServiceTest {
     val platformInsights = insightsService.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
     assertThat(platformInsights)
-      .isEqualTo(Optional.empty<PlatformInsightsResponse>())
+      .isNull()
   }
 
   @Test
@@ -576,25 +567,23 @@ class InsightsServiceTest {
     assertThat(cryptoInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          CryptoInsightResponse(
-            cryptoName = "Bitcoin",
-            balances = BalancesResponse(
-              totalUSDBalance = "7500.00",
-              totalBTCBalance = "0.25",
-              totalEURBalance = "6750.00"
-            ),
-            platforms = listOf(
-              PlatformInsight(
-                quantity = "0.25",
-                balances = BalancesResponse(
-                  totalUSDBalance = "7500.00",
-                  totalBTCBalance = "0.25",
-                  totalEURBalance = "6750.00"
-                ),
-                percentage = 100f,
-                platformName = "BINANCE"
-              )
+        CryptoInsightResponse(
+          cryptoName = "Bitcoin",
+          balances = BalancesResponse(
+            totalUSDBalance = "7500.00",
+            totalBTCBalance = "0.25",
+            totalEURBalance = "6750.00"
+          ),
+          platforms = listOf(
+            PlatformInsight(
+              quantity = "0.25",
+              balances = BalancesResponse(
+                totalUSDBalance = "7500.00",
+                totalBTCBalance = "0.25",
+                totalEURBalance = "6750.00"
+              ),
+              percentage = 100f,
+              platformName = "BINANCE"
             )
           )
         )
@@ -638,8 +627,7 @@ class InsightsServiceTest {
 
     val cryptoInsightResponse = insightsService.retrieveCryptoInsights("bitcoin")
 
-    assertTrue(cryptoInsightResponse.isPresent)
-    assertThat(cryptoInsightResponse.get())
+    assertThat(cryptoInsightResponse!!)
       .usingRecursiveComparison()
       .isEqualTo(
         CryptoInsightResponse(
@@ -676,7 +664,7 @@ class InsightsServiceTest {
   }
 
   @Test
-  fun `should retrieve empty if no cryptos are found for retrieveCryptoInsights`() {
+  fun `should retrieve null if no cryptos are found for retrieveCryptoInsights`() {
     every {
       userCryptoServiceMock.findAllByCoingeckoCryptoId("bitcoin")
     } returns emptyList()
@@ -684,7 +672,7 @@ class InsightsServiceTest {
     val cryptoInsightResponse = insightsService.retrieveCryptoInsights("bitcoin")
 
     assertThat(cryptoInsightResponse)
-      .isEqualTo(Optional.empty<CryptoInsightResponse>())
+      .isNull()
   }
 
   @Test
@@ -864,92 +852,90 @@ class InsightsServiceTest {
     assertThat(userCryptosPlatformsInsights)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          PageUserCryptosInsightsResponse(
-            page = 1,
-            totalPages = 1,
-            hasNextPage = false,
-            balances = BalancesResponse(
-              totalUSDBalance = "6919.05",
-              totalBTCBalance = "0.24392648",
-              totalEURBalance = "6307.48"
+        PageUserCryptosInsightsResponse(
+          page = 1,
+          totalPages = 1,
+          hasNextPage = false,
+          balances = BalancesResponse(
+            totalUSDBalance = "6919.05",
+            totalBTCBalance = "0.24392648",
+            totalEURBalance = "6307.48"
+          ),
+          cryptos = listOf(
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Bitcoin",
+                coingeckoCryptoId = "bitcoin",
+                symbol = "btc",
+                image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+                price = Price(
+                  usd = "30000",
+                  eur = "27000",
+                  btc = "1"
+                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("10.00"),
+                  changePercentageIn7d = BigDecimal("-5.00"),
+                  changePercentageIn30d = BigDecimal("0.00")
+                )
+              ),
+              quantity = "0.15",
+              percentage = 65.04f,
+              balances = BalancesResponse(
+                totalUSDBalance = "4500.00",
+                totalBTCBalance = "0.15",
+                totalEURBalance = "4050.00"
+              ),
             ),
-            cryptos = listOf(
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Bitcoin",
-                  coingeckoCryptoId = "bitcoin",
-                  symbol = "btc",
-                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-                  price = Price(
-                    usd = "30000",
-                    eur = "27000",
-                    btc = "1"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("10.00"),
-                    changePercentageIn7d = BigDecimal("-5.00"),
-                    changePercentageIn30d = BigDecimal("0.00")
-                  )
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Ethereum",
+                coingeckoCryptoId = "ethereum",
+                symbol = "eth",
+                image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
+                price = Price(
+                  usd = "1617.44",
+                  eur = "1509.37",
+                  btc = "0.06280356"
                 ),
-                quantity = "0.15",
-                percentage = 65.04f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "4500.00",
-                  totalBTCBalance = "0.15",
-                  totalEURBalance = "4050.00"
-                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("10.00"),
+                  changePercentageIn7d = BigDecimal("-5.00"),
+                  changePercentageIn30d = BigDecimal("2.00")
+                )
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Ethereum",
-                  coingeckoCryptoId = "ethereum",
-                  symbol = "eth",
-                  image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
-                  price = Price(
-                    usd = "1617.44",
-                    eur = "1509.37",
-                    btc = "0.06280356"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("10.00"),
-                    changePercentageIn7d = BigDecimal("-5.00"),
-                    changePercentageIn30d = BigDecimal("2.00")
-                  )
-                ),
-                quantity = "1.372",
-                percentage = 32.07f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "2219.13",
-                  totalBTCBalance = "0.08616648",
-                  totalEURBalance = "2070.86"
-                ),
+              quantity = "1.372",
+              percentage = 32.07f,
+              balances = BalancesResponse(
+                totalUSDBalance = "2219.13",
+                totalBTCBalance = "0.08616648",
+                totalEURBalance = "2070.86"
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Tether",
-                  coingeckoCryptoId = "tether",
-                  symbol = "usdt",
-                  image = "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663",
-                  price = Price(
-                    usd = "0.999618",
-                    eur = "0.933095",
-                    btc = "0.0000388"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("0.00"),
-                    changePercentageIn7d = BigDecimal("0.00"),
-                    changePercentageIn30d = BigDecimal("0.00")
-                  )
+            ),
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Tether",
+                coingeckoCryptoId = "tether",
+                symbol = "usdt",
+                image = "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663",
+                price = Price(
+                  usd = "0.999618",
+                  eur = "0.933095",
+                  btc = "0.0000388"
                 ),
-                quantity = "200",
-                percentage = 2.89f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "199.92",
-                  totalBTCBalance = "0.00776",
-                  totalEURBalance = "186.62"
-                ),
-              )
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("0.00"),
+                  changePercentageIn7d = BigDecimal("0.00"),
+                  changePercentageIn30d = BigDecimal("0.00")
+                )
+              ),
+              quantity = "200",
+              percentage = 2.89f,
+              balances = BalancesResponse(
+                totalUSDBalance = "199.92",
+                totalBTCBalance = "0.00776",
+                totalEURBalance = "186.62"
+              ),
             )
           )
         )
@@ -999,272 +985,269 @@ class InsightsServiceTest {
 
     val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosInsights(0)
 
-    assertTrue(userCryptosPlatformsInsights.isPresent)
-    assertThat(userCryptosPlatformsInsights.get().cryptos.size).isEqualTo(10)
+    assertThat(userCryptosPlatformsInsights!!.cryptos.size).isEqualTo(10)
     assertThat(userCryptosPlatformsInsights)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          PageUserCryptosInsightsResponse(
-            page = 1,
-            totalPages = 2,
-            hasNextPage = true,
-            balances = BalancesResponse(
-              totalUSDBalance = "8373.63",
-              totalBTCBalance = "0.29959592",
-              totalEURBalance = "7663.61"
+        PageUserCryptosInsightsResponse(
+          page = 1,
+          totalPages = 2,
+          hasNextPage = true,
+          balances = BalancesResponse(
+            totalUSDBalance = "8373.63",
+            totalBTCBalance = "0.29959592",
+            totalEURBalance = "7663.61"
+          ),
+          cryptos = listOf(
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Bitcoin",
+                coingeckoCryptoId = "bitcoin",
+                symbol = "btc",
+                image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+                price = Price(
+                  usd = "30000",
+                  eur = "27000",
+                  btc = "1"
+                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("10.00"),
+                  changePercentageIn7d = BigDecimal("-5.00"),
+                  changePercentageIn30d = BigDecimal("0.00")
+                )
+              ),
+              quantity = "0.15",
+              percentage = 53.74f,
+              balances = BalancesResponse(
+                totalUSDBalance = "4500.00",
+                totalBTCBalance = "0.15",
+                totalEURBalance = "4050.00"
+              ),
             ),
-            cryptos = listOf(
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Bitcoin",
-                  coingeckoCryptoId = "bitcoin",
-                  symbol = "btc",
-                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-                  price = Price(
-                    usd = "30000",
-                    eur = "27000",
-                    btc = "1"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("10.00"),
-                    changePercentageIn7d = BigDecimal("-5.00"),
-                    changePercentageIn30d = BigDecimal("0.00")
-                  )
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Ethereum",
+                coingeckoCryptoId = "ethereum",
+                symbol = "eth",
+                image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
+                price = Price(
+                  usd = "1617.44",
+                  eur = "1509.37",
+                  btc = "0.06280356"
                 ),
-                quantity = "0.15",
-                percentage = 53.74f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "4500.00",
-                  totalBTCBalance = "0.15",
-                  totalEURBalance = "4050.00"
-                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("10.00"),
+                  changePercentageIn7d = BigDecimal("-5.00"),
+                  changePercentageIn30d = BigDecimal("2.00")
+                )
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Ethereum",
-                  coingeckoCryptoId = "ethereum",
-                  symbol = "eth",
-                  image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
-                  price = Price(
-                    usd = "1617.44",
-                    eur = "1509.37",
-                    btc = "0.06280356"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("10.00"),
-                    changePercentageIn7d = BigDecimal("-5.00"),
-                    changePercentageIn30d = BigDecimal("2.00")
-                  )
-                ),
-                quantity = "1.372",
-                percentage = 26.5f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "2219.13",
-                  totalBTCBalance = "0.08616648",
-                  totalEURBalance = "2070.86"
-                ),
+              quantity = "1.372",
+              percentage = 26.5f,
+              balances = BalancesResponse(
+                totalUSDBalance = "2219.13",
+                totalBTCBalance = "0.08616648",
+                totalEURBalance = "2070.86"
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Avalanche",
-                  coingeckoCryptoId = "avalanche-2",
-                  symbol = "avax",
-                  image = "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png?1670992574",
-                  price = Price(
-                    usd = "9.3",
-                    eur = "8.67",
-                    btc = "0.00035516"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("4.00"),
-                    changePercentageIn7d = BigDecimal("1.00"),
-                    changePercentageIn30d = BigDecimal("8.00")
-                  )
+            ),
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Avalanche",
+                coingeckoCryptoId = "avalanche-2",
+                symbol = "avax",
+                image = "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png?1670992574",
+                price = Price(
+                  usd = "9.3",
+                  eur = "8.67",
+                  btc = "0.00035516"
                 ),
-                quantity = "25",
-                percentage = 2.78f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "232.50",
-                  totalBTCBalance = "0.008879",
-                  totalEURBalance = "216.75"
-                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("4.00"),
+                  changePercentageIn7d = BigDecimal("1.00"),
+                  changePercentageIn30d = BigDecimal("8.00")
+                )
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "BNB",
-                  coingeckoCryptoId = "binancecoin",
-                  symbol = "bnb",
-                  image = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850",
-                  price = Price(
-                    usd = "211.79",
-                    eur = "197.80",
-                    btc = "0.00811016"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("6.00"),
-                    changePercentageIn7d = BigDecimal("-2.00"),
-                    changePercentageIn30d = BigDecimal("12.00")
-                  )
-                ),
-                quantity = "1",
-                percentage = 2.53f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "211.79",
-                  totalBTCBalance = "0.00811016",
-                  totalEURBalance = "197.80"
-                ),
+              quantity = "25",
+              percentage = 2.78f,
+              balances = BalancesResponse(
+                totalUSDBalance = "232.50",
+                totalBTCBalance = "0.008879",
+                totalEURBalance = "216.75"
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Chainlink",
-                  coingeckoCryptoId = "chainlink",
-                  symbol = "link",
-                  image = "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png?1547034700",
-                  price = Price(
-                    usd = "5.99",
-                    eur = "5.58",
-                    btc = "0.00022866"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("4.00"),
-                    changePercentageIn7d = BigDecimal("-1.00"),
-                    changePercentageIn30d = BigDecimal("8.00")
-                  )
+            ),
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "BNB",
+                coingeckoCryptoId = "binancecoin",
+                symbol = "bnb",
+                image = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850",
+                price = Price(
+                  usd = "211.79",
+                  eur = "197.80",
+                  btc = "0.00811016"
                 ),
-                quantity = "35",
-                percentage = 2.5f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "209.65",
-                  totalBTCBalance = "0.0080031",
-                  totalEURBalance = "195.30"
-                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("6.00"),
+                  changePercentageIn7d = BigDecimal("-2.00"),
+                  changePercentageIn30d = BigDecimal("12.00")
+                )
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Tether",
-                  coingeckoCryptoId = "tether",
-                  symbol = "usdt",
-                  image = "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663",
-                  price = Price(
-                    usd = "0.999618",
-                    eur = "0.933095",
-                    btc = "0.0000388"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("0.00"),
-                    changePercentageIn7d = BigDecimal("0.00"),
-                    changePercentageIn30d = BigDecimal("0.00")
-                  )
-                ),
-                quantity = "200",
-                percentage = 2.39f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "199.92",
-                  totalBTCBalance = "0.00776",
-                  totalEURBalance = "186.62"
-                ),
+              quantity = "1",
+              percentage = 2.53f,
+              balances = BalancesResponse(
+                totalUSDBalance = "211.79",
+                totalBTCBalance = "0.00811016",
+                totalEURBalance = "197.80"
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Litecoin",
-                  coingeckoCryptoId = "litecoin",
-                  symbol = "ltc",
-                  image = "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1547033580",
-                  price = Price(
-                    usd = "60.59",
-                    eur = "56.56",
-                    btc = "0.00235292"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("6.00"),
-                    changePercentageIn7d = BigDecimal("-2.00"),
-                    changePercentageIn30d = BigDecimal("12.00")
-                  )
+            ),
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Chainlink",
+                coingeckoCryptoId = "chainlink",
+                symbol = "link",
+                image = "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png?1547034700",
+                price = Price(
+                  usd = "5.99",
+                  eur = "5.58",
+                  btc = "0.00022866"
                 ),
-                quantity = "3.125",
-                percentage = 2.26f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "189.34",
-                  totalBTCBalance = "0.00735288",
-                  totalEURBalance = "176.75"
-                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("4.00"),
+                  changePercentageIn7d = BigDecimal("-1.00"),
+                  changePercentageIn30d = BigDecimal("8.00")
+                )
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Solana",
-                  coingeckoCryptoId = "solana",
-                  symbol = "sol",
-                  image = "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
-                  price = Price(
-                    usd = "18.04",
-                    eur = "16.82",
-                    btc = "0.00068809"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("4.00"),
-                    changePercentageIn7d = BigDecimal("1.00"),
-                    changePercentageIn30d = BigDecimal("-2.00")
-                  )
-                ),
-                quantity = "10",
-                percentage = 2.15f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "180.40",
-                  totalBTCBalance = "0.0068809",
-                  totalEURBalance = "168.20"
-                ),
+              quantity = "35",
+              percentage = 2.5f,
+              balances = BalancesResponse(
+                totalUSDBalance = "209.65",
+                totalBTCBalance = "0.0080031",
+                totalEURBalance = "195.30"
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Polkadot",
-                  coingeckoCryptoId = "polkadot",
-                  symbol = "dot",
-                  image = "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1639712644",
-                  price = Price(
-                    usd = "4.01",
-                    eur = "3.73",
-                    btc = "0.00015302"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("4.00"),
-                    changePercentageIn7d = BigDecimal("-1.00"),
-                    changePercentageIn30d = BigDecimal("2.00")
-                  )
+            ),
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Tether",
+                coingeckoCryptoId = "tether",
+                symbol = "usdt",
+                image = "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663",
+                price = Price(
+                  usd = "0.999618",
+                  eur = "0.933095",
+                  btc = "0.0000388"
                 ),
-                quantity = "40",
-                percentage = 1.92f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "160.40",
-                  totalBTCBalance = "0.0061208",
-                  totalEURBalance = "149.20"
-                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("0.00"),
+                  changePercentageIn7d = BigDecimal("0.00"),
+                  changePercentageIn30d = BigDecimal("0.00")
+                )
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Uniswap",
-                  coingeckoCryptoId = "uniswap",
-                  symbol = "uni",
-                  image = "https://assets.coingecko.com/coins/images/12504/large/uni.jpg?1687143398",
-                  price = Price(
-                    usd = "4.25",
-                    eur = "3.96",
-                    btc = "0.00016197"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("2.00"),
-                    changePercentageIn7d = BigDecimal("-1.00"),
-                    changePercentageIn30d = BigDecimal("3.00")
-                  )
+              quantity = "200",
+              percentage = 2.39f,
+              balances = BalancesResponse(
+                totalUSDBalance = "199.92",
+                totalBTCBalance = "0.00776",
+                totalEURBalance = "186.62"
+              ),
+            ),
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Litecoin",
+                coingeckoCryptoId = "litecoin",
+                symbol = "ltc",
+                image = "https://assets.coingecko.com/coins/images/2/large/litecoin.png?1547033580",
+                price = Price(
+                  usd = "60.59",
+                  eur = "56.56",
+                  btc = "0.00235292"
                 ),
-                quantity = "30",
-                percentage = 1.52f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "127.50",
-                  totalBTCBalance = "0.0048591",
-                  totalEURBalance = "118.80"
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("6.00"),
+                  changePercentageIn7d = BigDecimal("-2.00"),
+                  changePercentageIn30d = BigDecimal("12.00")
+                )
+              ),
+              quantity = "3.125",
+              percentage = 2.26f,
+              balances = BalancesResponse(
+                totalUSDBalance = "189.34",
+                totalBTCBalance = "0.00735288",
+                totalEURBalance = "176.75"
+              ),
+            ),
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Solana",
+                coingeckoCryptoId = "solana",
+                symbol = "sol",
+                image = "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
+                price = Price(
+                  usd = "18.04",
+                  eur = "16.82",
+                  btc = "0.00068809"
                 ),
-              )
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("4.00"),
+                  changePercentageIn7d = BigDecimal("1.00"),
+                  changePercentageIn30d = BigDecimal("-2.00")
+                )
+              ),
+              quantity = "10",
+              percentage = 2.15f,
+              balances = BalancesResponse(
+                totalUSDBalance = "180.40",
+                totalBTCBalance = "0.0068809",
+                totalEURBalance = "168.20"
+              ),
+            ),
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Polkadot",
+                coingeckoCryptoId = "polkadot",
+                symbol = "dot",
+                image = "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1639712644",
+                price = Price(
+                  usd = "4.01",
+                  eur = "3.73",
+                  btc = "0.00015302"
+                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("4.00"),
+                  changePercentageIn7d = BigDecimal("-1.00"),
+                  changePercentageIn30d = BigDecimal("2.00")
+                )
+              ),
+              quantity = "40",
+              percentage = 1.92f,
+              balances = BalancesResponse(
+                totalUSDBalance = "160.40",
+                totalBTCBalance = "0.0061208",
+                totalEURBalance = "149.20"
+              ),
+            ),
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Uniswap",
+                coingeckoCryptoId = "uniswap",
+                symbol = "uni",
+                image = "https://assets.coingecko.com/coins/images/12504/large/uni.jpg?1687143398",
+                price = Price(
+                  usd = "4.25",
+                  eur = "3.96",
+                  btc = "0.00016197"
+                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("2.00"),
+                  changePercentageIn7d = BigDecimal("-1.00"),
+                  changePercentageIn30d = BigDecimal("3.00")
+                )
+              ),
+              quantity = "30",
+              percentage = 1.52f,
+              balances = BalancesResponse(
+                totalUSDBalance = "127.50",
+                totalBTCBalance = "0.0048591",
+                totalEURBalance = "118.80"
+              ),
             )
           )
         )
@@ -1317,117 +1300,115 @@ class InsightsServiceTest {
     assertThat(userCryptosPlatformsInsights)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          PageUserCryptosInsightsResponse(
-            page = 2,
-            totalPages = 2,
-            hasNextPage = false,
-            balances = BalancesResponse(
-              totalUSDBalance = "8373.63",
-              totalBTCBalance = "0.29959592",
-              totalEURBalance = "7663.61"
+        PageUserCryptosInsightsResponse(
+          page = 2,
+          totalPages = 2,
+          hasNextPage = false,
+          balances = BalancesResponse(
+            totalUSDBalance = "8373.63",
+            totalBTCBalance = "0.29959592",
+            totalEURBalance = "7663.61"
+          ),
+          cryptos = listOf(
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Polygon",
+                coingeckoCryptoId = "matic-network",
+                symbol = "matic",
+                image = "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png?1624446912",
+                price = Price(
+                  usd = "0.509995",
+                  eur = "0.475407",
+                  btc = "0.00001947"
+                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("14.00"),
+                  changePercentageIn7d = BigDecimal("-10.00"),
+                  changePercentageIn30d = BigDecimal("2.00")
+                )
+              ),
+              quantity = "100",
+              percentage = 0.61f,
+              balances = BalancesResponse(
+                totalUSDBalance = "51.00",
+                totalBTCBalance = "0.001947",
+                totalEURBalance = "47.54"
+              ),
             ),
-            cryptos = listOf(
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Polygon",
-                  coingeckoCryptoId = "matic-network",
-                  symbol = "matic",
-                  image = "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png?1624446912",
-                  price = Price(
-                    usd = "0.509995",
-                    eur = "0.475407",
-                    btc = "0.00001947"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("14.00"),
-                    changePercentageIn7d = BigDecimal("-10.00"),
-                    changePercentageIn30d = BigDecimal("2.00")
-                  )
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Cardano",
+                coingeckoCryptoId = "cardano",
+                symbol = "ada",
+                image = "https://assets.coingecko.com/coins/images/975/large/cardano.png?1547034860",
+                price = Price(
+                  usd = "0.248915",
+                  eur = "0.231985",
+                  btc = "0.0000095"
                 ),
-                quantity = "100",
-                percentage = 0.61f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "51.00",
-                  totalBTCBalance = "0.001947",
-                  totalEURBalance = "47.54"
-                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("7.00"),
+                  changePercentageIn7d = BigDecimal("1.00"),
+                  changePercentageIn30d = BigDecimal("-2.00")
+                )
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Cardano",
-                  coingeckoCryptoId = "cardano",
-                  symbol = "ada",
-                  image = "https://assets.coingecko.com/coins/images/975/large/cardano.png?1547034860",
-                  price = Price(
-                    usd = "0.248915",
-                    eur = "0.231985",
-                    btc = "0.0000095"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("7.00"),
-                    changePercentageIn7d = BigDecimal("1.00"),
-                    changePercentageIn30d = BigDecimal("-2.00")
-                  )
-                ),
-                quantity = "150",
-                percentage = 0.45f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "37.34",
-                  totalBTCBalance = "0.001425",
-                  totalEURBalance = "34.80"
-                ),
+              quantity = "150",
+              percentage = 0.45f,
+              balances = BalancesResponse(
+                totalUSDBalance = "37.34",
+                totalBTCBalance = "0.001425",
+                totalEURBalance = "34.80"
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Dogecoin",
-                  coingeckoCryptoId = "dogecoin",
-                  symbol = "doge",
-                  image = "https://assets.coingecko.com/coins/images/5/large/dogecoin.png?1547792256",
-                  price = Price(
-                    usd = "0.061481",
-                    eur = "0.057319",
-                    btc = "0.00000235"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("-4.00"),
-                    changePercentageIn7d = BigDecimal("-1.00"),
-                    changePercentageIn30d = BigDecimal("-8.00")
-                  )
+            ),
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Dogecoin",
+                coingeckoCryptoId = "dogecoin",
+                symbol = "doge",
+                image = "https://assets.coingecko.com/coins/images/5/large/dogecoin.png?1547792256",
+                price = Price(
+                  usd = "0.061481",
+                  eur = "0.057319",
+                  btc = "0.00000235"
                 ),
-                quantity = "500",
-                percentage = 0.37f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "30.74",
-                  totalBTCBalance = "0.001175",
-                  totalEURBalance = "28.66"
-                ),
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("-4.00"),
+                  changePercentageIn7d = BigDecimal("-1.00"),
+                  changePercentageIn30d = BigDecimal("-8.00")
+                )
               ),
-              UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "XRP",
-                  coingeckoCryptoId = "ripple",
-                  symbol = "xrp",
-                  image = "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1605778731",
-                  price = Price(
-                    usd = "0.478363",
-                    eur = "0.446699",
-                    btc = "0.00001833"
-                  ),
-                  priceChange = PriceChange(
-                    changePercentageIn24h = BigDecimal("2.00"),
-                    changePercentageIn7d = BigDecimal("3.00"),
-                    changePercentageIn30d = BigDecimal("-5.00")
-                  )
+              quantity = "500",
+              percentage = 0.37f,
+              balances = BalancesResponse(
+                totalUSDBalance = "30.74",
+                totalBTCBalance = "0.001175",
+                totalEURBalance = "28.66"
+              ),
+            ),
+            UserCryptoInsights(
+              cryptoInfo = CryptoInfo(
+                cryptoName = "XRP",
+                coingeckoCryptoId = "ripple",
+                symbol = "xrp",
+                image = "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1605778731",
+                price = Price(
+                  usd = "0.478363",
+                  eur = "0.446699",
+                  btc = "0.00001833"
                 ),
-                quantity = "50",
-                percentage = 0.29f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "23.92",
-                  totalBTCBalance = "0.0009165",
-                  totalEURBalance = "22.33"
-                ),
-              )
+                priceChange = PriceChange(
+                  changePercentageIn24h = BigDecimal("2.00"),
+                  changePercentageIn7d = BigDecimal("3.00"),
+                  changePercentageIn30d = BigDecimal("-5.00")
+                )
+              ),
+              quantity = "50",
+              percentage = 0.29f,
+              balances = BalancesResponse(
+                totalUSDBalance = "23.92",
+                totalBTCBalance = "0.0009165",
+                totalEURBalance = "22.33"
+              ),
             )
           )
         )
@@ -1435,18 +1416,17 @@ class InsightsServiceTest {
   }
 
   @Test
-  fun `should retrieve empty if no user cryptos are found for retrieveUserCryptosInsights`() {
+  fun `should retrieve null if no user cryptos are found for retrieveUserCryptosInsights`() {
     every { userCryptoServiceMock.findAll() } returns emptyList()
 
     val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosInsights(0)
 
     assertThat(userCryptosPlatformsInsights)
-      .usingRecursiveComparison()
-      .isEqualTo(Optional.empty<PageUserCryptosInsightsResponse>())
+      .isNull()
   }
 
   @Test
-  fun `should retrieve empty if no user cryptos are found for page for retrieveUserCryptosInsights`() {
+  fun `should retrieve null if no user cryptos are found for page for retrieveUserCryptosInsights`() {
     val cryptos = listOf("bitcoin", "ethereum", "tether")
     val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
     val cryptosEntities = cryptos().filter { cryptos.contains(it.id) }
@@ -1473,8 +1453,7 @@ class InsightsServiceTest {
     val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosInsights(1)
 
     assertThat(userCryptosPlatformsInsights)
-      .usingRecursiveComparison()
-      .isEqualTo(Optional.empty<PageUserCryptosInsightsResponse>())
+      .isNull()
   }
 
   private fun userCryptos(): List<UserCrypto> {

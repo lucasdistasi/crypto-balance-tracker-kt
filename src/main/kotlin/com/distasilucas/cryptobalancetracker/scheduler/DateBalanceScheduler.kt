@@ -24,24 +24,21 @@ class DateBalanceScheduler(
 
     val today = LocalDate.now(clock).toString()
     val totalBalances = insightsService.retrieveTotalBalances()
-    val optionalDateBalance = dateBalancesRepository.findDateBalanceByDate(today)
+    val optionalDateBalance: DateBalance? = dateBalancesRepository.findDateBalanceByDate(today)
 
-    optionalDateBalance.ifPresentOrElse(
-      {
-        val updatedDateBalance = DateBalance(it.id, today, totalBalances)
-        logger.info {"Updating balances for date $today. Old Balance: $it. New balances $updatedDateBalance" }
-        dateBalancesRepository.save(updatedDateBalance)
-      },
-      {
-        logger.info { "Saving balances $totalBalances for date $today" }
-        dateBalancesRepository.save(
-          DateBalance(
-            date = today,
-            usdBalance = totalBalances.totalUSDBalance,
-            eurBalance = totalBalances.totalEURBalance,
-            btcBalance = totalBalances.totalBTCBalance)
-        )
-      }
-    )
+    if (optionalDateBalance != null) {
+      val updatedDateBalance = DateBalance(optionalDateBalance.id, today, totalBalances)
+      logger.info {"Updating balances for date $today. Old Balance: $optionalDateBalance. New balances $updatedDateBalance" }
+      dateBalancesRepository.save(updatedDateBalance)
+    } else {
+      logger.info { "Saving balances $totalBalances for date $today" }
+      dateBalancesRepository.save(
+        DateBalance(
+          date = today,
+          usdBalance = totalBalances.totalUSDBalance,
+          eurBalance = totalBalances.totalEURBalance,
+          btcBalance = totalBalances.totalBTCBalance)
+      )
+    }
   }
 }

@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.Optional
 
 @Validated
 @RestController
@@ -58,7 +57,7 @@ class InsightsController(private val insightsService: InsightsService) : Insight
     val sortParams = SortParams(sortBy, sortType)
     val userCryptosInsights = insightsService.retrieveUserCryptosInsights(page, sortParams)
 
-    return if (userCryptosInsights.isEmpty) ResponseEntity.noContent().build() else ResponseEntity.ok(userCryptosInsights.get())
+    return okOrNoContent(userCryptosInsights)
   }
 
   @GetMapping("/cryptos/balances")
@@ -93,7 +92,7 @@ class InsightsController(private val insightsService: InsightsService) : Insight
     return okOrNoContent(platformsInsights)
   }
 
-  private fun <T> okOrNoContent(optional: Optional<T>): ResponseEntity<T> {
-    return if (optional.isPresent) ResponseEntity.ok(optional.get()) else ResponseEntity.noContent().build()
+  private fun <T> okOrNoContent(response: T?): ResponseEntity<T> {
+    return if (response != null) ResponseEntity.ok(response) else ResponseEntity.noContent().build()
   }
 }

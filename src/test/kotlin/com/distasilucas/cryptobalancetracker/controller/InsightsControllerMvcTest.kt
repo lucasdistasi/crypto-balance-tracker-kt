@@ -8,10 +8,10 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesCha
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
-import com.distasilucas.cryptobalancetracker.model.response.insights.Price
-import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
@@ -42,7 +42,6 @@ import retrievePlatformsBalancesInsights
 import retrieveTotalBalancesInsights
 import retrieveUserCryptosPlatformsInsights
 import java.math.BigDecimal
-import java.util.Optional
 
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(SpringExtension::class)
@@ -101,9 +100,7 @@ class InsightsControllerMvcTest(
     val page = 0
     val pageUserCryptosInsightsResponse = pageUserCryptosInsightsResponse()
 
-    every {
-      insightsServiceMock.retrieveUserCryptosInsights(page)
-    } returns Optional.of(pageUserCryptosInsightsResponse)
+    every { insightsServiceMock.retrieveUserCryptosInsights(page) } returns pageUserCryptosInsightsResponse
 
     mockMvc.retrieveUserCryptosPlatformsInsights(page)
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -177,7 +174,7 @@ class InsightsControllerMvcTest(
   fun `should retrieve crypto insights with status 200`() {
     val cryptoInsightResponse = cryptoInsightResponse()
 
-    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns Optional.of(cryptoInsightResponse)
+    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns cryptoInsightResponse
 
     mockMvc.retrieveCryptoInsights("bitcoin")
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -199,7 +196,7 @@ class InsightsControllerMvcTest(
 
     every {
       insightsServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
-    } returns Optional.of(platformInsightsResponse)
+    } returns platformInsightsResponse
 
     mockMvc.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
       .andExpect(MockMvcResultMatchers.status().isOk)

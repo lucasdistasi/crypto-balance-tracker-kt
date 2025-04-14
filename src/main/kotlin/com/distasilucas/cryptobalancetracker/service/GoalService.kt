@@ -54,9 +54,9 @@ class GoalService(
 
   fun saveGoal(goalRequest: GoalRequest): GoalResponse {
     val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(goalRequest.cryptoName!!)
-    val existingGoal = goalRepository.findByCoingeckoCryptoId(coingeckoCrypto.id)
+    val existingGoal: Goal? = goalRepository.findByCoingeckoCryptoId(coingeckoCrypto.id)
 
-    if (existingGoal.isPresent) {
+    if (existingGoal != null) {
       throw DuplicatedGoalException(DUPLICATED_GOAL.format(coingeckoCrypto.name))
     }
 

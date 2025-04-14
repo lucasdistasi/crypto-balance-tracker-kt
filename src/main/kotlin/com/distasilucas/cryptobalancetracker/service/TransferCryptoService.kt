@@ -38,15 +38,14 @@ class TransferCryptoService(
 
     val remainingCryptoQuantity = transferCryptoRequest.calculateRemainingCryptoQuantity(availableQuantity)
     val quantityToSendReceive = transferCryptoRequest.calculateQuantityToSendReceive(remainingCryptoQuantity, availableQuantity)
-    val toPlatformOptionalUserCrypto = userCryptoService.findByCoingeckoCryptoIdAndPlatformId(
+    val toPlatformUserCrypto = userCryptoService.findByCoingeckoCryptoIdAndPlatformId(
       userCryptoToTransfer.coingeckoCryptoId,
       transferCryptoRequest.toPlatformId
     )
 
     var transferCryptoResponse: TransferCryptoResponse? = null
 
-    if (doesFromPlatformHaveRemaining(remainingCryptoQuantity) && toPlatformOptionalUserCrypto.isPresent) {
-      val toPlatformUserCrypto = toPlatformOptionalUserCrypto.get()
+    if (doesFromPlatformHaveRemaining(remainingCryptoQuantity) && toPlatformUserCrypto != null) {
       val newQuantity = toPlatformUserCrypto.quantity.add(quantityToSendReceive)
       val updatedFromPlatformUserCrypto = userCryptoToTransfer.copy(quantity = remainingCryptoQuantity)
       val updatedToPlatformUserCrypto = toPlatformUserCrypto.copy(quantity = newQuantity)
@@ -60,9 +59,9 @@ class TransferCryptoService(
       )
     }
 
-    if (doesFromPlatformHaveRemaining(remainingCryptoQuantity) && toPlatformOptionalUserCrypto.isEmpty) {
+    if (doesFromPlatformHaveRemaining(remainingCryptoQuantity) && toPlatformUserCrypto == null) {
       val uuid = UUID.randomUUID().toString()
-      val toPlatformUserCrypto = UserCrypto(
+      val updatedToPlatformUserCrypto = UserCrypto(
         uuid,
         userCryptoToTransfer.coingeckoCryptoId,
         quantityToSendReceive,
@@ -71,10 +70,10 @@ class TransferCryptoService(
       val updatedUserCryptoToTransfer = userCryptoToTransfer.copy(quantity = remainingCryptoQuantity)
 
       if (transferCryptoRequest.sendFullQuantity == true) {
-        userCryptoService.saveOrUpdateAll(listOf(updatedUserCryptoToTransfer, toPlatformUserCrypto))
+        userCryptoService.saveOrUpdateAll(listOf(updatedUserCryptoToTransfer, updatedToPlatformUserCrypto))
       } else {
         if (quantityToSendReceive > BigDecimal.ZERO) {
-          userCryptoService.saveOrUpdateAll(listOf(updatedUserCryptoToTransfer, toPlatformUserCrypto))
+          userCryptoService.saveOrUpdateAll(listOf(updatedUserCryptoToTransfer, updatedToPlatformUserCrypto))
         } else {
           userCryptoService.saveOrUpdateAll(listOf(updatedUserCryptoToTransfer))
         }
@@ -87,8 +86,7 @@ class TransferCryptoService(
       )
     }
 
-    if (!doesFromPlatformHaveRemaining(remainingCryptoQuantity) && toPlatformOptionalUserCrypto.isPresent) {
-      val toPlatformUserCrypto = toPlatformOptionalUserCrypto.get()
+    if (!doesFromPlatformHaveRemaining(remainingCryptoQuantity) && toPlatformUserCrypto != null) {
       val newQuantity = toPlatformUserCrypto.quantity.add(quantityToSendReceive)
       val updatedToPlatformUserCrypto = toPlatformUserCrypto.copy(quantity = newQuantity)
 
@@ -102,7 +100,7 @@ class TransferCryptoService(
       )
     }
 
-    if (!doesFromPlatformHaveRemaining(remainingCryptoQuantity) && toPlatformOptionalUserCrypto.isEmpty) {
+    if (!doesFromPlatformHaveRemaining(remainingCryptoQuantity) && toPlatformUserCrypto == null) {
       val updatedFromPlatformUserCrypto = UserCrypto(
         userCryptoToTransfer.id,
         userCryptoToTransfer.coingeckoCryptoId,
