@@ -70,7 +70,7 @@ class InsightsServiceTest {
       .isEqualTo(
         BalancesResponse(
           totalUSDBalance = "7108.39",
-          totalBTCBalance = "0.2512793593",
+          totalBTCBalance = "0.25127936",
           totalEURBalance = "6484.23"
         )
       )
@@ -871,7 +871,7 @@ class InsightsServiceTest {
             hasNextPage = false,
             balances = BalancesResponse(
               totalUSDBalance = "6919.05",
-              totalBTCBalance = "0.2439264843",
+              totalBTCBalance = "0.24392648",
               totalEURBalance = "6307.48"
             ),
             cryptos = listOf(
@@ -921,7 +921,7 @@ class InsightsServiceTest {
                 percentage = 32.07f,
                 balances = BalancesResponse(
                   totalUSDBalance = "2219.13",
-                  totalBTCBalance = "0.0861664843",
+                  totalBTCBalance = "0.08616648",
                   totalEURBalance = "2070.86"
                 ),
               ),
@@ -1011,7 +1011,7 @@ class InsightsServiceTest {
             hasNextPage = true,
             balances = BalancesResponse(
               totalUSDBalance = "8373.63",
-              totalBTCBalance = "0.2995959193",
+              totalBTCBalance = "0.29959592",
               totalEURBalance = "7663.61"
             ),
             cryptos = listOf(
@@ -1061,7 +1061,7 @@ class InsightsServiceTest {
                 percentage = 26.5f,
                 balances = BalancesResponse(
                   totalUSDBalance = "2219.13",
-                  totalBTCBalance = "0.0861664843",
+                  totalBTCBalance = "0.08616648",
                   totalEURBalance = "2070.86"
                 ),
               ),
@@ -1186,7 +1186,7 @@ class InsightsServiceTest {
                 percentage = 2.26f,
                 balances = BalancesResponse(
                   totalUSDBalance = "189.34",
-                  totalBTCBalance = "0.007352875",
+                  totalBTCBalance = "0.00735288",
                   totalEURBalance = "176.75"
                 ),
               ),
@@ -1324,7 +1324,7 @@ class InsightsServiceTest {
             hasNextPage = false,
             balances = BalancesResponse(
               totalUSDBalance = "8373.63",
-              totalBTCBalance = "0.2995959193",
+              totalBTCBalance = "0.29959592",
               totalEURBalance = "7663.61"
             ),
             cryptos = listOf(

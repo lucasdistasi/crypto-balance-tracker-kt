@@ -405,7 +405,7 @@ class InsightsService(
 
     return BalancesResponse(
       totalUSDBalance = totalUSDBalance.toPlainString(),
-      totalBTCBalance = totalBTCBalance.setScale(10, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
+      totalBTCBalance = totalBTCBalance.setScale(8, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
       totalEURBalance = totalEURBalance.toPlainString()
     )
   }
@@ -413,7 +413,7 @@ class InsightsService(
   private fun getCryptoTotalBalances(crypto: Crypto, quantity: BigDecimal): BalancesResponse {
     return BalancesResponse(
       totalUSDBalance = crypto.lastKnownPrice.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString(),
-      totalBTCBalance = crypto.lastKnownPriceInBTC.multiply(quantity).setScale(10, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
+      totalBTCBalance = crypto.lastKnownPriceInBTC.multiply(quantity).setScale(8, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString(),
       totalEURBalance = crypto.lastKnownPriceInEUR.multiply(quantity).setScale(2, RoundingMode.HALF_UP).toPlainString()
     )
   }
