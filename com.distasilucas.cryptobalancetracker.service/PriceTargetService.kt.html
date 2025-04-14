@@ -98,9 +98,9 @@ import java.math.BigDecimal
 <span class="fc" id="L98">  }</span>
 
   private fun validatePriceTargetIsNotDuplicated(coingeckoCryptoId: String, priceTarget: BigDecimal) {
-<span class="fc" id="L101">    val optionalPriceTarget: PriceTarget? = priceTargetRepository.findByCoingeckoCryptoIdAndTarget(coingeckoCryptoId, priceTarget)</span>
+<span class="fc" id="L101">    val optionalPriceTarget = priceTargetRepository.findByCoingeckoCryptoIdAndTarget(coingeckoCryptoId, priceTarget)</span>
 
-<span class="fc bfc" id="L103" title="All 2 branches covered.">    if (optionalPriceTarget != null)</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">    if (optionalPriceTarget.isPresent)</span>
 <span class="fc" id="L104">      throw DuplicatedPriceTargetException(&quot;You already have a price target for $coingeckoCryptoId at that price&quot;)</span>
 <span class="fc" id="L105">  }</span>
 }

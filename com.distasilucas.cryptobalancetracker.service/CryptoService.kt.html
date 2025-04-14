@@ -109,7 +109,7 @@ import java.time.LocalDateTime
 
   fun isCryptoOrphan(coingeckoCryptoId: String): Boolean {
 <span class="fc bfc" id="L111" title="All 2 branches covered.">    return userCryptoRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId).isEmpty() &amp;&amp;</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">      goalRepository.findByCoingeckoCryptoId(coingeckoCryptoId) == null &amp;&amp;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">      goalRepository.findByCoingeckoCryptoId(coingeckoCryptoId).isEmpty &amp;&amp;</span>
 <span class="fc bfc" id="L113" title="All 2 branches covered.">      priceTargetRepository.findAllByCoingeckoCryptoId(coingeckoCryptoId).isEmpty()</span>
   }
 

@@ -23,25 +23,26 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.Optional
 
 @Validated
 @RestController
 @RequestMapping(&quot;/api/v1/insights&quot;)
 @CrossOrigin(origins = [&quot;\${allowed-origins}&quot;])
-<span class="fc" id="L31">class InsightsController(private val insightsService: InsightsService) : InsightsControllerAPI {</span>
+<span class="fc" id="L32">class InsightsController(private val insightsService: InsightsService) : InsightsControllerAPI {</span>
 
   @GetMapping(&quot;/balances&quot;)
   override fun retrieveTotalBalances(): ResponseEntity&lt;BalancesResponse&gt; {
-<span class="fc" id="L35">    val totalBalances = insightsService.retrieveTotalBalances()</span>
+<span class="fc" id="L36">    val totalBalances = insightsService.retrieveTotalBalances()</span>
 
-<span class="fc" id="L37">    return ResponseEntity.ok(totalBalances)</span>
+<span class="fc" id="L38">    return ResponseEntity.ok(totalBalances)</span>
   }
 
   @GetMapping(&quot;/dates-balances&quot;)
   override fun retrieveDatesBalances(@RequestParam dateRange: DateRange): ResponseEntity&lt;DatesBalanceResponse&gt; {
-<span class="fc" id="L42">    val dateBalances = insightsService.retrieveDatesBalances(dateRange)</span>
+<span class="fc" id="L43">    val dateBalances = insightsService.retrieveDatesBalances(dateRange)</span>
 
-<span class="fc" id="L44">    return ResponseEntity.ok(dateBalances)</span>
+<span class="fc" id="L45">    return ResponseEntity.ok(dateBalances)</span>
   }
 
   @GetMapping(&quot;/cryptos&quot;)
@@ -54,31 +55,31 @@ import org.springframework.web.bind.annotation.RestController
     @RequestParam(required = false)
     sortType: SortType
   ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt; {
-<span class="fc" id="L57">    val sortParams = SortParams(sortBy, sortType)</span>
-<span class="fc" id="L58">    val userCryptosInsights = insightsService.retrieveUserCryptosInsights(page, sortParams)</span>
+<span class="fc" id="L58">    val sortParams = SortParams(sortBy, sortType)</span>
+<span class="fc" id="L59">    val userCryptosInsights = insightsService.retrieveUserCryptosInsights(page, sortParams)</span>
 
-<span class="fc" id="L60">    return okOrNoContent(userCryptosInsights)</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">    return if (userCryptosInsights.isEmpty) ResponseEntity.noContent().build() else ResponseEntity.ok(userCryptosInsights.get())</span>
   }
 
   @GetMapping(&quot;/cryptos/balances&quot;)
   override fun retrieveCryptosBalancesInsights(): ResponseEntity&lt;List&lt;BalancesChartResponse&gt;&gt; {
-<span class="fc" id="L65">    val cryptosBalancesInsights = insightsService.retrieveCryptosBalancesInsights()</span>
+<span class="fc" id="L66">    val cryptosBalancesInsights = insightsService.retrieveCryptosBalancesInsights()</span>
 
-<span class="pc bpc" id="L67" title="1 of 2 branches missed.">    return if (cryptosBalancesInsights.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(cryptosBalancesInsights)</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">    return if (cryptosBalancesInsights.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(cryptosBalancesInsights)</span>
   }
 
   @GetMapping(&quot;/platforms/balances&quot;)
   override fun retrievePlatformsBalancesInsights(): ResponseEntity&lt;List&lt;BalancesChartResponse&gt;&gt; {
-<span class="fc" id="L72">    val platformsBalancesInsights = insightsService.retrievePlatformsBalancesInsights()</span>
+<span class="fc" id="L73">    val platformsBalancesInsights = insightsService.retrievePlatformsBalancesInsights()</span>
 
-<span class="pc bpc" id="L74" title="1 of 2 branches missed.">    return if (platformsBalancesInsights.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(platformsBalancesInsights)</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">    return if (platformsBalancesInsights.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(platformsBalancesInsights)</span>
   }
 
   @GetMapping(&quot;/cryptos/{coingeckoCryptoId}&quot;)
   override fun retrieveCryptoInsights(@PathVariable coingeckoCryptoId: String): ResponseEntity&lt;CryptoInsightResponse&gt; {
-<span class="fc" id="L79">    val cryptoInsights = insightsService.retrieveCryptoInsights(coingeckoCryptoId)</span>
+<span class="fc" id="L80">    val cryptoInsights = insightsService.retrieveCryptoInsights(coingeckoCryptoId)</span>
 
-<span class="fc" id="L81">    return okOrNoContent(cryptoInsights)</span>
+<span class="fc" id="L82">    return okOrNoContent(cryptoInsights)</span>
   }
 
   @GetMapping(&quot;/platforms/{platformId}&quot;)
@@ -87,13 +88,13 @@ import org.springframework.web.bind.annotation.RestController
     @UUID(message = PLATFORM_ID_UUID)
     platformId: String
   ): ResponseEntity&lt;PlatformInsightsResponse&gt; {
-<span class="fc" id="L90">    val platformsInsights = insightsService.retrievePlatformInsights(platformId)</span>
+<span class="fc" id="L91">    val platformsInsights = insightsService.retrievePlatformInsights(platformId)</span>
 
-<span class="fc" id="L92">    return okOrNoContent(platformsInsights)</span>
+<span class="fc" id="L93">    return okOrNoContent(platformsInsights)</span>
   }
 
-  private fun &lt;T&gt; okOrNoContent(response: T?): ResponseEntity&lt;T&gt; {
-<span class="fc bfc" id="L96" title="All 2 branches covered.">    return if (response != null) ResponseEntity.ok(response) else ResponseEntity.noContent().build()</span>
+  private fun &lt;T&gt; okOrNoContent(optional: Optional&lt;T&gt;): ResponseEntity&lt;T&gt; {
+<span class="fc bfc" id="L97" title="All 2 branches covered.">    return if (optional.isPresent) ResponseEntity.ok(optional.get()) else ResponseEntity.noContent().build()</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
