@@ -87,10 +87,10 @@ import org.springframework.stereotype.Service
 <span class="fc" id="L87">  }</span>
 
   private fun validatePlatformNotExists(platformName: String) {
-<span class="fc" id="L90">    val existingPlatform = platformRepository.findByName(platformName.uppercase())</span>
+<span class="fc" id="L90">    val existingPlatform: Platform? = platformRepository.findByName(platformName.uppercase())</span>
 
-<span class="fc bfc" id="L92" title="All 2 branches covered.">    if (existingPlatform.isPresent) {</span>
-<span class="fc" id="L93">      throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(existingPlatform.get().name))</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">    if (existingPlatform != null) {</span>
+<span class="fc" id="L93">      throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(existingPlatform.name))</span>
     }
 <span class="fc" id="L95">  }</span>
 }
