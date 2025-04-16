@@ -14,10 +14,9 @@ import org.springframework.stereotype.Service
   fun findByUsername(username: String): User {
 <span class="fc" id="L15">    logger.info { &quot;Searching for username $username&quot; }</span>
 
-<span class="fc" id="L17">    return userRepository.findByUsername(username)</span>
-<span class="fc" id="L18">      .orElseThrow { UsernameNotFoundException() }</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">    return userRepository.findByUsername(username) ?: throw UsernameNotFoundException()</span>
   }
 }
 
-<span class="fc" id="L22">class UsernameNotFoundException : RuntimeException(USERNAME_NOT_FOUND)</span>
+<span class="fc" id="L21">class UsernameNotFoundException : RuntimeException(USERNAME_NOT_FOUND)</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

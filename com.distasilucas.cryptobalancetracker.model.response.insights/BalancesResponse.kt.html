@@ -6,5 +6,9 @@ import java.io.Serializable
 <span class="fc" id="L6">  val totalUSDBalance: String,</span>
 <span class="fc" id="L7">  val totalEURBalance: String,</span>
 <span class="fc" id="L8">  val totalBTCBalance: String</span>
-): Serializable
+): Serializable {
+  companion object {
+<span class="fc" id="L11">    val EMPTY = BalancesResponse(&quot;0&quot;, &quot;0&quot;, &quot;0&quot;)</span>
+  }
+}
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

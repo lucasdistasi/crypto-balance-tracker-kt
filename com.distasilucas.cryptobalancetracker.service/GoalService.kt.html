@@ -54,9 +54,9 @@ import java.math.RoundingMode
 
   fun saveGoal(goalRequest: GoalRequest): GoalResponse {
 <span class="fc" id="L56">    val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(goalRequest.cryptoName!!)</span>
-<span class="fc" id="L57">    val existingGoal = goalRepository.findByCoingeckoCryptoId(coingeckoCrypto.id)</span>
+<span class="fc" id="L57">    val existingGoal: Goal? = goalRepository.findByCoingeckoCryptoId(coingeckoCrypto.id)</span>
 
-<span class="fc bfc" id="L59" title="All 2 branches covered.">    if (existingGoal.isPresent) {</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">    if (existingGoal != null) {</span>
 <span class="fc" id="L60">      throw DuplicatedGoalException(DUPLICATED_GOAL.format(coingeckoCrypto.name))</span>
     }
 
