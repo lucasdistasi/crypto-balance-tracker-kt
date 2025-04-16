@@ -28,6 +28,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -107,13 +108,15 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        DatesBalanceResponse(
-          datesBalances = listOf(
-            DateBalances("16 March 2024", BalancesResponse("1000", "918.45", "0.01438911")),
-            DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.021583665"))
-          ),
-          change = BalanceChanges(50F, 50F, 50F),
-          priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
+        Optional.of(
+          DatesBalanceResponse(
+            datesBalances = listOf(
+              DateBalances("16 March 2024", BalancesResponse("1000", "918.45", "0.01438911")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.021583665"))
+            ),
+            change = BalanceChanges(50F, 50F, 50F),
+            priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
+          )
         )
       )
   }
@@ -135,18 +138,21 @@ class InsightsServiceTest {
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.THREE_DAYS)
 
-    assertEquals(3, datesBalances!!.datesBalances.size)
+    assertTrue(datesBalances.isPresent)
+    assertEquals(3, datesBalances.get().datesBalances.size)
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        DatesBalanceResponse(
-          datesBalances = listOf(
-            DateBalances("15 March 2024", BalancesResponse("1200", "1102.14", "0.020689655")),
-            DateBalances("16 March 2024", BalancesResponse("1000", "918.85", "0.017241379")),
-            DateBalances("17 March 2024", BalancesResponse("1500", "1378.27", "0.025862069"))
-          ),
-          change = BalanceChanges(25F, 25.05F, 25F),
-          priceDifference = DifferencesChanges("300", "276.13", "0.005172414")
+        Optional.of(
+          DatesBalanceResponse(
+            datesBalances = listOf(
+              DateBalances("15 March 2024", BalancesResponse("1200", "1102.14", "0.020689655")),
+              DateBalances("16 March 2024", BalancesResponse("1000", "918.85", "0.017241379")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1378.27", "0.025862069"))
+            ),
+            change = BalanceChanges(25F, 25.05F, 25F),
+            priceDifference = DifferencesChanges("300", "276.13", "0.005172414")
+          )
         )
       )
   }
@@ -174,15 +180,17 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        DatesBalanceResponse(
-          datesBalances = listOf(
-            DateBalances("14 March 2024", BalancesResponse("1200", "1102.62", "0.020689655")),
-            DateBalances("15 March 2024", BalancesResponse("900", "823.63", "0.015789474")),
-            DateBalances("16 March 2024", BalancesResponse("1000", "913", "0.016806723")),
-            DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.025862069"))
-          ),
-          change = BalanceChanges(25F, 24.95F, 25F),
-          priceDifference = DifferencesChanges("300", "275.05", "0.005172414")
+        Optional.of(
+          DatesBalanceResponse(
+            datesBalances = listOf(
+              DateBalances("14 March 2024", BalancesResponse("1200", "1102.62", "0.020689655")),
+              DateBalances("15 March 2024", BalancesResponse("900", "823.63", "0.015789474")),
+              DateBalances("16 March 2024", BalancesResponse("1000", "913", "0.016806723")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.025862069"))
+            ),
+            change = BalanceChanges(25F, 24.95F, 25F),
+            priceDifference = DifferencesChanges("300", "275.05", "0.005172414")
+          )
         )
       )
   }
@@ -207,15 +215,17 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        DatesBalanceResponse(
-          datesBalances = listOf(
-            DateBalances("11 March 2024", BalancesResponse("1200", "1102.14", "0.020530368")),
-            DateBalances("13 March 2024", BalancesResponse("900", "826.61", "0.015544041")),
-            DateBalances("15 March 2024", BalancesResponse("1000", "918.45", "0.016906171")),
-            DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.025862069"))
-          ),
-          change = BalanceChanges(25F, 25F, 25.97F),
-          priceDifference = DifferencesChanges("300", "275.53", "0.005331701")
+        Optional.of(
+          DatesBalanceResponse(
+            datesBalances = listOf(
+              DateBalances("11 March 2024", BalancesResponse("1200", "1102.14", "0.020530368")),
+              DateBalances("13 March 2024", BalancesResponse("900", "826.61", "0.015544041")),
+              DateBalances("15 March 2024", BalancesResponse("1000", "918.45", "0.016906171")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.025862069"))
+            ),
+            change = BalanceChanges(25F, 25F, 25.97F),
+            priceDifference = DifferencesChanges("300", "275.53", "0.005331701")
+          )
         )
       )
   }
@@ -241,16 +251,18 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        DatesBalanceResponse(
-          datesBalances = listOf(
-            DateBalances("22 February 2024", BalancesResponse("1150", "1067.03", "0.019827586")),
-            DateBalances("28 February 2024", BalancesResponse("1200", "1108.50", "0.020512821")),
-            DateBalances("5 March 2024", BalancesResponse("900", "830.38", "0.015319149")),
-            DateBalances("11 March 2024", BalancesResponse("1000", "921.15", "0.016949153")),
-            DateBalances("17 March 2024", BalancesResponse("1500", "1372.73", "0.025"))
-          ),
-          change = BalanceChanges(30.43F, 28.65F, 26.09F),
-          priceDifference = DifferencesChanges("350", "305.70", "0.005172414")
+        Optional.of(
+          DatesBalanceResponse(
+            datesBalances = listOf(
+              DateBalances("22 February 2024", BalancesResponse("1150", "1067.03", "0.019827586")),
+              DateBalances("28 February 2024", BalancesResponse("1200", "1108.50", "0.020512821")),
+              DateBalances("5 March 2024", BalancesResponse("900", "830.38", "0.015319149")),
+              DateBalances("11 March 2024", BalancesResponse("1000", "921.15", "0.016949153")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1372.73", "0.025"))
+            ),
+            change = BalanceChanges(30.43F, 28.65F, 26.09F),
+            priceDifference = DifferencesChanges("350", "305.70", "0.005172414")
+          )
         )
       )
   }
@@ -277,17 +289,19 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        DatesBalanceResponse(
-          datesBalances = listOf(
-            DateBalances("27 January 2024", BalancesResponse("1150", "1057.14", "0.019827586")),
-            DateBalances("6 February 2024", BalancesResponse("1150", "1060.30", "0.019311503")),
-            DateBalances("16 February 2024", BalancesResponse("1200", "1113.18", "0.020689655")),
-            DateBalances("26 February 2024", BalancesResponse("900", "840.46", "0.015062762")),
-            DateBalances("7 March 2024", BalancesResponse("1000", "923.75", "0.016666667")),
-            DateBalances("17 March 2024", BalancesResponse("1500", "1381.73", "0.025062657"))
-          ),
-          change = BalanceChanges(30.43F, 30.7F, 26.4F),
-          priceDifference = DifferencesChanges("350", "324.59", "0.005235071")
+        Optional.of(
+          DatesBalanceResponse(
+            datesBalances = listOf(
+              DateBalances("27 January 2024", BalancesResponse("1150", "1057.14", "0.019827586")),
+              DateBalances("6 February 2024", BalancesResponse("1150", "1060.30", "0.019311503")),
+              DateBalances("16 February 2024", BalancesResponse("1200", "1113.18", "0.020689655")),
+              DateBalances("26 February 2024", BalancesResponse("900", "840.46", "0.015062762")),
+              DateBalances("7 March 2024", BalancesResponse("1000", "923.75", "0.016666667")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1381.73", "0.025062657"))
+            ),
+            change = BalanceChanges(30.43F, 30.7F, 26.4F),
+            priceDifference = DifferencesChanges("350", "324.59", "0.005235071")
+          )
         )
       )
   }
@@ -314,17 +328,19 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        DatesBalanceResponse(
-          datesBalances = listOf(
-            DateBalances("17 October 2023", BalancesResponse("1150", "1024.36", "0.020909091")),
-            DateBalances("17 November 2023", BalancesResponse("1150", "1054.66", "0.020720721")),
-            DateBalances("17 December 2023", BalancesResponse("1200", "1101.42", "0.021428571")),
-            DateBalances("17 January 2024", BalancesResponse("900", "827.33", "0.015929204")),
-            DateBalances("17 February 2024", BalancesResponse("1000", "928.25", "0.01754386")),
-            DateBalances("17 March 2024", BalancesResponse("1500", "1378.20", "0.025862069"))
-          ),
-          change = BalanceChanges(30.43F, 34.54F, 23.69F),
-          priceDifference = DifferencesChanges("350", "353.84", "0.004952978")
+        Optional.of(
+          DatesBalanceResponse(
+            datesBalances = listOf(
+              DateBalances("17 October 2023", BalancesResponse("1150", "1024.36", "0.020909091")),
+              DateBalances("17 November 2023", BalancesResponse("1150", "1054.66", "0.020720721")),
+              DateBalances("17 December 2023", BalancesResponse("1200", "1101.42", "0.021428571")),
+              DateBalances("17 January 2024", BalancesResponse("900", "827.33", "0.015929204")),
+              DateBalances("17 February 2024", BalancesResponse("1000", "928.25", "0.01754386")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1378.20", "0.025862069"))
+            ),
+            change = BalanceChanges(30.43F, 34.54F, 23.69F),
+            priceDifference = DifferencesChanges("350", "353.84", "0.004952978")
+          )
         )
       )
   }
@@ -357,15 +373,17 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        DatesBalanceResponse(
-          datesBalances = listOf(
-            DateBalances("14 March 2024", BalancesResponse("950", "872.86", "0.016225448")),
-            DateBalances("15 March 2024", BalancesResponse("1000", "918.80", "0.016949153")),
-            DateBalances("16 March 2024", BalancesResponse("900", "826.92", "0.015397776")),
-            DateBalances("17 March 2024", BalancesResponse("1500", "1378.20", "0.025359256"))
-          ),
-          change = BalanceChanges(57.89F, 57.89F, 56.29F),
-          priceDifference = DifferencesChanges("550", "505.34", "0.009133808")
+        Optional.of(
+          DatesBalanceResponse(
+            datesBalances = listOf(
+              DateBalances("14 March 2024", BalancesResponse("950", "872.86", "0.016225448")),
+              DateBalances("15 March 2024", BalancesResponse("1000", "918.80", "0.016949153")),
+              DateBalances("16 March 2024", BalancesResponse("900", "826.92", "0.015397776")),
+              DateBalances("17 March 2024", BalancesResponse("1500", "1378.20", "0.025359256"))
+            ),
+            change = BalanceChanges(57.89F, 57.89F, 56.29F),
+            priceDifference = DifferencesChanges("550", "505.34", "0.009133808")
+          )
         )
       )
   }
@@ -383,7 +401,8 @@ class InsightsServiceTest {
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.ONE_WEEK)
 
     assertThat(datesBalances)
-      .isNull()
+      .usingRecursiveComparison()
+      .isEqualTo(Optional.empty<DatesBalanceResponse>())
   }
 
   @Test
@@ -407,29 +426,31 @@ class InsightsServiceTest {
     assertThat(platformInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        PlatformInsightsResponse(
-          platformName = "BINANCE",
-          balances = BalancesResponse(
-            totalUSDBalance = "7500.00",
-            totalBTCBalance = "0.25",
-            totalEURBalance = "6750.00"
-          ),
-          cryptos = listOf(
-            CryptoInsights(
-              id = "123e4567-e89b-12d3-a456-426614174000",
-              userCryptoInfo = UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Bitcoin",
-                  coingeckoCryptoId = "bitcoin",
-                  symbol = "btc",
-                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-                ),
-                quantity = "0.25",
-                percentage = 100f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "7500.00",
-                  totalBTCBalance = "0.25",
-                  totalEURBalance = "6750.00"
+        Optional.of(
+          PlatformInsightsResponse(
+            platformName = "BINANCE",
+            balances = BalancesResponse(
+              totalUSDBalance = "7500.00",
+              totalBTCBalance = "0.25",
+              totalEURBalance = "6750.00"
+            ),
+            cryptos = listOf(
+              CryptoInsights(
+                id = "123e4567-e89b-12d3-a456-426614174000",
+                userCryptoInfo = UserCryptoInsights(
+                  cryptoInfo = CryptoInfo(
+                    cryptoName = "Bitcoin",
+                    coingeckoCryptoId = "bitcoin",
+                    symbol = "btc",
+                    image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+                  ),
+                  quantity = "0.25",
+                  percentage = 100f,
+                  balances = BalancesResponse(
+                    totalUSDBalance = "7500.00",
+                    totalBTCBalance = "0.25",
+                    totalEURBalance = "6750.00"
+                  )
                 )
               )
             )
@@ -479,50 +500,52 @@ class InsightsServiceTest {
 
     val platformInsightsResponse = insightsService.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
-    assertThat(platformInsightsResponse!!)
+    assertThat(platformInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        PlatformInsightsResponse(
-          platformName = "BINANCE",
-          balances = BalancesResponse(
-            totalUSDBalance = "7925.00",
-            totalBTCBalance = "0.266554",
-            totalEURBalance = "7147.00"
-          ),
-          cryptos = listOf(
-            CryptoInsights(
-              id = "123e4567-e89b-12d3-a456-426614174000",
-              userCryptoInfo = UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Bitcoin",
-                  coingeckoCryptoId = "bitcoin",
-                  symbol = "btc",
-                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-                ),
-                quantity = "0.25",
-                percentage = 94.64f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "7500.00",
-                  totalBTCBalance = "0.25",
-                  totalEURBalance = "6750.00"
-                )
-              )
+        Optional.of(
+          PlatformInsightsResponse(
+            platformName = "BINANCE",
+            balances = BalancesResponse(
+              totalUSDBalance = "7925.00",
+              totalBTCBalance = "0.266554",
+              totalEURBalance = "7147.00"
             ),
-            CryptoInsights(
-              id = polkadotUserCrypto.id,
-              userCryptoInfo = UserCryptoInsights(
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Polkadot",
-                  coingeckoCryptoId = "polkadot",
-                  symbol = "dot",
-                  image = "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1639712644",
-                ),
-                quantity = "100",
-                percentage = 5.36f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "425.00",
-                  totalBTCBalance = "0.016554",
-                  totalEURBalance = "397.00"
+            cryptos = listOf(
+              CryptoInsights(
+                id = "123e4567-e89b-12d3-a456-426614174000",
+                userCryptoInfo = UserCryptoInsights(
+                  cryptoInfo = CryptoInfo(
+                    cryptoName = "Bitcoin",
+                    coingeckoCryptoId = "bitcoin",
+                    symbol = "btc",
+                    image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+                  ),
+                  quantity = "0.25",
+                  percentage = 94.64f,
+                  balances = BalancesResponse(
+                    totalUSDBalance = "7500.00",
+                    totalBTCBalance = "0.25",
+                    totalEURBalance = "6750.00"
+                  )
+                )
+              ),
+              CryptoInsights(
+                id = polkadotUserCrypto.id,
+                userCryptoInfo = UserCryptoInsights(
+                  cryptoInfo = CryptoInfo(
+                    cryptoName = "Polkadot",
+                    coingeckoCryptoId = "polkadot",
+                    symbol = "dot",
+                    image = "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1639712644",
+                  ),
+                  quantity = "100",
+                  percentage = 5.36f,
+                  balances = BalancesResponse(
+                    totalUSDBalance = "425.00",
+                    totalBTCBalance = "0.016554",
+                    totalEURBalance = "397.00"
+                  )
                 )
               )
             )
@@ -540,7 +563,8 @@ class InsightsServiceTest {
     val platformInsights = insightsService.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
     assertThat(platformInsights)
-      .isNull()
+      .usingRecursiveComparison()
+      .isEqualTo(Optional.empty<PlatformInsightsResponse>())
   }
 
   @Test
@@ -567,23 +591,25 @@ class InsightsServiceTest {
     assertThat(cryptoInsightsResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        CryptoInsightResponse(
-          cryptoName = "Bitcoin",
-          balances = BalancesResponse(
-            totalUSDBalance = "7500.00",
-            totalBTCBalance = "0.25",
-            totalEURBalance = "6750.00"
-          ),
-          platforms = listOf(
-            PlatformInsight(
-              quantity = "0.25",
-              balances = BalancesResponse(
-                totalUSDBalance = "7500.00",
-                totalBTCBalance = "0.25",
-                totalEURBalance = "6750.00"
-              ),
-              percentage = 100f,
-              platformName = "BINANCE"
+        Optional.of(
+          CryptoInsightResponse(
+            cryptoName = "Bitcoin",
+            balances = BalancesResponse(
+              totalUSDBalance = "7500.00",
+              totalBTCBalance = "0.25",
+              totalEURBalance = "6750.00"
+            ),
+            platforms = listOf(
+              PlatformInsight(
+                quantity = "0.25",
+                balances = BalancesResponse(
+                  totalUSDBalance = "7500.00",
+                  totalBTCBalance = "0.25",
+                  totalEURBalance = "6750.00"
+                ),
+                percentage = 100f,
+                platformName = "BINANCE"
+              )
             )
           )
         )
@@ -627,36 +653,38 @@ class InsightsServiceTest {
 
     val cryptoInsightResponse = insightsService.retrieveCryptoInsights("bitcoin")
 
-    assertThat(cryptoInsightResponse!!)
+    assertThat(cryptoInsightResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        CryptoInsightResponse(
-          cryptoName = "Bitcoin",
-          balances = BalancesResponse(
-            totalUSDBalance = "8536.50",
-            totalBTCBalance = "0.28455",
-            totalEURBalance = "7682.85"
-          ),
-          platforms = listOf(
-            PlatformInsight(
-              quantity = "0.25",
-              balances = BalancesResponse(
-                totalUSDBalance = "7500.00",
-                totalBTCBalance = "0.25",
-                totalEURBalance = "6750.00"
-              ),
-              percentage = 87.86f,
-              platformName = "BINANCE"
+        Optional.of(
+          CryptoInsightResponse(
+            cryptoName = "Bitcoin",
+            balances = BalancesResponse(
+              totalUSDBalance = "8536.50",
+              totalBTCBalance = "0.28455",
+              totalEURBalance = "7682.85"
             ),
-            PlatformInsight(
-              quantity = "0.03455",
-              balances = BalancesResponse(
-                totalUSDBalance = "1036.50",
-                totalBTCBalance = "0.03455",
-                totalEURBalance = "932.85"
+            platforms = listOf(
+              PlatformInsight(
+                quantity = "0.25",
+                balances = BalancesResponse(
+                  totalUSDBalance = "7500.00",
+                  totalBTCBalance = "0.25",
+                  totalEURBalance = "6750.00"
+                ),
+                percentage = 87.86f,
+                platformName = "BINANCE"
               ),
-              percentage = 12.14f,
-              platformName = "COINBASE"
+              PlatformInsight(
+                quantity = "0.03455",
+                balances = BalancesResponse(
+                  totalUSDBalance = "1036.50",
+                  totalBTCBalance = "0.03455",
+                  totalEURBalance = "932.85"
+                ),
+                percentage = 12.14f,
+                platformName = "COINBASE"
+              )
             )
           )
         )
@@ -672,7 +700,8 @@ class InsightsServiceTest {
     val cryptoInsightResponse = insightsService.retrieveCryptoInsights("bitcoin")
 
     assertThat(cryptoInsightResponse)
-      .isNull()
+      .usingRecursiveComparison()
+      .isEqualTo(Optional.empty<CryptoInsightResponse>())
   }
 
   @Test
@@ -985,7 +1014,7 @@ class InsightsServiceTest {
 
     val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosInsights(0)
 
-    assertThat(userCryptosPlatformsInsights!!.cryptos.size).isEqualTo(10)
+    assertThat(userCryptosPlatformsInsights.cryptos.size).isEqualTo(10)
     assertThat(userCryptosPlatformsInsights)
       .usingRecursiveComparison()
       .isEqualTo(
@@ -1422,7 +1451,8 @@ class InsightsServiceTest {
     val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosInsights(0)
 
     assertThat(userCryptosPlatformsInsights)
-      .isNull()
+      .usingRecursiveComparison()
+      .isEqualTo(PageUserCryptosInsightsResponse.EMPTY)
   }
 
   @Test
@@ -1453,7 +1483,8 @@ class InsightsServiceTest {
     val userCryptosPlatformsInsights = insightsService.retrieveUserCryptosInsights(1)
 
     assertThat(userCryptosPlatformsInsights)
-      .isNull()
+      .usingRecursiveComparison()
+      .isEqualTo(PageUserCryptosInsightsResponse.EMPTY)
   }
 
   private fun userCryptos(): List<UserCrypto> {

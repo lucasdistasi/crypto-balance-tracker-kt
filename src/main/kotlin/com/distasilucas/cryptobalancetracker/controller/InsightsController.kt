@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.Optional
 
 @Validated
 @RestController
@@ -41,7 +42,7 @@ class InsightsController(private val insightsService: InsightsService) : Insight
   override fun retrieveDatesBalances(@RequestParam dateRange: DateRange): ResponseEntity<DatesBalanceResponse> {
     val dateBalances = insightsService.retrieveDatesBalances(dateRange)
 
-    return ResponseEntity.ok(dateBalances)
+    return dateBalances.toResponseEntity()
   }
 
   @GetMapping("/cryptos")
@@ -57,28 +58,30 @@ class InsightsController(private val insightsService: InsightsService) : Insight
     val sortParams = SortParams(sortBy, sortType)
     val userCryptosInsights = insightsService.retrieveUserCryptosInsights(page, sortParams)
 
-    return okOrNoContent(userCryptosInsights)
+    if (userCryptosInsights == PageUserCryptosInsightsResponse.EMPTY) return ResponseEntity.noContent().build()
+
+    return ResponseEntity.ok(userCryptosInsights)
   }
 
   @GetMapping("/cryptos/balances")
   override fun retrieveCryptosBalancesInsights(): ResponseEntity<List<BalancesChartResponse>> {
     val cryptosBalancesInsights = insightsService.retrieveCryptosBalancesInsights()
 
-    return if (cryptosBalancesInsights.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(cryptosBalancesInsights)
+    return okOrNoContent(cryptosBalancesInsights)
   }
 
   @GetMapping("/platforms/balances")
   override fun retrievePlatformsBalancesInsights(): ResponseEntity<List<BalancesChartResponse>> {
     val platformsBalancesInsights = insightsService.retrievePlatformsBalancesInsights()
 
-    return if (platformsBalancesInsights.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(platformsBalancesInsights)
+    return okOrNoContent(platformsBalancesInsights)
   }
 
   @GetMapping("/cryptos/{coingeckoCryptoId}")
   override fun retrieveCryptoInsights(@PathVariable coingeckoCryptoId: String): ResponseEntity<CryptoInsightResponse> {
     val cryptoInsights = insightsService.retrieveCryptoInsights(coingeckoCryptoId)
 
-    return okOrNoContent(cryptoInsights)
+    return cryptoInsights.toResponseEntity()
   }
 
   @GetMapping("/platforms/{platformId}")
@@ -89,10 +92,18 @@ class InsightsController(private val insightsService: InsightsService) : Insight
   ): ResponseEntity<PlatformInsightsResponse> {
     val platformsInsights = insightsService.retrievePlatformInsights(platformId)
 
-    return okOrNoContent(platformsInsights)
+    return platformsInsights.toResponseEntity()
   }
 
-  private fun <T> okOrNoContent(response: T?): ResponseEntity<T> {
-    return if (response != null) ResponseEntity.ok(response) else ResponseEntity.noContent().build()
+  private fun <T> okOrNoContent(response: List<T>): ResponseEntity<List<T>> {
+    return if (response.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(response)
+  }
+
+  private fun <T> Optional<T>.toResponseEntity(): ResponseEntity<T> {
+    return if (this.isEmpty) {
+      ResponseEntity.noContent().build()
+    } else {
+      ResponseEntity.ok(this.get())
+    }
   }
 }

@@ -65,7 +65,7 @@ class InsightsService(
     val userCryptos = userCryptoService.findAll()
 
     if (userCryptos.isEmpty()) {
-      return BalancesResponse("0", "0", "0")
+      return BalancesResponse.EMPTY
     }
 
     val userCryptoQuantity = getUserCryptoQuantity(userCryptos)
@@ -76,7 +76,7 @@ class InsightsService(
   }
 
   @Cacheable(cacheNames = [DATES_BALANCES_CACHE], key = "#dateRange")
-  fun retrieveDatesBalances(dateRange: DateRange): DatesBalanceResponse? {
+  fun retrieveDatesBalances(dateRange: DateRange): Optional<DatesBalanceResponse> {
     logger.info { "Retrieving balances for date range: $dateRange" }
     val now = LocalDate.now(clock)
 
@@ -98,20 +98,20 @@ class InsightsService(
 
     logger.info { "Balances found: ${datesBalances.size}" }
 
-    if (datesBalances.isEmpty()) return null
+    if (datesBalances.isEmpty()) return Optional.empty()
 
     val changesPair = changesPair(datesBalances)
 
-    return DatesBalanceResponse(datesBalances, changesPair.first, changesPair.second)
+    return Optional.of(DatesBalanceResponse(datesBalances, changesPair.first, changesPair.second))
   }
 
   @Cacheable(cacheNames = [PLATFORM_INSIGHTS_CACHE], key = "#platformId")
-  fun retrievePlatformInsights(platformId: String): PlatformInsightsResponse? {
+  fun retrievePlatformInsights(platformId: String): Optional<PlatformInsightsResponse> {
     logger.info { "Retrieving insights for platform with id $platformId" }
 
     val userCryptosInPlatform = userCryptoService.findAllByPlatformId(platformId)
 
-    if (userCryptosInPlatform.isEmpty()) return null
+    if (userCryptosInPlatform.isEmpty()) return Optional.empty()
 
     val platform = platformService.retrievePlatformById(platformId)
     val cryptosIds = userCryptosInPlatform.map { it.coingeckoCryptoId }
@@ -136,16 +136,16 @@ class InsightsService(
       )
     }.sortedByDescending { it.userCryptoInfo.percentage }
 
-    return PlatformInsightsResponse(platform.name, totalBalances, cryptosInsights)
+    return Optional.of(PlatformInsightsResponse(platform.name, totalBalances, cryptosInsights))
   }
 
   @Cacheable(cacheNames = [CRYPTO_INSIGHTS_CACHE], key = "#coingeckoCryptoId")
-  fun retrieveCryptoInsights(coingeckoCryptoId: String): CryptoInsightResponse? {
+  fun retrieveCryptoInsights(coingeckoCryptoId: String): Optional<CryptoInsightResponse> {
     logger.info { "Retrieving insights for crypto with coingeckoCryptoId $coingeckoCryptoId" }
 
     val userCryptos = userCryptoService.findAllByCoingeckoCryptoId(coingeckoCryptoId)
 
-    if (userCryptos.isEmpty()) return null
+    if (userCryptos.isEmpty()) return Optional.empty()
 
     val platformsIds = userCryptos.map { it.platformId }
     val platforms = platformService.findAllByIds(platformsIds)
@@ -169,7 +169,7 @@ class InsightsService(
       platformInsight
     }.sortedByDescending { it.percentage }
 
-    return CryptoInsightResponse(crypto.name, totalBalances, platformInsights)
+    return Optional.of(CryptoInsightResponse(crypto.name, totalBalances, platformInsights))
   }
 
   @Cacheable(cacheNames = [PLATFORMS_BALANCES_INSIGHTS_CACHE])
@@ -232,7 +232,7 @@ class InsightsService(
   fun retrieveUserCryptosInsights(
     page: Int,
     sortParams: SortParams = SortParams(SortBy.PERCENTAGE, SortType.DESC)
-  ): PageUserCryptosInsightsResponse? {
+  ): PageUserCryptosInsightsResponse {
     logger.info { "Retrieving user cryptos insights for page $page" }
 
     // If one of the user cryptos happens to be at the end, and another of the same (i.e: bitcoin), at the start
@@ -244,7 +244,9 @@ class InsightsService(
     // would be a better approach so I don't need to retrieve all.
     val userCryptos = userCryptoService.findAll()
 
-    if (userCryptos.isEmpty()) return null
+    if (userCryptos.isEmpty()) {
+      return PageUserCryptosInsightsResponse.EMPTY
+    }
 
     val userCryptoQuantity = getUserCryptoQuantity(userCryptos)
     val cryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet()
@@ -272,18 +274,15 @@ class InsightsService(
 
     val startIndex = page * INT_ELEMENTS_PER_PAGE
 
-    if (startIndex > userCryptoInsights.size) return null
+    if (startIndex > userCryptoInsights.size) {
+      return PageUserCryptosInsightsResponse.EMPTY
+    }
 
     val totalPages = ceil(userCryptoInsights.size.toDouble() / ELEMENTS_PER_PAGE).toInt()
     val endIndex = if (isLastPage(page, totalPages)) userCryptoInsights.size else startIndex + INT_ELEMENTS_PER_PAGE
     val cryptosInsights = userCryptoInsights.subList(startIndex, endIndex)
 
-    return PageUserCryptosInsightsResponse(
-      page = page,
-      totalPages = totalPages,
-      balances = totalBalances,
-      cryptos = cryptosInsights
-    )
+    return PageUserCryptosInsightsResponse(page, totalPages, totalBalances, cryptosInsights)
   }
 
   private fun retrieveDatesBalances(from: LocalDate, to: LocalDate): List<DateBalance> {

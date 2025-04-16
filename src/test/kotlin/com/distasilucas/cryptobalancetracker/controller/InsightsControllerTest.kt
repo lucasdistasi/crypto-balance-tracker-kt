@@ -17,6 +17,7 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.http.ResponseEntity
+import java.util.*
 
 class InsightsControllerTest {
 
@@ -61,7 +62,7 @@ class InsightsControllerTest {
       priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
     )
 
-    every { insightsServiceMock.retrieveDatesBalances(DateRange.LAST_DAY) } returns dateBalanceResponse
+    every { insightsServiceMock.retrieveDatesBalances(DateRange.LAST_DAY) } returns Optional.of(dateBalanceResponse)
 
     val datesBalances = insightsController.retrieveDatesBalances(DateRange.LAST_DAY)
 
@@ -90,7 +91,7 @@ class InsightsControllerTest {
 
   @Test
   fun `should retrieve empty for cryptos insights with status 204`() {
-    every { insightsServiceMock.retrieveUserCryptosInsights(0) } returns null
+    every { insightsServiceMock.retrieveUserCryptosInsights(0) } returns PageUserCryptosInsightsResponse.EMPTY
 
     val cryptosPlatformsInsights = insightsController.retrieveUserCryptosInsights(0)
 
@@ -133,7 +134,7 @@ class InsightsControllerTest {
       platforms = emptyList()
     )
 
-    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns cryptoInsightResponse
+    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns Optional.of(cryptoInsightResponse)
 
     val cryptoInsights = insightsController.retrieveCryptoInsights("bitcoin")
 
@@ -144,7 +145,9 @@ class InsightsControllerTest {
 
   @Test
   fun `should retrieve crypto insights with status 204`() {
-    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns null
+    every {
+      insightsServiceMock.retrieveCryptoInsights("bitcoin")
+    } returns Optional.empty()
 
     val cryptoInsights = insightsController.retrieveCryptoInsights("bitcoin")
 
@@ -163,7 +166,7 @@ class InsightsControllerTest {
 
     every {
       insightsServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
-    } returns platformInsightsResponse
+    } returns Optional.of(platformInsightsResponse)
 
     val platformInsights = insightsController.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
@@ -176,7 +179,7 @@ class InsightsControllerTest {
   fun `should retrieve platform insights with status 204`() {
     every {
       insightsServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
-    } returns null
+    } returns Optional.empty()
 
     val platformInsights = insightsController.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
