@@ -17,7 +17,6 @@ import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
@@ -27,6 +26,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoI
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
+import com.distasilucas.cryptobalancetracker.model.response.insights.platform.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
 import com.distasilucas.cryptobalancetracker.repository.DateBalanceRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -123,18 +123,15 @@ class InsightsService(
       val crypto = cryptos.first { userCrypto.coingeckoCryptoId == it.id }
       val quantity = userCryptosQuantity[userCrypto.coingeckoCryptoId]
       val cryptoTotalBalances = getCryptoTotalBalances(crypto, quantity!!)
-      val cryptoInfo = crypto.toCryptoInfo()
 
       CryptoInsights(
         id = userCrypto.id,
-        userCryptoInfo = UserCryptoInsights(
-          cryptoInfo = cryptoInfo,
-          quantity = quantity.toPlainString(),
-          percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),
-          balances = cryptoTotalBalances
-        )
+        cryptoInfo = crypto.toCryptoInfo(),
+        quantity = quantity.toPlainString(),
+        percentage = calculatePercentage(totalBalances.totalUSDBalance, cryptoTotalBalances.totalUSDBalance),
+        balances = cryptoTotalBalances
       )
-    }.sortedByDescending { it.userCryptoInfo.percentage }
+    }.sortedByDescending { it.percentage }
 
     return Optional.of(PlatformInsightsResponse(platform.name, totalBalances, cryptosInsights))
   }

@@ -7,7 +7,6 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChan
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
-import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
@@ -17,6 +16,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoI
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
+import com.distasilucas.cryptobalancetracker.model.response.insights.platform.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
 import com.distasilucas.cryptobalancetracker.service.InsightsService
 import com.ninjasquad.springmockk.MockkBean
@@ -206,15 +206,15 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
       .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
       .andExpect(jsonPath("$.cryptos[0].id", `is`("1f832f95-62e3-4d1b-a1e6-982d8c22f2bb")))
-      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.cryptoInfo.cryptoName", `is`("Bitcoin")))
-      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.cryptoInfo.cryptoId", `is`("bitcoin")))
-      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.cryptoInfo.symbol", `is`("btc")))
-      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.cryptoInfo.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
-      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.quantity", `is`("0.15")))
-      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.balances.totalUSDBalance", `is`("4500.00")))
-      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.balances.totalBTCBalance", `is`("0.15")))
-      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.balances.totalEURBalance", `is`("4050.00")))
-      .andExpect(jsonPath("$.cryptos[0].userCryptoInfo.percentage", `is`(100.0)))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoId", `is`("bitcoin")))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.symbol", `is`("btc")))
+      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
+      .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.15")))
+      .andExpect(jsonPath("$.cryptos[0].balances.totalUSDBalance", `is`("4500.00")))
+      .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.15")))
+      .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("4050.00")))
+      .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
   }
 
   @ParameterizedTest
@@ -306,20 +306,18 @@ class InsightsControllerMvcTest(
     cryptos = listOf(
       CryptoInsights(
         id = "1f832f95-62e3-4d1b-a1e6-982d8c22f2bb",
-        userCryptoInfo = UserCryptoInsights(
-          cryptoInfo = CryptoInfo(
-            cryptoName = "Bitcoin",
-            coingeckoCryptoId = "bitcoin",
-            symbol = "btc",
-            image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-          ),
-          quantity = "0.15",
-          percentage = 100f,
-          balances = BalancesResponse(
-            totalUSDBalance = "4500.00",
-            totalBTCBalance = "0.15",
-            totalEURBalance = "4050.00"
-          )
+        cryptoInfo = CryptoInfo(
+          cryptoName = "Bitcoin",
+          coingeckoCryptoId = "bitcoin",
+          symbol = "btc",
+          image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+        ),
+        quantity = "0.15",
+        percentage = 100f,
+        balances = BalancesResponse(
+          totalUSDBalance = "4500.00",
+          totalBTCBalance = "0.15",
+          totalEURBalance = "4050.00"
         )
       )
     )
