@@ -14,8 +14,7 @@ class UserService(private val userRepository: UserRepository) {
   fun findByUsername(username: String): User {
     logger.info { "Searching for username $username" }
 
-    return userRepository.findByUsername(username)
-      .orElseThrow { UsernameNotFoundException() }
+    return userRepository.findByUsername(username) ?: throw UsernameNotFoundException()
   }
 }
 

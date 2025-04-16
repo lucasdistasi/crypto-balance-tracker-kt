@@ -5,8 +5,8 @@ import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
+import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -17,7 +17,7 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.http.ResponseEntity
-import java.util.Optional
+import java.util.*
 
 class InsightsControllerTest {
 
@@ -62,7 +62,7 @@ class InsightsControllerTest {
       priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
     )
 
-    every { insightsServiceMock.retrieveDatesBalances(DateRange.LAST_DAY) } returns dateBalanceResponse
+    every { insightsServiceMock.retrieveDatesBalances(DateRange.LAST_DAY) } returns Optional.of(dateBalanceResponse)
 
     val datesBalances = insightsController.retrieveDatesBalances(DateRange.LAST_DAY)
 
@@ -80,9 +80,7 @@ class InsightsControllerTest {
       cryptos = emptyList()
     )
 
-    every {
-      insightsServiceMock.retrieveUserCryptosInsights(0)
-    } returns Optional.of(pageUserCryptosInsightsResponse)
+    every { insightsServiceMock.retrieveUserCryptosInsights(0) } returns pageUserCryptosInsightsResponse
 
     val cryptosPlatformsInsights = insightsController.retrieveUserCryptosInsights(0)
 
@@ -93,9 +91,7 @@ class InsightsControllerTest {
 
   @Test
   fun `should retrieve empty for cryptos insights with status 204`() {
-    every {
-      insightsServiceMock.retrieveUserCryptosInsights(0)
-    } returns Optional.empty()
+    every { insightsServiceMock.retrieveUserCryptosInsights(0) } returns PageUserCryptosInsightsResponse.EMPTY
 
     val cryptosPlatformsInsights = insightsController.retrieveUserCryptosInsights(0)
 
@@ -149,7 +145,9 @@ class InsightsControllerTest {
 
   @Test
   fun `should retrieve crypto insights with status 204`() {
-    every { insightsServiceMock.retrieveCryptoInsights("bitcoin") } returns Optional.empty()
+    every {
+      insightsServiceMock.retrieveCryptoInsights("bitcoin")
+    } returns Optional.empty()
 
     val cryptoInsights = insightsController.retrieveCryptoInsights("bitcoin")
 

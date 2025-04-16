@@ -16,7 +16,6 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Scope
 import org.springframework.context.annotation.ScopedProxyMode
 import org.springframework.stereotype.Service
-import java.util.Optional
 
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -68,7 +67,7 @@ class UserCryptoService(
     return userCryptoRepository.findAll()
   }
 
-  fun findByCoingeckoCryptoIdAndPlatformId(cryptoId: String, platformId: String): Optional<UserCrypto> {
+  fun findByCoingeckoCryptoIdAndPlatformId(cryptoId: String, platformId: String): UserCrypto? {
     return userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(cryptoId, platformId)
   }
 
@@ -76,10 +75,10 @@ class UserCryptoService(
     val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(userCryptoRequest.cryptoName!!)
     val platform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)
 
-    val existingUserCrypto =
+    val existingUserCrypto: UserCrypto? =
       userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)
 
-    if (existingUserCrypto.isPresent) {
+    if (existingUserCrypto != null) {
       throw DuplicatedCryptoPlatFormException(
         DUPLICATED_CRYPTO_PLATFORM.format(coingeckoCrypto.name, platform.name)
       )
@@ -108,10 +107,10 @@ class UserCryptoService(
     val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(userCrypto.coingeckoCryptoId)
 
     if (didChangePlatform(requestPlatform.id, userCrypto.platformId)) {
-      val existingUserCrypto =
+      val existingUserCrypto: UserCrypto? =
         userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)
 
-      if (existingUserCrypto.isPresent) {
+      if (existingUserCrypto != null) {
         throw DuplicatedCryptoPlatFormException(
           DUPLICATED_CRYPTO_PLATFORM.format(coingeckoCrypto.name, requestPlatform.name)
         )

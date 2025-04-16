@@ -19,4 +19,8 @@ data class PageUserCryptosInsightsResponse(
     cryptos = cryptos
   )
 
+  companion object {
+    val EMPTY = PageUserCryptosInsightsResponse(0, 0, false, BalancesResponse.EMPTY, emptyList())
+  }
+
 }

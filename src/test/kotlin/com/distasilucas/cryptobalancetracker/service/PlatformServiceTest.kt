@@ -132,7 +132,7 @@ class PlatformServiceTest {
     val platformEntity = platformRequest.toEntity()
 
     val slot = slot<Platform>()
-    every { platformRepositoryMock.findByName("BINANCE") } returns Optional.empty()
+    every { platformRepositoryMock.findByName("BINANCE") } returns null
     every { platformRepositoryMock.save(capture(slot)) } returns platformEntity
     justRun { cacheServiceMock.invalidate(CacheType.PLATFORMS_CACHES) }
 
@@ -151,7 +151,7 @@ class PlatformServiceTest {
     val platformEntity = platformRequest.toEntity()
     val existingEntity = platformEntity.copy(id = UUID.randomUUID().toString())
 
-    every { platformRepositoryMock.findByName("BINANCE") } returns Optional.of(existingEntity)
+    every { platformRepositoryMock.findByName("BINANCE") } returns existingEntity
 
     val exception = assertThrows<DuplicatedPlatformException> { platformService.savePlatform(platformRequest) }
 
@@ -167,7 +167,7 @@ class PlatformServiceTest {
     val id = existingPlatform.id
     val newPlatform = existingPlatform.copy(name = "OKX")
 
-    every { platformRepositoryMock.findByName("OKX") } returns Optional.empty()
+    every { platformRepositoryMock.findByName("OKX") } returns null
     every { _platformServiceMock.retrievePlatformById(existingPlatform.id) } returns newPlatform
     every { platformRepositoryMock.findById(id) } returns Optional.of(existingPlatform)
     every { platformRepositoryMock.save(newPlatform) } returns newPlatform
@@ -188,7 +188,7 @@ class PlatformServiceTest {
     val existingPlatform = Platform(UUID.randomUUID().toString(), "BINANCE")
     val id = existingPlatform.id
 
-    every { platformRepositoryMock.findByName("BINANCE") } returns Optional.of(existingPlatform)
+    every { platformRepositoryMock.findByName("BINANCE") } returns existingPlatform
 
     val exception = assertThrows<DuplicatedPlatformException> {
       platformService.updatePlatform(id, platformRequest)
@@ -206,7 +206,7 @@ class PlatformServiceTest {
     val id = existingPlatform.id
     val exceptionMessage = PLATFORM_ID_NOT_FOUND.format(id)
 
-    every { platformRepositoryMock.findByName("OKX") } returns Optional.empty()
+    every { platformRepositoryMock.findByName("OKX") } returns null
     every {
       _platformServiceMock.retrievePlatformById(id)
     } throws PlatformNotFoundException(exceptionMessage)

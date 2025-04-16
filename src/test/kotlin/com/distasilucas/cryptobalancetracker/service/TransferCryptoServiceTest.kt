@@ -20,8 +20,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 
 class TransferCryptoServiceTest {
 
@@ -62,7 +61,7 @@ class TransferCryptoServiceTest {
         "bitcoin",
         "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
       )
-    } returns Optional.of(toPlatformUserCrypto)
+    } returns toPlatformUserCrypto
     justRun {
       userCryptoServiceMock.saveOrUpdateAll(
         listOf(
@@ -120,7 +119,7 @@ class TransferCryptoServiceTest {
         "bitcoin",
         "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
       )
-    } returns Optional.empty()
+    } returns null
     mockkStatic(UUID::class)
     every { UUID.randomUUID().toString() } returns "60560fe6-8be2-460f-89ba-ef2e1c2e405b"
     justRun {
@@ -181,7 +180,7 @@ class TransferCryptoServiceTest {
         "bitcoin",
         "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
       )
-    } returns Optional.of(toPlatformUserCrypto)
+    } returns toPlatformUserCrypto
     justRun {
       userCryptoServiceMock.saveOrUpdateAll(
         listOf(
@@ -239,7 +238,7 @@ class TransferCryptoServiceTest {
         "bitcoin",
         "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
       )
-    } returns Optional.empty()
+    } returns null
     mockkStatic(UUID::class)
     every { UUID.randomUUID().toString() } returns "60560fe6-8be2-460f-89ba-ef2e1c2e405b"
     justRun {
@@ -302,7 +301,7 @@ class TransferCryptoServiceTest {
         "bitcoin",
         "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
       )
-    } returns Optional.empty()
+    } returns null
     mockkStatic(UUID::class)
     every { UUID.randomUUID().toString() } returns "60560fe6-8be2-460f-89ba-ef2e1c2e405b"
     justRun {
@@ -374,7 +373,7 @@ class TransferCryptoServiceTest {
         "bitcoin",
         "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
       )
-    } returns Optional.of(toPlatformUserCrypto)
+    } returns toPlatformUserCrypto
     justRun {
       userCryptoServiceMock.deleteUserCrypto("f47ac10b-58cc-4372-a567-0e02b2c3d479")
     }
@@ -429,7 +428,7 @@ class TransferCryptoServiceTest {
         "bitcoin",
         "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
       )
-    } returns Optional.empty()
+    } returns null
     justRun {
       userCryptoServiceMock.saveOrUpdateAll(
         listOf(
@@ -485,7 +484,7 @@ class TransferCryptoServiceTest {
         "bitcoin",
         "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
       )
-    } returns Optional.of(toPlatformUserCrypto)
+    } returns toPlatformUserCrypto
     justRun {
       userCryptoServiceMock.deleteUserCrypto("f47ac10b-58cc-4372-a567-0e02b2c3d479")
     }
@@ -543,7 +542,7 @@ class TransferCryptoServiceTest {
         "bitcoin",
         "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
       )
-    } returns Optional.empty()
+    } returns null
     justRun {
       userCryptoServiceMock.saveOrUpdateAll(
         listOf(
@@ -599,7 +598,7 @@ class TransferCryptoServiceTest {
         "bitcoin",
         "b8e8c277-e4b4-4b7e-9c5d-7885ef04b71b"
       )
-    } returns Optional.empty()
+    } returns null
     justRun { userCryptoServiceMock.deleteUserCrypto("f47ac10b-58cc-4372-a567-0e02b2c3d479") }
 
     val transferCryptoResponse = transferCryptoService.transferCrypto(transferCryptoRequest)

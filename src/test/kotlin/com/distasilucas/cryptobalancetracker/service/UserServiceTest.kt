@@ -14,7 +14,6 @@ import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertThrows
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.time.LocalDateTime
-import java.util.Optional
 
 class UserServiceTest {
 
@@ -31,7 +30,7 @@ class UserServiceTest {
       createdAt = LocalDateTime.now()
     )
 
-    every { userRepositoryMock.findByUsername("username") } returns Optional.of(userEntity)
+    every { userRepositoryMock.findByUsername("username") } returns userEntity
 
     val user = userService.findByUsername("username")
 
@@ -59,7 +58,7 @@ class UserServiceTest {
 
   @Test
   fun `should throw UsernameNotFoundException if user does not exists`() {
-    every { userRepositoryMock.findByUsername("username") } returns Optional.empty()
+    every { userRepositoryMock.findByUsername("username") } returns null
 
     val exception = assertThrows<UsernameNotFoundException> { userService.findByUsername("username") }
 

@@ -13,8 +13,7 @@ import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZoneOffset
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 
 class DateBalanceSchedulerTest {
 
@@ -33,7 +32,7 @@ class DateBalanceSchedulerTest {
     every { clockMock.instant() } returns localDate.atStartOfDay().toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns localDate.atStartOfDay().atZone(ZoneId.of("UTC")).zone
     every { insightsServiceMock.retrieveTotalBalances() } returns balancesResponse
-    every { dateBalancesRepositoryMock.findDateBalanceByDate(localDate.toString()) } returns Optional.empty()
+    every { dateBalancesRepositoryMock.findDateBalanceByDate(localDate.toString()) } returns null
     every { dateBalancesRepositoryMock.save(dateBalance) } returns dateBalance
     mockkStatic(UUID::class)
     every { UUID.randomUUID().toString() } returns uuid
@@ -53,7 +52,7 @@ class DateBalanceSchedulerTest {
     every { clockMock.instant() } returns localDate.atStartOfDay().toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns localDate.atStartOfDay().atZone(ZoneId.of("UTC")).zone
     every { insightsServiceMock.retrieveTotalBalances() } returns balancesResponse
-    every { dateBalancesRepositoryMock.findDateBalanceByDate(localDate.toString()) } returns Optional.of(dateBalance)
+    every { dateBalancesRepositoryMock.findDateBalanceByDate(localDate.toString()) } returns dateBalance
     every { dateBalancesRepositoryMock.save(dateBalance) } returns dateBalance
     mockkStatic(UUID::class)
     every { UUID.randomUUID().toString() } returns uuid

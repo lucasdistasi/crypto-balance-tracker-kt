@@ -166,7 +166,7 @@ class PriceTargetServiceTest {
     } returns coingeckoCrypto
     every {
       priceTargetRepositoryMock.findByCoingeckoCryptoIdAndTarget("bitcoin", priceTargetRequest.priceTarget!!)
-    } returns Optional.empty()
+    } returns null
     every {
       cryptoServiceMock.retrieveCryptoInfoById("bitcoin")
     } returns getCryptoEntity(lastKnownPrice = BigDecimal("60000"))
@@ -200,7 +200,7 @@ class PriceTargetServiceTest {
     } returns coingeckoCrypto
     every {
       priceTargetRepositoryMock.findByCoingeckoCryptoIdAndTarget("bitcoin", priceTargetRequest.priceTarget!!)
-    } returns Optional.of(priceTargetEntity)
+    } returns priceTargetEntity
 
     val exception = assertThrows<DuplicatedPriceTargetException> { priceTargetService.savePriceTarget(priceTargetRequest) }
 
@@ -215,7 +215,7 @@ class PriceTargetServiceTest {
     every { _priceTargetServiceMock.findById(priceTargetEntity.id) } returns priceTargetEntity
     every {
       priceTargetRepositoryMock.findByCoingeckoCryptoIdAndTarget("bitcoin", priceTargetRequest.priceTarget!!)
-    } returns Optional.empty()
+    } returns null
     every {
       cryptoServiceMock.retrieveCryptoInfoById(priceTargetRequest.cryptoNameOrId!!)
     } returns getCryptoEntity(lastKnownPrice = BigDecimal("60000"))
@@ -245,7 +245,7 @@ class PriceTargetServiceTest {
     every { _priceTargetServiceMock.findById(priceTargetEntity.id) } returns priceTargetEntity
     every {
       priceTargetRepositoryMock.findByCoingeckoCryptoIdAndTarget("bitcoin", priceTargetRequest.priceTarget!!)
-    } returns Optional.of(anotherSamePriceTargetEntity)
+    } returns anotherSamePriceTargetEntity
 
     val exception = assertThrows<DuplicatedPriceTargetException> {
       priceTargetService.updatePriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", priceTargetRequest)
