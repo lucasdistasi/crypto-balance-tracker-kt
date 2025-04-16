@@ -3,7 +3,6 @@ package com.distasilucas.cryptobalancetracker.repository
 import com.distasilucas.cryptobalancetracker.entity.DateBalance
 import org.springframework.data.mongodb.repository.Aggregation
 import org.springframework.data.mongodb.repository.MongoRepository
-import java.util.Optional
 
 interface DateBalanceRepository : MongoRepository<DateBalance, String> {
 
@@ -12,5 +11,5 @@ interface DateBalanceRepository : MongoRepository<DateBalance, String> {
   ])
   fun findDateBalancesByInclusiveDateBetween(from: String, to: String): List<DateBalance>
   fun findAllByDateIn(dates: List<String>): List<DateBalance>
-  fun findDateBalanceByDate(date: String): Optional<DateBalance>
+  fun findDateBalanceByDate(date: String): DateBalance?
 }

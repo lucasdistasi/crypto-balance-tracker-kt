@@ -4,23 +4,18 @@ import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_CRYPTO_PLATFOR
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
-import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.request.crypto.UserCryptoRequest
-import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
 import com.distasilucas.cryptobalancetracker.repository.UserCryptoRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Scope
 import org.springframework.context.annotation.ScopedProxyMode
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -51,22 +46,6 @@ class UserCryptoService(
     return userCrypto.toUserCryptoResponse(crypto.name, platform.name)
   }
 
-  @Cacheable(cacheNames = [USER_CRYPTOS_RESPONSE_PAGE_CACHE], key = "#page")
-  fun retrieveUserCryptosByPage(page: Int): PageUserCryptoResponse {
-    logger.info { "Retrieving user cryptos for page $page" }
-
-    val pageRequest: Pageable = PageRequest.of(page, 10)
-    val entityUserCryptosPage = userCryptoRepository.findAll(pageRequest)
-    val userCryptosPage = entityUserCryptosPage.content.map { userCrypto ->
-      val platform = platformService.retrievePlatformById(userCrypto.platformId)
-      val crypto = cryptoService.retrieveCryptoInfoById(userCrypto.coingeckoCryptoId)
-
-      userCrypto.toUserCryptoResponse(crypto.name, platform.name)
-    }
-
-    return PageUserCryptoResponse(page, entityUserCryptosPage.totalPages, userCryptosPage)
-  }
-
   @Cacheable(cacheNames = [USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE], key = "#coingeckoCryptoId")
   fun findAllByCoingeckoCryptoId(coingeckoCryptoId: String): List<UserCrypto> {
     logger.info { "Retrieving all user cryptos matching coingecko crypto id $coingeckoCryptoId" }
@@ -88,7 +67,7 @@ class UserCryptoService(
     return userCryptoRepository.findAll()
   }
 
-  fun findByCoingeckoCryptoIdAndPlatformId(cryptoId: String, platformId: String): Optional<UserCrypto> {
+  fun findByCoingeckoCryptoIdAndPlatformId(cryptoId: String, platformId: String): UserCrypto? {
     return userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(cryptoId, platformId)
   }
 
@@ -96,10 +75,10 @@ class UserCryptoService(
     val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(userCryptoRequest.cryptoName!!)
     val platform = platformService.retrievePlatformById(userCryptoRequest.platformId!!)
 
-    val existingUserCrypto =
+    val existingUserCrypto: UserCrypto? =
       userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)
 
-    if (existingUserCrypto.isPresent) {
+    if (existingUserCrypto != null) {
       throw DuplicatedCryptoPlatFormException(
         DUPLICATED_CRYPTO_PLATFORM.format(coingeckoCrypto.name, platform.name)
       )
@@ -128,10 +107,10 @@ class UserCryptoService(
     val coingeckoCrypto = cryptoService.retrieveCoingeckoCryptoInfoByNameOrId(userCrypto.coingeckoCryptoId)
 
     if (didChangePlatform(requestPlatform.id, userCrypto.platformId)) {
-      val existingUserCrypto =
+      val existingUserCrypto: UserCrypto? =
         userCryptoRepository.findByCoingeckoCryptoIdAndPlatformId(coingeckoCrypto.id, userCryptoRequest.platformId)
 
-      if (existingUserCrypto.isPresent) {
+      if (existingUserCrypto != null) {
         throw DuplicatedCryptoPlatFormException(
           DUPLICATED_CRYPTO_PLATFORM.format(coingeckoCrypto.name, requestPlatform.name)
         )

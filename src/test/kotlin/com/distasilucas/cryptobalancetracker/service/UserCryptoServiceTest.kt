@@ -4,7 +4,6 @@ import com.distasilucas.cryptobalancetracker.constants.DUPLICATED_CRYPTO_PLATFOR
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_NOT_FOUND
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
-import com.distasilucas.cryptobalancetracker.model.response.crypto.PageUserCryptoResponse
 import com.distasilucas.cryptobalancetracker.model.response.crypto.UserCryptoResponse
 import com.distasilucas.cryptobalancetracker.repository.UserCryptoRepository
 import getCoingeckoCrypto
@@ -20,11 +19,8 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
 import java.math.BigDecimal
-import java.util.Optional
+import java.util.*
 
 class UserCryptoServiceTest {
 
@@ -82,92 +78,6 @@ class UserCryptoServiceTest {
   }
 
   @Test
-  fun `should retrieve user cryptos by page`() {
-    val userCrypto = getUserCrypto()
-    val platform = getPlatformEntity()
-    val crypto = getCryptoEntity()
-
-    every { userCryptoRepositoryMock.findAll(PageRequest.of(0, 10)) } returns PageImpl(listOf(userCrypto))
-    every {
-      platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
-    } returns platform
-    every { cryptoServiceMock.retrieveCryptoInfoById("bitcoin") } returns crypto
-
-    val pageUserCryptoResponse = userCryptoService.retrieveUserCryptosByPage(0)
-
-    assertThat(pageUserCryptoResponse)
-      .usingRecursiveComparison()
-      .isEqualTo(
-        PageUserCryptoResponse(
-          page = 1,
-          totalPages = 1,
-          hasNextPage = false,
-          cryptos = listOf(
-            userCrypto.toUserCryptoResponse(
-              cryptoName = "Bitcoin",
-              platformName = "BINANCE"
-            )
-          )
-        )
-      )
-  }
-
-  @Test
-  fun `should retrieve user cryptos by page with next page`() {
-    val userCrypto = getUserCrypto()
-    val platform = getPlatformEntity()
-    val crypto = getCryptoEntity()
-    val userCryptosPage = List(2) { userCrypto }
-    val pageImpl = PageImpl(userCryptosPage, PageRequest.of(0, 2), 10L)
-
-    every { userCryptoRepositoryMock.findAll(PageRequest.of(0, 10)) } returns pageImpl
-    every {
-      platformServiceMock.retrievePlatformById("123e4567-e89b-12d3-a456-426614174111")
-    } returns platform
-    every { cryptoServiceMock.retrieveCryptoInfoById("bitcoin") } returns crypto
-
-    val pageUserCryptoResponse = userCryptoService.retrieveUserCryptosByPage(0)
-
-    assertThat(pageUserCryptoResponse)
-      .usingRecursiveComparison()
-      .isEqualTo(
-        PageUserCryptoResponse(
-          page = 1,
-          totalPages = 5,
-          hasNextPage = true,
-          cryptos = listOf(
-            userCrypto.toUserCryptoResponse(
-              cryptoName = "Bitcoin",
-              platformName = "BINANCE"
-            ),
-            userCrypto.toUserCryptoResponse(
-              cryptoName = "Bitcoin",
-              platformName = "BINANCE"
-            )
-          )
-        )
-      )
-  }
-
-  @Test
-  fun `should retrieve empty user cryptos for page`() {
-    every { userCryptoRepositoryMock.findAll(PageRequest.of(0, 10)) } returns Page.empty()
-
-    val pageUserCryptoResponse = userCryptoService.retrieveUserCryptosByPage(0)
-
-    assertThat(pageUserCryptoResponse)
-      .usingRecursiveComparison()
-      .isEqualTo(
-        PageUserCryptoResponse(
-          page = 1,
-          totalPages = 1,
-          hasNextPage = false,
-          cryptos = emptyList()
-        )
-      )
-  }
-
-  @Test
   fun `should save user crypto`() {
     val userCryptoRequest = getUserCryptoRequest()
     val coingeckoCrypto = getCoingeckoCrypto()
@@ -183,7 +93,7 @@ class UserCryptoServiceTest {
         "bitcoin",
         "123e4567-e89b-12d3-a456-426614174111"
       )
-    } returns Optional.empty()
+    } returns null
     every { userCryptoRepositoryMock.save(capture(slot)) } answers { slot.captured }
     justRun { cryptoServiceMock.saveCryptoIfNotExists("bitcoin") }
     justRun { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
@@ -225,7 +135,7 @@ class UserCryptoServiceTest {
         "bitcoin",
         "123e4567-e89b-12d3-a456-426614174111"
       )
-    } returns Optional.of(userCrypto)
+    } returns userCrypto
 
     val exception = assertThrows<DuplicatedCryptoPlatFormException> {
       userCryptoService.saveUserCrypto(userCryptoRequest)
@@ -260,7 +170,7 @@ class UserCryptoServiceTest {
         "bitcoin",
         "123e4567-e89b-12d3-a456-426614174111"
       )
-    } returns Optional.empty()
+    } returns null
     every { userCryptoRepositoryMock.save(updatedUserCrypto) } returns updatedUserCrypto
     justRun { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
 
@@ -311,7 +221,7 @@ class UserCryptoServiceTest {
         "bitcoin",
         "123e4567-e89b-12d3-a456-426614174333"
       )
-    } returns Optional.empty()
+    } returns null
     every { userCryptoRepositoryMock.save(updatedUserCrypto) } returns updatedUserCrypto
     justRun { cacheServiceMock.invalidate(CacheType.USER_CRYPTOS_CACHES, CacheType.GOALS_CACHES, CacheType.INSIGHTS_CACHES) }
 
@@ -379,7 +289,7 @@ class UserCryptoServiceTest {
         "bitcoin",
         "123e4567-e89b-12d3-a456-426614174333"
       )
-    } returns Optional.of(duplicatedUserCrypto)
+    } returns duplicatedUserCrypto
 
     val exception = assertThrows<DuplicatedCryptoPlatFormException> {
       userCryptoService.updateUserCrypto("123e4567-e89b-12d3-a456-426614174000", userCryptoRequest)
@@ -525,13 +435,12 @@ class UserCryptoServiceTest {
       userCryptoRepositoryMock.findByCoingeckoCryptoIdAndPlatformId(
         "bitcoin", "123e4567-e89b-12d3-a456-426614174111"
       )
-    } returns Optional.of(userCrypto)
+    } returns userCrypto
 
     val response =
       userCryptoService.findByCoingeckoCryptoIdAndPlatformId("bitcoin", "123e4567-e89b-12d3-a456-426614174111")
 
-    assertThat(response.isPresent)
-    assertThat(response.get())
+    assertThat(response)
       .usingRecursiveComparison()
       .isEqualTo(
         UserCrypto(

@@ -4,14 +4,13 @@ import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortType
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsBalancesInsightsResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
@@ -125,7 +124,7 @@ interface InsightsControllerAPI {
   )
   fun retrieveDatesBalances(dateRange: DateRange): ResponseEntity<DatesBalanceResponse>
 
-  @Operation(summary = "Retrieves information of each user crypto, like it's balance, information about the crypto, where it's stored")
+  @Operation(summary = "Retrieves information of each INDIVIDUAL user crypto, like the total balance, information about the crypto, in which platforms it's stored")
   @ApiResponses(
     value = [
       ApiResponse(
@@ -188,69 +187,6 @@ interface InsightsControllerAPI {
     sortType: SortType = SortType.DESC
   ): ResponseEntity<PageUserCryptosInsightsResponse>
 
-  @Operation(summary = "Retrieves information of each INDIVIDUAL user crypto, like the total balance, information about the crypto, in which platforms it's stored")
-  @ApiResponses(
-    value = [
-      ApiResponse(
-        responseCode = "200",
-        description = "Cryptos Information",
-        content = [Content(
-          mediaType = "application/json",
-          schema = Schema(
-            implementation = PageUserCryptosInsightsResponse::class
-          )
-        )]
-      ),
-      ApiResponse(
-        responseCode = "204",
-        description = "No user cryptos saved",
-        content = [Content(
-          mediaType = "application/json",
-          schema = Schema(
-            implementation = Void::class
-          )
-        )]
-      ),
-      ApiResponse(
-        responseCode = "401",
-        description = "Unauthorized",
-        content = [Content(
-          schema = Schema(
-            implementation = Void::class
-          )
-        )]
-      ),
-      ApiResponse(
-        responseCode = "403",
-        description = "Forbidden. Not yet implemented",
-        content = [Content(
-          mediaType = "application/json",
-          schema = Schema(
-            implementation = ProblemDetail::class
-          )
-        )]
-      ),
-      ApiResponse(
-        responseCode = "500",
-        description = "Internal Server Error",
-        content = [Content(
-          mediaType = "application/json",
-          array = ArraySchema(
-            schema = Schema(
-              implementation = ProblemDetail::class
-            )
-          )
-        )]
-      )
-    ]
-  )
-  fun retrieveUserCryptosPlatformsInsights(
-    @Min(value = 0, message = "Page must be greater than or equal to 0")
-    page: Int,
-    sortBy: SortBy = SortBy.PERCENTAGE,
-    sortType: SortType = SortType.DESC
-  ): ResponseEntity<PageUserCryptosInsightsResponse>
-
   @Operation(summary = "Retrieve insights balances for all user cryptos")
   @ApiResponses(
     value = [
@@ -259,8 +195,10 @@ interface InsightsControllerAPI {
         description = "User cryptos balances insights",
         content = [Content(
           mediaType = "application/json",
-          schema = Schema(
-            implementation = CryptosBalancesInsightsResponse::class
+          array = ArraySchema(
+            schema = Schema(
+              implementation = BalancesChartResponse::class
+            )
           )
         )]
       ),
@@ -307,7 +245,7 @@ interface InsightsControllerAPI {
       )
     ]
   )
-  fun retrieveCryptosBalancesInsights(): ResponseEntity<CryptosBalancesInsightsResponse>
+  fun retrieveCryptosBalancesInsights(): ResponseEntity<List<BalancesChartResponse>>
 
   @Operation(summary = "Retrieve insights balances for all platforms")
   @ApiResponses(
@@ -317,8 +255,10 @@ interface InsightsControllerAPI {
         description = "Platforms balances insights",
         content = [Content(
           mediaType = "application/json",
-          schema = Schema(
-            implementation = PlatformsBalancesInsightsResponse::class
+          array = ArraySchema(
+            schema = Schema(
+              implementation = BalancesChartResponse::class
+            )
           )
         )]
       ),
@@ -365,7 +305,7 @@ interface InsightsControllerAPI {
       )
     ]
   )
-  fun retrievePlatformsBalancesInsights(): ResponseEntity<PlatformsBalancesInsightsResponse>
+  fun retrievePlatformsBalancesInsights(): ResponseEntity<List<BalancesChartResponse>>
 
   @Operation(summary = "Retrieve user cryptos insights for the given coingecko crypto id")
   @ApiResponses(

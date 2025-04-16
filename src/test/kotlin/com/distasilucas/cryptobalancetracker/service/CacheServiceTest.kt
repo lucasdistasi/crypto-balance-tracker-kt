@@ -18,7 +18,6 @@ import com.distasilucas.cryptobalancetracker.constants.TOTAL_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
-import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.entity.Platform
@@ -26,20 +25,21 @@ import com.distasilucas.cryptobalancetracker.entity.PriceTarget
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.goal.PageGoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInsights
+import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptosBalancesInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
+import com.distasilucas.cryptobalancetracker.model.response.insights.platform.CryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsBalancesInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformsInsights
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PagePriceTargetResponse
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PriceTargetResponse
 import getCryptoEntity
+import getCryptoInfo
 import getGoalResponse
 import getUserCrypto
 import io.mockk.every
@@ -69,21 +69,18 @@ class CacheServiceTest {
     val userCryptosCoingeckoCryptoIdMap = mapOf("bitcoin" to listOf(userCrypto))
     val userCryptoIdMap = mapOf("bc7a8ee5-13f9-4405-a7fb-887458c21bed" to listOf(userCrypto))
     val userCryptoResponseUserCryptoIdMap = mapOf("bc7a8ee5-13f9-4405-a7fb-887458c21bed" to listOf(userCryptoResponse))
-    val userCryptosResponsePageMap = mapOf(0 to listOf(userCryptoResponse))
 
     val userCryptosCache = getMapCache(USER_CRYPTOS_CACHE, userCryptosCacheMap)
     val userCryptosPlatformIdCache = getMapCache(USER_CRYPTOS_PLATFORM_ID_CACHE, userCryptosPlatformIdMap)
     val userCryptosCoingeckoCryptoIdCache = getMapCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE, userCryptosCoingeckoCryptoIdMap)
     val userCryptoIdCache = getMapCache(USER_CRYPTO_ID_CACHE, userCryptoIdMap)
     val userCryptoResponseUserCryptoIdCache = getMapCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE, userCryptoResponseUserCryptoIdMap)
-    val userCryptosResponsePageCache = getMapCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE, userCryptosResponsePageMap)
 
     every { cacheManagerMock.getCache(USER_CRYPTOS_CACHE) } returns userCryptosCache
     every { cacheManagerMock.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE) } returns userCryptosPlatformIdCache
     every { cacheManagerMock.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE) } returns userCryptosCoingeckoCryptoIdCache
     every { cacheManagerMock.getCache(USER_CRYPTO_ID_CACHE) } returns userCryptoIdCache
     every { cacheManagerMock.getCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE) } returns userCryptoResponseUserCryptoIdCache
-    every { cacheManagerMock.getCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE) } returns userCryptosResponsePageCache
 
     cacheService.invalidate(CacheType.USER_CRYPTOS_CACHES)
 
@@ -92,14 +89,12 @@ class CacheServiceTest {
     assertTrue(userCryptosCoingeckoCryptoIdCache.nativeCache.isEmpty())
     assertTrue(userCryptoIdCache.nativeCache.isEmpty())
     assertTrue(userCryptoResponseUserCryptoIdCache.nativeCache.isEmpty())
-    assertTrue(userCryptosResponsePageCache.nativeCache.isEmpty())
 
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_PLATFORM_ID_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTO_ID_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE) }
-    verify(exactly = 1) { cacheManagerMock.getCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE) }
   }
 
   @Test
@@ -180,7 +175,7 @@ class CacheServiceTest {
     val priceTarget = PriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", "bitcoin", BigDecimal("120000"))
     val priceTargetResponse = PriceTargetResponse(
       "f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08",
-      "Bitcoin",
+      getCryptoInfo(),
       "58000",
       "120000",
       50F
@@ -293,15 +288,19 @@ class CacheServiceTest {
     cryptos = listOf(
       CryptoInsights(
         id = "123e4567-e89b-12d3-a456-426614174000",
-        cryptoName = "Bitcoin",
-        cryptoId = "bitcoin",
+        cryptoInfo = CryptoInfo(
+          cryptoName = "Bitcoin",
+          coingeckoCryptoId = "bitcoin",
+          symbol = "btc",
+          image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+        ),
         quantity = "0.25",
+        percentage = 100f,
         balances = BalancesResponse(
           totalUSDBalance = "7500.00",
           totalBTCBalance = "0.25",
           totalEURBalance = "6750.00"
-        ),
-        percentage = 100f
+        )
       )
     )
   )
@@ -315,87 +314,14 @@ class CacheServiceTest {
     priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
   )
 
-  private fun getCryptosBalancesInsightsResponse() = CryptosBalancesInsightsResponse(
-    balances = BalancesResponse(
-      totalUSDBalance = "7108.39",
-      totalBTCBalance = "0.2512793593",
-      totalEURBalance = "6484.23"
-    ),
-    cryptos = listOf(
-      CryptoInsights(
-        cryptoName = "Bitcoin",
-        cryptoId = "bitcoin",
-        quantity = "0.15",
-        balances = BalancesResponse(
-          totalUSDBalance = "4500.00",
-          totalBTCBalance = "0.15",
-          totalEURBalance = "4050.00"
-        ),
-        percentage = 63.31f
-      ),
-      CryptoInsights(
-        cryptoName = "Ethereum",
-        cryptoId = "ethereum",
-        quantity = "1.372",
-        balances = BalancesResponse(
-          totalUSDBalance = "2219.13",
-          totalBTCBalance = "0.0861664843",
-          totalEURBalance = "2070.86"
-        ),
-        percentage = 31.22f
-      ),
-      CryptoInsights(
-        cryptoName = "Tether",
-        cryptoId = "tether",
-        quantity = "200",
-        balances = BalancesResponse(
-          totalUSDBalance = "199.92",
-          totalBTCBalance = "0.00776",
-          totalEURBalance = "186.62"
-        ),
-        percentage = 2.81f
-      ),
-      CryptoInsights(
-        cryptoName = "Litecoin",
-        cryptoId = "litecoin",
-        quantity = "3.125",
-        balances = BalancesResponse(
-          totalUSDBalance = "189.34",
-          totalBTCBalance = "0.007352875",
-          totalEURBalance = "176.75"
-        ),
-        percentage = 2.66f
-      )
-    )
+  private fun getCryptosBalancesInsightsResponse() = listOf(
+    BalancesChartResponse("Bitcoin", "7108.39", 63.31F),
+    BalancesChartResponse("Ethereum", "2219.13", 31.22F),
+    BalancesChartResponse("Tether", "199.92", 2.81F),
+    BalancesChartResponse("Litecoin", "189.34", 2.66F),
   )
 
-  private fun getPlatformsBalancesInsightsResponse() = PlatformsBalancesInsightsResponse(
-    balances = BalancesResponse(
-      totalUSDBalance = "7108.39",
-      totalBTCBalance = "0.2512793593",
-      totalEURBalance = "6484.23"
-    ),
-    platforms = listOf(
-      PlatformsInsights(
-        platformName = "BINANCE",
-        balances = BalancesResponse(
-          totalUSDBalance = "5120.45",
-          totalBTCBalance = "0.1740889256",
-          totalEURBalance = "4629.06"
-        ),
-        percentage = 72.03f
-      ),
-      PlatformsInsights(
-        platformName = "COINBASE",
-        balances = BalancesResponse(
-          totalUSDBalance = "1987.93",
-          totalBTCBalance = "0.0771904337",
-          totalEURBalance = "1855.17"
-        ),
-        percentage = 27.97f
-      )
-    )
-  )
+  private fun getPlatformsBalancesInsightsResponse() = listOf(BalancesChartResponse("BINANCE", "5120.45", 72.03f))
 
   private fun getCryptoInsightResponse() = CryptoInsightResponse(
     cryptoName = "Bitcoin",
@@ -417,5 +343,4 @@ class CacheServiceTest {
       )
     )
   )
-
 }

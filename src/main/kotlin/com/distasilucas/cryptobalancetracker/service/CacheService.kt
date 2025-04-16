@@ -18,7 +18,6 @@ import com.distasilucas.cryptobalancetracker.constants.TOTAL_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
-import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -54,7 +53,6 @@ class CacheService(private val cacheManager: CacheManager) {
     cacheManager.getCache(USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE)!!.invalidate()
     cacheManager.getCache(USER_CRYPTO_ID_CACHE)!!.invalidate()
     cacheManager.getCache(USER_CRYPTO_RESPONSE_USER_CRYPTO_ID_CACHE)!!.invalidate()
-    cacheManager.getCache(USER_CRYPTOS_RESPONSE_PAGE_CACHE)!!.invalidate()
   }
 
   private fun invalidatePlatformsCaches() {

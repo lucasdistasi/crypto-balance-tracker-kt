@@ -9,6 +9,7 @@ import com.distasilucas.cryptobalancetracker.model.response.goal.PageGoalRespons
 import com.distasilucas.cryptobalancetracker.repository.GoalRepository
 import getCoingeckoCrypto
 import getCryptoEntity
+import getCryptoInfo
 import getUserCrypto
 import io.mockk.every
 import io.mockk.justRun
@@ -33,6 +34,7 @@ class GoalServiceTest {
   private val cacheServiceMock = mockk<CacheService>()
 
   private val goalService = GoalService(goalRepositoryMock, cryptoServiceMock, userCryptoServiceMock, cacheServiceMock)
+  private val cryptoInfo = getCryptoInfo()
 
   @Test
   fun `should retrieve goal by id`() {
@@ -54,7 +56,7 @@ class GoalServiceTest {
       .isEqualTo(
         GoalResponse(
           id = "123e4567-e89b-12d3-a456-426614174111",
-          cryptoName = "Bitcoin",
+          cryptoInfo = cryptoInfo,
           actualQuantity = "0.25",
           progress = 25f,
           remainingQuantity = "0.75",
@@ -86,7 +88,7 @@ class GoalServiceTest {
       .isEqualTo(
         GoalResponse(
           id = "123e4567-e89b-12d3-a456-426614174111",
-          cryptoName = "Bitcoin",
+          cryptoInfo = cryptoInfo,
           actualQuantity = "1",
           progress = 100f,
           remainingQuantity = "0",
@@ -134,7 +136,7 @@ class GoalServiceTest {
           goals = listOf(
             GoalResponse(
               id = "123e4567-e89b-12d3-a456-426614174111",
-              cryptoName = "Bitcoin",
+              cryptoInfo = cryptoInfo,
               actualQuantity = "0.25",
               progress = 25f,
               remainingQuantity = "0.75",
@@ -174,7 +176,7 @@ class GoalServiceTest {
           goals = listOf(
             GoalResponse(
               id = "123e4567-e89b-12d3-a456-426614174111",
-              cryptoName = "Bitcoin",
+              cryptoInfo = cryptoInfo,
               actualQuantity = "0.25",
               progress = 25f,
               remainingQuantity = "0.75",
@@ -183,7 +185,7 @@ class GoalServiceTest {
             ),
             GoalResponse(
               id = "123e4567-e89b-12d3-a456-426614174111",
-              cryptoName = "Bitcoin",
+              cryptoInfo = cryptoInfo,
               actualQuantity = "0.25",
               progress = 25f,
               remainingQuantity = "0.75",
@@ -228,7 +230,7 @@ class GoalServiceTest {
 
     val slot = slot<Goal>()
     every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
-    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.empty()
+    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns null
     justRun { cryptoServiceMock.saveCryptoIfNotExists("bitcoin") }
     every { goalRepositoryMock.save(capture(slot)) } answers { slot.captured }
     every { cryptoServiceMock.retrieveCryptoInfoById("bitcoin") } returns cryptoEntity
@@ -244,7 +246,7 @@ class GoalServiceTest {
       .isEqualTo(
         GoalResponse(
           id = slot.captured.id,
-          cryptoName = "Bitcoin",
+          cryptoInfo = cryptoInfo,
           actualQuantity = "0.25",
           progress = 25f,
           remainingQuantity = "0.75",
@@ -267,7 +269,7 @@ class GoalServiceTest {
     val coingeckoCrypto = getCoingeckoCrypto()
 
     every { cryptoServiceMock.retrieveCoingeckoCryptoInfoByNameOrId("bitcoin") } returns coingeckoCrypto
-    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.of(existingGoal)
+    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns existingGoal
 
     val exception = assertThrows<DuplicatedGoalException> { goalService.saveGoal(goalRequest) }
 
@@ -306,7 +308,7 @@ class GoalServiceTest {
       .isEqualTo(
         GoalResponse(
           id = "123e4567-e89b-12d3-a456-426614174111",
-          cryptoName = "Bitcoin",
+          cryptoInfo = cryptoInfo,
           actualQuantity = "0.25",
           progress = 33.33f,
           remainingQuantity = "0.50",

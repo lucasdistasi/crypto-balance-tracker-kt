@@ -14,8 +14,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 
 class OrphanCryptoServiceTest {
 
@@ -28,7 +27,7 @@ class OrphanCryptoServiceTest {
   @Test
   fun `should return true if crypto it's not being used`() {
     every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns emptyList()
-    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.empty()
+    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns null
     every { priceTargetRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns emptyList()
 
     val result = orphanCryptoService.isCryptoOrphan("bitcoin")
@@ -45,7 +44,7 @@ class OrphanCryptoServiceTest {
     )
 
     every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns listOf(userCrypto)
-    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.empty()
+    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns null
     every { priceTargetRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns emptyList()
 
     val result = orphanCryptoService.isCryptoOrphan("bitcoin")
@@ -61,7 +60,7 @@ class OrphanCryptoServiceTest {
     )
 
     every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns emptyList()
-    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.of(goalEntity)
+    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns goalEntity
     every { priceTargetRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns emptyList()
 
     val result = orphanCryptoService.isCryptoOrphan("bitcoin")
@@ -74,7 +73,7 @@ class OrphanCryptoServiceTest {
     val priceTargetEntity = PriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", "bitcoin", BigDecimal("120000"))
 
     every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns emptyList()
-    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns Optional.empty()
+    every { goalRepositoryMock.findByCoingeckoCryptoId("bitcoin") } returns null
     every { priceTargetRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns listOf(priceTargetEntity)
 
     val result = orphanCryptoService.isCryptoOrphan("bitcoin")
@@ -92,7 +91,7 @@ class OrphanCryptoServiceTest {
 
     every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("bitcoin") } returns listOf(userCrypto)
     every { userCryptoRepositoryMock.findAllByCoingeckoCryptoId("ethereum") } returns emptyList()
-    every { goalRepositoryMock.findByCoingeckoCryptoId("ethereum") } returns Optional.empty()
+    every { goalRepositoryMock.findByCoingeckoCryptoId("ethereum") } returns null
     every { priceTargetRepositoryMock.findAllByCoingeckoCryptoId("ethereum") } returns emptyList()
 
     val orphanCryptos = orphanCryptoService.getOrphanCryptos(listOf("bitcoin", "ethereum"))
@@ -100,5 +99,4 @@ class OrphanCryptoServiceTest {
     assertThat(orphanCryptos.size).isEqualTo(1)
     assertEquals(listOf("ethereum"), orphanCryptos)
   }
-
 }

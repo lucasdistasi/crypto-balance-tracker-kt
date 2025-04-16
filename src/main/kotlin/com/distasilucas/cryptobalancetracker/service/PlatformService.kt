@@ -87,10 +87,10 @@ class PlatformService(
   }
 
   private fun validatePlatformNotExists(platformName: String) {
-    val existingPlatform = platformRepository.findByName(platformName.uppercase())
+    val existingPlatform: Platform? = platformRepository.findByName(platformName.uppercase())
 
-    if (existingPlatform.isPresent) {
-      throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(existingPlatform.get().name))
+    if (existingPlatform != null) {
+      throw DuplicatedPlatformException(DUPLICATED_PLATFORM.format(existingPlatform.name))
     }
   }
 }

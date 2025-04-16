@@ -7,6 +7,7 @@ import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PagePric
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PriceTargetResponse
 import com.distasilucas.cryptobalancetracker.repository.PriceTargetRepository
 import getCryptoEntity
+import getCryptoInfo
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
@@ -29,6 +30,8 @@ class PriceTargetServiceTest {
   private val _priceTargetServiceMock = mockk<PriceTargetService>()
 
   private val priceTargetService = PriceTargetService(priceTargetRepositoryMock, cryptoServiceMock, cacheServiceMock, _priceTargetServiceMock)
+
+  private val cryptoInfo = getCryptoInfo()
 
   @Test
   fun `should return price target entity`() {
@@ -75,7 +78,7 @@ class PriceTargetServiceTest {
       .usingRecursiveComparison()
       .isEqualTo(PriceTargetResponse(
         "f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08",
-        "Bitcoin",
+        cryptoInfo,
         "60000",
         "120000",
         100F
@@ -104,20 +107,26 @@ class PriceTargetServiceTest {
       PriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", "bitcoin", BigDecimal("120000")),
       PriceTarget("ff738ff7-6f9a-400a-8b06-36b7e1fef81e", "ethereum", BigDecimal("15000")),
     )
+    val ethereumCryptoInfo = getCryptoInfo(
+      "Ethereum",
+      "ethereum",
+      "eth",
+      "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880"
+    )
     val pagePriceTargetResponse = PagePriceTargetResponse(
       0,
       1,
       listOf(
         PriceTargetResponse(
           "f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08",
-          "Bitcoin",
+          cryptoInfo,
           "60000",
           "120000",
           100F
         ),
         PriceTargetResponse(
           "ff738ff7-6f9a-400a-8b06-36b7e1fef81e",
-          "Ethereum",
+          ethereumCryptoInfo,
           "4000",
           "15000",
           275F
@@ -131,7 +140,13 @@ class PriceTargetServiceTest {
     } returns getCryptoEntity(lastKnownPrice = BigDecimal("60000"))
     every {
       cryptoServiceMock.retrieveCryptoInfoById("ethereum")
-    } returns getCryptoEntity(name = "Ethereum", lastKnownPrice = BigDecimal("4000"))
+    } returns getCryptoEntity(
+      id = "ethereum",
+      name = "Ethereum",
+      ticker = "eth",
+      image = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
+      lastKnownPrice = BigDecimal("4000")
+    )
 
     val priceTargetResponse = priceTargetService.retrievePriceTargetsByPage(0)
 
@@ -151,7 +166,7 @@ class PriceTargetServiceTest {
     } returns coingeckoCrypto
     every {
       priceTargetRepositoryMock.findByCoingeckoCryptoIdAndTarget("bitcoin", priceTargetRequest.priceTarget!!)
-    } returns Optional.empty()
+    } returns null
     every {
       cryptoServiceMock.retrieveCryptoInfoById("bitcoin")
     } returns getCryptoEntity(lastKnownPrice = BigDecimal("60000"))
@@ -166,7 +181,7 @@ class PriceTargetServiceTest {
       .usingRecursiveComparison()
       .isEqualTo(PriceTargetResponse(
         "f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08",
-        "Bitcoin",
+        cryptoInfo,
         "60000",
         "120000",
         100F
@@ -185,7 +200,7 @@ class PriceTargetServiceTest {
     } returns coingeckoCrypto
     every {
       priceTargetRepositoryMock.findByCoingeckoCryptoIdAndTarget("bitcoin", priceTargetRequest.priceTarget!!)
-    } returns Optional.of(priceTargetEntity)
+    } returns priceTargetEntity
 
     val exception = assertThrows<DuplicatedPriceTargetException> { priceTargetService.savePriceTarget(priceTargetRequest) }
 
@@ -200,7 +215,7 @@ class PriceTargetServiceTest {
     every { _priceTargetServiceMock.findById(priceTargetEntity.id) } returns priceTargetEntity
     every {
       priceTargetRepositoryMock.findByCoingeckoCryptoIdAndTarget("bitcoin", priceTargetRequest.priceTarget!!)
-    } returns Optional.empty()
+    } returns null
     every {
       cryptoServiceMock.retrieveCryptoInfoById(priceTargetRequest.cryptoNameOrId!!)
     } returns getCryptoEntity(lastKnownPrice = BigDecimal("60000"))
@@ -213,7 +228,7 @@ class PriceTargetServiceTest {
       .usingRecursiveComparison()
       .isEqualTo(PriceTargetResponse(
         "f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08",
-        "Bitcoin",
+        cryptoInfo,
         "60000",
         "100000",
         66.70F
@@ -230,7 +245,7 @@ class PriceTargetServiceTest {
     every { _priceTargetServiceMock.findById(priceTargetEntity.id) } returns priceTargetEntity
     every {
       priceTargetRepositoryMock.findByCoingeckoCryptoIdAndTarget("bitcoin", priceTargetRequest.priceTarget!!)
-    } returns Optional.of(anotherSamePriceTargetEntity)
+    } returns anotherSamePriceTargetEntity
 
     val exception = assertThrows<DuplicatedPriceTargetException> {
       priceTargetService.updatePriceTarget("f9c8cb17-73a4-4b7e-96f6-7943e3ddcd08", priceTargetRequest)

@@ -11,6 +11,9 @@ import com.distasilucas.cryptobalancetracker.model.response.coingecko.MarketCap
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
+import com.distasilucas.cryptobalancetracker.model.response.insights.Price
+import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -58,11 +61,6 @@ fun MockMvc.deletePlatform(platformId: String) = this.perform(
 
 fun MockMvc.retrieveUserCrypto(userCryptoId: String) = this.perform(
   MockMvcRequestBuilders.get("$USER_CRYPTOS_ENDPOINT/$userCryptoId")
-    .contentType(APPLICATION_JSON)
-)
-
-fun MockMvc.retrieveUserCryptosForPage(page: Int) = this.perform(
-  MockMvcRequestBuilders.get("$USER_CRYPTOS_ENDPOINT?page=$page")
     .contentType(APPLICATION_JSON)
 )
 
@@ -127,13 +125,8 @@ fun MockMvc.retrieveDatesBalances(dateRange: DateRange) = this.perform(
     .contentType(APPLICATION_JSON)
 )
 
-fun MockMvc.retrieveUserCryptosInsights(page: Int) = this.perform(
-  MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/cryptos?page=$page")
-    .contentType(APPLICATION_JSON)
-)
-
 fun MockMvc.retrieveUserCryptosPlatformsInsights(page: Int) = this.perform(
-  MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/cryptos/platforms?page=$page")
+  MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/cryptos?page=$page")
     .contentType(APPLICATION_JSON)
 )
 
@@ -270,7 +263,7 @@ fun getCoingeckoCrypto(
 
 fun getGoalResponse(
   id: String = "123e4567-e89b-12d3-a456-426614174111",
-  cryptoName: String = "Bitcoin",
+  cryptoInfo: CryptoInfo = getCryptoInfo(),
   actualQuantity: BigDecimal = BigDecimal("1"),
   progress: Float = 100f,
   remainingQuantity: BigDecimal = BigDecimal.ZERO,
@@ -279,7 +272,7 @@ fun getGoalResponse(
 ): GoalResponse {
   return GoalResponse(
     id = id,
-    cryptoName = cryptoName,
+    cryptoInfo = cryptoInfo,
     actualQuantity = actualQuantity.toPlainString(),
     progress = progress,
     remainingQuantity = remainingQuantity.toPlainString(),
@@ -339,3 +332,12 @@ fun balances() = BalancesResponse(
   totalBTCBalance = "0.1",
   totalEURBalance = "70"
 )
+
+fun getCryptoInfo(
+  cryptoName: String = "Bitcoin",
+  coingeckoCryptoId: String = "bitcoin",
+  symbol: String = "btc",
+  image: String = getImage().large,
+  price: Price? = null,
+  priceChange: PriceChange? = null
+) = CryptoInfo(cryptoName, coingeckoCryptoId, symbol, image, price, priceChange)

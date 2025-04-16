@@ -1,5 +1,6 @@
 package com.distasilucas.cryptobalancetracker.entity
 
+import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PriceTargetResponse
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -19,8 +20,11 @@ data class PriceTarget(
   val target: BigDecimal
 ): Serializable {
 
-  fun toPriceTargetResponse(cryptoName: String, currentPrice: BigDecimal, change: Float) =
-    PriceTargetResponse(id, cryptoName, currentPrice.toPlainString(), target.toPlainString(), change)
+  fun toPriceTargetResponse(
+    cryptoInfo: CryptoInfo,
+    currentPrice: BigDecimal,
+    change: Float
+  ) = PriceTargetResponse(id, cryptoInfo, currentPrice.toPlainString(), target.toPlainString(), change)
 
   fun calculateChangeNeeded(currentPrice: BigDecimal): Float {
     val change = target.subtract(currentPrice)
