@@ -35,11 +35,12 @@ import java.time.LocalDate
 <span class="fc" id="L35">      dateBalancesRepository.save(</span>
 <span class="fc" id="L36">        DateBalance(</span>
 <span class="fc" id="L37">          date = today,</span>
-<span class="fc" id="L38">          usdBalance = totalBalances.totalUSDBalance,</span>
-<span class="fc" id="L39">          eurBalance = totalBalances.totalEURBalance,</span>
-<span class="fc" id="L40">          btcBalance = totalBalances.totalBTCBalance)</span>
+<span class="fc" id="L38">          usdBalance = totalBalances.fiat.usd,</span>
+<span class="fc" id="L39">          eurBalance = totalBalances.fiat.eur,</span>
+<span class="fc" id="L40">          btcBalance = totalBalances.btc</span>
+        )
       )
     }
-<span class="fc" id="L43">  }</span>
+<span class="fc" id="L44">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

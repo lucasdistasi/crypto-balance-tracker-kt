@@ -5,8 +5,8 @@ import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
@@ -25,7 +25,7 @@ import org.springframework.http.ResponseEntity
 @Tag(name = &quot;Insights Controller&quot;, description = &quot;API endpoints for retrieving insights&quot;)
 interface InsightsControllerAPI {
 
-  @Operation(summary = &quot;Retrieve total balances in USD, BTC and EUR&quot;)
+  @Operation(summary = &quot;Retrieve total balances&quot;)
   @ApiResponses(
     value = [
       ApiResponse(
@@ -34,7 +34,7 @@ interface InsightsControllerAPI {
         content = [Content(
           mediaType = &quot;application/json&quot;,
           schema = Schema(
-            implementation = BalancesResponse::class
+            implementation = TotalBalancesResponse::class
           )
         )]
       ),
@@ -71,7 +71,7 @@ interface InsightsControllerAPI {
       )
     ]
   )
-  fun retrieveTotalBalances(): ResponseEntity&lt;BalancesResponse&gt;
+  fun retrieveTotalBalances(): ResponseEntity&lt;TotalBalancesResponse&gt;
 
   @Operation(summary = &quot;Retrieve day balances for the provided date range&quot;)
   @ApiResponses(

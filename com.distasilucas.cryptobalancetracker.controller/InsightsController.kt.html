@@ -7,8 +7,8 @@ import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortParams
 import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
@@ -32,7 +32,7 @@ import java.util.Optional
 <span class="fc" id="L32">class InsightsController(private val insightsService: InsightsService) : InsightsControllerAPI {</span>
 
   @GetMapping(&quot;/balances&quot;)
-  override fun retrieveTotalBalances(): ResponseEntity&lt;BalancesResponse&gt; {
+  override fun retrieveTotalBalances(): ResponseEntity&lt;TotalBalancesResponse&gt; {
 <span class="fc" id="L36">    val totalBalances = insightsService.retrieveTotalBalances()</span>
 
 <span class="fc" id="L38">    return ResponseEntity.ok(totalBalances)</span>
