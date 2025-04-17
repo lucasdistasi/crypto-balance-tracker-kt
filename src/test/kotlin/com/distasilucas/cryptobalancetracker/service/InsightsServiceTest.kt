@@ -7,13 +7,15 @@ import com.distasilucas.cryptobalancetracker.entity.UserCrypto
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.FiatBalance
 import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
+import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -68,10 +70,10 @@ class InsightsServiceTest {
     assertThat(balances)
       .usingRecursiveComparison()
       .isEqualTo(
-        BalancesResponse(
-          totalUSDBalance = "7108.39",
-          totalBTCBalance = "0.25127936",
-          totalEURBalance = "6484.23"
+        TotalBalancesResponse(
+          fiat = FiatBalance("7108.39", "6484.23"),
+          btc = "0.25127936",
+          stablecoins = "199.92"
         )
       )
   }
@@ -84,7 +86,7 @@ class InsightsServiceTest {
 
     assertThat(balances)
       .usingRecursiveComparison()
-      .isEqualTo(BalancesResponse("0", "0", "0"))
+      .isEqualTo(TotalBalancesResponse.EMPTY)
   }
 
   @Test
@@ -111,8 +113,8 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DateBalances("16 March 2024", BalancesResponse("1000", "918.45", "0.01438911")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.021583665"))
+              DateBalances("16 March 2024", Balances(FiatBalance("1000", "918.45"), "0.01438911")),
+              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.021583665"))
             ),
             change = BalanceChanges(50F, 50F, 50F),
             priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
@@ -146,9 +148,9 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DateBalances("15 March 2024", BalancesResponse("1200", "1102.14", "0.020689655")),
-              DateBalances("16 March 2024", BalancesResponse("1000", "918.85", "0.017241379")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1378.27", "0.025862069"))
+              DateBalances("15 March 2024", Balances(FiatBalance("1200", "1102.14"), "0.020689655")),
+              DateBalances("16 March 2024", Balances(FiatBalance("1000", "918.85"), "0.017241379")),
+              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1378.27"), "0.025862069"))
             ),
             change = BalanceChanges(25F, 25.05F, 25F),
             priceDifference = DifferencesChanges("300", "276.13", "0.005172414")
@@ -183,10 +185,10 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DateBalances("14 March 2024", BalancesResponse("1200", "1102.62", "0.020689655")),
-              DateBalances("15 March 2024", BalancesResponse("900", "823.63", "0.015789474")),
-              DateBalances("16 March 2024", BalancesResponse("1000", "913", "0.016806723")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.025862069"))
+              DateBalances("14 March 2024", Balances(FiatBalance("1200", "1102.62"), "0.020689655")),
+              DateBalances("15 March 2024", Balances(FiatBalance("900", "823.63"), "0.015789474")),
+              DateBalances("16 March 2024", Balances(FiatBalance("1000", "913"), "0.016806723")),
+              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.025862069"))
             ),
             change = BalanceChanges(25F, 24.95F, 25F),
             priceDifference = DifferencesChanges("300", "275.05", "0.005172414")
@@ -218,10 +220,10 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DateBalances("11 March 2024", BalancesResponse("1200", "1102.14", "0.020530368")),
-              DateBalances("13 March 2024", BalancesResponse("900", "826.61", "0.015544041")),
-              DateBalances("15 March 2024", BalancesResponse("1000", "918.45", "0.016906171")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.025862069"))
+              DateBalances("11 March 2024", Balances(FiatBalance("1200", "1102.14"), "0.020530368")),
+              DateBalances("13 March 2024", Balances(FiatBalance("900", "826.61"), "0.015544041")),
+              DateBalances("15 March 2024", Balances(FiatBalance("1000", "918.45"), "0.016906171")),
+              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.025862069"))
             ),
             change = BalanceChanges(25F, 25F, 25.97F),
             priceDifference = DifferencesChanges("300", "275.53", "0.005331701")
@@ -254,11 +256,11 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DateBalances("22 February 2024", BalancesResponse("1150", "1067.03", "0.019827586")),
-              DateBalances("28 February 2024", BalancesResponse("1200", "1108.50", "0.020512821")),
-              DateBalances("5 March 2024", BalancesResponse("900", "830.38", "0.015319149")),
-              DateBalances("11 March 2024", BalancesResponse("1000", "921.15", "0.016949153")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1372.73", "0.025"))
+              DateBalances("22 February 2024", Balances(FiatBalance("1150", "1067.03"), "0.019827586")),
+              DateBalances("28 February 2024", Balances(FiatBalance("1200", "1108.50"), "0.020512821")),
+              DateBalances("5 March 2024", Balances(FiatBalance("900", "830.38"), "0.015319149")),
+              DateBalances("11 March 2024", Balances(FiatBalance("1000", "921.15"), "0.016949153")),
+              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1372.73"), "0.025"))
             ),
             change = BalanceChanges(30.43F, 28.65F, 26.09F),
             priceDifference = DifferencesChanges("350", "305.70", "0.005172414")
@@ -292,12 +294,12 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DateBalances("27 January 2024", BalancesResponse("1150", "1057.14", "0.019827586")),
-              DateBalances("6 February 2024", BalancesResponse("1150", "1060.30", "0.019311503")),
-              DateBalances("16 February 2024", BalancesResponse("1200", "1113.18", "0.020689655")),
-              DateBalances("26 February 2024", BalancesResponse("900", "840.46", "0.015062762")),
-              DateBalances("7 March 2024", BalancesResponse("1000", "923.75", "0.016666667")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1381.73", "0.025062657"))
+              DateBalances("27 January 2024", Balances(FiatBalance("1150", "1057.14"), "0.019827586")),
+              DateBalances("6 February 2024", Balances(FiatBalance("1150", "1060.30"), "0.019311503")),
+              DateBalances("16 February 2024", Balances(FiatBalance("1200", "1113.18"), "0.020689655")),
+              DateBalances("26 February 2024", Balances(FiatBalance("900", "840.46"), "0.015062762")),
+              DateBalances("7 March 2024", Balances(FiatBalance("1000", "923.75"), "0.016666667")),
+              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1381.73"), "0.025062657"))
             ),
             change = BalanceChanges(30.43F, 30.7F, 26.4F),
             priceDifference = DifferencesChanges("350", "324.59", "0.005235071")
@@ -331,12 +333,12 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DateBalances("17 October 2023", BalancesResponse("1150", "1024.36", "0.020909091")),
-              DateBalances("17 November 2023", BalancesResponse("1150", "1054.66", "0.020720721")),
-              DateBalances("17 December 2023", BalancesResponse("1200", "1101.42", "0.021428571")),
-              DateBalances("17 January 2024", BalancesResponse("900", "827.33", "0.015929204")),
-              DateBalances("17 February 2024", BalancesResponse("1000", "928.25", "0.01754386")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1378.20", "0.025862069"))
+              DateBalances("17 October 2023", Balances(FiatBalance("1150", "1024.36"), "0.020909091")),
+              DateBalances("17 November 2023", Balances(FiatBalance("1150", "1054.66"), "0.020720721")),
+              DateBalances("17 December 2023", Balances(FiatBalance("1200", "1101.42"), "0.021428571")),
+              DateBalances("17 January 2024", Balances(FiatBalance("900", "827.33"), "0.015929204")),
+              DateBalances("17 February 2024", Balances(FiatBalance("1000", "928.25"), "0.01754386")),
+              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1378.20"), "0.025862069"))
             ),
             change = BalanceChanges(30.43F, 34.54F, 23.69F),
             priceDifference = DifferencesChanges("350", "353.84", "0.004952978")
@@ -376,10 +378,10 @@ class InsightsServiceTest {
         Optional.of(
           DatesBalanceResponse(
             datesBalances = listOf(
-              DateBalances("14 March 2024", BalancesResponse("950", "872.86", "0.016225448")),
-              DateBalances("15 March 2024", BalancesResponse("1000", "918.80", "0.016949153")),
-              DateBalances("16 March 2024", BalancesResponse("900", "826.92", "0.015397776")),
-              DateBalances("17 March 2024", BalancesResponse("1500", "1378.20", "0.025359256"))
+              DateBalances("14 March 2024", Balances(FiatBalance("950", "872.86"), "0.016225448")),
+              DateBalances("15 March 2024", Balances(FiatBalance("1000", "918.80"), "0.016949153")),
+              DateBalances("16 March 2024", Balances(FiatBalance("900", "826.92"), "0.015397776")),
+              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1378.20"), "0.025359256"))
             ),
             change = BalanceChanges(57.89F, 57.89F, 56.29F),
             priceDifference = DifferencesChanges("550", "505.34", "0.009133808")
@@ -429,11 +431,7 @@ class InsightsServiceTest {
         Optional.of(
           PlatformInsightsResponse(
             platformName = "BINANCE",
-            balances = BalancesResponse(
-              totalUSDBalance = "7500.00",
-              totalBTCBalance = "0.25",
-              totalEURBalance = "6750.00"
-            ),
+            balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25"),
             cryptos = listOf(
               CryptoInsights(
                 id = "123e4567-e89b-12d3-a456-426614174000",
@@ -445,11 +443,7 @@ class InsightsServiceTest {
                 ),
                 quantity = "0.25",
                 percentage = 100f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "7500.00",
-                  totalBTCBalance = "0.25",
-                  totalEURBalance = "6750.00"
-                )
+                balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25")
               )
             )
           )
@@ -504,11 +498,7 @@ class InsightsServiceTest {
         Optional.of(
           PlatformInsightsResponse(
             platformName = "BINANCE",
-            balances = BalancesResponse(
-              totalUSDBalance = "7925.00",
-              totalBTCBalance = "0.266554",
-              totalEURBalance = "7147.00"
-            ),
+            balances = Balances(FiatBalance("7925.00", "7147.00"), "0.266554"),
             cryptos = listOf(
               CryptoInsights(
                 id = "123e4567-e89b-12d3-a456-426614174000",
@@ -520,11 +510,7 @@ class InsightsServiceTest {
                 ),
                 quantity = "0.25",
                 percentage = 94.64f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "7500.00",
-                  totalBTCBalance = "0.25",
-                  totalEURBalance = "6750.00"
-                )
+                balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25")
               ),
               CryptoInsights(
                 id = polkadotUserCrypto.id,
@@ -536,11 +522,7 @@ class InsightsServiceTest {
                 ),
                 quantity = "100",
                 percentage = 5.36f,
-                balances = BalancesResponse(
-                  totalUSDBalance = "425.00",
-                  totalBTCBalance = "0.016554",
-                  totalEURBalance = "397.00"
-                )
+                balances = Balances(FiatBalance("425.00", "397.00"), "0.016554")
               )
             )
           )
@@ -588,19 +570,11 @@ class InsightsServiceTest {
         Optional.of(
           CryptoInsightResponse(
             cryptoName = "Bitcoin",
-            balances = BalancesResponse(
-              totalUSDBalance = "7500.00",
-              totalBTCBalance = "0.25",
-              totalEURBalance = "6750.00"
-            ),
+            balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25"),
             platforms = listOf(
               PlatformInsight(
                 quantity = "0.25",
-                balances = BalancesResponse(
-                  totalUSDBalance = "7500.00",
-                  totalBTCBalance = "0.25",
-                  totalEURBalance = "6750.00"
-                ),
+                balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25"),
                 percentage = 100f,
                 platformName = "BINANCE"
               )
@@ -653,29 +627,17 @@ class InsightsServiceTest {
         Optional.of(
           CryptoInsightResponse(
             cryptoName = "Bitcoin",
-            balances = BalancesResponse(
-              totalUSDBalance = "8536.50",
-              totalBTCBalance = "0.28455",
-              totalEURBalance = "7682.85"
-            ),
+            balances = Balances(FiatBalance("8536.50", "7682.85"), "0.28455"),
             platforms = listOf(
               PlatformInsight(
                 quantity = "0.25",
-                balances = BalancesResponse(
-                  totalUSDBalance = "7500.00",
-                  totalBTCBalance = "0.25",
-                  totalEURBalance = "6750.00"
-                ),
+                balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25"),
                 percentage = 87.86f,
                 platformName = "BINANCE"
               ),
               PlatformInsight(
                 quantity = "0.03455",
-                balances = BalancesResponse(
-                  totalUSDBalance = "1036.50",
-                  totalBTCBalance = "0.03455",
-                  totalEURBalance = "932.85"
-                ),
+                balances = Balances(FiatBalance("1036.50", "932.85"), "0.03455"),
                 percentage = 12.14f,
                 platformName = "COINBASE"
               )
@@ -879,11 +841,7 @@ class InsightsServiceTest {
           page = 1,
           totalPages = 1,
           hasNextPage = false,
-          balances = BalancesResponse(
-            totalUSDBalance = "6919.05",
-            totalBTCBalance = "0.24392648",
-            totalEURBalance = "6307.48"
-          ),
+          balances = Balances(FiatBalance("6919.05", "6307.48"), "0.24392648"),
           cryptos = listOf(
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -904,11 +862,7 @@ class InsightsServiceTest {
               ),
               quantity = "0.15",
               percentage = 65.04f,
-              balances = BalancesResponse(
-                totalUSDBalance = "4500.00",
-                totalBTCBalance = "0.15",
-                totalEURBalance = "4050.00"
-              ),
+              balances = Balances(FiatBalance("4500.00", "4050.00"), "0.15")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -929,11 +883,7 @@ class InsightsServiceTest {
               ),
               quantity = "1.372",
               percentage = 32.07f,
-              balances = BalancesResponse(
-                totalUSDBalance = "2219.13",
-                totalBTCBalance = "0.08616648",
-                totalEURBalance = "2070.86"
-              ),
+              balances = Balances(FiatBalance("2219.13", "2070.86"), "0.08616648")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -954,11 +904,7 @@ class InsightsServiceTest {
               ),
               quantity = "200",
               percentage = 2.89f,
-              balances = BalancesResponse(
-                totalUSDBalance = "199.92",
-                totalBTCBalance = "0.00776",
-                totalEURBalance = "186.62"
-              ),
+              balances = Balances(FiatBalance("199.92", "186.62"), "0.00776")
             )
           )
         )
@@ -1016,11 +962,7 @@ class InsightsServiceTest {
           page = 1,
           totalPages = 2,
           hasNextPage = true,
-          balances = BalancesResponse(
-            totalUSDBalance = "8373.63",
-            totalBTCBalance = "0.29959592",
-            totalEURBalance = "7663.61"
-          ),
+          balances = Balances(FiatBalance("8373.63", "7663.61"), "0.29959592"),
           cryptos = listOf(
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1041,11 +983,7 @@ class InsightsServiceTest {
               ),
               quantity = "0.15",
               percentage = 53.74f,
-              balances = BalancesResponse(
-                totalUSDBalance = "4500.00",
-                totalBTCBalance = "0.15",
-                totalEURBalance = "4050.00"
-              ),
+              balances = Balances(FiatBalance("4500.00", "4050.00"), "0.15")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1066,11 +1004,7 @@ class InsightsServiceTest {
               ),
               quantity = "1.372",
               percentage = 26.5f,
-              balances = BalancesResponse(
-                totalUSDBalance = "2219.13",
-                totalBTCBalance = "0.08616648",
-                totalEURBalance = "2070.86"
-              ),
+              balances = Balances(FiatBalance("2219.13", "2070.86"), "0.08616648")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1091,11 +1025,7 @@ class InsightsServiceTest {
               ),
               quantity = "25",
               percentage = 2.78f,
-              balances = BalancesResponse(
-                totalUSDBalance = "232.50",
-                totalBTCBalance = "0.008879",
-                totalEURBalance = "216.75"
-              ),
+              balances = Balances(FiatBalance("232.50", "216.75"), "0.008879")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1116,11 +1046,7 @@ class InsightsServiceTest {
               ),
               quantity = "1",
               percentage = 2.53f,
-              balances = BalancesResponse(
-                totalUSDBalance = "211.79",
-                totalBTCBalance = "0.00811016",
-                totalEURBalance = "197.80"
-              ),
+              balances = Balances(FiatBalance("211.79", "197.80"), "0.00811016")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1141,11 +1067,7 @@ class InsightsServiceTest {
               ),
               quantity = "35",
               percentage = 2.5f,
-              balances = BalancesResponse(
-                totalUSDBalance = "209.65",
-                totalBTCBalance = "0.0080031",
-                totalEURBalance = "195.30"
-              ),
+              balances = Balances(FiatBalance("209.65", "195.30"), "0.0080031")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1166,11 +1088,7 @@ class InsightsServiceTest {
               ),
               quantity = "200",
               percentage = 2.39f,
-              balances = BalancesResponse(
-                totalUSDBalance = "199.92",
-                totalBTCBalance = "0.00776",
-                totalEURBalance = "186.62"
-              ),
+              balances = Balances(FiatBalance("199.92", "186.62"), "0.00776")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1191,11 +1109,7 @@ class InsightsServiceTest {
               ),
               quantity = "3.125",
               percentage = 2.26f,
-              balances = BalancesResponse(
-                totalUSDBalance = "189.34",
-                totalBTCBalance = "0.00735288",
-                totalEURBalance = "176.75"
-              ),
+              balances = Balances(FiatBalance("189.34", "176.75"), "0.00735288")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1216,11 +1130,7 @@ class InsightsServiceTest {
               ),
               quantity = "10",
               percentage = 2.15f,
-              balances = BalancesResponse(
-                totalUSDBalance = "180.40",
-                totalBTCBalance = "0.0068809",
-                totalEURBalance = "168.20"
-              ),
+              balances = Balances(FiatBalance("180.40", "168.20"), "0.0068809")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1241,11 +1151,7 @@ class InsightsServiceTest {
               ),
               quantity = "40",
               percentage = 1.92f,
-              balances = BalancesResponse(
-                totalUSDBalance = "160.40",
-                totalBTCBalance = "0.0061208",
-                totalEURBalance = "149.20"
-              ),
+              balances = Balances(FiatBalance("160.40", "149.20"), "0.0061208")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1266,11 +1172,7 @@ class InsightsServiceTest {
               ),
               quantity = "30",
               percentage = 1.52f,
-              balances = BalancesResponse(
-                totalUSDBalance = "127.50",
-                totalBTCBalance = "0.0048591",
-                totalEURBalance = "118.80"
-              ),
+              balances = Balances(FiatBalance("127.50", "118.80"), "0.0048591")
             )
           )
         )
@@ -1327,11 +1229,7 @@ class InsightsServiceTest {
           page = 2,
           totalPages = 2,
           hasNextPage = false,
-          balances = BalancesResponse(
-            totalUSDBalance = "8373.63",
-            totalBTCBalance = "0.29959592",
-            totalEURBalance = "7663.61"
-          ),
+          balances = Balances(FiatBalance("8373.63", "7663.61"), "0.29959592"),
           cryptos = listOf(
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1352,11 +1250,7 @@ class InsightsServiceTest {
               ),
               quantity = "100",
               percentage = 0.61f,
-              balances = BalancesResponse(
-                totalUSDBalance = "51.00",
-                totalBTCBalance = "0.001947",
-                totalEURBalance = "47.54"
-              ),
+              balances = Balances(FiatBalance("51.00", "47.54"), "0.001947")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1377,11 +1271,7 @@ class InsightsServiceTest {
               ),
               quantity = "150",
               percentage = 0.45f,
-              balances = BalancesResponse(
-                totalUSDBalance = "37.34",
-                totalBTCBalance = "0.001425",
-                totalEURBalance = "34.80"
-              ),
+              balances = Balances(FiatBalance("37.34", "34.80"), "0.001425"),
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1402,11 +1292,7 @@ class InsightsServiceTest {
               ),
               quantity = "500",
               percentage = 0.37f,
-              balances = BalancesResponse(
-                totalUSDBalance = "30.74",
-                totalBTCBalance = "0.001175",
-                totalEURBalance = "28.66"
-              ),
+              balances = Balances(FiatBalance("30.74", "28.66"), "0.001175")
             ),
             UserCryptoInsights(
               cryptoInfo = CryptoInfo(
@@ -1427,11 +1313,7 @@ class InsightsServiceTest {
               ),
               quantity = "50",
               percentage = 0.29f,
-              balances = BalancesResponse(
-                totalUSDBalance = "23.92",
-                totalBTCBalance = "0.0009165",
-                totalEURBalance = "22.33"
-              ),
+              balances = Balances(FiatBalance("23.92", "22.33"), "0.0009165")
             )
           )
         )

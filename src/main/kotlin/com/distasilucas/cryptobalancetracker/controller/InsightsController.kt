@@ -7,7 +7,6 @@ import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortParams
 import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
@@ -32,15 +31,8 @@ import java.util.Optional
 @CrossOrigin(origins = ["\${allowed-origins}"])
 class InsightsController(private val insightsService: InsightsService) : InsightsControllerAPI {
 
-  @GetMapping("/total-balances")
-  override fun retrieveTotal(): ResponseEntity<TotalBalancesResponse> {
-    val totalBalances = insightsService.retrieveTotal()
-
-    return ResponseEntity.ok(totalBalances)
-  }
-
   @GetMapping("/balances")
-  override fun retrieveTotalBalances(): ResponseEntity<BalancesResponse> {
+  override fun retrieveTotalBalances(): ResponseEntity<TotalBalancesResponse> {
     val totalBalances = insightsService.retrieveTotalBalances()
 
     return ResponseEntity.ok(totalBalances)

@@ -1,7 +1,8 @@
 package com.distasilucas.cryptobalancetracker.scheduler
 
 import com.distasilucas.cryptobalancetracker.entity.DateBalance
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.FiatBalance
+import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.repository.DateBalanceRepository
 import com.distasilucas.cryptobalancetracker.service.InsightsService
 import io.mockk.every
@@ -27,11 +28,11 @@ class DateBalanceSchedulerTest {
     val localDate = LocalDate.of(2024, 3, 17)
     val uuid = "2771242a-8021-48e1-85b2-61967f6558e5"
     val dateBalance = DateBalance(uuid, localDate.toString(), "1000", "918", "0.015")
-    val balancesResponse = BalancesResponse("1000", "918", "0.015")
+    val totalBalances = TotalBalancesResponse(FiatBalance("1000", "918"), "0.015", "50")
 
     every { clockMock.instant() } returns localDate.atStartOfDay().toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns localDate.atStartOfDay().atZone(ZoneId.of("UTC")).zone
-    every { insightsServiceMock.retrieveTotalBalances() } returns balancesResponse
+    every { insightsServiceMock.retrieveTotalBalances() } returns totalBalances
     every { dateBalancesRepositoryMock.findDateBalanceByDate(localDate.toString()) } returns null
     every { dateBalancesRepositoryMock.save(dateBalance) } returns dateBalance
     mockkStatic(UUID::class)
@@ -47,11 +48,11 @@ class DateBalanceSchedulerTest {
     val localDate = LocalDate.of(2024, 3, 17)
     val uuid = "2771242a-8021-48e1-85b2-61967f6558e5"
     val dateBalance = DateBalance(uuid, localDate.toString(), "1500", "1377", "0.022")
-    val balancesResponse = BalancesResponse("1500", "1377", "0.022")
+    val totalBalances = TotalBalancesResponse(FiatBalance("1500", "1377"), "0.022", "50")
 
     every { clockMock.instant() } returns localDate.atStartOfDay().toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns localDate.atStartOfDay().atZone(ZoneId.of("UTC")).zone
-    every { insightsServiceMock.retrieveTotalBalances() } returns balancesResponse
+    every { insightsServiceMock.retrieveTotalBalances() } returns totalBalances
     every { dateBalancesRepositoryMock.findDateBalanceByDate(localDate.toString()) } returns dateBalance
     every { dateBalancesRepositoryMock.save(dateBalance) } returns dateBalance
     mockkStatic(UUID::class)

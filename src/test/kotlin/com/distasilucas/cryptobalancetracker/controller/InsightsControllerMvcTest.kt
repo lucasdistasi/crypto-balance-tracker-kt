@@ -1,17 +1,18 @@
 package com.distasilucas.cryptobalancetracker.controller
 
-import balances
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_ID_UUID
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.FiatBalance
 import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
+import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -56,21 +57,22 @@ class InsightsControllerMvcTest(
 
   @Test
   fun `should retrieve total balances with status 200`() {
-    every { insightsServiceMock.retrieveTotalBalances() } returns balances()
+    every { insightsServiceMock.retrieveTotalBalances() } returns TotalBalancesResponse(FiatBalance("100", "70"), "0.1", "50")
 
     mockMvc.retrieveTotalBalancesInsights()
       .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(jsonPath("$.totalUSDBalance", `is`("100")))
-      .andExpect(jsonPath("$.totalBTCBalance", `is`("0.1")))
-      .andExpect(jsonPath("$.totalEURBalance", `is`("70")))
+      .andExpect(jsonPath("$.fiat.usd", `is`("100")))
+      .andExpect(jsonPath("$.fiat.eur", `is`("70")))
+      .andExpect(jsonPath("$.btc", `is`("0.1")))
+      .andExpect(jsonPath("$.stablecoins", `is`("50")))
   }
 
   @Test
   fun `should retrieve dates balances with status 200`() {
     val dateBalanceResponse = DatesBalanceResponse(
       datesBalances = listOf(
-        DateBalances("16 March 2024", BalancesResponse("1000", "918.45", "0.01438911")),
-        DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.021583665"))
+        DateBalances("16 March 2024", Balances(FiatBalance("1000", "918.45"), "0.01438911")),
+        DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.021583665"))
       ),
       change = BalanceChanges(50F, 50F, 49.99F),
       priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
@@ -81,13 +83,13 @@ class InsightsControllerMvcTest(
     mockMvc.retrieveDatesBalances(DateRange.LAST_DAY)
       .andExpect(MockMvcResultMatchers.status().isOk)
       .andExpect(jsonPath("$.datesBalances[0].date", `is`("16 March 2024")))
-      .andExpect(jsonPath("$.datesBalances[0].balances.totalUSDBalance", `is`("1000")))
-      .andExpect(jsonPath("$.datesBalances[0].balances.totalEURBalance", `is`("918.45")))
-      .andExpect(jsonPath("$.datesBalances[0].balances.totalBTCBalance", `is`("0.01438911")))
+      .andExpect(jsonPath("$.datesBalances[0].balances.fiat.usd", `is`("1000")))
+      .andExpect(jsonPath("$.datesBalances[0].balances.fiat.eur", `is`("918.45")))
+      .andExpect(jsonPath("$.datesBalances[0].balances.btc", `is`("0.01438911")))
       .andExpect(jsonPath("$.datesBalances[1].date", `is`("17 March 2024")))
-      .andExpect(jsonPath("$.datesBalances[1].balances.totalUSDBalance", `is`("1500")))
-      .andExpect(jsonPath("$.datesBalances[1].balances.totalEURBalance", `is`("1377.67")))
-      .andExpect(jsonPath("$.datesBalances[1].balances.totalBTCBalance", `is`("0.021583665")))
+      .andExpect(jsonPath("$.datesBalances[1].balances.fiat.usd", `is`("1500")))
+      .andExpect(jsonPath("$.datesBalances[1].balances.fiat.eur", `is`("1377.67")))
+      .andExpect(jsonPath("$.datesBalances[1].balances.btc", `is`("0.021583665")))
       .andExpect(jsonPath("$.change.usdChange", `is`(50.0)))
       .andExpect(jsonPath("$.change.eurChange", `is`(50.0)))
       .andExpect(jsonPath("$.change.btcChange", `is`(49.99)))
@@ -108,15 +110,17 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$.page", `is`(1)))
       .andExpect(jsonPath("$.totalPages", `is`(1)))
       .andExpect(jsonPath("$.hasNextPage", `is`(false)))
-      .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("4500.00")))
-      .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
-      .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
+      .andExpect(jsonPath("$.balances.fiat.usd", `is`("4500.00")))
+      .andExpect(jsonPath("$.balances.fiat.eur", `is`("4050.00")))
+      .andExpect(jsonPath("$.balances.btc", `is`("0.15")))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoName", `is`("Bitcoin")))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoId", `is`("bitcoin")))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.symbol", `is`("btc")))
-      .andExpect(jsonPath(
-        "$.cryptos[0].cryptoInfo.image",
-        `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"))
+      .andExpect(
+        jsonPath(
+          "$.cryptos[0].cryptoInfo.image",
+          `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")
+        )
       )
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.price.usd", `is`("30000")))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.price.eur", `is`("27000")))
@@ -126,9 +130,9 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.priceChange.changePercentageIn30d", `is`(0.00)))
       .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.15")))
       .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalUSDBalance", `is`("4500.00")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.15")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("4050.00")))
+      .andExpect(jsonPath("$.cryptos[0].balances.fiat.usd", `is`("4500.00")))
+      .andExpect(jsonPath("$.cryptos[0].balances.fiat.eur", `is`("4050.00")))
+      .andExpect(jsonPath("$.cryptos[0].balances.btc", `is`("0.15")))
   }
 
   @Test
@@ -180,13 +184,13 @@ class InsightsControllerMvcTest(
     mockMvc.retrieveCryptoInsights("bitcoin")
       .andExpect(MockMvcResultMatchers.status().isOk)
       .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
-      .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("4500.00")))
-      .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
-      .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
+      .andExpect(jsonPath("$.balances.fiat.usd", `is`("4500.00")))
+      .andExpect(jsonPath("$.balances.fiat.eur", `is`("4050.00")))
+      .andExpect(jsonPath("$.balances.btc", `is`("0.15")))
       .andExpect(jsonPath("$.platforms[0].quantity", `is`("0.15")))
-      .andExpect(jsonPath("$.platforms[0].balances.totalUSDBalance", `is`("4500.00")))
-      .andExpect(jsonPath("$.platforms[0].balances.totalBTCBalance", `is`("0.15")))
-      .andExpect(jsonPath("$.platforms[0].balances.totalEURBalance", `is`("4050.00")))
+      .andExpect(jsonPath("$.platforms[0].balances.fiat.usd", `is`("4500.00")))
+      .andExpect(jsonPath("$.platforms[0].balances.fiat.eur", `is`("4050.00")))
+      .andExpect(jsonPath("$.platforms[0].balances.btc", `is`("0.15")))
       .andExpect(jsonPath("$.platforms[0].percentage", `is`(100.0)))
       .andExpect(jsonPath("$.platforms[0].platformName", `is`("BINANCE")))
   }
@@ -202,18 +206,23 @@ class InsightsControllerMvcTest(
     mockMvc.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
       .andExpect(MockMvcResultMatchers.status().isOk)
       .andExpect(jsonPath("$.platformName", `is`("BINANCE")))
-      .andExpect(jsonPath("$.balances.totalUSDBalance", `is`("4500.00")))
-      .andExpect(jsonPath("$.balances.totalBTCBalance", `is`("0.15")))
-      .andExpect(jsonPath("$.balances.totalEURBalance", `is`("4050.00")))
+      .andExpect(jsonPath("$.balances.fiat.usd", `is`("4500.00")))
+      .andExpect(jsonPath("$.balances.fiat.eur", `is`("4050.00")))
+      .andExpect(jsonPath("$.balances.btc", `is`("0.15")))
       .andExpect(jsonPath("$.cryptos[0].id", `is`("1f832f95-62e3-4d1b-a1e6-982d8c22f2bb")))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoName", `is`("Bitcoin")))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.cryptoId", `is`("bitcoin")))
       .andExpect(jsonPath("$.cryptos[0].cryptoInfo.symbol", `is`("btc")))
-      .andExpect(jsonPath("$.cryptos[0].cryptoInfo.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
+      .andExpect(
+        jsonPath(
+          "$.cryptos[0].cryptoInfo.image",
+          `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")
+        )
+      )
       .andExpect(jsonPath("$.cryptos[0].quantity", `is`("0.15")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalUSDBalance", `is`("4500.00")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalBTCBalance", `is`("0.15")))
-      .andExpect(jsonPath("$.cryptos[0].balances.totalEURBalance", `is`("4050.00")))
+      .andExpect(jsonPath("$.cryptos[0].balances.fiat.usd", `is`("4500.00")))
+      .andExpect(jsonPath("$.cryptos[0].balances.fiat.eur", `is`("4050.00")))
+      .andExpect(jsonPath("$.cryptos[0].balances.btc", `is`("0.15")))
       .andExpect(jsonPath("$.cryptos[0].percentage", `is`(100.0)))
   }
 
@@ -237,11 +246,7 @@ class InsightsControllerMvcTest(
   private fun pageUserCryptosInsightsResponse() = PageUserCryptosInsightsResponse(
     page = 0,
     totalPages = 1,
-    balances = BalancesResponse(
-      totalUSDBalance = "4500.00",
-      totalBTCBalance = "0.15",
-      totalEURBalance = "4050.00"
-    ),
+    balances = Balances(FiatBalance("4500.00", "4050.00"), "0.15"),
     cryptos = listOf(
       UserCryptoInsights(
         cryptoInfo = CryptoInfo(
@@ -262,11 +267,7 @@ class InsightsControllerMvcTest(
         ),
         quantity = "0.15",
         percentage = 100f,
-        balances = BalancesResponse(
-          totalUSDBalance = "4500.00",
-          totalBTCBalance = "0.15",
-          totalEURBalance = "4050.00"
-        ),
+        balances = Balances(FiatBalance("4500.00", "4050.00"), "0.15")
       )
     )
   )
@@ -277,19 +278,11 @@ class InsightsControllerMvcTest(
 
   private fun cryptoInsightResponse() = CryptoInsightResponse(
     cryptoName = "Bitcoin",
-    balances = BalancesResponse(
-      totalUSDBalance = "4500.00",
-      totalBTCBalance = "0.15",
-      totalEURBalance = "4050.00"
-    ),
+    balances = Balances(FiatBalance("4500.00", "4050.00"), "0.15"),
     platforms = listOf(
       PlatformInsight(
         quantity = "0.15",
-        balances = BalancesResponse(
-          totalUSDBalance = "4500.00",
-          totalBTCBalance = "0.15",
-          totalEURBalance = "4050.00"
-        ),
+        balances = Balances(FiatBalance("4500.00", "4050.00"), "0.15"),
         percentage = 100f,
         platformName = "BINANCE"
       )
@@ -298,11 +291,7 @@ class InsightsControllerMvcTest(
 
   private fun platformInsightsResponse() = PlatformInsightsResponse(
     platformName = "BINANCE",
-    balances = BalancesResponse(
-      totalUSDBalance = "4500.00",
-      totalBTCBalance = "0.15",
-      totalEURBalance = "4050.00"
-    ),
+    balances = Balances(FiatBalance("4500.00", "4050.00"), "0.15"),
     cryptos = listOf(
       CryptoInsights(
         id = "1f832f95-62e3-4d1b-a1e6-982d8c22f2bb",
@@ -314,11 +303,7 @@ class InsightsControllerMvcTest(
         ),
         quantity = "0.15",
         percentage = 100f,
-        balances = BalancesResponse(
-          totalUSDBalance = "4500.00",
-          totalBTCBalance = "0.15",
-          totalEURBalance = "4050.00"
-        )
+        balances = Balances(FiatBalance("4500.00", "4050.00"), "0.15")
       )
     )
   )
