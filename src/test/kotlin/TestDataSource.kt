@@ -10,8 +10,9 @@ import com.distasilucas.cryptobalancetracker.model.response.coingecko.Image
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.MarketCap
 import com.distasilucas.cryptobalancetracker.model.response.coingecko.MarketData
 import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
+import com.distasilucas.cryptobalancetracker.model.response.insights.FiatBalance
 import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -327,11 +328,7 @@ fun getCurrentPrince(
   btc = btc
 )
 
-fun balances() = BalancesResponse(
-  totalUSDBalance = "100",
-  totalBTCBalance = "0.1",
-  totalEURBalance = "70"
-)
+fun balances() = Balances(FiatBalance("100", "70"), "0.1")
 
 fun getCryptoInfo(
   cryptoName: String = "Bitcoin",

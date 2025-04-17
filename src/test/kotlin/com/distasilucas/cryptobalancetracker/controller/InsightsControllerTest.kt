@@ -4,10 +4,12 @@ import balances
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
+import com.distasilucas.cryptobalancetracker.model.response.insights.FiatBalance
+import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
@@ -27,36 +29,34 @@ class InsightsControllerTest {
 
   @Test
   fun `should retrieve total balances with status 200`() {
-    val balances = balances()
+    val totalBalances = TotalBalancesResponse(FiatBalance("500", "480"), "0.00025", "50")
 
-    every { insightsServiceMock.retrieveTotalBalances() } returns balances
+    every { insightsServiceMock.retrieveTotalBalances() } returns totalBalances
 
     val totalBalancesInsights = insightsController.retrieveTotalBalances()
 
     assertThat(totalBalancesInsights)
       .usingRecursiveComparison()
-      .isEqualTo(ResponseEntity.ok(balances))
+      .isEqualTo(ResponseEntity.ok(totalBalances))
   }
 
   @Test
   fun `should retrieve zero for total balances when empty cryptos with status 200`() {
-    every {
-      insightsServiceMock.retrieveTotalBalances()
-    } returns BalancesResponse("0", "0", "0")
+    every { insightsServiceMock.retrieveTotalBalances() } returns TotalBalancesResponse.EMPTY
 
     val totalBalancesInsights = insightsController.retrieveTotalBalances()
 
     assertThat(totalBalancesInsights)
       .usingRecursiveComparison()
-      .isEqualTo(ResponseEntity.ok(BalancesResponse("0", "0", "0")))
+      .isEqualTo(ResponseEntity.ok(TotalBalancesResponse.EMPTY))
   }
 
   @Test
   fun `should retrieve dates balances with status 200`() {
     val dateBalanceResponse = DatesBalanceResponse(
       datesBalances = listOf(
-        DateBalances("16 March 2024", BalancesResponse("1000", "918.45", "0.01438911")),
-        DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.021583665"))
+        DateBalances("16 March 2024", Balances(FiatBalance("1000", "918.45"), "0.01438911")),
+        DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.021583665"))
       ),
       change = BalanceChanges(50F, 30F, 10F),
       priceDifference = DifferencesChanges("500", "459.22", "0.007194555")

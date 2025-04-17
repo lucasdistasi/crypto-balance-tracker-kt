@@ -35,9 +35,10 @@ class DateBalanceScheduler(
       dateBalancesRepository.save(
         DateBalance(
           date = today,
-          usdBalance = totalBalances.totalUSDBalance,
-          eurBalance = totalBalances.totalEURBalance,
-          btcBalance = totalBalances.totalBTCBalance)
+          usdBalance = totalBalances.fiat.usd,
+          eurBalance = totalBalances.fiat.eur,
+          btcBalance = totalBalances.btc
+        )
       )
     }
   }

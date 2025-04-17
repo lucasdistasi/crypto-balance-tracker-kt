@@ -26,12 +26,13 @@ import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.goal.PageGoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
-import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
+import com.distasilucas.cryptobalancetracker.model.response.insights.FiatBalance
+import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.CryptoInsights
@@ -209,7 +210,7 @@ class CacheServiceTest {
 
   @Test
   fun `should invalidate insights caches if they exist`() {
-    val totalBalancesMap = mapOf(SimpleKey::class.java to BalancesResponse("1000", "927.30", "0.015384615"))
+    val totalBalancesMap = mapOf(SimpleKey::class.java to TotalBalancesResponse(FiatBalance("500", "480"), "0.015384615", "100"))
     val datesBalancesMap = mapOf(DateRange::class.java to getDateBalanceResponse())
     val platformInsightsMap = mapOf(String::class.java to getPlatformInsightsResponse())
     val cryptoInsightsMap = mapOf(String::class.java to getCryptoInsightResponse())
@@ -280,11 +281,7 @@ class CacheServiceTest {
 
   private fun getPlatformInsightsResponse() = PlatformInsightsResponse(
     platformName = "BINANCE",
-    balances = BalancesResponse(
-      totalUSDBalance = "7500.00",
-      totalBTCBalance = "0.25",
-      totalEURBalance = "6750.00"
-    ),
+    balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25"),
     cryptos = listOf(
       CryptoInsights(
         id = "123e4567-e89b-12d3-a456-426614174000",
@@ -296,19 +293,15 @@ class CacheServiceTest {
         ),
         quantity = "0.25",
         percentage = 100f,
-        balances = BalancesResponse(
-          totalUSDBalance = "7500.00",
-          totalBTCBalance = "0.25",
-          totalEURBalance = "6750.00"
-        )
+        balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25")
       )
     )
   )
 
   private fun getDateBalanceResponse() = DatesBalanceResponse(
     datesBalances = listOf(
-      DateBalances("16 March 2024", BalancesResponse("1000", "918.45", "0.01438911")),
-      DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.021583665"))
+      DateBalances("16 March 2024", Balances(FiatBalance("1000", "918.45"), "0.01438911")),
+      DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.021583665"))
     ),
     change = BalanceChanges(50F, 50F, 49.99F),
     priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
@@ -325,19 +318,11 @@ class CacheServiceTest {
 
   private fun getCryptoInsightResponse() = CryptoInsightResponse(
     cryptoName = "Bitcoin",
-    balances = BalancesResponse(
-      totalUSDBalance = "7500.00",
-      totalBTCBalance = "0.25",
-      totalEURBalance = "6750.00"
-    ),
+    balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25"),
     platforms = listOf(
       PlatformInsight(
         quantity = "0.25",
-        balances = BalancesResponse(
-          totalUSDBalance = "7500.00",
-          totalBTCBalance = "0.25",
-          totalEURBalance = "6750.00"
-        ),
+        balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25"),
         percentage = 100f,
         platformName = "BINANCE"
       )
