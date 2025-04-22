@@ -85,7 +85,7 @@ class InsightsServiceTest {
             symbol = "btc",
             image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
             price = Price("30000", "27000"),
-            priceChange = PriceChange(BigDecimal("10.00"))
+            priceChange = PriceChange(10.00)
           )
         )
       )
@@ -486,9 +486,9 @@ class InsightsServiceTest {
       maxSupply = BigDecimal.ZERO,
       marketCapRank = 13,
       marketCap = BigDecimal("8946471948"),
-      changePercentageIn24h = BigDecimal("-2.75"),
-      changePercentageIn7d = BigDecimal("10.25"),
-      changePercentageIn30d = BigDecimal("-5.15"),
+      changePercentageIn24h = -2.75,
+      changePercentageIn7d = 10.25,
+      changePercentageIn30d = -5.15,
       lastUpdatedAt = localDateTime
     )
 
@@ -867,9 +867,9 @@ class InsightsServiceTest {
                   btc = "1"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("10.00"),
-                  changePercentageIn7d = BigDecimal("-5.00"),
-                  changePercentageIn30d = BigDecimal("0.00")
+                  changePercentageIn24h = 10.00,
+                  changePercentageIn7d = -5.00,
+                  changePercentageIn30d = 0.00
                 )
               ),
               quantity = "0.15",
@@ -888,9 +888,9 @@ class InsightsServiceTest {
                   btc = "0.06280356"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("10.00"),
-                  changePercentageIn7d = BigDecimal("-5.00"),
-                  changePercentageIn30d = BigDecimal("2.00")
+                  changePercentageIn24h = 10.00,
+                  changePercentageIn7d = -5.00,
+                  changePercentageIn30d = 2.00
                 )
               ),
               quantity = "1.372",
@@ -909,9 +909,9 @@ class InsightsServiceTest {
                   btc = "0.0000388"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("0.00"),
-                  changePercentageIn7d = BigDecimal("0.00"),
-                  changePercentageIn30d = BigDecimal("0.00")
+                  changePercentageIn24h = 0.00,
+                  changePercentageIn7d = 0.00,
+                  changePercentageIn30d = 0.00
                 )
               ),
               quantity = "200",
@@ -988,9 +988,9 @@ class InsightsServiceTest {
                   btc = "1"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("10.00"),
-                  changePercentageIn7d = BigDecimal("-5.00"),
-                  changePercentageIn30d = BigDecimal("0.00")
+                  changePercentageIn24h = 10.00,
+                  changePercentageIn7d = -5.00,
+                  changePercentageIn30d = 0.00
                 )
               ),
               quantity = "0.15",
@@ -1009,9 +1009,9 @@ class InsightsServiceTest {
                   btc = "0.06280356"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("10.00"),
-                  changePercentageIn7d = BigDecimal("-5.00"),
-                  changePercentageIn30d = BigDecimal("2.00")
+                  changePercentageIn24h = 10.00,
+                  changePercentageIn7d = -5.00,
+                  changePercentageIn30d = 2.00
                 )
               ),
               quantity = "1.372",
@@ -1030,9 +1030,9 @@ class InsightsServiceTest {
                   btc = "0.00035516"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("4.00"),
-                  changePercentageIn7d = BigDecimal("1.00"),
-                  changePercentageIn30d = BigDecimal("8.00")
+                  changePercentageIn24h = 4.00,
+                  changePercentageIn7d = 1.00,
+                  changePercentageIn30d = 8.00
                 )
               ),
               quantity = "25",
@@ -1051,9 +1051,9 @@ class InsightsServiceTest {
                   btc = "0.00811016"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("6.00"),
-                  changePercentageIn7d = BigDecimal("-2.00"),
-                  changePercentageIn30d = BigDecimal("12.00")
+                  changePercentageIn24h = 6.00,
+                  changePercentageIn7d = -2.00,
+                  changePercentageIn30d = 12.00
                 )
               ),
               quantity = "1",
@@ -1072,9 +1072,9 @@ class InsightsServiceTest {
                   btc = "0.00022866"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("4.00"),
-                  changePercentageIn7d = BigDecimal("-1.00"),
-                  changePercentageIn30d = BigDecimal("8.00")
+                  changePercentageIn24h = 4.00,
+                  changePercentageIn7d = -1.00,
+                  changePercentageIn30d = 8.00
                 )
               ),
               quantity = "35",
@@ -1093,9 +1093,9 @@ class InsightsServiceTest {
                   btc = "0.0000388"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("0.00"),
-                  changePercentageIn7d = BigDecimal("0.00"),
-                  changePercentageIn30d = BigDecimal("0.00")
+                  changePercentageIn24h = 0.00,
+                  changePercentageIn7d = 0.00,
+                  changePercentageIn30d = 0.00
                 )
               ),
               quantity = "200",
@@ -1114,9 +1114,9 @@ class InsightsServiceTest {
                   btc = "0.00235292"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("6.00"),
-                  changePercentageIn7d = BigDecimal("-2.00"),
-                  changePercentageIn30d = BigDecimal("12.00")
+                  changePercentageIn24h = 6.00,
+                  changePercentageIn7d = -2.00,
+                  changePercentageIn30d = 12.00
                 )
               ),
               quantity = "3.125",
@@ -1135,9 +1135,9 @@ class InsightsServiceTest {
                   btc = "0.00068809"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("4.00"),
-                  changePercentageIn7d = BigDecimal("1.00"),
-                  changePercentageIn30d = BigDecimal("-2.00")
+                  changePercentageIn24h = 4.00,
+                  changePercentageIn7d = 1.00,
+                  changePercentageIn30d = -2.00
                 )
               ),
               quantity = "10",
@@ -1156,9 +1156,9 @@ class InsightsServiceTest {
                   btc = "0.00015302"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("4.00"),
-                  changePercentageIn7d = BigDecimal("-1.00"),
-                  changePercentageIn30d = BigDecimal("2.00")
+                  changePercentageIn24h = 4.00,
+                  changePercentageIn7d = -1.00,
+                  changePercentageIn30d = 2.00
                 )
               ),
               quantity = "40",
@@ -1177,9 +1177,9 @@ class InsightsServiceTest {
                   btc = "0.00016197"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("2.00"),
-                  changePercentageIn7d = BigDecimal("-1.00"),
-                  changePercentageIn30d = BigDecimal("3.00")
+                  changePercentageIn24h = 2.00,
+                  changePercentageIn7d = -1.00,
+                  changePercentageIn30d = 3.00
                 )
               ),
               quantity = "30",
@@ -1255,9 +1255,9 @@ class InsightsServiceTest {
                   btc = "0.00001947"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("14.00"),
-                  changePercentageIn7d = BigDecimal("-10.00"),
-                  changePercentageIn30d = BigDecimal("2.00")
+                  changePercentageIn24h = 14.00,
+                  changePercentageIn7d = -10.00,
+                  changePercentageIn30d = 2.00
                 )
               ),
               quantity = "100",
@@ -1276,9 +1276,9 @@ class InsightsServiceTest {
                   btc = "0.0000095"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("7.00"),
-                  changePercentageIn7d = BigDecimal("1.00"),
-                  changePercentageIn30d = BigDecimal("-2.00")
+                  changePercentageIn24h = 7.00,
+                  changePercentageIn7d = 1.00,
+                  changePercentageIn30d = -2.00
                 )
               ),
               quantity = "150",
@@ -1297,9 +1297,9 @@ class InsightsServiceTest {
                   btc = "0.00000235"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("-4.00"),
-                  changePercentageIn7d = BigDecimal("-1.00"),
-                  changePercentageIn30d = BigDecimal("-8.00")
+                  changePercentageIn24h = -4.00,
+                  changePercentageIn7d = -1.00,
+                  changePercentageIn30d = -8.00
                 )
               ),
               quantity = "500",
@@ -1318,9 +1318,9 @@ class InsightsServiceTest {
                   btc = "0.00001833"
                 ),
                 priceChange = PriceChange(
-                  changePercentageIn24h = BigDecimal("2.00"),
-                  changePercentageIn7d = BigDecimal("3.00"),
-                  changePercentageIn30d = BigDecimal("-5.00")
+                  changePercentageIn24h = 2.00,
+                  changePercentageIn7d = 3.00,
+                  changePercentageIn30d = -5.00
                 )
               ),
               quantity = "50",
@@ -1486,9 +1486,9 @@ class InsightsServiceTest {
         lastKnownPriceInEUR = BigDecimal("0.933095"),
         marketCapRank = 3,
         marketCap = BigDecimal("95085861049"),
-        changePercentageIn24h = BigDecimal("0.00"),
-        changePercentageIn7d = BigDecimal("0.00"),
-        changePercentageIn30d = BigDecimal("0.00"),
+        changePercentageIn24h = 0.00,
+        changePercentageIn7d = 0.00,
+        changePercentageIn30d = 0.00,
         maxSupply = BigDecimal.ZERO,
         lastUpdatedAt = localDateTime
       ),
@@ -1504,9 +1504,9 @@ class InsightsServiceTest {
         maxSupply = BigDecimal.ZERO,
         marketCapRank = 2,
         marketCap = BigDecimal("298219864117"),
-        changePercentageIn24h = BigDecimal("10.00"),
-        changePercentageIn7d = BigDecimal("-5.00"),
-        changePercentageIn30d = BigDecimal("2.00"),
+        changePercentageIn24h = 10.00,
+        changePercentageIn7d = -5.00,
+        changePercentageIn30d = 2.00,
         lastUpdatedAt = localDateTime
       ),
       Crypto(
@@ -1521,9 +1521,9 @@ class InsightsServiceTest {
         maxSupply = BigDecimal("84000000"),
         marketCapRank = 19,
         marketCap = BigDecimal("5259205267"),
-        changePercentageIn24h = BigDecimal("6.00"),
-        changePercentageIn7d = BigDecimal("-2.00"),
-        changePercentageIn30d = BigDecimal("12.00"),
+        changePercentageIn24h = 6.00,
+        changePercentageIn7d = -2.00,
+        changePercentageIn30d = 12.00,
         lastUpdatedAt = localDateTime
       ),
       Crypto(
@@ -1538,9 +1538,9 @@ class InsightsServiceTest {
         maxSupply = BigDecimal("200000000"),
         marketCapRank = 4,
         marketCap = BigDecimal("48318686968"),
-        changePercentageIn24h = BigDecimal("6.00"),
-        changePercentageIn7d = BigDecimal("-2.00"),
-        changePercentageIn30d = BigDecimal("12.00"),
+        changePercentageIn24h = 6.00,
+        changePercentageIn7d = -2.00,
+        changePercentageIn30d = 12.00,
         lastUpdatedAt = localDateTime
       ),
       Crypto(
@@ -1555,9 +1555,9 @@ class InsightsServiceTest {
         maxSupply = BigDecimal("100000000000"),
         marketCapRank = 6,
         marketCap = BigDecimal("29348197308"),
-        changePercentageIn24h = BigDecimal("2.00"),
-        changePercentageIn7d = BigDecimal("3.00"),
-        changePercentageIn30d = BigDecimal("-5.00"),
+        changePercentageIn24h = 2.00,
+        changePercentageIn7d = 3.00,
+        changePercentageIn30d = -5.00,
         lastUpdatedAt = localDateTime
       ),
       Crypto(
@@ -1572,9 +1572,9 @@ class InsightsServiceTest {
         maxSupply = BigDecimal("45000000000"),
         marketCapRank = 9,
         marketCap = BigDecimal("29348197308"),
-        changePercentageIn24h = BigDecimal("7.00"),
-        changePercentageIn7d = BigDecimal("1.00"),
-        changePercentageIn30d = BigDecimal("-2.00"),
+        changePercentageIn24h = 7.00,
+        changePercentageIn7d = 1.00,
+        changePercentageIn30d = -2.00,
         lastUpdatedAt = localDateTime
       ),
       Crypto(
@@ -1589,9 +1589,9 @@ class InsightsServiceTest {
         maxSupply = BigDecimal.ZERO,
         marketCapRank = 13,
         marketCap = BigDecimal("8993575127"),
-        changePercentageIn24h = BigDecimal("4.00"),
-        changePercentageIn7d = BigDecimal("-1.00"),
-        changePercentageIn30d = BigDecimal("2.00"),
+        changePercentageIn24h = 4.00,
+        changePercentageIn7d = -1.00,
+        changePercentageIn30d = 2.00,
         lastUpdatedAt = localDateTime
       ),
       Crypto(
@@ -1606,9 +1606,9 @@ class InsightsServiceTest {
         maxSupply = BigDecimal.ZERO,
         marketCapRank = 5,
         marketCap = BigDecimal("40090766907"),
-        changePercentageIn24h = BigDecimal("4.00"),
-        changePercentageIn7d = BigDecimal("1.00"),
-        changePercentageIn30d = BigDecimal("-2.00"),
+        changePercentageIn24h = 4.00,
+        changePercentageIn7d = 1.00,
+        changePercentageIn30d = -2.00,
         lastUpdatedAt = localDateTime
       ),
       Crypto(
@@ -1623,9 +1623,9 @@ class InsightsServiceTest {
         maxSupply = BigDecimal("10000000000"),
         marketCapRank = 16,
         marketCap = BigDecimal("7001911961"),
-        changePercentageIn24h = BigDecimal("14.00"),
-        changePercentageIn7d = BigDecimal("-10.00"),
-        changePercentageIn30d = BigDecimal("2.00"),
+        changePercentageIn24h = 14.00,
+        changePercentageIn7d = -10.00,
+        changePercentageIn30d = 2.00,
         lastUpdatedAt = localDateTime
       ),
       Crypto(
@@ -1640,9 +1640,9 @@ class InsightsServiceTest {
         maxSupply = BigDecimal("1000000000"),
         marketCapRank = 16,
         marketCap = BigDecimal("9021587267"),
-        changePercentageIn24h = BigDecimal("4.00"),
-        changePercentageIn7d = BigDecimal("-1.00"),
-        changePercentageIn30d = BigDecimal("8.00"),
+        changePercentageIn24h = 4.00,
+        changePercentageIn7d = -1.00,
+        changePercentageIn30d = 8.00,
         lastUpdatedAt = localDateTime
       ),
       Crypto(
@@ -1657,9 +1657,9 @@ class InsightsServiceTest {
         maxSupply = BigDecimal.ZERO,
         marketCapRank = 11,
         marketCap = BigDecimal("11195832359"),
-        changePercentageIn24h = BigDecimal("-4.00"),
-        changePercentageIn7d = BigDecimal("-1.00"),
-        changePercentageIn30d = BigDecimal("-8.00"),
+        changePercentageIn24h = -4.00,
+        changePercentageIn7d = -1.00,
+        changePercentageIn30d = -8.00,
         lastUpdatedAt = localDateTime
       ),
       Crypto(
@@ -1674,9 +1674,9 @@ class InsightsServiceTest {
         maxSupply = BigDecimal("720000000"),
         marketCapRank = 10,
         marketCap = BigDecimal("11953262327"),
-        changePercentageIn24h = BigDecimal("4.00"),
-        changePercentageIn7d = BigDecimal("1.00"),
-        changePercentageIn30d = BigDecimal("8.00"),
+        changePercentageIn24h = 4.00,
+        changePercentageIn7d = 1.00,
+        changePercentageIn30d = 8.00,
         lastUpdatedAt = localDateTime
       ),
       Crypto(
@@ -1691,9 +1691,9 @@ class InsightsServiceTest {
         maxSupply = BigDecimal("1000000000"),
         marketCapRank = 22,
         marketCap = BigDecimal("4772322900"),
-        changePercentageIn24h = BigDecimal("2.00"),
-        changePercentageIn7d = BigDecimal("-1.00"),
-        changePercentageIn30d = BigDecimal("3.00"),
+        changePercentageIn24h = 2.00,
+        changePercentageIn7d = -1.00,
+        changePercentageIn30d = 3.00,
         lastUpdatedAt = localDateTime
       )
     )

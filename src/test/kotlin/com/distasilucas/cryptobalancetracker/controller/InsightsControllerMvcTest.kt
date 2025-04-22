@@ -42,7 +42,6 @@ import retrievePlatformInsights
 import retrievePlatformsBalancesInsights
 import retrieveHomeInsights
 import retrieveUserCryptosPlatformsInsights
-import java.math.BigDecimal
 import java.util.*
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -65,7 +64,7 @@ class InsightsControllerMvcTest(
         symbol = "btc",
         image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
         price = Price("90824.40", "79305.30"),
-        priceChange = PriceChange(BigDecimal(10))
+        priceChange = PriceChange(10.0)
       )
     )
 
@@ -82,7 +81,7 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$.top24hGainer.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
       .andExpect(jsonPath("$.top24hGainer.price.usd", `is`("90824.40")))
       .andExpect(jsonPath("$.top24hGainer.price.eur", `is`("79305.30")))
-      .andExpect(jsonPath("$.top24hGainer.priceChange.changePercentageIn24h", `is`(10)))
+      .andExpect(jsonPath("$.top24hGainer.priceChange.changePercentageIn24h", `is`(10.0)))
   }
 
   @Test
@@ -278,9 +277,9 @@ class InsightsControllerMvcTest(
             btc = "1"
           ),
           priceChange = PriceChange(
-            changePercentageIn24h = BigDecimal("10.00"),
-            changePercentageIn7d = BigDecimal("-5.00"),
-            changePercentageIn30d = BigDecimal("0.00")
+            changePercentageIn24h = 10.00,
+            changePercentageIn7d = -5.00,
+            changePercentageIn30d = 0.00
           )
         ),
         quantity = "0.15",

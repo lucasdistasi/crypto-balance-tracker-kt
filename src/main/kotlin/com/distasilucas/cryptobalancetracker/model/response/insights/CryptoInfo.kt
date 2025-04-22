@@ -34,7 +34,7 @@ data class Price(
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class PriceChange(
-  val changePercentageIn24h: BigDecimal? = null,
-  val changePercentageIn7d: BigDecimal? = null,
-  val changePercentageIn30d: BigDecimal? = null
+  val changePercentageIn24h: Double? = null,
+  val changePercentageIn7d: Double? = null,
+  val changePercentageIn30d: Double? = null
 ): Serializable

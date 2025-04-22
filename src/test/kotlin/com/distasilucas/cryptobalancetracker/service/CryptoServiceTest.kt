@@ -64,9 +64,9 @@ class CryptoServiceTest {
           maxSupply = BigDecimal("21000000"),
           marketCapRank = 1,
           marketCap = BigDecimal("813208997089"),
-          changePercentageIn24h = BigDecimal("10.00"),
-          changePercentageIn7d = BigDecimal("-5.00"),
-          changePercentageIn30d = BigDecimal("0.00"),
+          changePercentageIn24h = 10.00,
+          changePercentageIn7d = -5.00,
+          changePercentageIn30d = 0.00,
           lastUpdatedAt = localDateTime
         )
       )
@@ -107,9 +107,9 @@ class CryptoServiceTest {
           maxSupply = BigDecimal("21000000"),
           marketCapRank = 1,
           marketCap = BigDecimal("813208997089"),
-          changePercentageIn24h = BigDecimal("10.00"),
-          changePercentageIn7d = BigDecimal("-5.00"),
-          changePercentageIn30d = BigDecimal("0.00"),
+          changePercentageIn24h = 10.00,
+          changePercentageIn7d = -5.00,
+          changePercentageIn30d = 0.00,
           lastUpdatedAt = localDateTime
         )
       )
@@ -153,9 +153,9 @@ class CryptoServiceTest {
           maxSupply = BigDecimal.ZERO,
           marketCapRank = 1,
           marketCap = BigDecimal("813208997089"),
-          changePercentageIn24h = BigDecimal("10.00"),
-          changePercentageIn7d = BigDecimal("-5.00"),
-          changePercentageIn30d = BigDecimal("0.00"),
+          changePercentageIn24h = 10.00,
+          changePercentageIn7d = -5.00,
+          changePercentageIn30d = 0.00,
           lastUpdatedAt = localDateTime
         )
       )
@@ -264,9 +264,9 @@ class CryptoServiceTest {
           maxSupply = BigDecimal("21000000"),
           marketCapRank = 1,
           marketCap = BigDecimal("813208997089"),
-          changePercentageIn24h = BigDecimal("10.00"),
-          changePercentageIn7d = BigDecimal("-5.00"),
-          changePercentageIn30d = BigDecimal("0.00"),
+          changePercentageIn24h = 10.00,
+          changePercentageIn7d = -5.00,
+          changePercentageIn30d = 0.00,
           lastUpdatedAt = localDateTime
         )
       )
@@ -306,9 +306,9 @@ class CryptoServiceTest {
           maxSupply = BigDecimal.ZERO,
           marketCapRank = 1,
           marketCap = BigDecimal("813208997089"),
-          changePercentageIn24h = BigDecimal("10.00"),
-          changePercentageIn7d = BigDecimal("-5.00"),
-          changePercentageIn30d = BigDecimal("0.00"),
+          changePercentageIn24h = 10.00,
+          changePercentageIn7d = -5.00,
+          changePercentageIn30d = 0.00,
           lastUpdatedAt = localDateTime
         )
       )
@@ -399,9 +399,9 @@ class CryptoServiceTest {
             maxSupply = BigDecimal("21000000"),
             marketCapRank = 1,
             marketCap = BigDecimal("813208997089"),
-            changePercentageIn24h = BigDecimal("10.00"),
-            changePercentageIn7d = BigDecimal("-5.00"),
-            changePercentageIn30d = BigDecimal("0.00"),
+            changePercentageIn24h = 10.00,
+            changePercentageIn7d = -5.00,
+            changePercentageIn30d = 0.00,
             lastUpdatedAt = localDateTime
           )
         )
@@ -447,9 +447,9 @@ class CryptoServiceTest {
           maxSupply = BigDecimal("21000000"),
           marketCapRank = 1,
           marketCap = BigDecimal("813208997089"),
-          changePercentageIn24h = BigDecimal("10.00"),
-          changePercentageIn7d = BigDecimal("-5.00"),
-          changePercentageIn30d = BigDecimal("0.00"),
+          changePercentageIn24h = 10.00,
+          changePercentageIn7d = -5.00,
+          changePercentageIn30d = 0.00,
           lastUpdatedAt = localDateTime
         )
       ))

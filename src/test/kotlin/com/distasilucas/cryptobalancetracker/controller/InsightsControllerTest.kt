@@ -41,7 +41,7 @@ class InsightsControllerTest {
         symbol = "btc",
         image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
         price = Price("90824.40", "79305.30"),
-        priceChange = PriceChange(BigDecimal(10))
+        priceChange = PriceChange(10.00)
       )
     )
 

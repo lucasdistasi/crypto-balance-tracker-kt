@@ -190,9 +190,9 @@ fun getCryptoEntity(
   maxSupply: BigDecimal? = BigDecimal("21000000"),
   marketCapRank: Int = 1,
   marketCap: BigDecimal = BigDecimal("813208997089"),
-  changePercentageIn24h: BigDecimal = BigDecimal("10.00"),
-  changePercentageIn7d: BigDecimal = BigDecimal("-5.00"),
-  changePercentageIn30d: BigDecimal = BigDecimal("0.00"),
+  changePercentageIn24h: Double = 10.00,
+  changePercentageIn7d: Double = -5.00,
+  changePercentageIn30d: Double = 0.00,
   lastUpdatedAt: LocalDateTime = LocalDateTime.now()
 ): Crypto {
   return Crypto(
@@ -310,9 +310,9 @@ fun getMarketData(
     circulatingSupply = circulatingSupply,
     maxSupply = maxSupply,
     marketCap = MarketCap(BigDecimal("813208997089")),
-    changePercentageIn24h = BigDecimal("10.00"),
-    changePercentageIn7d = BigDecimal("-5.00"),
-    changePercentageIn30d = BigDecimal("0.00")
+    changePercentageIn24h = 10.00,
+    changePercentageIn7d = -5.00,
+    changePercentageIn30d = 0.00
   )
 }
 
