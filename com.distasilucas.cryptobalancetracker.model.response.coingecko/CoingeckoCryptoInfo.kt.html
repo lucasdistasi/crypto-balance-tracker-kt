@@ -4,80 +4,79 @@ import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.Serializable
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.Clock
 import java.time.LocalDateTime
 
-<span class="fc" id="L11">data class CoingeckoCryptoInfo(</span>
-<span class="fc" id="L12">  val id: String,</span>
-<span class="pc" id="L13">  val symbol: String,</span>
-<span class="pc" id="L14">  val name: String,</span>
-<span class="pc" id="L15">  val image: Image,</span>
+<span class="fc" id="L10">data class CoingeckoCryptoInfo(</span>
+<span class="fc" id="L11">  val id: String,</span>
+<span class="pc" id="L12">  val symbol: String,</span>
+<span class="pc" id="L13">  val name: String,</span>
+<span class="pc" id="L14">  val image: Image,</span>
 
-<span class="pc" id="L17">  @JsonProperty(&quot;market_cap_rank&quot;)</span>
+<span class="pc" id="L16">  @JsonProperty(&quot;market_cap_rank&quot;)</span>
   val marketCapRank: Int,
 
-<span class="pc" id="L20">  @JsonProperty(&quot;market_data&quot;)</span>
+<span class="pc" id="L19">  @JsonProperty(&quot;market_data&quot;)</span>
   val marketData: MarketData
 ) : Serializable {
 
   fun toCrypto(clock: Clock): Crypto {
-<span class="fc" id="L25">    return Crypto(</span>
-<span class="fc" id="L26">      id = id,</span>
-<span class="fc" id="L27">      name = name,</span>
-<span class="fc" id="L28">      ticker = symbol,</span>
-<span class="fc" id="L29">      image = image.large,</span>
-<span class="fc" id="L30">      lastKnownPrice = marketData.currentPrice.usd,</span>
-<span class="fc" id="L31">      lastKnownPriceInEUR = marketData.currentPrice.eur,</span>
-<span class="fc" id="L32">      lastKnownPriceInBTC = marketData.currentPrice.btc,</span>
-<span class="fc" id="L33">      circulatingSupply = marketData.circulatingSupply,</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">      maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,</span>
-<span class="fc" id="L35">      marketCapRank = marketCapRank,</span>
-<span class="fc" id="L36">      marketCap = marketData.marketCap.usd,</span>
-<span class="fc" id="L37">      changePercentageIn24h = marketData.changePercentageIn24h.roundChangePercentage(),</span>
-<span class="fc" id="L38">      changePercentageIn7d = marketData.changePercentageIn7d.roundChangePercentage(),</span>
-<span class="fc" id="L39">      changePercentageIn30d = marketData.changePercentageIn30d.roundChangePercentage(),</span>
-<span class="fc" id="L40">      lastUpdatedAt = LocalDateTime.now(clock)</span>
+<span class="fc" id="L24">    return Crypto(</span>
+<span class="fc" id="L25">      id = id,</span>
+<span class="fc" id="L26">      name = name,</span>
+<span class="fc" id="L27">      ticker = symbol,</span>
+<span class="fc" id="L28">      image = image.large,</span>
+<span class="fc" id="L29">      lastKnownPrice = marketData.currentPrice.usd,</span>
+<span class="fc" id="L30">      lastKnownPriceInEUR = marketData.currentPrice.eur,</span>
+<span class="fc" id="L31">      lastKnownPriceInBTC = marketData.currentPrice.btc,</span>
+<span class="fc" id="L32">      circulatingSupply = marketData.circulatingSupply,</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">      maxSupply = marketData.maxSupply ?: BigDecimal.ZERO,</span>
+<span class="fc" id="L34">      marketCapRank = marketCapRank,</span>
+<span class="fc" id="L35">      marketCap = marketData.marketCap.usd,</span>
+<span class="fc" id="L36">      changePercentageIn24h = marketData.changePercentageIn24h.roundChangePercentage(),</span>
+<span class="fc" id="L37">      changePercentageIn7d = marketData.changePercentageIn7d.roundChangePercentage(),</span>
+<span class="fc" id="L38">      changePercentageIn30d = marketData.changePercentageIn30d.roundChangePercentage(),</span>
+<span class="fc" id="L39">      lastUpdatedAt = LocalDateTime.now(clock)</span>
     )
   }
 
-<span class="fc" id="L44">  private fun BigDecimal.roundChangePercentage() = this.setScale(2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L43">  private fun Double.roundChangePercentage() = String.format(&quot;%.2f&quot;, this).toDouble()</span>
 }
 
-<span class="fc" id="L47">data class Image(</span>
-<span class="fc" id="L48">  val large: String</span>
+<span class="fc" id="L46">data class Image(</span>
+<span class="fc" id="L47">  val large: String</span>
 ) : Serializable
 
-<span class="fc" id="L51">data class MarketData(</span>
-<span class="fc" id="L52">  @JsonProperty(&quot;current_price&quot;)</span>
+<span class="fc" id="L50">data class MarketData(</span>
+<span class="fc" id="L51">  @JsonProperty(&quot;current_price&quot;)</span>
   val currentPrice: CurrentPrice,
 
-<span class="fc" id="L55">  @JsonProperty(&quot;circulating_supply&quot;)</span>
+<span class="fc" id="L54">  @JsonProperty(&quot;circulating_supply&quot;)</span>
   val circulatingSupply: BigDecimal,
 
-<span class="fc" id="L58">  @JsonProperty(&quot;max_supply&quot;)</span>
+<span class="fc" id="L57">  @JsonProperty(&quot;max_supply&quot;)</span>
   val maxSupply: BigDecimal?,
 
-<span class="fc" id="L61">  @JsonProperty(&quot;market_cap&quot;)</span>
+<span class="fc" id="L60">  @JsonProperty(&quot;market_cap&quot;)</span>
   val marketCap: MarketCap,
 
-<span class="fc" id="L64">  @JsonProperty(&quot;price_change_percentage_24h&quot;)</span>
-  val changePercentageIn24h: BigDecimal,
+<span class="fc" id="L63">  @JsonProperty(&quot;price_change_percentage_24h&quot;)</span>
+  val changePercentageIn24h: Double,
 
-<span class="fc" id="L67">  @JsonProperty(&quot;price_change_percentage_7d&quot;)</span>
-  val changePercentageIn7d: BigDecimal,
+<span class="fc" id="L66">  @JsonProperty(&quot;price_change_percentage_7d&quot;)</span>
+  val changePercentageIn7d: Double,
 
-<span class="fc" id="L70">  @JsonProperty(&quot;price_change_percentage_30d&quot;)</span>
-  val changePercentageIn30d: BigDecimal
+<span class="fc" id="L69">  @JsonProperty(&quot;price_change_percentage_30d&quot;)</span>
+  val changePercentageIn30d: Double
 ) : Serializable
 
-<span class="fc" id="L74">data class CurrentPrice(</span>
-<span class="fc" id="L75">  val usd: BigDecimal,</span>
-<span class="fc" id="L76">  val eur: BigDecimal,</span>
-<span class="fc" id="L77">  val btc: BigDecimal</span>
+<span class="fc" id="L73">data class CurrentPrice(</span>
+<span class="fc" id="L74">  val usd: BigDecimal,</span>
+<span class="fc" id="L75">  val eur: BigDecimal,</span>
+<span class="fc" id="L76">  val btc: BigDecimal</span>
 ) : Serializable
 
-<span class="fc" id="L80">data class MarketCap(</span>
-<span class="fc" id="L81">  val usd: BigDecimal</span>
+<span class="fc" id="L79">data class MarketCap(</span>
+<span class="fc" id="L80">  val usd: BigDecimal</span>
 ) : Serializable
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

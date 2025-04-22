@@ -8,9 +8,9 @@ import java.math.BigDecimal
 ) {
 <span class="fc" id="L9">  PERCENTAGE(Comparator.comparing { it.percentage }),</span>
 <span class="pc bnc" id="L10" title="All 2 branches missed.">  CURRENT_PRICE(Comparator.comparing { BigDecimal(it.cryptoInfo.price?.usd) }),</span>
-<span class="pc bnc" id="L11" title="All 2 branches missed.">  CHANGE_PRICE_IN_24H(Comparator.comparing { it.cryptoInfo.priceChange?.changePercentageIn24h }),</span>
-<span class="pc bnc" id="L12" title="All 2 branches missed.">  CHANGE_PRICE_IN_7D(Comparator.comparing { it.cryptoInfo.priceChange?.changePercentageIn7d }),</span>
-<span class="pc bnc" id="L13" title="All 2 branches missed.">  CHANGE_PRICE_IN_30D(Comparator.comparing { it.cryptoInfo.priceChange?.changePercentageIn30d });</span>
+<span class="pc bnc" id="L11" title="All 2 branches missed.">  CHANGE_PRICE_IN_24H(Comparator.comparing { it.cryptoInfo.priceChange?.changePercentageIn24h!! }),</span>
+<span class="pc bnc" id="L12" title="All 2 branches missed.">  CHANGE_PRICE_IN_7D(Comparator.comparing { it.cryptoInfo.priceChange?.changePercentageIn7d!! }),</span>
+<span class="pc bnc" id="L13" title="All 2 branches missed.">  CHANGE_PRICE_IN_30D(Comparator.comparing { it.cryptoInfo.priceChange?.changePercentageIn30d!! });</span>
 
   fun getUserCryptosInsightsComparator(sortType: SortType): Comparator&lt;UserCryptoInsights&gt; {
 <span class="pc bpc" id="L16" title="1 of 2 branches missed.">    return if (sortType == SortType.ASC) userCryptoInsightsComparator else userCryptoInsightsComparator.reversed()</span>
