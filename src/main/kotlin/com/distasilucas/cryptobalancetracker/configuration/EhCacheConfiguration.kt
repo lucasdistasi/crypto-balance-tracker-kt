@@ -1,6 +1,7 @@
 package com.distasilucas.cryptobalancetracker.configuration
 
 import com.distasilucas.cryptobalancetracker.constants.ALL_PLATFORMS_CACHE
+import com.distasilucas.cryptobalancetracker.constants.HOME_INSIGHTS_RESPONSE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.COINGECKO_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_BALANCES_INSIGHTS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_CRYPTOS_IDS_CACHE
@@ -17,7 +18,6 @@ import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACH
 import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_RESPONSE_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_RESPONSE_PAGE_CACHE
-import com.distasilucas.cryptobalancetracker.constants.TOTAL_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
@@ -35,7 +35,7 @@ import com.distasilucas.cryptobalancetracker.model.response.goal.GoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.goal.PageGoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.pricetarget.PagePriceTargetResponse
@@ -92,7 +92,7 @@ class EhCacheConfiguration {
       PRICE_TARGET_RESPONSE_PAGE_CACHE to getCacheConfig(Int::class.javaObjectType, PagePriceTargetResponse::class.java),
       GOAL_RESPONSE_GOAL_ID_CACHE to getCacheConfig(String::class.java, GoalResponse::class.java),
       PAGE_GOALS_RESPONSE_PAGE_CACHE to getCacheConfig(Int::class.javaObjectType, PageGoalResponse::class.java),
-      TOTAL_BALANCES_CACHE to getCacheConfig(SimpleKey::class.java, TotalBalancesResponse::class.java, Duration.ofMinutes(5)),
+      HOME_INSIGHTS_RESPONSE_CACHE to getCacheConfig(SimpleKey::class.java, HomeInsightsResponse::class.java, Duration.ofMinutes(3)),
       DATES_BALANCES_CACHE to getCacheConfig(DateRange::class.java, DatesBalanceResponse::class.java, Duration.ofMinutes(5)),
       PLATFORM_INSIGHTS_CACHE to getCacheConfig(String::class.java, PlatformInsightsResponse::class.java, Duration.ofMinutes(5)),
       CRYPTO_INSIGHTS_CACHE to getCacheConfig(String::class.java, CryptoInsightResponse::class.java, Duration.ofMinutes(5)),

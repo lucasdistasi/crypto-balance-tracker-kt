@@ -4,6 +4,7 @@ import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.DateBalance
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
+import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
@@ -13,9 +14,9 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalance
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.FiatBalance
+import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
-import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -32,8 +33,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.Clock
 import java.time.LocalDate
@@ -59,34 +62,43 @@ class InsightsServiceTest {
     val cryptos = listOf("bitcoin", "tether", "ethereum", "litecoin")
     val userCryptos = userCryptos().filter { cryptos.contains(it.coingeckoCryptoId) }
     val cryptosEntities = cryptos().filter { cryptos.contains(it.id) }
+    val bitcoin = cryptosEntities.first { it.id == "bitcoin" }
 
     every { userCryptoServiceMock.findAll() } returns userCryptos
     every {
       cryptoServiceMock.findAllByIds(setOf("bitcoin", "tether", "ethereum", "litecoin"))
     } returns cryptosEntities
+    every {
+      cryptoServiceMock.findTopGainer24h(setOf("bitcoin", "tether", "ethereum", "litecoin"))
+    } returns bitcoin
 
-    val balances = insightsService.retrieveTotalBalances()
+    val homeInsightResponse = insightsService.retrieveHomeInsightsResponse()
 
-    assertThat(balances)
+    assertThat(homeInsightResponse)
       .usingRecursiveComparison()
       .isEqualTo(
-        TotalBalancesResponse(
-          fiat = FiatBalance("7108.39", "6484.23"),
-          btc = "0.25127936",
-          stablecoins = "199.92"
+        HomeInsightsResponse(
+          Balances(FiatBalance("7108.39", "6484.23"), "0.25127936"),
+          "199.92",
+          CryptoInfo(
+            coingeckoCryptoId = "bitcoin",
+            symbol = "btc",
+            image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+            price = Price("30000", "27000"),
+            priceChange = PriceChange(BigDecimal("10.00"))
+          )
         )
       )
   }
 
   @Test
-  fun `should retrieve empty for total balances insights`() {
+  fun `should throw ApiException when calling retrieveHomeInsightsResponse`() {
     every { userCryptoServiceMock.findAll() } returns emptyList()
 
-    val balances = insightsService.retrieveTotalBalances()
+    val exception = assertThrows<ApiException> { insightsService.retrieveHomeInsightsResponse() }
 
-    assertThat(balances)
-      .usingRecursiveComparison()
-      .isEqualTo(TotalBalancesResponse.EMPTY)
+    assertEquals(HttpStatus.NOT_FOUND, exception.httpStatusCode)
+    assertEquals("No user cryptos were found", exception.message)
   }
 
   @Test

@@ -115,8 +115,8 @@ fun MockMvc.transferUserCrypto(payload: String) = this.perform(
     .contentType(APPLICATION_JSON)
 )
 
-fun MockMvc.retrieveTotalBalancesInsights() = this.perform(
-  MockMvcRequestBuilders.get("$INSIGHTS_ENDPOINT/balances")
+fun MockMvc.retrieveHomeInsights() = this.perform(
+  MockMvcRequestBuilders.get(INSIGHTS_ENDPOINT)
     .contentType(APPLICATION_JSON)
 )
 

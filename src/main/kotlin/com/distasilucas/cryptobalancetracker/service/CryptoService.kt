@@ -46,6 +46,12 @@ class CryptoService(
     return cryptoRepository.findAllByIdIn(ids)
   }
 
+  fun findTopGainer24h(ids: Set<String>): Crypto {
+    logger.info { "Retrieving best performant crypto in the last 24H" }
+
+    return cryptoRepository.findFirstByIdInOrderByChangePercentageIn24hDesc(ids)
+  }
+
   fun retrieveCoingeckoCryptoInfoByNameOrId(cryptoNameOrId: String): CoingeckoCrypto {
     logger.info { "Retrieving info for coingecko crypto $cryptoNameOrId" }
 

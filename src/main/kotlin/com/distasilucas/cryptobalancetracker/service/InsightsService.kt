@@ -1,15 +1,16 @@
 package com.distasilucas.cryptobalancetracker.service
 
+import com.distasilucas.cryptobalancetracker.constants.HOME_INSIGHTS_RESPONSE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_BALANCES_INSIGHTS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTO_INSIGHTS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.DATES_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_BALANCES_INSIGHTS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORM_INSIGHTS_CACHE
-import com.distasilucas.cryptobalancetracker.constants.TOTAL_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.DateBalance
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
+import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortParams
@@ -17,13 +18,14 @@ import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
+import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.FiatBalance
+import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
-import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -34,6 +36,7 @@ import com.distasilucas.cryptobalancetracker.repository.DateBalanceRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -63,23 +66,34 @@ class InsightsService(
   // TODO - Retrieve from Coingecko API
   private val stableCoinsIds = listOf("tether", "usd-coin", "ethena-usde", "dai", "first-digital-usd")
 
-  @Cacheable(cacheNames = [TOTAL_BALANCES_CACHE])
-  fun retrieveTotalBalances(): TotalBalancesResponse {
-    logger.info { "Retrieving total balances" }
+  @Cacheable(cacheNames = [HOME_INSIGHTS_RESPONSE_CACHE])
+  fun retrieveHomeInsightsResponse(): HomeInsightsResponse {
+    logger.info { "Retrieving home insights" }
 
     val userCryptos = userCryptoService.findAll()
 
-    if (userCryptos.isEmpty()) return TotalBalancesResponse.EMPTY
+    if (userCryptos.isEmpty()) {
+      throw ApiException(HttpStatus.NOT_FOUND, "No user cryptos were found")
+    }
 
     val userCryptoQuantity = getUserCryptoQuantity(userCryptos)
-    val cryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet()
-    val cryptos = cryptoService.findAllByIds(cryptosIds)
+    val userCryptosIds = userCryptos.map { it.coingeckoCryptoId }.toSet()
+    val cryptos = cryptoService.findAllByIds(userCryptosIds)
     val balances = getTotalBalances(cryptos, userCryptoQuantity)
     val stableCoins = cryptos.filter { stableCoinsIds.contains(it.id) }
     val userStableCoins = userCryptos.filter { stableCoinsIds.contains(it.coingeckoCryptoId) }
     val stableCoinsBalance = retrieveStableCoinsBalance(userStableCoins, stableCoins)
+    val top24hGainer = with(cryptoService.findTopGainer24h(userCryptosIds)) {
+      CryptoInfo(
+        coingeckoCryptoId = id,
+        symbol = ticker,
+        image = image,
+        price = Price(lastKnownPrice, lastKnownPriceInEUR),
+        priceChange = PriceChange(changePercentageIn24h)
+      )
+    }
 
-    return TotalBalancesResponse(balances.fiat, balances.btc, stableCoinsBalance)
+    return HomeInsightsResponse(balances, stableCoinsBalance, top24hGainer)
   }
 
   @Cacheable(cacheNames = [DATES_BALANCES_CACHE], key = "#dateRange")

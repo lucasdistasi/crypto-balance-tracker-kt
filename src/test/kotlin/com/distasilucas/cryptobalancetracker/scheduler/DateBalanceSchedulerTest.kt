@@ -1,8 +1,12 @@
 package com.distasilucas.cryptobalancetracker.scheduler
 
 import com.distasilucas.cryptobalancetracker.entity.DateBalance
+import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
+import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.FiatBalance
-import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsightsResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.Price
+import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.repository.DateBalanceRepository
 import com.distasilucas.cryptobalancetracker.service.InsightsService
 import io.mockk.every
@@ -10,6 +14,7 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
@@ -27,12 +32,11 @@ class DateBalanceSchedulerTest {
   fun `should save daily balance`() {
     val localDate = LocalDate.of(2024, 3, 17)
     val uuid = "2771242a-8021-48e1-85b2-61967f6558e5"
-    val dateBalance = DateBalance(uuid, localDate.toString(), "1000", "918", "0.015")
-    val totalBalances = TotalBalancesResponse(FiatBalance("1000", "918"), "0.015", "50")
+    val dateBalance = DateBalance(uuid, localDate.toString(), "22822.29", "19927.78", "0.25127936")
 
     every { clockMock.instant() } returns localDate.atStartOfDay().toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns localDate.atStartOfDay().atZone(ZoneId.of("UTC")).zone
-    every { insightsServiceMock.retrieveTotalBalances() } returns totalBalances
+    every { insightsServiceMock.retrieveHomeInsightsResponse() } returns homeInsights()
     every { dateBalancesRepositoryMock.findDateBalanceByDate(localDate.toString()) } returns null
     every { dateBalancesRepositoryMock.save(dateBalance) } returns dateBalance
     mockkStatic(UUID::class)
@@ -47,12 +51,12 @@ class DateBalanceSchedulerTest {
   fun `should update daily balance`() {
     val localDate = LocalDate.of(2024, 3, 17)
     val uuid = "2771242a-8021-48e1-85b2-61967f6558e5"
+    val homeInsights = homeInsights(Balances(FiatBalance("1500", "1377"), "0.022"))
     val dateBalance = DateBalance(uuid, localDate.toString(), "1500", "1377", "0.022")
-    val totalBalances = TotalBalancesResponse(FiatBalance("1500", "1377"), "0.022", "50")
 
     every { clockMock.instant() } returns localDate.atStartOfDay().toInstant(ZoneOffset.UTC)
     every { clockMock.zone } returns localDate.atStartOfDay().atZone(ZoneId.of("UTC")).zone
-    every { insightsServiceMock.retrieveTotalBalances() } returns totalBalances
+    every { insightsServiceMock.retrieveHomeInsightsResponse() } returns homeInsights
     every { dateBalancesRepositoryMock.findDateBalanceByDate(localDate.toString()) } returns dateBalance
     every { dateBalancesRepositoryMock.save(dateBalance) } returns dateBalance
     mockkStatic(UUID::class)
@@ -62,4 +66,18 @@ class DateBalanceSchedulerTest {
 
     verify(exactly = 1) { dateBalancesRepositoryMock.save(dateBalance) }
   }
+
+  private fun homeInsights(
+    balances: Balances = Balances(FiatBalance("22822.29", "19927.78"), "0.25127936")
+  ) = HomeInsightsResponse(
+    balances,
+    "199.92",
+    CryptoInfo(
+      coingeckoCryptoId = "bitcoin",
+      symbol = "btc",
+      image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+      price = Price("90824.40", "79305.30"),
+      priceChange = PriceChange(BigDecimal(10))
+    )
+  )
 }

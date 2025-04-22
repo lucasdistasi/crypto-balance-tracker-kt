@@ -8,7 +8,7 @@ import com.distasilucas.cryptobalancetracker.model.SortParams
 import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.Optional
+import java.util.*
 
 @Validated
 @RestController
@@ -31,11 +31,9 @@ import java.util.Optional
 @CrossOrigin(origins = ["\${allowed-origins}"])
 class InsightsController(private val insightsService: InsightsService) : InsightsControllerAPI {
 
-  @GetMapping("/balances")
-  override fun retrieveTotalBalances(): ResponseEntity<TotalBalancesResponse> {
-    val totalBalances = insightsService.retrieveTotalBalances()
-
-    return ResponseEntity.ok(totalBalances)
+  @GetMapping
+  override fun retrieveHomeInsights(): ResponseEntity<HomeInsightsResponse> {
+    return ResponseEntity.ok(insightsService.retrieveHomeInsightsResponse())
   }
 
   @GetMapping("/dates-balances")

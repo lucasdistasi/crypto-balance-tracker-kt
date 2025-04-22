@@ -10,9 +10,9 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalance
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.FiatBalance
+import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.Price
 import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
-import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
@@ -40,7 +40,7 @@ import retrieveCryptosBalancesInsights
 import retrieveDatesBalances
 import retrievePlatformInsights
 import retrievePlatformsBalancesInsights
-import retrieveTotalBalancesInsights
+import retrieveHomeInsights
 import retrieveUserCryptosPlatformsInsights
 import java.math.BigDecimal
 import java.util.*
@@ -56,15 +56,33 @@ class InsightsControllerMvcTest(
   private lateinit var insightsServiceMock: InsightsService
 
   @Test
-  fun `should retrieve total balances with status 200`() {
-    every { insightsServiceMock.retrieveTotalBalances() } returns TotalBalancesResponse(FiatBalance("100", "70"), "0.1", "50")
+  fun `should retrieve home insights with status 200`() {
+    val homeInsightsResponse = HomeInsightsResponse(
+      Balances(FiatBalance("22822.29", "19927.78"), "0.25127936"),
+      "199.92",
+      CryptoInfo(
+        coingeckoCryptoId = "bitcoin",
+        symbol = "btc",
+        image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+        price = Price("90824.40", "79305.30"),
+        priceChange = PriceChange(BigDecimal(10))
+      )
+    )
 
-    mockMvc.retrieveTotalBalancesInsights()
+    every { insightsServiceMock.retrieveHomeInsightsResponse() } returns homeInsightsResponse
+
+    mockMvc.retrieveHomeInsights()
       .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(jsonPath("$.fiat.usd", `is`("100")))
-      .andExpect(jsonPath("$.fiat.eur", `is`("70")))
-      .andExpect(jsonPath("$.btc", `is`("0.1")))
-      .andExpect(jsonPath("$.stablecoins", `is`("50")))
+      .andExpect(jsonPath("$.balances.fiat.usd", `is`("22822.29")))
+      .andExpect(jsonPath("$.balances.fiat.eur", `is`("19927.78")))
+      .andExpect(jsonPath("$.balances.btc", `is`("0.25127936")))
+      .andExpect(jsonPath("$.stablecoins", `is`("199.92")))
+      .andExpect(jsonPath("$.top24hGainer.cryptoId", `is`("bitcoin")))
+      .andExpect(jsonPath("$.top24hGainer.symbol", `is`("btc")))
+      .andExpect(jsonPath("$.top24hGainer.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
+      .andExpect(jsonPath("$.top24hGainer.price.usd", `is`("90824.40")))
+      .andExpect(jsonPath("$.top24hGainer.price.eur", `is`("79305.30")))
+      .andExpect(jsonPath("$.top24hGainer.priceChange.changePercentageIn24h", `is`(10)))
   }
 
   @Test

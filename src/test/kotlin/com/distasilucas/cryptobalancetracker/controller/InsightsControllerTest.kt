@@ -5,11 +5,14 @@ import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
+import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.FiatBalance
-import com.distasilucas.cryptobalancetracker.model.response.insights.TotalBalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsightsResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.Price
+import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
@@ -19,6 +22,7 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.http.ResponseEntity
+import java.math.BigDecimal
 import java.util.*
 
 class InsightsControllerTest {
@@ -29,26 +33,25 @@ class InsightsControllerTest {
 
   @Test
   fun `should retrieve total balances with status 200`() {
-    val totalBalances = TotalBalancesResponse(FiatBalance("500", "480"), "0.00025", "50")
+    val homeInsightsResponse = HomeInsightsResponse(
+      Balances(FiatBalance("22822.29", "19927.78"), "0.25127936"),
+      "199.92",
+      CryptoInfo(
+        coingeckoCryptoId = "bitcoin",
+        symbol = "btc",
+        image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+        price = Price("90824.40", "79305.30"),
+        priceChange = PriceChange(BigDecimal(10))
+      )
+    )
 
-    every { insightsServiceMock.retrieveTotalBalances() } returns totalBalances
+    every { insightsServiceMock.retrieveHomeInsightsResponse() } returns homeInsightsResponse
 
-    val totalBalancesInsights = insightsController.retrieveTotalBalances()
+    val homeInsights = insightsController.retrieveHomeInsights()
 
-    assertThat(totalBalancesInsights)
+    assertThat(homeInsights)
       .usingRecursiveComparison()
-      .isEqualTo(ResponseEntity.ok(totalBalances))
-  }
-
-  @Test
-  fun `should retrieve zero for total balances when empty cryptos with status 200`() {
-    every { insightsServiceMock.retrieveTotalBalances() } returns TotalBalancesResponse.EMPTY
-
-    val totalBalancesInsights = insightsController.retrieveTotalBalances()
-
-    assertThat(totalBalancesInsights)
-      .usingRecursiveComparison()
-      .isEqualTo(ResponseEntity.ok(TotalBalancesResponse.EMPTY))
+      .isEqualTo(ResponseEntity.ok(homeInsightsResponse))
   }
 
   @Test
