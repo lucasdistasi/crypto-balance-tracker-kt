@@ -5,8 +5,8 @@ import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
@@ -25,16 +25,26 @@ import org.springframework.http.ResponseEntity
 @Tag(name = &quot;Insights Controller&quot;, description = &quot;API endpoints for retrieving insights&quot;)
 interface InsightsControllerAPI {
 
-  @Operation(summary = &quot;Retrieve total balances in USD, BTC and EUR&quot;)
+  @Operation(summary = &quot;Retrieve representative insights&quot;)
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = &quot;200&quot;,
-        description = &quot;Total Balances&quot;,
+        description = &quot;Insights&quot;,
         content = [Content(
           mediaType = &quot;application/json&quot;,
           schema = Schema(
-            implementation = BalancesResponse::class
+            implementation = HomeInsightsResponse::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = &quot;204&quot;,
+        description = &quot;No user cryptos saved&quot;,
+        content = [Content(
+          mediaType = &quot;application/json&quot;,
+          schema = Schema(
+            implementation = Void::class
           )
         )]
       ),
@@ -71,7 +81,7 @@ interface InsightsControllerAPI {
       )
     ]
   )
-  fun retrieveTotalBalances(): ResponseEntity&lt;BalancesResponse&gt;
+  fun retrieveHomeInsights(): ResponseEntity&lt;HomeInsightsResponse&gt;
 
   @Operation(summary = &quot;Retrieve day balances for the provided date range&quot;)
   @ApiResponses(
@@ -121,7 +131,7 @@ interface InsightsControllerAPI {
   )
   fun retrieveDatesBalances(dateRange: DateRange): ResponseEntity&lt;DatesBalanceResponse&gt;
 
-<span class="fc" id="L124">  @Operation(summary = &quot;Retrieves information of each INDIVIDUAL user crypto, like the total balance, information about the crypto, in which platforms it's stored&quot;)</span>
+<span class="fc" id="L134">  @Operation(summary = &quot;Retrieves information of each INDIVIDUAL user crypto, like the total balance, information about the crypto, in which platforms it's stored&quot;)</span>
   @ApiResponses(
     value = [
       ApiResponse(
@@ -180,8 +190,8 @@ interface InsightsControllerAPI {
   fun retrieveUserCryptosInsights(
     @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
     page: Int,
-<span class="fc" id="L183">    sortBy: SortBy = SortBy.PERCENTAGE,</span>
-<span class="fc" id="L184">    sortType: SortType = SortType.DESC</span>
+<span class="fc" id="L193">    sortBy: SortBy = SortBy.PERCENTAGE,</span>
+<span class="fc" id="L194">    sortType: SortType = SortType.DESC</span>
   ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt;
 
   @Operation(summary = &quot;Retrieve insights balances for all user cryptos&quot;)
