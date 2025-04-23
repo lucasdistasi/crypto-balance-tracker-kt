@@ -38,10 +38,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import retrieveCryptoInsights
 import retrieveCryptosBalancesInsights
 import retrieveDatesBalances
+import retrieveHomeInsights
 import retrievePlatformInsights
 import retrievePlatformsBalancesInsights
-import retrieveHomeInsights
 import retrieveUserCryptosPlatformsInsights
+import java.math.BigDecimal
 import java.util.*
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -78,7 +79,12 @@ class InsightsControllerMvcTest(
       .andExpect(jsonPath("$.stablecoins", `is`("199.92")))
       .andExpect(jsonPath("$.top24hGainer.cryptoId", `is`("bitcoin")))
       .andExpect(jsonPath("$.top24hGainer.symbol", `is`("btc")))
-      .andExpect(jsonPath("$.top24hGainer.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
+      .andExpect(
+        jsonPath(
+          "$.top24hGainer.image",
+          `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")
+        )
+      )
       .andExpect(jsonPath("$.top24hGainer.price.usd", `is`("90824.40")))
       .andExpect(jsonPath("$.top24hGainer.price.eur", `is`("79305.30")))
       .andExpect(jsonPath("$.top24hGainer.priceChange.changePercentageIn24h", `is`(10.0)))
@@ -200,7 +206,15 @@ class InsightsControllerMvcTest(
 
     mockMvc.retrieveCryptoInsights("bitcoin")
       .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(jsonPath("$.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.cryptoName", `is`("Bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.cryptoId", `is`("bitcoin")))
+      .andExpect(jsonPath("$.cryptoInfo.symbol", `is`("btc")))
+      .andExpect(jsonPath("$.cryptoInfo.image", `is`("https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579")))
+      .andExpect(jsonPath("$.cryptoInfo.price.usd", `is`("90824.40")))
+      .andExpect(jsonPath("$.cryptoInfo.price.eur", `is`("79305.30")))
+      .andExpect(jsonPath("$.cryptoInfo.priceChange.changePercentageIn24h", `is`(2.0)))
+      .andExpect(jsonPath("$.cryptoInfo.priceChange.changePercentageIn7d", `is`(-1.0)))
+      .andExpect(jsonPath("$.cryptoInfo.priceChange.changePercentageIn30d", `is`(10.0)))
       .andExpect(jsonPath("$.balances.fiat.usd", `is`("4500.00")))
       .andExpect(jsonPath("$.balances.fiat.eur", `is`("4050.00")))
       .andExpect(jsonPath("$.balances.btc", `is`("0.15")))
@@ -294,7 +308,14 @@ class InsightsControllerMvcTest(
   private fun platformsBalancesInsightsResponse() = BalancesChartResponse("BINANCE", "7500.00", 100F)
 
   private fun cryptoInsightResponse() = CryptoInsightResponse(
-    cryptoName = "Bitcoin",
+    cryptoInfo = CryptoInfo(
+      cryptoName = "Bitcoin",
+      coingeckoCryptoId = "bitcoin",
+      symbol = "btc",
+      image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+      price = Price("90824.40", "79305.30"),
+      priceChange = PriceChange(2.0, -1.0, 10.0)
+    ),
     balances = Balances(FiatBalance("4500.00", "4050.00"), "0.15"),
     platforms = listOf(
       PlatformInsight(

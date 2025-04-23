@@ -132,8 +132,14 @@ class InsightsControllerTest {
   @Test
   fun `should retrieve crypto insights with status 200`() {
     val cryptoInsightResponse = CryptoInsightResponse(
+      cryptoInfo = CryptoInfo(
+        coingeckoCryptoId = "bitcoin",
+        symbol = "btc",
+        image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+        price = Price("90824.40", "79305.30"),
+        priceChange = PriceChange(2.0, -1.0, 10.0)
+      ),
       balances = balances(),
-      cryptoName = "Bitcoin",
       platforms = emptyList()
     )
 

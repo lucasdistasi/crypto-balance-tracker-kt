@@ -170,6 +170,10 @@ class InsightsService(
     val platformsIds = userCryptos.map { it.platformId }
     val platforms = platformService.findAllByIds(platformsIds)
     val crypto = cryptoService.retrieveCryptoInfoById(coingeckoCryptoId)
+    val cryptoInfo = crypto.toCryptoInfo(
+      price = Price(crypto.lastKnownPrice, crypto.lastKnownPriceInEUR),
+      priceChange = PriceChange(crypto.changePercentageIn24h, crypto.changePercentageIn7d, crypto.changePercentageIn30d)
+    )
 
     val platformUserCryptoQuantity = userCryptos.associateBy({ it.platformId }, { it.quantity })
     val totalCryptoQuantity = userCryptos.map { it.quantity }.fold(BigDecimal.ZERO, BigDecimal::add)
@@ -189,7 +193,7 @@ class InsightsService(
       platformInsight
     }.sortedByDescending { it.percentage }
 
-    return Optional.of(CryptoInsightResponse(crypto.name, totalBalances, platformInsights))
+    return Optional.of(CryptoInsightResponse(cryptoInfo, totalBalances, platformInsights))
   }
 
   @Cacheable(cacheNames = [PLATFORMS_BALANCES_INSIGHTS_CACHE])

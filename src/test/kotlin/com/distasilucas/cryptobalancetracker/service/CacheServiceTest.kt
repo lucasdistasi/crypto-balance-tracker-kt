@@ -331,7 +331,13 @@ class CacheServiceTest {
   private fun getPlatformsBalancesInsightsResponse() = listOf(BalancesChartResponse("BINANCE", "5120.45", 72.03f))
 
   private fun getCryptoInsightResponse() = CryptoInsightResponse(
-    cryptoName = "Bitcoin",
+    cryptoInfo = CryptoInfo(
+      coingeckoCryptoId = "bitcoin",
+      symbol = "btc",
+      image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+      price = Price("90824.40", "79305.30"),
+      priceChange = PriceChange(2.0, -1.0, 10.0)
+    ),
     balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25"),
     platforms = listOf(
       PlatformInsight(

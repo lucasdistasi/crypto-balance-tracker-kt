@@ -581,7 +581,14 @@ class InsightsServiceTest {
       .isEqualTo(
         Optional.of(
           CryptoInsightResponse(
-            cryptoName = "Bitcoin",
+            cryptoInfo = CryptoInfo(
+              cryptoName = "Bitcoin",
+              coingeckoCryptoId = "bitcoin",
+              symbol = "btc",
+              image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+              price = Price("30000", "27000"),
+              priceChange = PriceChange(10.0, -5.0, 0.0)
+            ),
             balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25"),
             platforms = listOf(
               PlatformInsight(
@@ -638,7 +645,14 @@ class InsightsServiceTest {
       .isEqualTo(
         Optional.of(
           CryptoInsightResponse(
-            cryptoName = "Bitcoin",
+            cryptoInfo = CryptoInfo(
+              cryptoName = "Bitcoin",
+              coingeckoCryptoId = "bitcoin",
+              symbol = "btc",
+              image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+              price = Price("30000", "27000"),
+              priceChange = PriceChange(10.0, -5.0, 0.0)
+            ),
             balances = Balances(FiatBalance("8536.50", "7682.85"), "0.28455"),
             platforms = listOf(
               PlatformInsight(
