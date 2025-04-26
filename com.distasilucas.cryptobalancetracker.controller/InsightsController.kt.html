@@ -12,7 +12,9 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsight
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
+import com.distasilucas.cryptobalancetracker.service.CryptoInsightsService
 import com.distasilucas.cryptobalancetracker.service.InsightsService
+import com.distasilucas.cryptobalancetracker.service.PlatformInsightService
 import jakarta.validation.constraints.Min
 import org.hibernate.validator.constraints.UUID
 import org.springframework.http.ResponseEntity
@@ -29,18 +31,22 @@ import java.util.*
 @RestController
 @RequestMapping(&quot;/api/v1/insights&quot;)
 @CrossOrigin(origins = [&quot;\${allowed-origins}&quot;])
-<span class="fc" id="L32">class InsightsController(private val insightsService: InsightsService) : InsightsControllerAPI {</span>
+<span class="fc" id="L34">class InsightsController(</span>
+<span class="fc" id="L35">  private val insightsService: InsightsService,</span>
+<span class="fc" id="L36">  private val cryptoInsightsService: CryptoInsightsService,</span>
+<span class="fc" id="L37">  private val platformInsightService: PlatformInsightService</span>
+) : InsightsControllerAPI {
 
   @GetMapping
   override fun retrieveHomeInsights(): ResponseEntity&lt;HomeInsightsResponse&gt; {
-<span class="fc" id="L36">    return ResponseEntity.ok(insightsService.retrieveHomeInsightsResponse())</span>
+<span class="fc" id="L42">    return ResponseEntity.ok(insightsService.retrieveHomeInsightsResponse())</span>
   }
 
   @GetMapping(&quot;/dates-balances&quot;)
   override fun retrieveDatesBalances(@RequestParam dateRange: DateRange): ResponseEntity&lt;DatesBalanceResponse&gt; {
-<span class="fc" id="L41">    val dateBalances = insightsService.retrieveDatesBalances(dateRange)</span>
+<span class="fc" id="L47">    val dateBalances = insightsService.retrieveDatesBalances(dateRange)</span>
 
-<span class="fc" id="L43">    return dateBalances.toResponseEntity()</span>
+<span class="fc" id="L49">    return dateBalances.toResponseEntity()</span>
   }
 
   @GetMapping(&quot;/cryptos&quot;)
@@ -53,33 +59,33 @@ import java.util.*
     @RequestParam(required = false)
     sortType: SortType
   ): ResponseEntity&lt;PageUserCryptosInsightsResponse&gt; {
-<span class="fc" id="L56">    val sortParams = SortParams(sortBy, sortType)</span>
-<span class="fc" id="L57">    val userCryptosInsights = insightsService.retrieveUserCryptosInsights(page, sortParams)</span>
+<span class="fc" id="L62">    val sortParams = SortParams(sortBy, sortType)</span>
+<span class="fc" id="L63">    val userCryptosInsights = cryptoInsightsService.retrieveUserCryptosInsights(page, sortParams)</span>
 
-<span class="fc bfc" id="L59" title="All 2 branches covered.">    if (userCryptosInsights == PageUserCryptosInsightsResponse.EMPTY) return ResponseEntity.noContent().build()</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">    if (userCryptosInsights == PageUserCryptosInsightsResponse.EMPTY) return ResponseEntity.noContent().build()</span>
 
-<span class="fc" id="L61">    return ResponseEntity.ok(userCryptosInsights)</span>
+<span class="fc" id="L67">    return ResponseEntity.ok(userCryptosInsights)</span>
   }
 
   @GetMapping(&quot;/cryptos/balances&quot;)
   override fun retrieveCryptosBalancesInsights(): ResponseEntity&lt;List&lt;BalancesChartResponse&gt;&gt; {
-<span class="fc" id="L66">    val cryptosBalancesInsights = insightsService.retrieveCryptosBalancesInsights()</span>
+<span class="fc" id="L72">    val cryptosBalancesInsights = cryptoInsightsService.retrieveCryptosBalancesInsights()</span>
 
-<span class="fc" id="L68">    return okOrNoContent(cryptosBalancesInsights)</span>
+<span class="fc" id="L74">    return okOrNoContent(cryptosBalancesInsights)</span>
   }
 
   @GetMapping(&quot;/platforms/balances&quot;)
   override fun retrievePlatformsBalancesInsights(): ResponseEntity&lt;List&lt;BalancesChartResponse&gt;&gt; {
-<span class="fc" id="L73">    val platformsBalancesInsights = insightsService.retrievePlatformsBalancesInsights()</span>
+<span class="fc" id="L79">    val platformsBalancesInsights = platformInsightService.retrievePlatformsBalancesInsights()</span>
 
-<span class="fc" id="L75">    return okOrNoContent(platformsBalancesInsights)</span>
+<span class="fc" id="L81">    return okOrNoContent(platformsBalancesInsights)</span>
   }
 
   @GetMapping(&quot;/cryptos/{coingeckoCryptoId}&quot;)
   override fun retrieveCryptoInsights(@PathVariable coingeckoCryptoId: String): ResponseEntity&lt;CryptoInsightResponse&gt; {
-<span class="fc" id="L80">    val cryptoInsights = insightsService.retrieveCryptoInsights(coingeckoCryptoId)</span>
+<span class="fc" id="L86">    val cryptoInsights = cryptoInsightsService.retrieveCryptoInsights(coingeckoCryptoId)</span>
 
-<span class="fc" id="L82">    return cryptoInsights.toResponseEntity()</span>
+<span class="fc" id="L88">    return cryptoInsights.toResponseEntity()</span>
   }
 
   @GetMapping(&quot;/platforms/{platformId}&quot;)
@@ -88,20 +94,20 @@ import java.util.*
     @UUID(message = PLATFORM_ID_UUID)
     platformId: String
   ): ResponseEntity&lt;PlatformInsightsResponse&gt; {
-<span class="fc" id="L91">    val platformsInsights = insightsService.retrievePlatformInsights(platformId)</span>
+<span class="fc" id="L97">    val platformsInsights = platformInsightService.retrievePlatformInsights(platformId)</span>
 
-<span class="fc" id="L93">    return platformsInsights.toResponseEntity()</span>
+<span class="fc" id="L99">    return platformsInsights.toResponseEntity()</span>
   }
 
   private fun &lt;T&gt; okOrNoContent(response: List&lt;T&gt;): ResponseEntity&lt;List&lt;T&gt;&gt; {
-<span class="pc bpc" id="L97" title="1 of 2 branches missed.">    return if (response.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(response)</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">    return if (response.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(response)</span>
   }
 
   private fun &lt;T&gt; Optional&lt;T&gt;.toResponseEntity(): ResponseEntity&lt;T&gt; {
-<span class="fc bfc" id="L101" title="All 2 branches covered.">    return if (this.isEmpty) {</span>
-<span class="fc" id="L102">      ResponseEntity.noContent().build()</span>
-<span class="fc" id="L103">    } else {</span>
-<span class="fc" id="L104">      ResponseEntity.ok(this.get())</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">    return if (this.isEmpty) {</span>
+<span class="fc" id="L108">      ResponseEntity.noContent().build()</span>
+<span class="fc" id="L109">    } else {</span>
+<span class="fc" id="L110">      ResponseEntity.ok(this.get())</span>
     }
   }
 }
