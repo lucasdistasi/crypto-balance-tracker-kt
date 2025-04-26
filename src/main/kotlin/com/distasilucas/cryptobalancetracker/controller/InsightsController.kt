@@ -12,7 +12,9 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsight
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
+import com.distasilucas.cryptobalancetracker.service.CryptoInsightsService
 import com.distasilucas.cryptobalancetracker.service.InsightsService
+import com.distasilucas.cryptobalancetracker.service.PlatformInsightService
 import jakarta.validation.constraints.Min
 import org.hibernate.validator.constraints.UUID
 import org.springframework.http.ResponseEntity
@@ -29,7 +31,11 @@ import java.util.*
 @RestController
 @RequestMapping("/api/v1/insights")
 @CrossOrigin(origins = ["\${allowed-origins}"])
-class InsightsController(private val insightsService: InsightsService) : InsightsControllerAPI {
+class InsightsController(
+  private val insightsService: InsightsService,
+  private val cryptoInsightsService: CryptoInsightsService,
+  private val platformInsightService: PlatformInsightService
+) : InsightsControllerAPI {
 
   @GetMapping
   override fun retrieveHomeInsights(): ResponseEntity<HomeInsightsResponse> {
@@ -54,7 +60,7 @@ class InsightsController(private val insightsService: InsightsService) : Insight
     sortType: SortType
   ): ResponseEntity<PageUserCryptosInsightsResponse> {
     val sortParams = SortParams(sortBy, sortType)
-    val userCryptosInsights = insightsService.retrieveUserCryptosInsights(page, sortParams)
+    val userCryptosInsights = cryptoInsightsService.retrieveUserCryptosInsights(page, sortParams)
 
     if (userCryptosInsights == PageUserCryptosInsightsResponse.EMPTY) return ResponseEntity.noContent().build()
 
@@ -63,21 +69,21 @@ class InsightsController(private val insightsService: InsightsService) : Insight
 
   @GetMapping("/cryptos/balances")
   override fun retrieveCryptosBalancesInsights(): ResponseEntity<List<BalancesChartResponse>> {
-    val cryptosBalancesInsights = insightsService.retrieveCryptosBalancesInsights()
+    val cryptosBalancesInsights = cryptoInsightsService.retrieveCryptosBalancesInsights()
 
     return okOrNoContent(cryptosBalancesInsights)
   }
 
   @GetMapping("/platforms/balances")
   override fun retrievePlatformsBalancesInsights(): ResponseEntity<List<BalancesChartResponse>> {
-    val platformsBalancesInsights = insightsService.retrievePlatformsBalancesInsights()
+    val platformsBalancesInsights = platformInsightService.retrievePlatformsBalancesInsights()
 
     return okOrNoContent(platformsBalancesInsights)
   }
 
   @GetMapping("/cryptos/{coingeckoCryptoId}")
   override fun retrieveCryptoInsights(@PathVariable coingeckoCryptoId: String): ResponseEntity<CryptoInsightResponse> {
-    val cryptoInsights = insightsService.retrieveCryptoInsights(coingeckoCryptoId)
+    val cryptoInsights = cryptoInsightsService.retrieveCryptoInsights(coingeckoCryptoId)
 
     return cryptoInsights.toResponseEntity()
   }
@@ -88,7 +94,7 @@ class InsightsController(private val insightsService: InsightsService) : Insight
     @UUID(message = PLATFORM_ID_UUID)
     platformId: String
   ): ResponseEntity<PlatformInsightsResponse> {
-    val platformsInsights = insightsService.retrievePlatformInsights(platformId)
+    val platformsInsights = platformInsightService.retrievePlatformInsights(platformId)
 
     return platformsInsights.toResponseEntity()
   }
