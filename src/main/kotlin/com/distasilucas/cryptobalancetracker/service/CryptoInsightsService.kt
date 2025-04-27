@@ -18,9 +18,9 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.Plat
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
-import java.util.*
 import kotlin.math.ceil
 
 @Service
@@ -38,12 +38,14 @@ data class CryptoInsightsService(
   private val logger = KotlinLogging.logger { }
 
   @Cacheable(cacheNames = [CRYPTO_INSIGHTS_CACHE], key = "#coingeckoCryptoId")
-  fun retrieveCryptoInsights(coingeckoCryptoId: String): Optional<CryptoInsightResponse> {
+  fun retrieveCryptoInsights(coingeckoCryptoId: String): CryptoInsightResponse {
     logger.info { "Retrieving insights for crypto with coingeckoCryptoId $coingeckoCryptoId" }
 
     val userCryptos = userCryptoService.findAllByCoingeckoCryptoId(coingeckoCryptoId)
 
-    if (userCryptos.isEmpty()) return Optional.empty()
+    if (userCryptos.isEmpty()) {
+      throw ApiException(HttpStatus.NOT_FOUND, "No cryptos with id $coingeckoCryptoId were found")
+    }
 
     val platformsIds = userCryptos.map { it.platformId }
     val platforms = platformService.findAllByIds(platformsIds)
@@ -70,7 +72,7 @@ data class CryptoInsightsService(
       )
     }.sortedByDescending { it.percentage }
 
-    return Optional.of(CryptoInsightResponse(cryptoInfo, totalBalances, platformInsights))
+    return CryptoInsightResponse(cryptoInfo, totalBalances, platformInsights)
   }
 
   @Cacheable(cacheNames = [CRYPTOS_BALANCES_INSIGHTS_CACHE])

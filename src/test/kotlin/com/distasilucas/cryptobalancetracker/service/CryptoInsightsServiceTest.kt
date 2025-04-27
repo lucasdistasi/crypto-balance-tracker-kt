@@ -1,6 +1,7 @@
 package com.distasilucas.cryptobalancetracker.service
 
 import com.distasilucas.cryptobalancetracker.entity.Platform
+import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
@@ -17,10 +18,12 @@ import getUserCrypto
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.springframework.http.HttpStatus
 import userCryptos
 import java.math.BigDecimal
-import java.util.*
 
 class CryptoInsightsServiceTest {
 
@@ -69,24 +72,22 @@ class CryptoInsightsServiceTest {
     assertThat(cryptoInsights)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          CryptoInsightResponse(
-            cryptoInfo = CryptoInfo(
-              cryptoName = "Bitcoin",
-              coingeckoCryptoId = "bitcoin",
-              symbol = "btc",
-              image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-              price = Price("30000", "27000"),
-              priceChange = PriceChange(10.0, -5.0, 0.0)
-            ),
-            balances = Balances(FiatBalance("7500", "6750"), "0.25"),
-            platforms = listOf(
-              PlatformInsight(
-                quantity = "0.25",
-                balances = Balances(FiatBalance("7500", "6750"), "0.25"),
-                percentage = 100F,
-                platformName = "BINANCE"
-              )
+        CryptoInsightResponse(
+          cryptoInfo = CryptoInfo(
+            cryptoName = "Bitcoin",
+            coingeckoCryptoId = "bitcoin",
+            symbol = "btc",
+            image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+            price = Price("30000", "27000"),
+            priceChange = PriceChange(10.0, -5.0, 0.0)
+          ),
+          balances = Balances(FiatBalance("7500", "6750"), "0.25"),
+          platforms = listOf(
+            PlatformInsight(
+              quantity = "0.25",
+              balances = Balances(FiatBalance("7500", "6750"), "0.25"),
+              percentage = 100F,
+              platformName = "BINANCE"
             )
           )
         )
@@ -145,30 +146,28 @@ class CryptoInsightsServiceTest {
     assertThat(cryptoInsight)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          CryptoInsightResponse(
-            cryptoInfo = CryptoInfo(
-              cryptoName = "Bitcoin",
-              coingeckoCryptoId = "bitcoin",
-              symbol = "btc",
-              image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-              price = Price("30000", "27000"),
-              priceChange = PriceChange(10.0, -5.0, 0.0)
+        CryptoInsightResponse(
+          cryptoInfo = CryptoInfo(
+            cryptoName = "Bitcoin",
+            coingeckoCryptoId = "bitcoin",
+            symbol = "btc",
+            image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+            price = Price("30000", "27000"),
+            priceChange = PriceChange(10.0, -5.0, 0.0)
+          ),
+          balances = Balances(FiatBalance("8536.50", "7682.85"), "0.28455"),
+          platforms = listOf(
+            PlatformInsight(
+              quantity = "0.25",
+              balances = Balances(FiatBalance("7500", "6750"), "0.25"),
+              percentage = 87.86F,
+              platformName = "BINANCE"
             ),
-            balances = Balances(FiatBalance("8536.50", "7682.85"), "0.28455"),
-            platforms = listOf(
-              PlatformInsight(
-                quantity = "0.25",
-                balances = Balances(FiatBalance("7500", "6750"), "0.25"),
-                percentage = 87.86F,
-                platformName = "BINANCE"
-              ),
-              PlatformInsight(
-                quantity = "0.03455",
-                balances = Balances(FiatBalance("1036.50", "932.85"), "0.03455"),
-                percentage = 12.14F,
-                platformName = "COINBASE"
-              )
+            PlatformInsight(
+              quantity = "0.03455",
+              balances = Balances(FiatBalance("1036.50", "932.85"), "0.03455"),
+              percentage = 12.14F,
+              platformName = "COINBASE"
             )
           )
         )
@@ -176,16 +175,15 @@ class CryptoInsightsServiceTest {
   }
 
   @Test
-  fun `should retrieve null if no cryptos are found for retrieveCryptoInsights`() {
+  fun `should throw ApIException if no cryptos are found for retrieveCryptoInsights`() {
     every {
       userCryptoServiceMock.findAllByCoingeckoCryptoId("bitcoin")
     } returns emptyList()
 
-    val cryptoInsight = cryptoInsightsService.retrieveCryptoInsights("bitcoin")
+    val exception = assertThrows<ApiException> { cryptoInsightsService.retrieveCryptoInsights("bitcoin") }
 
-    assertThat(cryptoInsight)
-      .usingRecursiveComparison()
-      .isEqualTo(Optional.empty<CryptoInsightResponse>())
+    assertEquals(HttpStatus.NOT_FOUND, exception.httpStatusCode)
+    assertEquals("No cryptos with id bitcoin were found", exception.message)
   }
 
   @Test

@@ -97,6 +97,18 @@ interface InsightsControllerAPI {
         )]
       ),
       ApiResponse(
+        responseCode = "204",
+        description = "No balances found for the given date range",
+        content = [Content(
+          mediaType = "application/json",
+          array = ArraySchema(
+            schema = Schema(
+              implementation = ProblemDetail::class
+            )
+          )
+        )]
+      ),
+      ApiResponse(
         responseCode = "401",
         description = "Unauthorized",
         content = [Content(

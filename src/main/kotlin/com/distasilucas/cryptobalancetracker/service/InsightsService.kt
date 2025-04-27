@@ -27,7 +27,6 @@ import java.math.RoundingMode
 import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
 import java.util.stream.LongStream
 
 @Service
@@ -74,7 +73,7 @@ class InsightsService(
   }
 
   @Cacheable(cacheNames = [DATES_BALANCES_CACHE], key = "#dateRange")
-  fun retrieveDatesBalances(dateRange: DateRange): Optional<DatesBalanceResponse> {
+  fun retrieveDatesBalances(dateRange: DateRange): DatesBalanceResponse {
     logger.info { "Retrieving balances for date range: $dateRange" }
     val now = LocalDate.now(clock)
 
@@ -98,11 +97,13 @@ class InsightsService(
 
     logger.info { "Balances found: ${datesBalances.size}" }
 
-    if (datesBalances.isEmpty()) return Optional.empty()
+    if (datesBalances.isEmpty()) {
+      throw ApiException(HttpStatus.NO_CONTENT, "No balances found for range $dateRange")
+    }
 
     val changesPair = changesPair(datesBalances)
 
-    return Optional.of(DatesBalanceResponse(datesBalances, changesPair.first, changesPair.second))
+    return DatesBalanceResponse(datesBalances, changesPair.first, changesPair.second)
   }
 
   fun getTotalBalances(cryptos: List<Crypto>, userCryptoQuantity: Map<String, BigDecimal>): Balances {

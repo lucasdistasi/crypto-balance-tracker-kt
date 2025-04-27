@@ -68,7 +68,7 @@ class InsightsControllerTest {
       priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
     )
 
-    every { insightsServiceMock.retrieveDatesBalances(DateRange.LAST_DAY) } returns Optional.of(dateBalanceResponse)
+    every { insightsServiceMock.retrieveDatesBalances(DateRange.LAST_DAY) } returns dateBalanceResponse
 
     val datesBalances = insightsController.retrieveDatesBalances(DateRange.LAST_DAY)
 
@@ -146,26 +146,13 @@ class InsightsControllerTest {
       platforms = emptyList()
     )
 
-    every { cryptoInsightsServiceMock.retrieveCryptoInsights("bitcoin") } returns Optional.of(cryptoInsightResponse)
+    every { cryptoInsightsServiceMock.retrieveCryptoInsights("bitcoin") } returns cryptoInsightResponse
 
     val cryptoInsights = insightsController.retrieveCryptoInsights("bitcoin")
 
     assertThat(cryptoInsights)
       .usingRecursiveComparison()
       .isEqualTo(ResponseEntity.ok(cryptoInsightResponse))
-  }
-
-  @Test
-  fun `should retrieve crypto insights with status 204`() {
-    every {
-      cryptoInsightsServiceMock.retrieveCryptoInsights("bitcoin")
-    } returns Optional.empty()
-
-    val cryptoInsights = insightsController.retrieveCryptoInsights("bitcoin")
-
-    assertThat(cryptoInsights)
-      .usingRecursiveComparison()
-      .isEqualTo(ResponseEntity.noContent().build<CryptoInsightResponse>())
   }
 
   @Test
@@ -178,25 +165,12 @@ class InsightsControllerTest {
 
     every {
       platformInsightServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
-    } returns Optional.of(platformInsightsResponse)
+    } returns platformInsightsResponse
 
     val platformInsights = insightsController.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
 
     assertThat(platformInsights)
       .usingRecursiveComparison()
       .isEqualTo(ResponseEntity.ok(platformInsightsResponse))
-  }
-
-  @Test
-  fun `should retrieve platform insights with status 204`() {
-    every {
-      platformInsightServiceMock.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
-    } returns Optional.empty()
-
-    val platformInsights = insightsController.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
-
-    assertThat(platformInsights)
-      .usingRecursiveComparison()
-      .isEqualTo(ResponseEntity.noContent().build<PlatformInsightsResponse>())
   }
 }

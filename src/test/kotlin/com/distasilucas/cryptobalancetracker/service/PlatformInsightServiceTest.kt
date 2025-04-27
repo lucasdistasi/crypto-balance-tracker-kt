@@ -3,6 +3,7 @@ package com.distasilucas.cryptobalancetracker.service
 import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.distasilucas.cryptobalancetracker.entity.Platform
 import com.distasilucas.cryptobalancetracker.entity.UserCrypto
+import com.distasilucas.cryptobalancetracker.exception.ApiException
 import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
@@ -16,7 +17,10 @@ import getUserCrypto
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.springframework.http.HttpStatus
 import userCryptos
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -66,23 +70,21 @@ class PlatformInsightServiceTest {
     assertThat(platformInsights)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          PlatformInsightsResponse(
-            platformName = "BINANCE",
-            balances = Balances(FiatBalance("7500", "6750"), "0.25"),
-            cryptos = listOf(
-              CryptoInsights(
-                id = "123e4567-e89b-12d3-a456-426614174000",
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Bitcoin",
-                  coingeckoCryptoId = "bitcoin",
-                  symbol = "btc",
-                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-                ),
-                quantity = "0.25",
-                percentage = 100f,
-                balances = Balances(FiatBalance("7500", "6750"), "0.25")
-              )
+        PlatformInsightsResponse(
+          platformName = "BINANCE",
+          balances = Balances(FiatBalance("7500", "6750"), "0.25"),
+          cryptos = listOf(
+            CryptoInsights(
+              id = "123e4567-e89b-12d3-a456-426614174000",
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Bitcoin",
+                coingeckoCryptoId = "bitcoin",
+                symbol = "btc",
+                image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+              ),
+              quantity = "0.25",
+              percentage = 100f,
+              balances = Balances(FiatBalance("7500", "6750"), "0.25")
             )
           )
         )
@@ -154,35 +156,33 @@ class PlatformInsightServiceTest {
     assertThat(platformInsights)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          PlatformInsightsResponse(
-            platformName = "BINANCE",
-            balances = Balances(FiatBalance("7925", "7147"), "0.266554"),
-            cryptos = listOf(
-              CryptoInsights(
-                id = "123e4567-e89b-12d3-a456-426614174000",
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Bitcoin",
-                  coingeckoCryptoId = "bitcoin",
-                  symbol = "btc",
-                  image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-                ),
-                quantity = "0.25",
-                percentage = 94.64F,
-                balances = Balances(FiatBalance("7500", "6750"), "0.25")
+        PlatformInsightsResponse(
+          platformName = "BINANCE",
+          balances = Balances(FiatBalance("7925", "7147"), "0.266554"),
+          cryptos = listOf(
+            CryptoInsights(
+              id = "123e4567-e89b-12d3-a456-426614174000",
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Bitcoin",
+                coingeckoCryptoId = "bitcoin",
+                symbol = "btc",
+                image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
               ),
-              CryptoInsights(
-                id = polkadotUserCrypto.id,
-                cryptoInfo = CryptoInfo(
-                  cryptoName = "Polkadot",
-                  coingeckoCryptoId = "polkadot",
-                  symbol = "dot",
-                  image = "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1639712644",
-                ),
-                quantity = "100",
-                percentage = 5.36F,
-                balances = Balances(FiatBalance("425", "397"), "0.016554")
-              )
+              quantity = "0.25",
+              percentage = 94.64F,
+              balances = Balances(FiatBalance("7500", "6750"), "0.25")
+            ),
+            CryptoInsights(
+              id = polkadotUserCrypto.id,
+              cryptoInfo = CryptoInfo(
+                cryptoName = "Polkadot",
+                coingeckoCryptoId = "polkadot",
+                symbol = "dot",
+                image = "https://assets.coingecko.com/coins/images/12171/large/polkadot.png?1639712644",
+              ),
+              quantity = "100",
+              percentage = 5.36F,
+              balances = Balances(FiatBalance("425", "397"), "0.016554")
             )
           )
         )
@@ -190,16 +190,17 @@ class PlatformInsightServiceTest {
   }
 
   @Test
-  fun `should retrieve null if no cryptos are found for retrievePlatformInsights`() {
+  fun `should throw ApiException if no cryptos are found for retrievePlatformInsights`() {
     every {
       userCryptoServiceMock.findAllByPlatformId("123e4567-e89b-12d3-a456-426614174111")
     } returns emptyList()
 
-    val platformInsights = platformInsightService.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
+    val exception = assertThrows<ApiException> {
+      platformInsightService.retrievePlatformInsights("123e4567-e89b-12d3-a456-426614174111")
+    }
 
-    assertThat(platformInsights)
-      .usingRecursiveComparison()
-      .isEqualTo(Optional.empty<PlatformInsightsResponse>())
+    assertEquals(HttpStatus.NO_CONTENT, exception.httpStatusCode)
+    assertEquals("There is no user cryptos in platform", exception.message)
   }
 
   @Test

@@ -19,7 +19,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -107,15 +106,13 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("16 March 2024", Balances(FiatBalance("1000", "918.45"), "0.01438911")),
-              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.021583665"))
-            ),
-            change = BalanceChanges(50F, 50F, 50F),
-            priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("16 March 2024", Balances(FiatBalance("1000", "918.45"), "0.01438911")),
+            DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.021583665"))
+          ),
+          change = BalanceChanges(50F, 50F, 50F),
+          priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
         )
       )
   }
@@ -137,21 +134,18 @@ class InsightsServiceTest {
 
     val datesBalances = insightsService.retrieveDatesBalances(DateRange.THREE_DAYS)
 
-    assertTrue(datesBalances.isPresent)
-    assertEquals(3, datesBalances.get().datesBalances.size)
+    assertEquals(3, datesBalances.datesBalances.size)
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("15 March 2024", Balances(FiatBalance("1200", "1102.14"), "0.020689655")),
-              DateBalances("16 March 2024", Balances(FiatBalance("1000", "918.85"), "0.017241379")),
-              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1378.27"), "0.025862069"))
-            ),
-            change = BalanceChanges(25F, 25.05F, 25F),
-            priceDifference = DifferencesChanges("300", "276.13", "0.005172414")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("15 March 2024", Balances(FiatBalance("1200", "1102.14"), "0.020689655")),
+            DateBalances("16 March 2024", Balances(FiatBalance("1000", "918.85"), "0.017241379")),
+            DateBalances("17 March 2024", Balances(FiatBalance("1500", "1378.27"), "0.025862069"))
+          ),
+          change = BalanceChanges(25F, 25.05F, 25F),
+          priceDifference = DifferencesChanges("300", "276.13", "0.005172414")
         )
       )
   }
@@ -179,17 +173,15 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("14 March 2024", Balances(FiatBalance("1200", "1102.62"), "0.020689655")),
-              DateBalances("15 March 2024", Balances(FiatBalance("900", "823.63"), "0.015789474")),
-              DateBalances("16 March 2024", Balances(FiatBalance("1000", "913"), "0.016806723")),
-              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.025862069"))
-            ),
-            change = BalanceChanges(25F, 24.95F, 25F),
-            priceDifference = DifferencesChanges("300", "275.05", "0.005172414")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("14 March 2024", Balances(FiatBalance("1200", "1102.62"), "0.020689655")),
+            DateBalances("15 March 2024", Balances(FiatBalance("900", "823.63"), "0.015789474")),
+            DateBalances("16 March 2024", Balances(FiatBalance("1000", "913"), "0.016806723")),
+            DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.025862069"))
+          ),
+          change = BalanceChanges(25F, 24.95F, 25F),
+          priceDifference = DifferencesChanges("300", "275.05", "0.005172414")
         )
       )
   }
@@ -214,17 +206,15 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("11 March 2024", Balances(FiatBalance("1200", "1102.14"), "0.020530368")),
-              DateBalances("13 March 2024", Balances(FiatBalance("900", "826.61"), "0.015544041")),
-              DateBalances("15 March 2024", Balances(FiatBalance("1000", "918.45"), "0.016906171")),
-              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.025862069"))
-            ),
-            change = BalanceChanges(25F, 25F, 25.97F),
-            priceDifference = DifferencesChanges("300", "275.53", "0.005331701")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("11 March 2024", Balances(FiatBalance("1200", "1102.14"), "0.020530368")),
+            DateBalances("13 March 2024", Balances(FiatBalance("900", "826.61"), "0.015544041")),
+            DateBalances("15 March 2024", Balances(FiatBalance("1000", "918.45"), "0.016906171")),
+            DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.025862069"))
+          ),
+          change = BalanceChanges(25F, 25F, 25.97F),
+          priceDifference = DifferencesChanges("300", "275.53", "0.005331701")
         )
       )
   }
@@ -250,18 +240,16 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("22 February 2024", Balances(FiatBalance("1150", "1067.03"), "0.019827586")),
-              DateBalances("28 February 2024", Balances(FiatBalance("1200", "1108.50"), "0.020512821")),
-              DateBalances("5 March 2024", Balances(FiatBalance("900", "830.38"), "0.015319149")),
-              DateBalances("11 March 2024", Balances(FiatBalance("1000", "921.15"), "0.016949153")),
-              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1372.73"), "0.025"))
-            ),
-            change = BalanceChanges(30.43F, 28.65F, 26.09F),
-            priceDifference = DifferencesChanges("350", "305.70", "0.005172414")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("22 February 2024", Balances(FiatBalance("1150", "1067.03"), "0.019827586")),
+            DateBalances("28 February 2024", Balances(FiatBalance("1200", "1108.50"), "0.020512821")),
+            DateBalances("5 March 2024", Balances(FiatBalance("900", "830.38"), "0.015319149")),
+            DateBalances("11 March 2024", Balances(FiatBalance("1000", "921.15"), "0.016949153")),
+            DateBalances("17 March 2024", Balances(FiatBalance("1500", "1372.73"), "0.025"))
+          ),
+          change = BalanceChanges(30.43F, 28.65F, 26.09F),
+          priceDifference = DifferencesChanges("350", "305.70", "0.005172414")
         )
       )
   }
@@ -288,19 +276,17 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("27 January 2024", Balances(FiatBalance("1150", "1057.14"), "0.019827586")),
-              DateBalances("6 February 2024", Balances(FiatBalance("1150", "1060.30"), "0.019311503")),
-              DateBalances("16 February 2024", Balances(FiatBalance("1200", "1113.18"), "0.020689655")),
-              DateBalances("26 February 2024", Balances(FiatBalance("900", "840.46"), "0.015062762")),
-              DateBalances("7 March 2024", Balances(FiatBalance("1000", "923.75"), "0.016666667")),
-              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1381.73"), "0.025062657"))
-            ),
-            change = BalanceChanges(30.43F, 30.7F, 26.4F),
-            priceDifference = DifferencesChanges("350", "324.59", "0.005235071")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("27 January 2024", Balances(FiatBalance("1150", "1057.14"), "0.019827586")),
+            DateBalances("6 February 2024", Balances(FiatBalance("1150", "1060.30"), "0.019311503")),
+            DateBalances("16 February 2024", Balances(FiatBalance("1200", "1113.18"), "0.020689655")),
+            DateBalances("26 February 2024", Balances(FiatBalance("900", "840.46"), "0.015062762")),
+            DateBalances("7 March 2024", Balances(FiatBalance("1000", "923.75"), "0.016666667")),
+            DateBalances("17 March 2024", Balances(FiatBalance("1500", "1381.73"), "0.025062657"))
+          ),
+          change = BalanceChanges(30.43F, 30.7F, 26.4F),
+          priceDifference = DifferencesChanges("350", "324.59", "0.005235071")
         )
       )
   }
@@ -327,19 +313,17 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("17 October 2023", Balances(FiatBalance("1150", "1024.36"), "0.020909091")),
-              DateBalances("17 November 2023", Balances(FiatBalance("1150", "1054.66"), "0.020720721")),
-              DateBalances("17 December 2023", Balances(FiatBalance("1200", "1101.42"), "0.021428571")),
-              DateBalances("17 January 2024", Balances(FiatBalance("900", "827.33"), "0.015929204")),
-              DateBalances("17 February 2024", Balances(FiatBalance("1000", "928.25"), "0.01754386")),
-              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1378.20"), "0.025862069"))
-            ),
-            change = BalanceChanges(30.43F, 34.54F, 23.69F),
-            priceDifference = DifferencesChanges("350", "353.84", "0.004952978")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("17 October 2023", Balances(FiatBalance("1150", "1024.36"), "0.020909091")),
+            DateBalances("17 November 2023", Balances(FiatBalance("1150", "1054.66"), "0.020720721")),
+            DateBalances("17 December 2023", Balances(FiatBalance("1200", "1101.42"), "0.021428571")),
+            DateBalances("17 January 2024", Balances(FiatBalance("900", "827.33"), "0.015929204")),
+            DateBalances("17 February 2024", Balances(FiatBalance("1000", "928.25"), "0.01754386")),
+            DateBalances("17 March 2024", Balances(FiatBalance("1500", "1378.20"), "0.025862069"))
+          ),
+          change = BalanceChanges(30.43F, 34.54F, 23.69F),
+          priceDifference = DifferencesChanges("350", "353.84", "0.004952978")
         )
       )
   }
@@ -372,23 +356,21 @@ class InsightsServiceTest {
     assertThat(datesBalances)
       .usingRecursiveComparison()
       .isEqualTo(
-        Optional.of(
-          DatesBalanceResponse(
-            datesBalances = listOf(
-              DateBalances("14 March 2024", Balances(FiatBalance("950", "872.86"), "0.016225448")),
-              DateBalances("15 March 2024", Balances(FiatBalance("1000", "918.80"), "0.016949153")),
-              DateBalances("16 March 2024", Balances(FiatBalance("900", "826.92"), "0.015397776")),
-              DateBalances("17 March 2024", Balances(FiatBalance("1500", "1378.20"), "0.025359256"))
-            ),
-            change = BalanceChanges(57.89F, 57.89F, 56.29F),
-            priceDifference = DifferencesChanges("550", "505.34", "0.009133808")
-          )
+        DatesBalanceResponse(
+          datesBalances = listOf(
+            DateBalances("14 March 2024", Balances(FiatBalance("950", "872.86"), "0.016225448")),
+            DateBalances("15 March 2024", Balances(FiatBalance("1000", "918.80"), "0.016949153")),
+            DateBalances("16 March 2024", Balances(FiatBalance("900", "826.92"), "0.015397776")),
+            DateBalances("17 March 2024", Balances(FiatBalance("1500", "1378.20"), "0.025359256"))
+          ),
+          change = BalanceChanges(57.89F, 57.89F, 56.29F),
+          priceDifference = DifferencesChanges("550", "505.34", "0.009133808")
         )
       )
   }
 
   @Test
-  fun `should retrieve null for dates balances`() {
+  fun `should throw ApiException when retrieving dates balances`() {
     val now = LocalDate.of(2024, 3, 17)
     val from = now.minusDays(6).toString()
     val to = now.toString()
@@ -397,11 +379,10 @@ class InsightsServiceTest {
     every { clockMock.zone } returns now.atStartOfDay().atZone(ZoneId.of("UTC")).zone
     every { dateBalanceRepositoryMock.findDateBalancesByInclusiveDateBetween(from, to) } returns emptyList()
 
-    val datesBalances = insightsService.retrieveDatesBalances(DateRange.ONE_WEEK)
+    val exception = assertThrows<ApiException> { insightsService.retrieveDatesBalances(DateRange.ONE_WEEK) }
 
-    assertThat(datesBalances)
-      .usingRecursiveComparison()
-      .isEqualTo(Optional.empty<DatesBalanceResponse>())
+    assertEquals(HttpStatus.NO_CONTENT, exception.httpStatusCode)
+    assertEquals("No balances found for range ONE_WEEK", exception.message)
   }
 
   private fun getMockDates(from: LocalDate, to: LocalDate, daysSubtraction: Int): List<String> {

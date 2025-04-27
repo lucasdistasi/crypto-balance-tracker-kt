@@ -7,11 +7,7 @@ import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortParams
 import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
 import com.distasilucas.cryptobalancetracker.service.CryptoInsightsService
 import com.distasilucas.cryptobalancetracker.service.InsightsService
 import com.distasilucas.cryptobalancetracker.service.PlatformInsightService
@@ -25,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
 
 @Validated
 @RestController
@@ -38,16 +33,11 @@ class InsightsController(
 ) : InsightsControllerAPI {
 
   @GetMapping
-  override fun retrieveHomeInsights(): ResponseEntity<HomeInsightsResponse> {
-    return ResponseEntity.ok(insightsService.retrieveHomeInsightsResponse())
-  }
+  override fun retrieveHomeInsights() = ResponseEntity.ok(insightsService.retrieveHomeInsightsResponse())
 
   @GetMapping("/dates-balances")
-  override fun retrieveDatesBalances(@RequestParam dateRange: DateRange): ResponseEntity<DatesBalanceResponse> {
-    val dateBalances = insightsService.retrieveDatesBalances(dateRange)
-
-    return dateBalances.toResponseEntity()
-  }
+  override fun retrieveDatesBalances(@RequestParam dateRange: DateRange) =
+    ResponseEntity.ok(insightsService.retrieveDatesBalances(dateRange))
 
   @GetMapping("/cryptos")
   override fun retrieveUserCryptosInsights(
@@ -82,32 +72,17 @@ class InsightsController(
   }
 
   @GetMapping("/cryptos/{coingeckoCryptoId}")
-  override fun retrieveCryptoInsights(@PathVariable coingeckoCryptoId: String): ResponseEntity<CryptoInsightResponse> {
-    val cryptoInsights = cryptoInsightsService.retrieveCryptoInsights(coingeckoCryptoId)
-
-    return cryptoInsights.toResponseEntity()
-  }
+  override fun retrieveCryptoInsights(@PathVariable coingeckoCryptoId: String) =
+    ResponseEntity.ok(cryptoInsightsService.retrieveCryptoInsights(coingeckoCryptoId))
 
   @GetMapping("/platforms/{platformId}")
   override fun retrievePlatformInsights(
     @PathVariable
     @UUID(message = PLATFORM_ID_UUID)
     platformId: String
-  ): ResponseEntity<PlatformInsightsResponse> {
-    val platformsInsights = platformInsightService.retrievePlatformInsights(platformId)
-
-    return platformsInsights.toResponseEntity()
-  }
+  ) = ResponseEntity.ok(platformInsightService.retrievePlatformInsights(platformId))
 
   private fun <T> okOrNoContent(response: List<T>): ResponseEntity<List<T>> {
     return if (response.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(response)
-  }
-
-  private fun <T> Optional<T>.toResponseEntity(): ResponseEntity<T> {
-    return if (this.isEmpty) {
-      ResponseEntity.noContent().build()
-    } else {
-      ResponseEntity.ok(this.get())
-    }
   }
 }
