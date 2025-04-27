@@ -5,8 +5,8 @@ import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.SortBy
 import com.distasilucas.cryptobalancetracker.model.SortType
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PageUserCryptosInsightsResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.PlatformInsightsResponse
@@ -25,16 +25,26 @@ import org.springframework.http.ResponseEntity
 @Tag(name = "Insights Controller", description = "API endpoints for retrieving insights")
 interface InsightsControllerAPI {
 
-  @Operation(summary = "Retrieve total balances in USD, BTC and EUR")
+  @Operation(summary = "Retrieve representative insights")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "200",
-        description = "Total Balances",
+        description = "Insights",
         content = [Content(
           mediaType = "application/json",
           schema = Schema(
-            implementation = BalancesResponse::class
+            implementation = HomeInsightsResponse::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = "204",
+        description = "No user cryptos saved",
+        content = [Content(
+          mediaType = "application/json",
+          schema = Schema(
+            implementation = Void::class
           )
         )]
       ),
@@ -71,7 +81,7 @@ interface InsightsControllerAPI {
       )
     ]
   )
-  fun retrieveTotalBalances(): ResponseEntity<BalancesResponse>
+  fun retrieveHomeInsights(): ResponseEntity<HomeInsightsResponse>
 
   @Operation(summary = "Retrieve day balances for the provided date range")
   @ApiResponses(
@@ -83,6 +93,18 @@ interface InsightsControllerAPI {
           mediaType = "application/json",
           schema = Schema(
             implementation = DatesBalanceResponse::class
+          )
+        )]
+      ),
+      ApiResponse(
+        responseCode = "204",
+        description = "No balances found for the given date range",
+        content = [Content(
+          mediaType = "application/json",
+          array = ArraySchema(
+            schema = Schema(
+              implementation = ProblemDetail::class
+            )
           )
         )]
       ),

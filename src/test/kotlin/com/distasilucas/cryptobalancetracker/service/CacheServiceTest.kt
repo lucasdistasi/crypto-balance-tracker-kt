@@ -6,6 +6,7 @@ import com.distasilucas.cryptobalancetracker.constants.CRYPTOS_CRYPTOS_IDS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.CRYPTO_INSIGHTS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.DATES_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.constants.GOAL_RESPONSE_GOAL_ID_CACHE
+import com.distasilucas.cryptobalancetracker.constants.HOME_INSIGHTS_RESPONSE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PAGE_GOALS_RESPONSE_PAGE_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_BALANCES_INSIGHTS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PLATFORMS_PLATFORMS_IDS_CACHE
@@ -14,7 +15,6 @@ import com.distasilucas.cryptobalancetracker.constants.PLATFORM_PLATFORM_ID_CACH
 import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_RESPONSE_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.PRICE_TARGET_RESPONSE_PAGE_CACHE
-import com.distasilucas.cryptobalancetracker.constants.TOTAL_BALANCES_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_COINGECKO_CRYPTO_ID_CACHE
 import com.distasilucas.cryptobalancetracker.constants.USER_CRYPTOS_PLATFORM_ID_CACHE
@@ -26,12 +26,15 @@ import com.distasilucas.cryptobalancetracker.model.DateRange
 import com.distasilucas.cryptobalancetracker.model.response.goal.PageGoalResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalanceChanges
 import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesChartResponse
-import com.distasilucas.cryptobalancetracker.model.response.insights.BalancesResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.Balances
 import com.distasilucas.cryptobalancetracker.model.response.insights.CryptoInfo
 import com.distasilucas.cryptobalancetracker.model.response.insights.DateBalances
 import com.distasilucas.cryptobalancetracker.model.response.insights.DatesBalanceResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.DifferencesChanges
-import com.distasilucas.cryptobalancetracker.model.response.insights.UserCryptoInsights
+import com.distasilucas.cryptobalancetracker.model.response.insights.FiatBalance
+import com.distasilucas.cryptobalancetracker.model.response.insights.HomeInsightsResponse
+import com.distasilucas.cryptobalancetracker.model.response.insights.Price
+import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.CryptoInsightResponse
 import com.distasilucas.cryptobalancetracker.model.response.insights.crypto.PlatformInsight
 import com.distasilucas.cryptobalancetracker.model.response.insights.platform.CryptoInsights
@@ -209,21 +212,21 @@ class CacheServiceTest {
 
   @Test
   fun `should invalidate insights caches if they exist`() {
-    val totalBalancesMap = mapOf(SimpleKey::class.java to BalancesResponse("1000", "927.30", "0.015384615"))
+    val homeInsightsMap = mapOf(SimpleKey::class.java to getHomeInsightsResponse())
     val datesBalancesMap = mapOf(DateRange::class.java to getDateBalanceResponse())
     val platformInsightsMap = mapOf(String::class.java to getPlatformInsightsResponse())
     val cryptoInsightsMap = mapOf(String::class.java to getCryptoInsightResponse())
     val platformsBalancesInsightsMap = mapOf(SimpleKey::class.java to getPlatformsBalancesInsightsResponse())
     val cryptosBalancesInsightsMap = mapOf(SimpleKey::class.java to getCryptosBalancesInsightsResponse())
 
-    val totalBalancesCache = getMapCache(TOTAL_BALANCES_CACHE, totalBalancesMap)
+    val totalBalancesCache = getMapCache(HOME_INSIGHTS_RESPONSE_CACHE, homeInsightsMap)
     val datesBalancesCache = getMapCache(DATES_BALANCES_CACHE, datesBalancesMap)
     val platformInsightsCache = getMapCache(PLATFORM_INSIGHTS_CACHE, platformInsightsMap)
     val cryptoInsightsCache = getMapCache(CRYPTO_INSIGHTS_CACHE, cryptoInsightsMap)
     val platformsBalancesInsightsCache = getMapCache(PLATFORMS_BALANCES_INSIGHTS_CACHE, platformsBalancesInsightsMap)
     val cryptosBalancesInsightsCache = getMapCache(CRYPTOS_BALANCES_INSIGHTS_CACHE, cryptosBalancesInsightsMap)
 
-    every { cacheManagerMock.getCache(TOTAL_BALANCES_CACHE) } returns totalBalancesCache
+    every { cacheManagerMock.getCache(HOME_INSIGHTS_RESPONSE_CACHE) } returns totalBalancesCache
     every { cacheManagerMock.getCache(DATES_BALANCES_CACHE) } returns datesBalancesCache
     every { cacheManagerMock.getCache(PLATFORM_INSIGHTS_CACHE) } returns platformInsightsCache
     every { cacheManagerMock.getCache(CRYPTO_INSIGHTS_CACHE) } returns cryptoInsightsCache
@@ -239,7 +242,7 @@ class CacheServiceTest {
     assertTrue(platformsBalancesInsightsCache.nativeCache.isEmpty())
     assertTrue(cryptosBalancesInsightsCache.nativeCache.isEmpty())
 
-    verify(exactly = 1) { cacheManagerMock.getCache(TOTAL_BALANCES_CACHE) }
+    verify(exactly = 1) { cacheManagerMock.getCache(HOME_INSIGHTS_RESPONSE_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(DATES_BALANCES_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(PLATFORM_INSIGHTS_CACHE) }
     verify(exactly = 1) { cacheManagerMock.getCache(CRYPTO_INSIGHTS_CACHE) }
@@ -280,11 +283,7 @@ class CacheServiceTest {
 
   private fun getPlatformInsightsResponse() = PlatformInsightsResponse(
     platformName = "BINANCE",
-    balances = BalancesResponse(
-      totalUSDBalance = "7500.00",
-      totalBTCBalance = "0.25",
-      totalEURBalance = "6750.00"
-    ),
+    balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25"),
     cryptos = listOf(
       CryptoInsights(
         id = "123e4567-e89b-12d3-a456-426614174000",
@@ -296,19 +295,27 @@ class CacheServiceTest {
         ),
         quantity = "0.25",
         percentage = 100f,
-        balances = BalancesResponse(
-          totalUSDBalance = "7500.00",
-          totalBTCBalance = "0.25",
-          totalEURBalance = "6750.00"
-        )
+        balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25")
       )
+    )
+  )
+
+  private fun getHomeInsightsResponse() = HomeInsightsResponse(
+    Balances(FiatBalance("22822.29", "19927.78"), "0.25127936"),
+    "199.92",
+    CryptoInfo(
+      coingeckoCryptoId = "bitcoin",
+      symbol = "btc",
+      image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+      price = Price("90824.40", "79305.30"),
+      priceChange = PriceChange(10.00)
     )
   )
 
   private fun getDateBalanceResponse() = DatesBalanceResponse(
     datesBalances = listOf(
-      DateBalances("16 March 2024", BalancesResponse("1000", "918.45", "0.01438911")),
-      DateBalances("17 March 2024", BalancesResponse("1500", "1377.67", "0.021583665"))
+      DateBalances("16 March 2024", Balances(FiatBalance("1000", "918.45"), "0.01438911")),
+      DateBalances("17 March 2024", Balances(FiatBalance("1500", "1377.67"), "0.021583665"))
     ),
     change = BalanceChanges(50F, 50F, 49.99F),
     priceDifference = DifferencesChanges("500", "459.22", "0.007194555")
@@ -324,20 +331,18 @@ class CacheServiceTest {
   private fun getPlatformsBalancesInsightsResponse() = listOf(BalancesChartResponse("BINANCE", "5120.45", 72.03f))
 
   private fun getCryptoInsightResponse() = CryptoInsightResponse(
-    cryptoName = "Bitcoin",
-    balances = BalancesResponse(
-      totalUSDBalance = "7500.00",
-      totalBTCBalance = "0.25",
-      totalEURBalance = "6750.00"
+    cryptoInfo = CryptoInfo(
+      coingeckoCryptoId = "bitcoin",
+      symbol = "btc",
+      image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+      price = Price("90824.40", "79305.30"),
+      priceChange = PriceChange(2.0, -1.0, 10.0)
     ),
+    balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25"),
     platforms = listOf(
       PlatformInsight(
         quantity = "0.25",
-        balances = BalancesResponse(
-          totalUSDBalance = "7500.00",
-          totalBTCBalance = "0.25",
-          totalEURBalance = "6750.00"
-        ),
+        balances = Balances(FiatBalance("7500.00", "6750.00"), "0.25"),
         percentage = 100f,
         platformName = "BINANCE"
       )

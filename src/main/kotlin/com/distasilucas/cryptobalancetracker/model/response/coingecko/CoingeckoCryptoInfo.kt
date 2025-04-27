@@ -4,7 +4,6 @@ import com.distasilucas.cryptobalancetracker.entity.Crypto
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.Serializable
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.Clock
 import java.time.LocalDateTime
 
@@ -41,7 +40,7 @@ data class CoingeckoCryptoInfo(
     )
   }
 
-  private fun BigDecimal.roundChangePercentage() = this.setScale(2, RoundingMode.HALF_UP)
+  private fun Double.roundChangePercentage() = String.format("%.2f", this).toDouble()
 }
 
 data class Image(
@@ -62,13 +61,13 @@ data class MarketData(
   val marketCap: MarketCap,
 
   @JsonProperty("price_change_percentage_24h")
-  val changePercentageIn24h: BigDecimal,
+  val changePercentageIn24h: Double,
 
   @JsonProperty("price_change_percentage_7d")
-  val changePercentageIn7d: BigDecimal,
+  val changePercentageIn7d: Double,
 
   @JsonProperty("price_change_percentage_30d")
-  val changePercentageIn30d: BigDecimal
+  val changePercentageIn30d: Double
 ) : Serializable
 
 data class CurrentPrice(

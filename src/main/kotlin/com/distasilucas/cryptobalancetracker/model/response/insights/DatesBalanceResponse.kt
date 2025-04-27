@@ -10,7 +10,7 @@ data class DatesBalanceResponse(
 
 data class DateBalances(
   val date: String,
-  val balances: BalancesResponse
+  val balances: Balances
 ): Serializable
 
 data class BalanceChanges(

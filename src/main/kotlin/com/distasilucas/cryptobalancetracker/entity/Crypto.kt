@@ -6,6 +6,7 @@ import com.distasilucas.cryptobalancetracker.model.response.insights.PriceChange
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
+import org.springframework.data.mongodb.core.mapping.FieldType
 import java.io.Serializable
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -18,35 +19,35 @@ data class Crypto(
   val ticker: String,
   val image: String,
 
-  @Field("last_known_price")
+  @Field("last_known_price", targetType = FieldType.DECIMAL128)
   val lastKnownPrice: BigDecimal,
 
-  @Field("last_known_price_in_eur")
+  @Field("last_known_price_in_eur", targetType = FieldType.DECIMAL128)
   val lastKnownPriceInEUR: BigDecimal,
 
-  @Field("last_known_price_in_btc")
+  @Field("last_known_price_in_btc", targetType = FieldType.DECIMAL128)
   val lastKnownPriceInBTC: BigDecimal,
 
-  @Field("circulating_supply")
+  @Field("circulating_supply", targetType = FieldType.DECIMAL128)
   val circulatingSupply: BigDecimal,
 
-  @Field("max_supply")
+  @Field("max_supply", targetType = FieldType.DECIMAL128)
   val maxSupply: BigDecimal,
 
   @Field("market_cap_rank")
   val marketCapRank: Int,
 
-  @Field("market_cap")
+  @Field("market_cap", targetType = FieldType.DECIMAL128)
   val marketCap: BigDecimal,
 
   @Field("change_percentage_in_24h")
-  val changePercentageIn24h: BigDecimal,
+  val changePercentageIn24h: Double,
 
   @Field("change_percentage_in_7d")
-  val changePercentageIn7d: BigDecimal,
+  val changePercentageIn7d: Double,
 
   @Field("change_percentage_in_30d")
-  val changePercentageIn30d: BigDecimal,
+  val changePercentageIn30d: Double,
 
   @Field("last_updated_at")
   val lastUpdatedAt: LocalDateTime

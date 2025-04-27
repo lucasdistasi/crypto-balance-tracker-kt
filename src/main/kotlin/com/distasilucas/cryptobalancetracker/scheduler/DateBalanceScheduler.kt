@@ -23,7 +23,7 @@ class DateBalanceScheduler(
     logger.info { "Running cron to save daily balance" }
 
     val today = LocalDate.now(clock).toString()
-    val totalBalances = insightsService.retrieveTotalBalances()
+    val totalBalances = insightsService.retrieveHomeInsightsResponse().balances
     val optionalDateBalance: DateBalance? = dateBalancesRepository.findDateBalanceByDate(today)
 
     if (optionalDateBalance != null) {
@@ -35,9 +35,10 @@ class DateBalanceScheduler(
       dateBalancesRepository.save(
         DateBalance(
           date = today,
-          usdBalance = totalBalances.totalUSDBalance,
-          eurBalance = totalBalances.totalEURBalance,
-          btcBalance = totalBalances.totalBTCBalance)
+          usdBalance = totalBalances.fiat.usd,
+          eurBalance = totalBalances.fiat.eur,
+          btcBalance = totalBalances.btc
+        )
       )
     }
   }

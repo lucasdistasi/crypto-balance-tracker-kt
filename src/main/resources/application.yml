@@ -21,6 +21,7 @@ springdoc:
 crypto:
   insights:
     max-single-items-count: 15
+    elements-page: 10
   scheduler:
     update:
       quantity: 10
