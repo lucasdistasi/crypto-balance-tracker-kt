@@ -114,7 +114,7 @@ import java.math.RoundingMode
   private fun getProgress(goalQuantity: BigDecimal, actualQuantity: BigDecimal): Float {
 <span class="fc bfc" id="L115" title="All 2 branches covered.">    return if (goalQuantity &lt;= actualQuantity) 100F else actualQuantity.multiply(BigDecimal(&quot;100&quot;))</span>
 <span class="fc" id="L116">      .divide(goalQuantity, RoundingMode.HALF_UP)</span>
-<span class="fc" id="L117">      .setScale(2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L117">      .setScale(2, RoundingMode.DOWN)</span>
 <span class="fc" id="L118">      .toFloat()</span>
   }
 
