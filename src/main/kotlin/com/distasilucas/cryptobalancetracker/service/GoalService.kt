@@ -114,7 +114,7 @@ class GoalService(
   private fun getProgress(goalQuantity: BigDecimal, actualQuantity: BigDecimal): Float {
     return if (goalQuantity <= actualQuantity) 100F else actualQuantity.multiply(BigDecimal("100"))
       .divide(goalQuantity, RoundingMode.HALF_UP)
-      .setScale(2, RoundingMode.HALF_UP)
+      .setScale(2, RoundingMode.DOWN)
       .toFloat()
   }
 
