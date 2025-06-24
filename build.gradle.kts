@@ -2,8 +2,8 @@ import com.adarshr.gradle.testlogger.theme.ThemeType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val ioMockkVersion = "1.14.2"
-val springDocVersion = "2.8.8"
+val ioMockkVersion = "1.14.4"
+val springDocVersion = "2.8.9"
 val ioGithubOshaiVersion = "7.0.7"
 val ninjaSquadVersion = "4.0.2"
 val springRetryVersion = "2.0.12"
@@ -15,12 +15,12 @@ val jacocoVersion = "0.8.12"
 val jsonWebTokenVersion = "0.12.6"
 
 plugins {
-	id("org.springframework.boot") version "3.5.0"
+	id("org.springframework.boot") version "3.5.3"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("com.adarshr.test-logger") version "4.0.0"
 	id("jacoco")
-	kotlin("jvm") version "2.1.21"
-	kotlin("plugin.spring") version "2.1.21"
+	kotlin("jvm") version "2.2.0"
+	kotlin("plugin.spring") version "2.2.0"
 }
 
 group = "com.distasilucas"
