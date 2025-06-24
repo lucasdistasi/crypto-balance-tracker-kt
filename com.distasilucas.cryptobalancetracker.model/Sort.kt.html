@@ -15,12 +15,12 @@ import java.math.BigDecimal
   fun getUserCryptosInsightsComparator(sortType: SortType): Comparator&lt;UserCryptoInsights&gt; {
 <span class="pc bpc" id="L16" title="1 of 2 branches missed.">    return if (sortType == SortType.ASC) userCryptoInsightsComparator else userCryptoInsightsComparator.reversed()</span>
   }
-<span class="fc" id="L18">}</span>
+}
 
 enum class SortType {
 <span class="fc" id="L21">  ASC,</span>
 <span class="fc" id="L22">  DESC</span>
-<span class="fc" id="L23">}</span>
+}
 
 <span class="fc" id="L25">data class SortParams(</span>
 <span class="pc" id="L26">  val sortBy: SortBy,</span>
