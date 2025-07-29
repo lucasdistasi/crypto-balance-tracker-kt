@@ -2,7 +2,7 @@ import com.adarshr.gradle.testlogger.theme.ThemeType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val ioMockkVersion = "1.14.4"
+val ioMockkVersion = "1.14.5"
 val springDocVersion = "2.8.9"
 val ioGithubOshaiVersion = "7.0.7"
 val ninjaSquadVersion = "4.0.2"
@@ -15,7 +15,7 @@ val jacocoVersion = "0.8.12"
 val jsonWebTokenVersion = "0.12.6"
 
 plugins {
-	id("org.springframework.boot") version "3.5.3"
+	id("org.springframework.boot") version "3.5.4"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("com.adarshr.test-logger") version "4.0.0"
 	id("jacoco")
