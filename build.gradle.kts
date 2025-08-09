@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val ioMockkVersion = "1.14.5"
 val springDocVersion = "2.8.9"
-val ioGithubOshaiVersion = "7.0.7"
+val ioGithubOshaiVersion = "7.0.11"
 val ninjaSquadVersion = "4.0.2"
 val springRetryVersion = "2.0.12"
 val ehcacheVersion = "3.10.8"
