@@ -3,24 +3,24 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val ioMockkVersion = "1.14.5"
-val springDocVersion = "2.8.9"
-val ioGithubOshaiVersion = "7.0.12"
+val springDocVersion = "2.8.11"
+val ioGithubOshaiVersion = "7.0.13"
 val ninjaSquadVersion = "4.0.2"
 val springRetryVersion = "2.0.12"
-val ehcacheVersion = "3.10.8"
+val ehcacheVersion = "3.11.0"
 val javaxCacheVersion = "1.1.1"
 val aspectjweaverVersion = "1.9.24"
 val okHttp3Version = "5.1.0"
 val jacocoVersion = "0.8.12"
-val jsonWebTokenVersion = "0.12.6"
+val jsonWebTokenVersion = "0.13.0"
 
 plugins {
-	id("org.springframework.boot") version "3.5.4"
+	id("org.springframework.boot") version "3.5.5"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("com.adarshr.test-logger") version "4.0.0"
 	id("jacoco")
-	kotlin("jvm") version "2.2.0"
-	kotlin("plugin.spring") version "2.2.0"
+	kotlin("jvm") version "2.2.10"
+	kotlin("plugin.spring") version "2.2.10"
 }
 
 group = "com.distasilucas"
