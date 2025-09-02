@@ -3,11 +3,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val ioMockkVersion = "1.14.5"
-val springDocVersion = "2.8.11"
+val springDocVersion = "2.8.12"
 val ioGithubOshaiVersion = "7.0.13"
 val ninjaSquadVersion = "4.0.2"
 val springRetryVersion = "2.0.12"
-val ehcacheVersion = "3.11.0"
+val ehcacheVersion = "3.11.1"
 val javaxCacheVersion = "1.1.1"
 val aspectjweaverVersion = "1.9.24"
 val okHttp3Version = "5.1.0"
