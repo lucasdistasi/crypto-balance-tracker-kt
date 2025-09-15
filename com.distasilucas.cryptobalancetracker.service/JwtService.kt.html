@@ -17,7 +17,7 @@ import java.util.Date
 import java.util.function.Function
 import javax.crypto.SecretKey
 
-@Service
+<span class="fc" id="L20">@Service</span>
 @ConditionalOnProperty(prefix = &quot;security&quot;, name = [&quot;enabled&quot;], havingValue = &quot;true&quot;)
 <span class="fc" id="L22">class JwtService(</span>
 <span class="fc" id="L23">  @Value(&quot;\${jwt.signing-key}&quot;)</span>

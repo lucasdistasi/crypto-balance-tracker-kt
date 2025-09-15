@@ -7,20 +7,20 @@ import org.springframework.data.mongodb.core.mapping.Field
 import java.time.LocalDate
 import java.util.*
 
-@Document(&quot;DateBalances&quot;)
+<span class="fc" id="L10">@Document(&quot;DateBalances&quot;)</span>
 <span class="fc" id="L11">data class DateBalance(</span>
 <span class="fc" id="L12">  @Id</span>
 <span class="fc" id="L13">  val id: String = UUID.randomUUID().toString(),</span>
 <span class="fc" id="L14">  val date: String,</span>
 
 <span class="fc" id="L16">  @Field(&quot;usd_balance&quot;)</span>
-  val usdBalance: String,
+<span class="fc" id="L17">  val usdBalance: String,</span>
 
 <span class="fc" id="L19">  @Field(&quot;eur_balance&quot;)</span>
-  val eurBalance: String,
+<span class="fc" id="L20">  val eurBalance: String,</span>
 
 <span class="fc" id="L22">  @Field(&quot;btc_balance&quot;)</span>
-  val btcBalance: String,
+<span class="fc" id="L23">  val btcBalance: String,</span>
 <span class="fc" id="L24">) {</span>
 <span class="fc" id="L25">  constructor(date: LocalDate, usdBalance: String, eurBalance: String, btcBalance: String) : this(UUID.randomUUID().toString(), date.toString(), usdBalance, eurBalance, btcBalance)</span>
 

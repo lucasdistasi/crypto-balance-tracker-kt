@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 import java.time.Clock
 import java.time.LocalDateTime
 
-@Service
+<span class="fc" id="L18">@Service</span>
 <span class="fc" id="L19">class CryptoService(</span>
 <span class="fc" id="L20">  private val coingeckoService: CoingeckoService,</span>
 <span class="fc" id="L21">  private val cacheService: CacheService,</span>
@@ -106,7 +106,7 @@ import java.time.LocalDateTime
 
 <span class="fc" id="L107">class CoingeckoCryptoNotFoundException(message: String) : RuntimeException(message)</span>
 
-@Service
+<span class="fc" id="L109">@Service</span>
 <span class="fc" id="L110">class OrphanCryptoService(</span>
 <span class="fc" id="L111">  private val userCryptoRepository: UserCryptoRepository,</span>
 <span class="fc" id="L112">  private val goalRepository: GoalRepository,</span>

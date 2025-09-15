@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
 <span class="fc" id="L12">data class PlatformRequest(</span>
 <span class="fc" id="L13">  @field: NotBlank(message = &quot;Platform name cannot be null or blank&quot;)</span>
   @field: ValidPlatformName
-  val name: String?
+<span class="fc" id="L15">  val name: String?</span>
 ) {
 
 <span class="fc" id="L18">  fun toEntity(id: String = UUID.randomUUID().toString()): Platform {</span>

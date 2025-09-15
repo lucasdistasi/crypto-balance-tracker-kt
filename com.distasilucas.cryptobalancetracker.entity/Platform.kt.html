@@ -6,13 +6,13 @@ import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import java.io.Serializable
 
-@Document(&quot;Platforms&quot;)
+<span class="fc" id="L9">@Document(&quot;Platforms&quot;)</span>
 <span class="fc" id="L10">data class Platform(</span>
 <span class="fc" id="L11">  @Id</span>
-  val id: String,
+<span class="fc" id="L12">  val id: String,</span>
 
 <span class="fc" id="L14">  @Field</span>
-  val name: String
+<span class="fc" id="L15">  val name: String</span>
 ) : Serializable {
 
   fun toPlatformResponse(): PlatformResponse {

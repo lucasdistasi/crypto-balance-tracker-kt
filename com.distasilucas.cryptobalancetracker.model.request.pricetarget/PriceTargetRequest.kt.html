@@ -16,7 +16,7 @@ import java.math.BigDecimal
 <span class="fc" id="L16">  @field: NotBlank(message = CRYPTO_NAME_NOT_BLANK)</span>
   @field: Size(min = 1, max = 64, message = CRYPTO_NAME_SIZE)
   @field: ValidCryptoName
-  val cryptoNameOrId: String?,
+<span class="fc" id="L19">  val cryptoNameOrId: String?,</span>
 
 <span class="fc" id="L21">  @field: NotNull(message = &quot;Price target can not be null&quot;)</span>
   @field: Digits(
@@ -29,7 +29,7 @@ import java.math.BigDecimal
     message = &quot;Price target must be less than or equal to 9999999999999999.999999999999&quot;
   )
   @field: Positive(message = &quot;Price target must be greater than 0&quot;)
-  val priceTarget: BigDecimal?
+<span class="fc" id="L32">  val priceTarget: BigDecimal?</span>
 ) {
 
 <span class="fc" id="L35">  fun toEntity(coingeckoCryptoId: String) = PriceTarget(coingeckoCryptoId = coingeckoCryptoId, target = priceTarget!!)</span>

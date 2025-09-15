@@ -8,18 +8,18 @@ import java.io.Serializable
 import java.math.BigDecimal
 import java.util.UUID
 
-@Document(&quot;UserCryptos&quot;)
+<span class="fc" id="L11">@Document(&quot;UserCryptos&quot;)</span>
 <span class="fc" id="L12">data class UserCrypto(</span>
 <span class="fc" id="L13">  @Id</span>
 <span class="fc" id="L14">  val id: String = UUID.randomUUID().toString(),</span>
 
 <span class="fc" id="L16">  @Field(&quot;crypto_id&quot;)</span>
-  val coingeckoCryptoId: String,
+<span class="fc" id="L17">  val coingeckoCryptoId: String,</span>
 
 <span class="fc" id="L19">  val quantity: BigDecimal,</span>
 
 <span class="fc" id="L21">  @Field(&quot;platform_id&quot;)</span>
-  val platformId: String
+<span class="fc" id="L22">  val platformId: String</span>
 
 <span class="fc" id="L24">) : Serializable {</span>
 

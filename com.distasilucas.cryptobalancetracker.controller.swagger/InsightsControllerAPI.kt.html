@@ -143,7 +143,7 @@ interface InsightsControllerAPI {
   )
   fun retrieveDatesBalances(dateRange: DateRange): ResponseEntity&lt;DatesBalanceResponse&gt;
 
-<span class="pc" id="L146">  @Operation(summary = &quot;Retrieves information of each INDIVIDUAL user crypto, like the total balance, information about the crypto, in which platforms it's stored&quot;)</span>
+  @Operation(summary = &quot;Retrieves information of each INDIVIDUAL user crypto, like the total balance, information about the crypto, in which platforms it's stored&quot;)
   @ApiResponses(
     value = [
       ApiResponse(
@@ -199,7 +199,7 @@ interface InsightsControllerAPI {
       )
     ]
   )
-  fun retrieveUserCryptosInsights(
+<span class="pc" id="L202">  fun retrieveUserCryptosInsights(</span>
     @Min(value = 0, message = &quot;Page must be greater than or equal to 0&quot;)
     page: Int,
 <span class="fc" id="L205">    sortBy: SortBy = SortBy.PERCENTAGE,</span>

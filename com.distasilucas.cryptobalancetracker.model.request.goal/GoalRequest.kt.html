@@ -16,7 +16,7 @@ import java.math.BigDecimal
 <span class="fc" id="L16">  @field: NotBlank(message = CRYPTO_NAME_NOT_BLANK)</span>
   @field: Size(min = 1, max = 64, message = CRYPTO_NAME_SIZE)
   @field: ValidCryptoName
-  val cryptoName: String?,
+<span class="fc" id="L19">  val cryptoName: String?,</span>
 
 <span class="fc" id="L21">  @field: NotNull(message = &quot;Goal quantity can not be null&quot;)</span>
   @field: Digits(
@@ -29,7 +29,7 @@ import java.math.BigDecimal
     message = &quot;Goal quantity must be less than or equal to 9999999999999999.999999999999&quot;
   )
   @field: Positive(message = &quot;Goal quantity must be greater than 0&quot;)
-  val goalQuantity: BigDecimal?,
+<span class="fc" id="L32">  val goalQuantity: BigDecimal?,</span>
 ) {
 
 <span class="fc" id="L35">  fun toEntity(cryptoId: String) = Goal(</span>

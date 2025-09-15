@@ -23,7 +23,7 @@ import java.math.BigDecimal
 <span class="fc" id="L23">  @field: NotBlank(message = CRYPTO_NAME_NOT_BLANK)</span>
   @field: Size(min = 1, max = 64, message = CRYPTO_NAME_SIZE)
   @field: ValidCryptoName
-  val cryptoName: String?,
+<span class="fc" id="L26">  val cryptoName: String?,</span>
 
 <span class="fc" id="L28">  @field: NotNull(message = CRYPTO_QUANTITY_NOT_NULL)</span>
   @field: Digits(
@@ -36,11 +36,11 @@ import java.math.BigDecimal
     message = CRYPTO_QUANTITY_DECIMAL_MAX
   )
   @field: Positive(message = CRYPTO_QUANTITY_POSITIVE)
-  val quantity: BigDecimal?,
+<span class="fc" id="L39">  val quantity: BigDecimal?,</span>
 
 <span class="fc" id="L41">  @field: NotBlank(message = PLATFORM_ID_NOT_BLANK)</span>
   @field: UUID(message = PLATFORM_ID_UUID)
-  val platformId: String?
+<span class="fc" id="L43">  val platformId: String?</span>
 ) {
 
 <span class="fc" id="L46">  fun toEntity(coingeckoCryptoId: String) = UserCrypto(</span>

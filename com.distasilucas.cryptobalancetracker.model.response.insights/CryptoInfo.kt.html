@@ -5,19 +5,19 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.Serializable
 import java.math.BigDecimal
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+<span class="fc" id="L8">@JsonInclude(JsonInclude.Include.NON_NULL)</span>
 <span class="fc" id="L9">data class CryptoInfo(</span>
 <span class="fc" id="L10">  val cryptoName: String? = null,</span>
 
 <span class="fc" id="L12">  @JsonProperty(&quot;cryptoId&quot;)</span>
-  val coingeckoCryptoId: String,
+<span class="fc" id="L13">  val coingeckoCryptoId: String,</span>
 <span class="fc" id="L14">  val symbol: String,</span>
 <span class="fc" id="L15">  val image: String,</span>
 <span class="fc" id="L16">  val price: Price? = null,</span>
 <span class="fc" id="L17">  val priceChange: PriceChange? = null,</span>
 <span class="fc" id="L18">): Serializable</span>
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+<span class="fc" id="L20">@JsonInclude(JsonInclude.Include.NON_NULL)</span>
 <span class="fc" id="L21">data class Price(</span>
 <span class="fc" id="L22">  val usd: String,</span>
 <span class="fc" id="L23">  val eur: String,</span>
@@ -32,7 +32,7 @@ import java.math.BigDecimal
 <span class="fc" id="L32">  )</span>
 }
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+<span class="fc" id="L35">@JsonInclude(JsonInclude.Include.NON_NULL)</span>
 <span class="fc" id="L36">data class PriceChange(</span>
 <span class="pc" id="L37">  val changePercentageIn24h: Double? = null,</span>
 <span class="fc" id="L38">  val changePercentageIn7d: Double? = null,</span>
