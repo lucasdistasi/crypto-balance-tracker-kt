@@ -19,8 +19,8 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 	id("com.adarshr.test-logger") version "4.0.0"
 	id("jacoco")
-	kotlin("jvm") version "2.2.10"
-	kotlin("plugin.spring") version "2.2.10"
+	kotlin("jvm") version "2.2.20"
+	kotlin("plugin.spring") version "2.2.20"
 }
 
 group = "com.distasilucas"
