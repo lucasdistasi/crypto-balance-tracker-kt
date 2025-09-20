@@ -1,0 +1,16 @@
+name: Update Gradle Wrapper
+
+on:
+  schedule:
+    - cron: "0 0 1,6,11,16,21,26 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  call-update-gradle-wrapper:
+    uses: lucasdistasi/ci-workflows/.github/workflows/update-gradle-wrapper.yml@main
+    with:
+      branch: ${{ github.ref_name }}
