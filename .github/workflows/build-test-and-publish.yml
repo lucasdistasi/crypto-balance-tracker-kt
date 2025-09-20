@@ -12,3 +12,5 @@ permissions:
 jobs:
   call-build-test-and-publish:
     uses: lucasdistasi/ci-workflows/.github/workflows/build-test-and-publish.yml@main
+    secrets:
+      actions-token: ${{ secrets.ACTIONS_TOKEN }}
