@@ -1,12 +1,13 @@
-name: main.yml
+name: Build, Test & Publish
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types: [opened, synchronize]
 
 permissions:
-  contents: read
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   call-build-test-and-publish:
