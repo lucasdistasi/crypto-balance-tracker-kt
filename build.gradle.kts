@@ -15,12 +15,12 @@ val jacocoVersion = "0.8.12"
 val jsonWebTokenVersion = "0.13.0"
 
 plugins {
-	id("org.springframework.boot") version "3.5.6"
+	id("org.springframework.boot") version "3.5.7"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("com.adarshr.test-logger") version "4.0.0"
 	id("jacoco")
-	kotlin("jvm") version "2.2.20"
-	kotlin("plugin.spring") version "2.2.20"
+	kotlin("jvm") version "2.2.21"
+	kotlin("plugin.spring") version "2.2.21"
 }
 
 group = "com.distasilucas"
