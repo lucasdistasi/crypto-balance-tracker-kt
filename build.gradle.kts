@@ -10,7 +10,7 @@ val springRetryVersion = "2.0.12"
 val ehcacheVersion = "3.11.1"
 val javaxCacheVersion = "1.1.1"
 val aspectjweaverVersion = "1.9.25"
-val okHttp3Version = "5.3.0"
+val okHttp3Version = "5.3.1"
 val jacocoVersion = "0.8.12"
 val jsonWebTokenVersion = "0.13.0"
 
